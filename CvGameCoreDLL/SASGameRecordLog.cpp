@@ -87,6 +87,17 @@ struct SASGameRecordTeamPrevious
 
 static SASGameRecordTeamPrevious g_akSASGameRecordTeamPrevious[MAX_TEAMS];
 
+struct SASGameRecordGlobalPrevious
+{
+	bool bValid;
+	int iGlobalWarmingIndex;
+	int iGlobalWarmingChances;
+	int iOwnedLand;
+	int iUnownedLand;
+};
+
+static SASGameRecordGlobalPrevious g_kSASGameRecordGlobalPrevious;
+
 // <!-- custom: Keep the portable high-level player fields first. More specialized bonus, espionage, unit-posture, worker, territory and city baselines are added with the corresponding snapshot rows rather than existing as unused state. (ChatGPT-5.6-Sol) -->
 struct SASGameRecordPlayerPrevious
 {
@@ -184,6 +195,11 @@ static void resetSASGameRecordTeamPrevious()
 		g_akSASGameRecordTeamPrevious[iI].bValid = false;
 		g_akSASGameRecordTeamPrevious[iI].bContactsValid = false;
 	}
+}
+
+static void resetSASGameRecordGlobalPrevious()
+{
+	g_kSASGameRecordGlobalPrevious.bValid = false;
 }
 
 static void resetSASGameRecordPlayerPrevious()
@@ -1378,6 +1394,62 @@ static void logSASGameRecordEspionage(PlayerTypes ePlayer, int iGameTurn)
 	kPrevious.iUnspentEP = iUnspentEP;
 }
 
+
+static void logSASGameRecordMapBonusTotals(int iGameTurn)
+{
+	CvString szBonuses;
+	FOR_EACH_ENUM(Bonus)
+		appendSASGameRecordTypeCount(szBonuses, getSASGameRecordBonusType(eLoopBonus), GC.getMap().getNumBonuses(eLoopBonus));
+	logSASGameRecord("GAME_RECORD_MAP_BONUSES turn=%d total=%s", iGameTurn, getSASDiagnosticOrDash(szBonuses).GetCString());
+}
+
+static void logSASGameRecordEnvironment(int iGameTurn)
+{
+	CvMap const& kMap = GC.getMap();
+	std::vector<int> aiFeatures(GC.getNumFeatureInfos(), 0);
+	std::vector<int> aiNegativeHealthFeatures(GC.getNumFeatureInfos(), 0);
+	int iOwnedLand = 0;
+	int iUnownedLand = 0;
+	for (int iI = 0; iI < kMap.numPlots(); iI++)
+	{
+		CvPlot const& kPlot = kMap.getPlotByIndex(iI);
+		if (!kPlot.isWater())
+		{
+			if (kPlot.isOwned())
+				iOwnedLand++;
+			else iUnownedLand++;
+		}
+		FeatureTypes eFeature = kPlot.getFeatureType();
+		if (eFeature != NO_FEATURE)
+		{
+			aiFeatures[eFeature]++;
+			if (GC.getInfo(eFeature).getHealthPercent() < 0)
+				aiNegativeHealthFeatures[eFeature]++;
+		}
+	}
+	CvString szFeatures;
+	CvString szNegativeHealthFeatures;
+	FOR_EACH_ENUM(Feature)
+	{
+		appendSASGameRecordTypeCount(szFeatures, getSASGameRecordFeatureType(eLoopFeature), aiFeatures[eLoopFeature]);
+		appendSASGameRecordTypeCount(szNegativeHealthFeatures, getSASGameRecordFeatureType(eLoopFeature), aiNegativeHealthFeatures[eLoopFeature]);
+	}
+	const int iGlobalWarmingIndex = GC.getGame().getGlobalWarmingIndex();
+	const int iGlobalWarmingChances = GC.getGame().getGlobalWarmingChances();
+	logSASGameRecord("GAME_RECORD_ENVIRONMENT turn=%d globalWarmingIndex=%d globalWarmingChances=%d land=%d water=%d ownedLand=%d unownedLand=%d negativeHealthFeatures=%s features=%s",
+			iGameTurn, iGlobalWarmingIndex, iGlobalWarmingChances, kMap.getLandPlots(), kMap.getWaterPlots(), iOwnedLand, iUnownedLand, getSASDiagnosticOrDash(szNegativeHealthFeatures).GetCString(), getSASDiagnosticOrDash(szFeatures).GetCString());
+	logSASGameRecord("GAME_RECORD_ENVIRONMENT_DELTAS turn=%d deltaValid=%d globalWarmingIndexDelta=%+d globalWarmingChancesDelta=%+d ownedLandDelta=%+d unownedLandDelta=%+d",
+			iGameTurn, g_kSASGameRecordGlobalPrevious.bValid,
+			getSASGameRecordDelta(g_kSASGameRecordGlobalPrevious.bValid, iGlobalWarmingIndex, g_kSASGameRecordGlobalPrevious.iGlobalWarmingIndex),
+			getSASGameRecordDelta(g_kSASGameRecordGlobalPrevious.bValid, iGlobalWarmingChances, g_kSASGameRecordGlobalPrevious.iGlobalWarmingChances),
+			getSASGameRecordDelta(g_kSASGameRecordGlobalPrevious.bValid, iOwnedLand, g_kSASGameRecordGlobalPrevious.iOwnedLand),
+			getSASGameRecordDelta(g_kSASGameRecordGlobalPrevious.bValid, iUnownedLand, g_kSASGameRecordGlobalPrevious.iUnownedLand));
+	g_kSASGameRecordGlobalPrevious.bValid = true;
+	g_kSASGameRecordGlobalPrevious.iGlobalWarmingIndex = iGlobalWarmingIndex;
+	g_kSASGameRecordGlobalPrevious.iGlobalWarmingChances = iGlobalWarmingChances;
+	g_kSASGameRecordGlobalPrevious.iOwnedLand = iOwnedLand;
+	g_kSASGameRecordGlobalPrevious.iUnownedLand = iUnownedLand;
+}
 
 static void logSASGameRecordPlayerBonuses(PlayerTypes ePlayer, int iGameTurn, SASGameRecordPlayerPrevious const& kPrevious)
 {
@@ -2917,6 +2989,15 @@ static void logSASGameRecordPlayerSnapshot(PlayerTypes ePlayer, int iGameTurn)
 			iResearchRate, getSASGameRecordDelta(kPrevious.bValid, iResearchRate, kPrevious.iResearchRate), kPlayer.getCommercePercent(COMMERCE_RESEARCH), getSASGameRecordTechType(eResearch), kPlayer.getOverflowResearch(), kPlayer.isNoResearchAvailable(), iResearchTurns, getSASGameRecordEraType(kPlayer.getCurrentEra()), getSASGameRecordReligionType(kPlayer.getStateReligion()), kTeam.getBestKnownTechScorePercent(), kPlayer.getCombatExperience(), kPlayer.getGreatPeopleCreated(), kPlayer.getGreatGeneralsCreated(), kPlayer.greatPeopleThreshold(true), kPlayer.getGoldenAgeTurns(), kPlayer.getAnarchyTurns(), kPlayer.getRevolutionTimer(), kPlayer.getConversionTimer(), getSASGameRecordWarTeams(kPlayer.getTeam()).GetCString());
 	logSASGameRecord("GAME_RECORD_PLAYER_HISTORY turn=%d player=%d deltaValid=%d historyScore=%d historyScoreDelta=%+d historyEconomy=%d historyEconomyDelta=%+d historyIndustry=%d historyIndustryDelta=%+d historyAgriculture=%d historyAgricultureDelta=%+d historyPower=%d historyPowerDelta=%+d historyCulture=%d historyCultureDelta=%+d historyEspionage=%d historyEspionageDelta=%+d",
 			iGameTurn, ePlayer, kPrevious.bValid, iHistoryScore, getSASGameRecordDelta(kPrevious.bValid, iHistoryScore, kPrevious.iHistoryScore), iHistoryEconomy, getSASGameRecordDelta(kPrevious.bValid, iHistoryEconomy, kPrevious.iHistoryEconomy), iHistoryIndustry, getSASGameRecordDelta(kPrevious.bValid, iHistoryIndustry, kPrevious.iHistoryIndustry), iHistoryAgriculture, getSASGameRecordDelta(kPrevious.bValid, iHistoryAgriculture, kPrevious.iHistoryAgriculture), iHistoryPower, getSASGameRecordDelta(kPrevious.bValid, iHistoryPower, kPrevious.iHistoryPower), iHistoryCulture, getSASGameRecordDelta(kPrevious.bValid, iHistoryCulture, kPrevious.iHistoryCulture), iHistoryEspionage, getSASGameRecordDelta(kPrevious.bValid, iHistoryEspionage, kPrevious.iHistoryEspionage));
+	// <!-- custom: The environment row shows world pollution, but not which player produced it or whether buildings, bonuses, dirty power, or population caused it. Keep these city scans behind record level 2, and derive the total from the four components rather than scanning a fifth time. (GPT-5.6-Sol) -->
+	if (bLogPlayerDetails)
+	{
+		int const iBuildingPollution = kPlayer.calculatePollution(CvPlayer::POLLUTION_BUILDINGS);
+		int const iBonusPollution = kPlayer.calculatePollution(CvPlayer::POLLUTION_BONUSES);
+		int const iPowerPollution = kPlayer.calculatePollution(CvPlayer::POLLUTION_POWER);
+		int const iPopulationPollution = kPlayer.calculatePollution(CvPlayer::POLLUTION_POPULATION);
+		logSASGameRecord("GAME_RECORD_POLLUTION turn=%d player=%d total=%d buildings=%d bonuses=%d power=%d population=%d", iGameTurn, ePlayer, iBuildingPollution + iBonusPollution + iPowerPollution + iPopulationPollution, iBuildingPollution, iBonusPollution, iPowerPollution, iPopulationPollution);
+	}
 	if (bLogPlayerDetails)
 	{
 		logSASGameRecordPlayerBonuses(ePlayer, iGameTurn, kPrevious);
@@ -3195,6 +3276,11 @@ static void logSASGameRecordSnapshot(int iGameTurn, char const* szReason)
 	CvGame const& kGame = GC.getGame();
 	logSASGameRecord("GAME_RECORD_TURN_BEGIN turn=%d reason=%s elapsed=%d year=%d playersAlive=%d teamsAlive=%d totalCities=%d totalPopulation=%d",
 			iGameTurn, szReason, kGame.getElapsedGameTurns(), kGame.getGameTurnYear(), kGame.countCivPlayersAlive(), kGame.countCivTeamsAlive(), kGame.getNumCities(), kGame.getTotalPopulation());
+	if (gGameRecordLogLevel >= 2)
+	{
+		logSASGameRecordMapBonusTotals(iGameTurn);
+		logSASGameRecordEnvironment(iGameTurn);
+	}
 	for (int iI = 0; iI < MAX_CIV_TEAMS; iI++)
 	{
 		TeamTypes eLoopTeam = (TeamTypes)iI;
@@ -3221,6 +3307,7 @@ void startSASGameRecordLogForNewGame()
 	rollSASGameRecordLog("new");
 	resetSASGameRecordTeamPrevious();
 	resetSASGameRecordPlayerPrevious();
+	resetSASGameRecordGlobalPrevious();
 	CvString const szLogName = getSASGameRecordLogName();
 	logSASGameRecord("GAME_RECORD_NEW_GAME_INITIALIZING utc=%s logFile=%s", getSASGameRecordLogTimestamp().GetCString(), getSASDiagnosticQuoted(szLogName.GetCString()).GetCString());
 	logSASGameRecordLogSettings();
@@ -3247,6 +3334,7 @@ void startSASGameRecordLogForLoadedSave()
 	rollSASGameRecordLog("load");
 	resetSASGameRecordTeamPrevious();
 	resetSASGameRecordPlayerPrevious();
+	resetSASGameRecordGlobalPrevious();
 	logSASGameRecordGameState("GAME_RECORD_SAVE_LOADED");
 	logSASGameRecordLogSettings();
 	logSASGameRecordTechCapabilitySources();
