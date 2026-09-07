@@ -65,7 +65,8 @@ private:
 	bool considerStep(Step& kStep, SolutionAttributes& kCurrSolutionAttribs) const;
 	void doIterations(PotentialSites& kPotentialSites);
 	void assignSitesToTeams();
-	int teamValue(PlayerTypes eSitePlayer, TeamTypes eForTeam) const;
+	// <!-- custom: Pass the authoritative remaining-site set so team evaluation cannot reuse sites already assigned to completed rivals. See KI#951. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	int teamValue(PlayerTypes eSitePlayer, TeamTypes eForTeam, std::set<PlayerTypes> const& aeAvailableSites) const;
 
 	static scaled weightedDistance(std::vector<short>& kDistances);
 

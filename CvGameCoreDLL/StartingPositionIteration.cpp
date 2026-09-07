@@ -567,16 +567,36 @@ StartingPositionIteration::DistanceTable::DistanceTable(vector<CvPlot const*>& k
 	}
 	// Need (fast) 2-way conversion for destination ids and plot numbers
 	m_destinationIDs.resize(kMap.numPlots(), NOT_A_DESTINATION);
-	m_destinationIDToPlotNum.resize(kDestinations.size(), NO_PLOT_NUM);
+	// <!-- custom: Keep the original and added destinations in one local sequence so their internal IDs and distance-table columns remain aligned. See KI#947. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	vector<CvPlot const*> aDistanceDestinations(kDestinations);
 	for (size_t i = 0; i < kDestinations.size(); i++)
 	{
 		DestinationID eDst = (DestinationID)i;
 		PlotNumTypes ePlotNum = kDestinations[i]->plotNum();
 		m_destinationIDs[ePlotNum] = eDst;
-		m_destinationIDToPlotNum[eDst] = ePlotNum;
 	}
+	// <!-- custom: Bad land tiles are normally omitted from kDestinations, but a valid city on one can be the only way to work a water destination.
+	// Include those city plots in Dijkstra so the water fallback uses the same weighted path metric and reachability rules as every stored distance.
+	// This replaces the inherited raw plotDistance fallback, which mixed tile units with weighted 9/12-step path units and treated same-area but unreachable sites as reachable. See KI#947. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	for (size_t i = 0; i < kDestinations.size(); i++)
+	{
+		CvPlot const& kDestination = *kDestinations[i];
+		if (!kDestination.isWater())
+			continue;
+		for (CityPlotIter it(kDestination, false); it.hasNext(); ++it)
+		{
+			if (it->canFound() && m_destinationIDs[it->plotNum()] == NOT_A_DESTINATION)
+			{
+				m_destinationIDs[it->plotNum()] = (DestinationID)aDistanceDestinations.size();
+				aDistanceDestinations.push_back(&*it);
+			}
+		}
+	}
+	m_destinationIDToPlotNum.resize(aDistanceDestinations.size(), NO_PLOT_NUM);
+	for (size_t i = 0; i < aDistanceDestinations.size(); i++)
+		m_destinationIDToPlotNum[i] = aDistanceDestinations[i]->plotNum();
 	m_distances.resize(kSources.size(),
-			vector<short>(kDestinations.size(), MAX_SHORT));
+			vector<short>(aDistanceDestinations.size(), MAX_SHORT));
 	for (size_t i = 0; i < kSources.size(); i++)
 	{
 		CvPlot const& kSource = *kSources[i];
@@ -592,40 +612,22 @@ StartingPositionIteration::DistanceTable::DistanceTable(vector<CvPlot const*>& k
 			CvPlot const& kWaterDest = *kDestinations[j];
 			if (!kWaterDest.isWater())
 				continue;
-			/*	Use the distance of the land destination closest to kSource
-				that can work kDest. Bad land tiles aren't stored in the
-				DistanceTable, so this will fail for e.g. an Ocean Fish workable
-				only from a Snow tile. Fall back on CvMap::plotDist and
-				CvPlot::sameArea in that case. */
+			// <!-- custom: Use the weighted path distance of the legal land city plot closest to kSource that can work kDest.
+			// The constructor added otherwise-omitted low-value land sites to the distance table for this purpose. See KI#947. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 			CvPlot const* pNearestLand = NULL;
 			short iShortestDist = MAX_SHORT;
-			bool bDest = false;
 			bool bInnerRing = false;
 			for (CityPlotIter it(kWaterDest, false); it.hasNext(); ++it)
 			{
 				if (!it->canFound())
 					continue;
 				bool bInnerRingLoop = (it.currID() < NUM_INNER_PLOTS);
-				if (m_destinationIDs[it->plotNum()] != NOT_A_DESTINATION)
+				short const iDist = d(kSource, *it);
+				if (iDist < iShortestDist)
 				{
-					short iDist = d(kSource, *it);
-					if (!bDest || iDist < iShortestDist)
-					{
-						bDest = true;
-						iShortestDist = iDist;
-						pNearestLand = &*it;
-						bInnerRing = bInnerRingLoop;
-					}
-				}
-				else if (!bDest && it->sameArea(kSource))
-				{
-					short iDist = static_cast<short>(kMap.plotDistance(&kSource, &*it));
-					if (iDist < iShortestDist)
-					{
-						iShortestDist = iDist;
-						pNearestLand = &*it;
-						bInnerRing = bInnerRingLoop;
-					}
+					iShortestDist = iDist;
+					pNearestLand = &*it;
+					bInnerRing = bInnerRingLoop;
 				}
 			}
 			if (pNearestLand != NULL)
@@ -1942,7 +1944,8 @@ void StartingPositionIteration::assignSitesToTeams()
 		for (AvailSitesIter itSite = aeAvailableSites.begin();
 			itSite != aeAvailableSites.end(); ++itSite)
 		{
-			int iVal = teamValue(*itSite, eCurrTeam);
+			// <!-- custom: Give teamValue the authoritative set that this assignment loop still considers available. See KI#951. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+			int iVal = teamValue(*itSite, eCurrTeam, aeAvailableSites);
 			if (iVal > iMaxSiteVal || (iVal == iMaxSiteVal &&
 				(itCurrSite == aeAvailableSites.end() ||
 				/*	One last tiebreaker that I haven't been able to fit into teamValue:
@@ -1963,13 +1966,27 @@ void StartingPositionIteration::assignSitesToTeams()
 		aeAvailableSites.erase(itCurrSite);
 		// Round robin placing two members of one team at a time
 		int const iLoopTeamSites = m_sitesPerTeam[eCurrTeam].size();
-		if (GET_TEAM(eCurrTeam).getNumMembers() <= iLoopTeamSites ||
-			iLoopTeamSites % 2 == 0)
+		// <!-- custom: A completed team must leave the rotation; merely advancing the index allowed a later wrap to overfill it and leave another team short in unequal-team games.
+		// Remove completed teams while preserving the inherited two-members-at-a-time rotation among teams that still need sites. See KI#948. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		if (GET_TEAM(eCurrTeam).getNumMembers() <= iLoopTeamSites)
+		{
+			aieTeamsBySize.erase(aieTeamsBySize.begin() + iLoopTeamIndex);
+			if (aieTeamsBySize.empty())
+			{
+				FAssert(aeAvailableSites.empty());
+				break;
+			}
+			iLoopTeamIndex %= aieTeamsBySize.size();
+		}
+		else if (iLoopTeamSites % 2 == 0)
 		{
 			iLoopTeamIndex++;
 			iLoopTeamIndex %= aieTeamsBySize.size();
 		}
 	}
+	// <!-- custom: Verify the completed producer before CvGame consumes and applies the team-site permutation. See KI#948. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	for (TeamIter<CIV_ALIVE> itTeam; itTeam.hasNext(); ++itTeam)
+		FAssert((int)m_sitesPerTeam[itTeam->getID()].size() == itTeam->getNumMembers());
 	#ifdef SPI_LOG
 		gDLL->logMsg("StartingPos.log", out.str().c_str(), false, false);
 	#endif
@@ -1977,7 +1994,8 @@ void StartingPositionIteration::assignSitesToTeams()
 
 /*	Both agents are placeholders that will get swapped around later.
 	The only relevant data about them are m_sitesPerTeam. */
-int StartingPositionIteration::teamValue(PlayerTypes eSitePlayer, TeamTypes eForTeam) const
+// <!-- custom: Accept the current remaining-site set so the fallback below can distinguish genuinely unassigned placeholders from sites already assigned to completed teams. See KI#951. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+int StartingPositionIteration::teamValue(PlayerTypes eSitePlayer, TeamTypes eForTeam, std::set<PlayerTypes> const& aeAvailableSites) const
 {
 	CvPlot const& kSite = *GET_PLAYER(eSitePlayer).getStartingPlot();
 	int const iAreaSites = kSite.getArea().getNumStartingPlots();
@@ -2041,12 +2059,13 @@ int StartingPositionIteration::teamValue(PlayerTypes eSitePlayer, TeamTypes eFor
 		vector<scaled> const* parCloseness = NULL;
 		if (arRivalCloseness.empty())
 		{
-			for (PlayerIter<CIV_ALIVE> itOther; itOther.hasNext(); ++itOther)
+			// <!-- custom: Sample only the still-available placeholder sites; the inherited all-player loop reintroduced completed rivals under the "unassigned" classification. See KI#951. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+			for (std::set<PlayerTypes>::const_iterator itOther = aeAvailableSites.begin(); itOther != aeAvailableSites.end(); ++itOther)
 			{
-				if (itOther->getID() != eSitePlayer)
+				if (*itOther != eSitePlayer)
 				{
 					short iCloseness = m_pPathDists->getLongDist() -
-							m_pPathDists->d(kSite, *itOther->getStartingPlot());
+							m_pPathDists->d(kSite, *GET_PLAYER(*itOther).getStartingPlot());
 					if (iCloseness > 0)
 						arUnassignedCloseness.push_back(iCloseness);
 				}

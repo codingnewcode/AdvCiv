@@ -1043,11 +1043,11 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#944 - (Provisional Pending inherited AdvC True Starts wrap defect) Diagonal climate regions disappear across seams](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-944)\
 [KI#945 - (Provisional Pending inherited AdvC True Starts locale defect) English option text controls Old-World filtering](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-945)\
 [KI#946 - (Fixed inherited AdvC normalization defect) Normalization-level tolerance fell through and reversed its strength](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-946)\
-[KI#947 - (Provisional Pending inherited AdvC starting-distance defect) A water fallback mixes tile and weighted-path units](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-947)\
-[KI#948 - (Provisional Pending inherited AdvC team-start defect) Unequal-team round-robin overfills completed teams](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-948)\
+[KI#947 - (Fixed inherited AdvC starting-distance defect) A water fallback mixed tile and weighted-path units](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-947)\
+[KI#948 - (Fixed inherited AdvC team-start defect) Unequal-team round-robin overfilled completed teams](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-948)\
 [KI#949 - (Fixed inherited AdvC shortest-path defect) Stale Dijkstra entries overwrote settled distances](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-949)\
 [KI#950 - (Fixed inherited AdvC scenario ownership defect) A normalization target and evaluator were leaked](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-950)\
-[KI#951 - (Provisional Pending inherited AdvC team-start defect) Assigned rival sites are reused as unassigned fallback sites](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-951)\
+[KI#951 - (Fixed inherited AdvC team-start defect) Assigned rival sites were reused as unassigned fallback sites](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-951)\
 [KI#952 - (Provisional Pending inherited AdvC Python-wrapper regression) Colony advice tests the reversed city-value polarity](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-952)\
 [KI#953 - (Provisional Pending inherited AdvC map-option regression) Wide translated comparisons narrow text and drop matching controls](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-953)\
 [KI#954 - (Provisional Pending inherited AdvC shelf-cache ownership defect) Final Shelf objects leak at map teardown](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-954)\
@@ -17370,17 +17370,25 @@ Found during ChatGPT-5.6-Sol's C031-WIP451 `StartingPositionIteration.cpp` audit
 
 <a id="ki-947"></a>
 
-## KI#947 - (Provisional Pending inherited AdvC starting-distance defect) A water fallback mixes tile and weighted-path units
+## KI#947 - (Fixed inherited AdvC starting-distance defect) A water fallback mixed tile and weighted-path units
 
-Album F625 finds the fallback for a valid low-value land city site near a workable water destination storing raw `CvMap::plotDistance` units in `DistanceTable`. The same value then receives adjustments and comparisons expressed in its weighted Dijkstra scale, where ordinary cardinal land steps cost 9 rather than 1. Current Ocean Fish workable only from an otherwise omitted Snow city site provides a supported live path. Pending converting the fallback separation to the weighted metric rather than mixing scales.
+Album F625 found the fallback for a valid low-value land city site near a workable water destination storing raw `CvMap::plotDistance` units in `DistanceTable`. The same value then received adjustments and comparisons expressed in its weighted Dijkstra scale, where ordinary cardinal land steps cost 9 rather than 1. Current Ocean Fish workable only from an otherwise omitted Snow city site provides a supported live path.
+
+Fixed by adding every legal land city plot capable of working a water destination to the Dijkstra destination table. The water adjustment now uses the same weighted path distance and reachability rules as every other stored distance; an impassable or isthmus-blocked site is no longer converted into a deceptively short finite distance merely because it shares the source area.
+
+Validated with the matching Debug-opt DLL through complete Small Archipelago autoplays using both unequal-team arrangements below. Both water-heavy maps generated and completed without an assertion or starting-position failure (`SASGameRecord_20260907T132538Z_new1.log`, `SASGameRecord_20260907T132914Z_new2.log`).
 
 Found during ChatGPT-5.6-Sol's C031-WIP452 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-948"></a>
 
-## KI#948 - (Provisional Pending inherited AdvC team-start defect) Unequal-team round-robin overfills completed teams
+## KI#948 - (Fixed inherited AdvC team-start defect) Unequal-team round-robin overfilled completed teams
 
-Album F626 finds `assignSitesToTeams` advancing after a team receives all its required sites but leaving that completed team in the rotating list. If sites remain when the loop wraps, the completed team receives another site while another team is left short; a supported 5+1 team-size arrangement is already sufficient. Pending removing or skipping completed teams so team membership and assigned-site cardinality stay equal.
+Album F626 found `assignSitesToTeams` advancing after a team received all its required sites but leaving that completed team in the rotating list. If sites remained when the loop wrapped, the completed team received another site while another team was left short; a supported 5+1 team-size arrangement was already sufficient.
+
+Fixed by removing each completed team from the active rotation while preserving the intended two-members-at-a-time round robin among unfinished teams. A producer-side assertion now verifies that every alive civilization team receives exactly as many placeholder sites as it has members before `CvGame` consumes the permutation.
+
+Validated with the matching Debug-opt DLL in a complete Small Archipelago autoplay with a five-member team and one singleton. The supported reproducer completed through turn 298 without the new assignment-cardinality assertion or a starting-position failure (`SASGameRecord_20260907T132538Z_new1.log`).
 
 Found during ChatGPT-5.6-Sol's C031-WIP453 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -17406,9 +17414,13 @@ Found during ChatGPT-5.6-Sol's C031-WIP455 `StartingPositionIteration.cpp` audit
 
 <a id="ki-951"></a>
 
-## KI#951 - (Provisional Pending inherited AdvC team-start defect) Assigned rival sites are reused as unassigned fallback sites
+## KI#951 - (Fixed inherited AdvC team-start defect) Assigned rival sites were reused as unassigned fallback sites
 
-Album F629 finds `teamValue` correctly excluding completed rival teams, but its fallback documented as considering unassigned sites instead iterates every alive player's physical starting site. Already-assigned sites of completed rivals are thereby reintroduced under the opposite classification and can deterministically invert later team-site rankings. Pending iterating the actual unassigned-site set used by team assignment.
+Album F629 found `teamValue` correctly excluding completed rival teams, but its fallback documented as considering unassigned sites instead iterated every alive player's physical starting site. Already-assigned sites of completed rivals were thereby reintroduced under the opposite classification and could deterministically invert later team-site rankings.
+
+Fixed by passing the authoritative available-placeholder set from `assignSitesToTeams` into `teamValue`. The fallback now samples only the other sites that remain genuinely unassigned, while the ordinary unfinished-rival path and broader team-clustering weights remain unchanged.
+
+Validated with the matching Debug-opt DLL in a complete Small Archipelago autoplay with team sizes 2+1+1+1. The supported fallback arrangement completed through turn 416 without an assertion or starting-position failure (`SASGameRecord_20260907T132914Z_new2.log`).
 
 Found during ChatGPT-5.6-Sol's C031-WIP456 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
