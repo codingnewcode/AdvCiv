@@ -703,16 +703,16 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#604 - (Fixed inherited AdvCiv deal-list regression) Second-list-only peace treaties never expire](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-604)\
 [KI#605 - (Fixed inherited AdvCiv diplomacy-memory regression) Deal cancellations overwrote rather than accumulated memory](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-605)\
 [KI#606 - (Fixed inherited AdvCiv deal-renewal defect) Team agreements were renewed through only one player pair and one trade list](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-606)\
-[KI#607 - (Provisional Pending inherited team-deal ownership defect incompletely addressed by AdvCiv) One teammate's death tears down surviving team agreements](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-607)\
+[KI#607 - (Pending Architectural inherited team-deal ownership defect incompletely addressed by AdvCiv) One teammate's death tears down surviving team agreements](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-607)\
 [KI#608 - (Fixed inherited AdvCiv deal-list regression) Embargo denial misses opposite-list peace reparations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-608)\
-[KI#609 - (Provisional Pending AdvCiv transaction-lifetime defect) Mixed alliance or vassal bundles can delete their active deal](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-609)\
-[KI#610 - (Provisional Pending inherited deal-granularity defect amplified by AdvCiv) Annual-item failure can terminate a protected peace treaty](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-610)\
+[KI#609 - (Pending Architectural AdvCiv transaction-lifetime defect) Mixed alliance or vassal bundles can delete their active deal](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-609)\
+[KI#610 - (Pending Architectural inherited deal-granularity defect amplified by AdvCiv) Annual-item failure can terminate a protected peace treaty](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-610)\
 [KI#611 - (Fixed AdvCiv team-state regression) A Permanent Alliance plus vassal bundle could create a self-vassal](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-611)\
 [KI#612 - (Fixed inherited brokered-war defect exposed more broadly by SAS) A vassal could hire war against its own master coalition](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-612)\
 [KI#613 - (Fixed inherited K-Mod/AdvCiv teardown-identity defect) Permanent Alliance cleanup ended a Defensive Pact as a self-pact](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-613)\
-[KI#614 - (Provisional Pending inherited civic-deal defect) One bundled civic change becomes several forced revolutions](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-614)\
-[KI#615 - (Provisional Pending inherited deal-transaction defect) A city transfer can invalidate a sibling resource export](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-615)\
-[KI#616 - (Provisional Pending AdvCiv attitude-bookkeeping defect) Multi-target peace and war trades retain only the last political target](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-616)\
+[KI#614 - (Pending Transaction Refactor inherited civic-deal defect) One bundled civic change becomes several forced revolutions](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-614)\
+[KI#615 - (Pending Transaction Refactor inherited deal-transaction defect) A city transfer can invalidate a sibling resource export](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-615)\
+[KI#616 - (Pending Architectural AdvCiv attitude-bookkeeping defect) Multi-target peace and war trades retain only the last political target](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-616)\
 [KI#617 - (Fixed inherited BtS embargo-scope defect worsened by AdvCiv) A player's embargo included teammate deals that survive it](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-617)\
 [KI#618 - (Fixed AdvCiv war-bribe valuation defect) Shared Open Borders and Defensive Pact losses were priced once per team member](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-618)\
 [KI#619 - (Fixed AdvCiv attitude-cache timing regression) Annual deals deferred cache refresh in only one direction](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-619)\
@@ -757,7 +757,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#658 - (Fixed inherited AdvCiv counterproposal defect) Select only resources that pass the no-overshoot filter](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-658)\
 [KI#659 - (Fixed inherited AdvCiv balancing defect) Apply Rise and Fall leniency to non-surplus resources](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-659)\
 [KI#660 - (Fixed inherited AdvCiv balancing defect) Restore Rise and Fall leniency to early gold and GPT](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-660)\
-[KI#661 - (Provisional Pending inherited AdvCiv deal-state defect) Queued cancellations can force another healthy GPT cancellation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-661)\
+[KI#661 - (Fixed inherited AdvCiv deal-state defect) Queued cancellations could force another healthy GPT cancellation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-661)\
 [KI#662 - (Fixed inherited K-Mod valuation defect) Own interception can devalue outgoing nukes](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-662)\
 [KI#663 - (Fixed inherited AdvCiv unit-role regression) Special-cargo ships qualify for incompatible carrier roles](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-663)\
 [KI#664 - (Fixed inherited AdvCiv scope defect) Sea-explorer retirement mixes global and area counts](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-664)\
@@ -1042,7 +1042,14 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#943 - (Provisional Pending inherited AdvC True Starts weighting defect) Civilizations are counted once per native leader](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-943)\
 [KI#944 - (Provisional Pending inherited AdvC True Starts wrap defect) Diagonal climate regions disappear across seams](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-944)\
 [KI#945 - (Provisional Pending inherited AdvC True Starts locale defect) English option text controls Old-World filtering](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-945)\
-[KI#946 - (Provisional Pending investigation) F624 remains unassigned in the open True Starts audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-946)\
+[KI#946 - (Provisional Pending inherited AdvC normalization defect) Normalization-level tolerance falls through and reverses its strength](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-946)\
+[KI#947 - (Provisional Pending inherited AdvC starting-distance defect) A water fallback mixes tile and weighted-path units](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-947)\
+[KI#948 - (Provisional Pending inherited AdvC team-start defect) Unequal-team round-robin overfills completed teams](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-948)\
+[KI#949 - (Provisional Pending inherited AdvC shortest-path defect) Stale Dijkstra entries overwrite settled distances](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-949)\
+[KI#950 - (Provisional Pending inherited AdvC scenario ownership defect) A normalization target and evaluator are leaked](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-950)\
+[KI#951 - (Provisional Pending inherited AdvC team-start defect) Assigned rival sites are reused as unassigned fallback sites](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-951)\
+[KI#952 - (Provisional Pending inherited AdvC Python-wrapper regression) Colony advice tests the reversed city-value polarity](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-952)\
+[KI#953 - (Provisional Pending investigation) F631 remains unassigned in the open CyCity audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-953)\
 
 <a id="ki-1"></a>
 
@@ -14251,7 +14258,7 @@ Found during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` audit; independently reviewed, 
 
 <a id="ki-607"></a>
 
-## KI#607 - (Provisional Pending inherited team-deal ownership defect incompletely addressed by AdvCiv) One teammate's death tears down surviving team agreements
+## KI#607 - (Pending Architectural inherited team-deal ownership defect incompletely addressed by AdvCiv) One teammate's death tears down surviving team agreements
 
 Album F284 finds Open Borders, Defensive Pact and Disengagement stored through player-pair proxy deals while their actual state belongs to teams. Eliminating one player from a still-alive multi-member team kills that player's proxy, clears the team-level agreement and recursively kills the surviving teammate proxies. The broad ownership mismatch is inherited from BtS/K-Mod; AdvCiv partly recognized player-death teardown for vassalage but left these agreements exposed. Pending independent implementation review that removes only dead-player proxy state while both participant teams remain alive; peace treaties require separate lifetime handling.
 
@@ -14269,7 +14276,7 @@ Found during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` audit; independently reviewed, 
 
 <a id="ki-609"></a>
 
-## KI#609 - (Provisional Pending AdvCiv transaction-lifetime defect) Mixed alliance or vassal bundles can delete their active deal
+## KI#609 - (Pending Architectural AdvCiv transaction-lifetime defect) Mixed alliance or vassal bundles can delete their active deal
 
 Album F286 finds supported human mixed transactions whose nested team-state change can delete the currently executing `CvDeal` from inside `addTradeItems`; `CvGame::implementAndReturnDeal` then dereferences the freed pointer. The first proven trigger combines a Permanent Alliance, a city/implied-peace bundle and AdvCiv's explicit human-visible peace-treaty entries; later saturation also found vassal and brokered-war paths into the same reentrant lifetime root. Pending architectural review that makes deal execution survive or defer nested deletion rather than patching each trigger independently.
 
@@ -14277,7 +14284,7 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` au
 
 <a id="ki-610"></a>
 
-## KI#610 - (Provisional Pending inherited deal-granularity defect amplified by AdvCiv) Annual-item failure can terminate a protected peace treaty
+## KI#610 - (Pending Architectural inherited deal-granularity defect amplified by AdvCiv) Annual-item failure can terminate a protected peace treaty
 
 Album F287 finds `CvDeal::verify` killing an entire mixed deal when one annual item becomes invalid. If that deal also owns the temporary peace treaty, teardown clears force-peace before `PEACE_TREATY_LENGTH` expires. The whole-deal resource-invalidity architecture is inherited from BtS/K-Mod, while AdvCiv practical 2765 added the cleaner live trigger by force-canceling unaffordable Gold Per Turn reparations without preserving their bundled treaty. Pending transaction-lifetime review that ends the invalid obligation while retaining the exact remaining peace duration.
 
@@ -14319,7 +14326,7 @@ Found during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` audit; independently reviewed, 
 
 <a id="ki-614"></a>
 
-## KI#614 - (Provisional Pending inherited civic-deal defect) One bundled civic change becomes several forced revolutions
+## KI#614 - (Pending Transaction Refactor inherited civic-deal defect) One bundled civic change becomes several forced revolutions
 
 Album F291 finds every `TRADE_CIVIC` item immediately rebuilding the current CivicMap and calling `revolution` separately. A supported multi-column civic bundle therefore charges the fixed base/city anarchy overhead once per civic, while each call overwrites the revolution timer and can shorten or erase the intended post-anarchy cooldown. The per-item execution shape is inherited from BtS/Civ4CE/K-Mod and remains in Base AdvCiv 1.14; AdvCiv recognizes and values multiple civic items but did not aggregate their execution. Pending collection into one forced CivicMap revolution per giving player, without changing ordinary revolution semantics.
 
@@ -14327,7 +14334,7 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` au
 
 <a id="ki-615"></a>
 
-## KI#615 - (Provisional Pending inherited deal-transaction defect) A city transfer can invalidate a sibling resource export
+## KI#615 - (Pending Transaction Refactor inherited deal-transaction defect) A city transfer can invalidate a sibling resource export
 
 Album F292 finds a human mixed city-plus-resource deal validating both items against the pre-deal world, then transferring the city before starting the resource export. If the city supplied the giver's last connected copy, the irreversible transfer invalidates the sibling annual promise after prevalidation, yet the export counters are still applied. Base AdvCiv 1.14, K-Mod and Civ4CE/BtS share the per-item execution and human mixed-item exception; SAS did not introduce the root. Pending bundle consistency checking that proves the resource remains available after all same-giver city transfers before committing ownership changes.
 
@@ -14335,7 +14342,7 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` au
 
 <a id="ki-616"></a>
 
-## KI#616 - (Provisional Pending AdvCiv attitude-bookkeeping defect) Multi-target peace and war trades retain only the last political target
+## KI#616 - (Pending Architectural AdvCiv attitude-bookkeeping defect) Multi-target peace and war trades retain only the last political target
 
 Album F293 finds `CvDeal::addTradeItems` collecting brokered war and peace context in one scalar target per class. Every additional `TRADE_WAR` or `TRADE_PEACE` overwrites the previous target, then the same final pair is passed to both trade directions when computing target-sensitive rival-trade resentment. Supported multi-peace bundles can therefore produce different diplomatic memory from the same items in a different list order; only the last target receives the intended observer-specific treatment. AdvCiv practical 1361 introduced this target-aware but single-target representation, Base AdvCiv 1.14 retains it and SAS inherited it unchanged. Pending architectural review using complete multi-target context rather than selecting the first or last target.
 
@@ -14771,11 +14778,15 @@ Found and investigated during ChatGPT-5.6-Sol's C031-WIP25 `CvPlayerAI.cpp` deep
 
 <a id="ki-661"></a>
 
-## KI#661 - (Provisional Pending inherited AdvCiv deal-state defect) Queued cancellations can force another healthy GPT cancellation
+## KI#661 - (Fixed inherited AdvCiv deal-state defect) Queued cancellations could force another healthy GPT cancellation
 
-Album F338 finds `AI_doDeals` choosing AI-human cancellations before AdvCiv's per-rival GPT-cap enforcement, while the queued deals remain live during the cap calculation. GPT from a deal already selected for cancellation can therefore force an additional healthy GPT deal to be canceled. Pending evaluating the cap against the projected post-cancellation state or applying queued cancellations before enforcing it.
+Album F338 found `AI_doDeals` choosing AI-human cancellations before AdvCiv's per-rival GPT-cap enforcement, while the queued deals remained live during the cap calculation. GPT from a deal already selected for cancellation could therefore force an additional healthy GPT deal to be canceled. AdvCiv practical 2967 introduced both the delayed combined human notification and the later GPT-limit pass in this order; Base AdvCiv 1.14 retains the defect, while K-Mod predates this enforcement pass and SAS inherited it unchanged.
 
-Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP26 `CvPlayerAI.cpp` deep re-audit; disposition reconciled with the help of GPT-5.6-Sol, thanks.
+Human-facing cancellation payloads are now captured and their already-rejected deals ended before the GPT limit reads live economic state. The cap consequently evaluates only surviving obligations. Any additional healthy deal that genuinely exceeds that post-cancellation cap is captured through the same helper afterward, preserving AdvCiv's one combined cancellation popup and its canceled-resource bookkeeping without manually approximating projected GPT or income state.
+
+After compilation, `SASGameRecord_20260907T061830Z_new1.log` confirms that a Debug-opt Huge Normal Custom Continents autoplay with 16 independent teams and full UWAI completed normally at the turn-385 Space Race victory. The record includes extensive GPT-deal teardown, including deals involving the human player, and therefore broadly exercised the live cancellation path without an observed issue. The exact same-rival combination of one already-rejected deal plus another otherwise-healthy GPT deal remains source verified.
+
+Found during ChatGPT-5.6-Sol's C031-WIP26 `CvPlayerAI.cpp` deep re-audit; independently reviewed, fixed and documented with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-662"></a>
 
@@ -17341,8 +17352,64 @@ Found as F623 during ChatGPT-5.6-Sol's C031-WIP449 audit; reconciled into Known 
 
 <a id="ki-946"></a>
 
-## KI#946 - (Provisional Pending investigation) F624 remains unassigned in the open True Starts audit
+## KI#946 - (Provisional Pending inherited AdvC normalization defect) Normalization-level tolerance falls through and reverses its strength
 
-Queue 022 `TrueStarts.cpp` remains open at C031-WIP449 after confirming F613-F623. Keep F624/KI#946 reserved until a later checkpoint proves another distinct current-live root or closes the file.
+Album F624 finds every `NormalizationTarget::isReached` switch case falling through while adding the extra "nearly reached" tolerance. LOW therefore uses 8.5%, MEDIUM 12.5% and HIGH 14.5% before handicap adjustment, making stronger normalization more tolerant of a weak result and allowing it to stop earlier. Pending adding mutually exclusive level adjustments while preserving the shared base tolerance.
 
-Reserved as F624 during ChatGPT-5.6-Sol's C031-WIP449 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+Found during ChatGPT-5.6-Sol's C031-WIP451 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-947"></a>
+
+## KI#947 - (Provisional Pending inherited AdvC starting-distance defect) A water fallback mixes tile and weighted-path units
+
+Album F625 finds the fallback for a valid low-value land city site near a workable water destination storing raw `CvMap::plotDistance` units in `DistanceTable`. The same value then receives adjustments and comparisons expressed in its weighted Dijkstra scale, where ordinary cardinal land steps cost 9 rather than 1. Current Ocean Fish workable only from an otherwise omitted Snow city site provides a supported live path. Pending converting the fallback separation to the weighted metric rather than mixing scales.
+
+Found during ChatGPT-5.6-Sol's C031-WIP452 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-948"></a>
+
+## KI#948 - (Provisional Pending inherited AdvC team-start defect) Unequal-team round-robin overfills completed teams
+
+Album F626 finds `assignSitesToTeams` advancing after a team receives all its required sites but leaving that completed team in the rotating list. If sites remain when the loop wraps, the completed team receives another site while another team is left short; a supported 5+1 team-size arrangement is already sufficient. Pending removing or skipping completed teams so team membership and assigned-site cardinality stay equal.
+
+Found during ChatGPT-5.6-Sol's C031-WIP453 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-949"></a>
+
+## KI#949 - (Provisional Pending inherited AdvC shortest-path defect) Stale Dijkstra entries overwrite settled distances
+
+Album F627 finds `DistanceTable::computeDistances` writing each popped queue value before checking whether that plot was already reached. A longer stale entry can consequently overwrite the correct shortest distance that Dijkstra settled earlier, corrupting the central metric used for starting-position scoring. Pending rejecting reached entries before `setDistance` while retaining ordinary neighbor expansion for the first pop.
+
+Found during ChatGPT-5.6-Sol's C031-WIP454 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-950"></a>
+
+## KI#950 - (Provisional Pending inherited AdvC scenario ownership defect) A normalization target and evaluator are leaked
+
+Album F628 finds scenario starting-plot assignment creating and using a heap-owned `NormalizationTarget`, then returning `NULL` so later normalization is skipped without deleting the target or its owned `CitySiteEvaluator`. AdvC practical 2708 made scenario targets constructible while retaining that pointer-discarding return. Pending deleting the scenario-only target after its handicap consumer or otherwise preserving one clear owner.
+
+Found during ChatGPT-5.6-Sol's C031-WIP455 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-951"></a>
+
+## KI#951 - (Provisional Pending inherited AdvC team-start defect) Assigned rival sites are reused as unassigned fallback sites
+
+Album F629 finds `teamValue` correctly excluding completed rival teams, but its fallback documented as considering unassigned sites instead iterates every alive player's physical starting site. Already-assigned sites of completed rivals are thereby reintroduced under the opposite classification and can deterministically invert later team-site rankings. Pending iterating the actual unassigned-site set used by team assignment.
+
+Found during ChatGPT-5.6-Sol's C031-WIP456 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-952"></a>
+
+## KI#952 - (Provisional Pending inherited AdvC Python-wrapper regression) Colony advice tests the reversed city-value polarity
+
+Album F630 finds AdvC practical 2176 sign-flipping native `AI_cityValue` into positive-means-split `AI_splitEmpireValue`, while `CyCity.AI_cityValue` forwards that new value under the old Python API name and the shipped colony advisor retains K-Mod's `< 0` test. Profitable cities can therefore receive the colony nag while costly split-worthy cities suppress it. Native `AI_doSplit` already uses the new polarity correctly; pending restoring the legacy polarity at the old Python wrapper boundary rather than changing the native heuristic.
+
+Found during ChatGPT-5.6-Sol's C031-WIP458 `CyCity.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-953"></a>
+
+## KI#953 - (Provisional Pending investigation) F631 remains unassigned in the open CyCity audit
+
+Queue 024 `CyCity.cpp` remains open at C031-WIP459 after confirming F630/KI#952. Keep F631/KI#953 reserved until a later checkpoint proves another distinct current-live root or closes the file.
+
+Reserved as F631 during ChatGPT-5.6-Sol's C031-WIP459 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.

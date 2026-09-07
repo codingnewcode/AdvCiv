@@ -2,12 +2,12 @@ AdvCiv-SAS C++ File Audit Album
 Generated from local light-source snapshot only; no web/GitHub lookup used.
 
 CURRENT PROGRESS SUMMARY
-Files complete: 32 / 169
+Files complete: 34 / 169
 Files open: 1 / 169
-Last completed file: queue 021 CvGameCoreDLL/CyPlayer.cpp (2,503 queued lines) - CLOSED AT C031-WIP438
-Current file: queue 022 CvGameCoreDLL/TrueStarts.cpp (2,448 queued lines) - OPEN AT C031-WIP449
-Latest confirmed audit findings: F613-F623 / KI#935-KI#945 in the open True Starts re-audit. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
-Next new root ID: F624 unused / provisional KI#946 next
+Last completed file: queue 025 CvGameCoreDLL/StartingPositionIteration.cpp (2,247 queued lines) - CLOSED AT C031-WIP457
+Current file: queue 024 CvGameCoreDLL/CyCity.cpp (2,399 queued lines) - OPEN AT C031-WIP459
+Latest confirmed audit findings: F624-F630 / KI#946-KI#952 in the Queue 025 closure and open Queue 024 re-audit. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
+Next new root ID: F631 unused / provisional KI#953 next
 
 The durable checkpoints and current cursor below are authoritative for finding status; the initial C010 snapshot and later WIP appends preserve their own historical source identities.
 
@@ -42,154 +42,154 @@ QUEUE (current .cpp files, longest -> shortest)
 019   2810 CvGameCoreDLL/CvDLLButtonPopup.cpp [COMPLETE - SEE C031 DURABLE CHECKPOINT]
 020   2599 CvGameCoreDLL/CvInfo_Unit.cpp [COMPLETE - C031-WIP437 / F612]
 021   2503 CvGameCoreDLL/CyPlayer.cpp [COMPLETE - C031-WIP438]
-022   2448 CvGameCoreDLL/TrueStarts.cpp [OPEN - C031-WIP449]<-(priority current wip)
+022   2448 CvGameCoreDLL/TrueStarts.cpp [COMPLETE - SEE C031-WIP450 DURABLE CHECKPOINT]
 023   2430 CvGameCoreDLL/InvasionGraph.cpp [COMPLETE - SEE C022 DURABLE CHECKPOINT]
-024   2399 CvGameCoreDLL/CyCity.cpp [PENDING]
-025   2247 CvGameCoreDLL/StartingPositionIteration.cpp [PENDING]<-(priority next wip after the first reloop)
-026   2132 CvGameCoreDLL/CvInitCore.cpp [PENDING]
-027   2099 CvGameCoreDLL/CvInfo_RandomEvent.cpp [PENDING]
-028   2095 CvGameCoreDLL/CvXMLLoadUtilitySet.cpp [PENDING]
-029   2052 CvGameCoreDLL/CyEnumsInterface.cpp [PENDING]
-030   1919 CvGameCoreDLL/CvInfo_Misc.cpp [PENDING]
+024   2399 CvGameCoreDLL/CyCity.cpp [OPEN - C031-WIP459]
+025   2247 CvGameCoreDLL/StartingPositionIteration.cpp [COMPLETE - SEE C031-WIP457 DURABLE CHECKPOINT]
+026   2132 CvGameCoreDLL/CvInitCore.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+027   2099 CvGameCoreDLL/CvInfo_RandomEvent.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+028   2095 CvGameCoreDLL/CvXMLLoadUtilitySet.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+029   2052 CvGameCoreDLL/CyEnumsInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+030   1919 CvGameCoreDLL/CvInfo_Misc.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 031   1812 CvGameCoreDLL/UWAICache.cpp [COMPLETE - SEE C020 DURABLE CHECKPOINT]
-032   1704 CvGameCoreDLL/CyUnit.cpp [PENDING]
-033   1672 CvGameCoreDLL/CvInfo_Terrain.cpp [PENDING]
-034   1637 CvGameCoreDLL/CvInfo_Civilization.cpp [PENDING]
-035   1619 CvGameCoreDLL/CvInfo_GameOption.cpp [PENDING]
+032   1704 CvGameCoreDLL/CyUnit.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+033   1672 CvGameCoreDLL/CvInfo_Terrain.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+034   1637 CvGameCoreDLL/CvInfo_Civilization.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+035   1619 CvGameCoreDLL/CvInfo_GameOption.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 036   1596 CvGameCoreDLL/CvMap.cpp [PENDING]<-(priority next wip after the first reloop)
 037   1576 CvGameCoreDLL/CvPythonCaller.cpp [COMPLETE - SEE C025 DURABLE CHECKPOINT]
-038   1555 CvGameCoreDLL/RiseFall.cpp [PENDING]
+038   1555 CvGameCoreDLL/RiseFall.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 039   1461 CvGameCoreDLL/CvGameCoreUtils.cpp [COMPLETE - SEE C023 DURABLE CHECKPOINT]
 040   1454 CvGameCoreDLL/CvGlobals.cpp [COMPLETE - SEE C024 DURABLE CHECKPOINT]
 041   1454 CvGameCoreDLL/CvSelectionGroupAI.cpp [COMPLETE - SEE C019 DURABLE CHECKPOINT]
 042   1419 CvGameCoreDLL/CvDeal.cpp [COMPLETE - SEE C026 DURABLE CHECKPOINT]
-043   1335 CvGameCoreDLL/ACOText.cpp [PENDING]
-044   1306 CvGameCoreDLL/CvMessageData.cpp [PENDING]
+043   1335 CvGameCoreDLL/ACOText.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+044   1306 CvGameCoreDLL/CvMessageData.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 045   1281 CvGameCoreDLL/CvMapGenerator.cpp [COMPLETE - SEE C021 DURABLE CHECKPOINT]
-046   1268 CvGameCoreDLL/CyGame.cpp [PENDING]
+046   1268 CvGameCoreDLL/CyGame.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 047   1214 CvGameCoreDLL/CvDllPythonEvents.cpp [COMPLETE - SEE C027 DURABLE CHECKPOINT]
-048   1128 CvGameCoreDLL/CvInfo_Building.cpp [PENDING]
-049   1081 CvGameCoreDLL/CvReplayInfo.cpp [PENDING]
-050   1067 CvGameCoreDLL/CyPlot.cpp [PENDING]
-051   1042 CvGameCoreDLL/CyTeam.cpp [PENDING]
-052    973 CvGameCoreDLL/CvXMLLoadUtilityGet.cpp [PENDING]
-053    970 CvGameCoreDLL/EnumMapTest.cpp [PENDING]
+048   1128 CvGameCoreDLL/CvInfo_Building.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+049   1081 CvGameCoreDLL/CvReplayInfo.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+050   1067 CvGameCoreDLL/CyPlot.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+051   1042 CvGameCoreDLL/CyTeam.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+052    973 CvGameCoreDLL/CvXMLLoadUtilityGet.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+053    970 CvGameCoreDLL/EnumMapTest.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 054    844 CvGameCoreDLL/GroupPathFinder.cpp [COMPLETE - SEE C028 DURABLE CHECKPOINT]
-055    837 CvGameCoreDLL/CyInfoInterface3.cpp [PENDING]
-056    768 CvGameCoreDLL/CvInfo_Asset.cpp [PENDING]
+055    837 CvGameCoreDLL/CyInfoInterface3.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+056    768 CvGameCoreDLL/CvInfo_Asset.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 057    713 CvGameCoreDLL/CombatOdds.cpp [PENDING]<-(priority next wip after the first reloop)
 058    693 CvGameCoreDLL/ArmamentForecast.cpp [PENDING]<-(priority next wip after the first reloop)
-059    687 CvGameCoreDLL/CyGlobalContext.cpp [PENDING]
+059    687 CvGameCoreDLL/CyGlobalContext.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 060    686 CvGameCoreDLL/CvArea.cpp [PENDING]<-(priority next wip after the first reloop)
-061    679 CvGameCoreDLL/CvEventReporter.cpp [PENDING]
+061    679 CvGameCoreDLL/CvEventReporter.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 062    673 CvGameCoreDLL/MilitaryAnalyst.cpp [PENDING]<-(priority next wip after the first reloop)
-063    643 CvGameCoreDLL/CyInfoInterface1.cpp [PENDING]
+063    643 CvGameCoreDLL/CyInfoInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 064    623 CvGameCoreDLL/MilitaryBranch.cpp [PENDING]<-(priority next wip after the first reloop)
-065    603 CvGameCoreDLL/CvStructs.cpp [PENDING]
-066    580 CvGameCoreDLL/CvInfo_Command.cpp [PENDING]
-067    576 CvGameCoreDLL/CvInfo_Civics.cpp [PENDING]
+065    603 CvGameCoreDLL/CvStructs.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+066    580 CvGameCoreDLL/CvInfo_Command.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+067    576 CvGameCoreDLL/CvInfo_Civics.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 068    551 CvGameCoreDLL/KmodPathFinderLegacy.cpp [PENDING]<-(priority next wip after the first reloop)
-069    543 CvGameCoreDLL/AdvCiv4lerts.cpp [PENDING]
-070    494 CvGameCoreDLL/CvInfo_Base.cpp [PENDING]
-071    491 CvGameCoreDLL/CyInfoInterface2.cpp [PENDING]
+069    543 CvGameCoreDLL/AdvCiv4lerts.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+070    494 CvGameCoreDLL/CvInfo_Base.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+071    491 CvGameCoreDLL/CyInfoInterface2.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 072    482 CvGameCoreDLL/CvStatistics.cpp [PENDING]<-(priority next wip after the first reloop)
-073    476 CvGameCoreDLL/CyPlayerInterface1.cpp [PENDING]
+073    476 CvGameCoreDLL/CyPlayerInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 074    475 CvGameCoreDLL/WarEvaluator.cpp [PENDING]<-(priority next wip after the first reloop)
-075    472 CvGameCoreDLL/SelfMod.cpp [PENDING]
-076    461 CvGameCoreDLL/CyCityInterface1.cpp [PENDING]
-077    451 CvGameCoreDLL/StartPointsAsHandicap.cpp [PENDING]
-078    435 CvGameCoreDLL/CvVirtualWrappers.cpp [PENDING]
-079    432 CvGameCoreDLL/ScaledNumTest.cpp [PENDING]
-080    428 CvGameCoreDLL/CyReplayInfo.cpp [PENDING]
-081    425 CvGameCoreDLL/CvInfo_Tech.cpp [PENDING]
+075    472 CvGameCoreDLL/SelfMod.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+076    461 CvGameCoreDLL/CyCityInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+077    451 CvGameCoreDLL/StartPointsAsHandicap.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+078    435 CvGameCoreDLL/CvVirtualWrappers.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+079    432 CvGameCoreDLL/ScaledNumTest.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+080    428 CvGameCoreDLL/CyReplayInfo.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+081    425 CvGameCoreDLL/CvInfo_Tech.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 082    407 CvGameCoreDLL/CvFractal.cpp [PENDING]<-(priority next wip after the first reloop)
-083    403 CvGameCoreDLL/FProfiler.cpp [PENDING]
-084    389 CvGameCoreDLL/CyUnitInterface1.cpp [PENDING]
-085    375 CvGameCoreDLL/FFreeListTrashArray.cpp [PENDING]
-086    374 CvGameCoreDLL/CvXMLLoadUtility.cpp [PENDING]
-087    348 CvGameCoreDLL/CyMap.cpp [PENDING]
-088    342 CvGameCoreDLL/CvInfo_Organization.cpp [PENDING]
+083    403 CvGameCoreDLL/FProfiler.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+084    389 CvGameCoreDLL/CyUnitInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+085    375 CvGameCoreDLL/FFreeListTrashArray.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+086    374 CvGameCoreDLL/CvXMLLoadUtility.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+087    348 CvGameCoreDLL/CyMap.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+088    342 CvGameCoreDLL/CvInfo_Organization.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 089    338 CvGameCoreDLL/CvGameAI.cpp [PENDING]<-(priority next wip after the first reloop)
-090    330 CvGameCoreDLL/CyGameInterface.cpp [PENDING]
-091    328 CvGameCoreDLL/CySelectionGroup.cpp [PENDING]
+090    330 CvGameCoreDLL/CyGameInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+091    328 CvGameCoreDLL/CySelectionGroup.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 092    327 CvGameCoreDLL/BBAILog.cpp [COMPLETE - SEE C029 DURABLE CHECKPOINT]
-093    323 CvGameCoreDLL/CvPopupReturn.cpp [PENDING]
-094    304 CvGameCoreDLL/CvPlotGroup.cpp [PENDING]
-095    291 CvGameCoreDLL/CyGameTextMgr.cpp [PENDING]
+093    323 CvGameCoreDLL/CvPopupReturn.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+094    304 CvGameCoreDLL/CvPlotGroup.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+095    291 CvGameCoreDLL/CyGameTextMgr.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 096    286 CvGameCoreDLL/CvMemoryManager.cpp [PENDING]<-(priority next wip after the first reloop)
-097    282 CvGameCoreDLL/CvTalkingHeadMessage.cpp [PENDING]
-098    281 CvGameCoreDLL/RFChapterScore.cpp [PENDING]
-099    279 CvGameCoreDLL/CvDLLLogger.cpp [PENDING]
-100    277 CvGameCoreDLL/CvInfo_Water.cpp [PENDING]
-101    277 CvGameCoreDLL/RFChapter.cpp [PENDING]
-102    273 CvGameCoreDLL/CyPlotInterface1.cpp [PENDING]
-103    272 CvGameCoreDLL/CyGameCoreUtils.cpp [PENDING]
-104    269 CvGameCoreDLL/CvString.cpp [PENDING]
-105    265 CvGameCoreDLL/CvInfo_City.cpp [PENDING]
-106    264 CvGameCoreDLL/CvDiploParameters.cpp [PENDING]
-107    262 CvGameCoreDLL/FAStarFunc.cpp [PENDING]
+097    282 CvGameCoreDLL/CvTalkingHeadMessage.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+098    281 CvGameCoreDLL/RFChapterScore.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+099    279 CvGameCoreDLL/CvDLLLogger.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+100    277 CvGameCoreDLL/CvInfo_Water.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+101    277 CvGameCoreDLL/RFChapter.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+102    273 CvGameCoreDLL/CyPlotInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+103    272 CvGameCoreDLL/CyGameCoreUtils.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+104    269 CvGameCoreDLL/CvString.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+105    265 CvGameCoreDLL/CvInfo_City.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+106    264 CvGameCoreDLL/CvDiploParameters.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+107    262 CvGameCoreDLL/FAStarFunc.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 108    258 CvGameCoreDLL/CvAgents.cpp [PENDING]<-(priority next wip after the first reloop)
-109    246 CvGameCoreDLL/CvPopupInfo.cpp [PENDING]
+109    246 CvGameCoreDLL/CvPopupInfo.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 110    240 CvGameCoreDLL/AgentIteratorTest.cpp [PENDING]<-(priority next wip after the first reloop)
-111    240 CvGameCoreDLL/CvArtFileMgr.cpp [PENDING]
+111    240 CvGameCoreDLL/CvArtFileMgr.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 112    237 CvGameCoreDLL/UWAI.cpp [PENDING]<-(priority next wip after the first reloop)
-113    235 CvGameCoreDLL/CyTeamInterface.cpp [PENDING]
-114    211 CvGameCoreDLL/CvInfo_Symbol.cpp [PENDING]
-115    208 CvGameCoreDLL/CvMessageControl.cpp [PENDING]
-116    205 CvGameCoreDLL/CyArea.cpp [PENDING]
-117    204 CvGameCoreDLL/FAssert.cpp [PENDING]
-118    204 CvGameCoreDLL/FDialogTemplate.cpp [PENDING]
-119    191 CvGameCoreDLL/CyStructsInterface1.cpp [PENDING]
+113    235 CvGameCoreDLL/CyTeamInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+114    211 CvGameCoreDLL/CvInfo_Symbol.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+115    208 CvGameCoreDLL/CvMessageControl.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+116    205 CvGameCoreDLL/CyArea.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+117    204 CvGameCoreDLL/FAssert.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+118    204 CvGameCoreDLL/FDialogTemplate.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+119    191 CvGameCoreDLL/CyStructsInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 120    186 CvGameCoreDLL/AgentIterator.cpp [PENDING]<-(priority next wip after the first reloop)
-121    177 CvGameCoreDLL/CvXMLLoadUtilityInit.cpp [PENDING]
-122    175 CvGameCoreDLL/RFTotalScore.cpp [PENDING]
+121    177 CvGameCoreDLL/CvXMLLoadUtilityInit.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+122    175 CvGameCoreDLL/RFTotalScore.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 123    175 CvGameCoreDLL/TeamPathFinder.cpp [PENDING]<-(priority next wip after the first reloop)
 124    171 CvGameCoreDLL/CyGlobalContextInterface4.cpp [PENDING]
 125    166 CvGameCoreDLL/UWAIReport.cpp [PENDING]<-(priority next wip after the first reloop)
-126    150 CvGameCoreDLL/CvDllTranslator.cpp [PENDING]
-127    149 CvGameCoreDLL/CyMapGenerator.cpp [PENDING]
-128    149 CvGameCoreDLL/ReproTest.cpp [PENDING]
+126    150 CvGameCoreDLL/CvDllTranslator.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+127    149 CvGameCoreDLL/CyMapGenerator.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+128    149 CvGameCoreDLL/ReproTest.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 129    145 CvGameCoreDLL/AIStrengthMemoryMap.cpp [PENDING]<-(priority next wip after the first reloop)
 130    137 CvGameCoreDLL/CvRandom.cpp [PENDING]<-(priority next wip after the first reloop)
-131    134 CvGameCoreDLL/Shelf.cpp [PENDING]
-132    127 CvGameCoreDLL/CvReplayMessage.cpp [PENDING]
-133    124 CvGameCoreDLL/CyGlobalContextInterface1.cpp [PENDING]
-134    101 CvGameCoreDLL/CvInfo_Build.cpp [PENDING]
-135     96 CvGameCoreDLL/TSCProfiler.cpp [PENDING]
-136     95 CvGameCoreDLL/CyArgsList.cpp [PENDING]
-137     94 CvGameCoreDLL/CyMapInterface.cpp [PENDING]
+131    134 CvGameCoreDLL/Shelf.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+132    127 CvGameCoreDLL/CvReplayMessage.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+133    124 CvGameCoreDLL/CyGlobalContextInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+134    101 CvGameCoreDLL/CvInfo_Build.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+135     96 CvGameCoreDLL/TSCProfiler.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+136     95 CvGameCoreDLL/CyArgsList.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+137     94 CvGameCoreDLL/CyMapInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 138     91 CvGameCoreDLL/CvDLLInterfaceIFaceBase.cpp [PENDING]<-(priority next wip after the first reloop)
-139     90 CvGameCoreDLL/CyPlayerInterface2.cpp [PENDING]
-140     89 CvGameCoreDLL/CvCivilization.cpp [PENDING]
-141     84 CvGameCoreDLL/CvDLLEntity.cpp [PENDING]
-142     84 CvGameCoreDLL/CyArtFileMgr.cpp [PENDING]
-143     81 CvGameCoreDLL/CySelectionGroupInterface.cpp [PENDING]
-144     80 CvGameCoreDLL/CvDLLPython.cpp [PENDING]
-145     80 CvGameCoreDLL/CyDeal.cpp [PENDING]
-146     80 CvGameCoreDLL/CyMessageControl.cpp [PENDING]
-147     79 CvGameCoreDLL/CvInfo_TrueStarts.cpp [PENDING]
-148     79 CvGameCoreDLL/CyHallOfFameInterface.cpp [PENDING]
-149     78 CvGameCoreDLL/CvBugOptions.cpp [PENDING]
-150     76 CvGameCoreDLL/PlayerHistory.cpp [PENDING]
+139     90 CvGameCoreDLL/CyPlayerInterface2.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+140     89 CvGameCoreDLL/CvCivilization.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+141     84 CvGameCoreDLL/CvDLLEntity.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+142     84 CvGameCoreDLL/CyArtFileMgr.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+143     81 CvGameCoreDLL/CySelectionGroupInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+144     80 CvGameCoreDLL/CvDLLPython.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+145     80 CvGameCoreDLL/CyDeal.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+146     80 CvGameCoreDLL/CyMessageControl.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+147     79 CvGameCoreDLL/CvInfo_TrueStarts.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+148     79 CvGameCoreDLL/CyHallOfFameInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+149     78 CvGameCoreDLL/CvBugOptions.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+150     76 CvGameCoreDLL/PlayerHistory.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 151     74 CvGameCoreDLL/WarEvalParameters.cpp [PENDING]<-(priority next wip after the first reloop)
-152     73 CvGameCoreDLL/BarbarianWeightMap.cpp [PENDING]
-153     73 CvGameCoreDLL/CyGameCoreUtilsInterface.cpp [PENDING]
-154     73 CvGameCoreDLL/CyGlobalContextInterface2.cpp [PENDING]
-155     62 CvGameCoreDLL/CyAreaInterface.cpp [PENDING]
-156     60 CvGameCoreDLL/CyGlobalContextInterface3.cpp [PENDING]
-157     57 CvGameCoreDLL/CyGameTextMgrInterface.cpp [PENDING]
-158     44 CvGameCoreDLL/CyCityInterface2.cpp [PENDING]
-159     43 CvGameCoreDLL/CyMapGeneratorInterface.cpp [PENDING]
-160     39 CvGameCoreDLL/CvHallOfFameInfo.cpp [PENDING]
-161     38 CvGameCoreDLL/CvGameCoreDLL.cpp [PENDING]
-162     31 CvGameCoreDLL/CyArtFileMgrInterface.cpp [PENDING]
-163     25 CvGameCoreDLL/CyMessageControlInterface.cpp [PENDING]
-164     24 CvGameCoreDLL/CyHallOfFameInfo.cpp [PENDING]
-165     20 CvGameCoreDLL/CyRandomInterface.cpp [PENDING]
-166     18 CvGameCoreDLL/ModName.cpp [PENDING]
-167     16 CvGameCoreDLL/PlotRadiusIterator.cpp [PENDING]
+152     73 CvGameCoreDLL/BarbarianWeightMap.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+153     73 CvGameCoreDLL/CyGameCoreUtilsInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+154     73 CvGameCoreDLL/CyGlobalContextInterface2.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+155     62 CvGameCoreDLL/CyAreaInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+156     60 CvGameCoreDLL/CyGlobalContextInterface3.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+157     57 CvGameCoreDLL/CyGameTextMgrInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+158     44 CvGameCoreDLL/CyCityInterface2.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+159     43 CvGameCoreDLL/CyMapGeneratorInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+160     39 CvGameCoreDLL/CvHallOfFameInfo.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+161     38 CvGameCoreDLL/CvGameCoreDLL.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+162     31 CvGameCoreDLL/CyArtFileMgrInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+163     25 CvGameCoreDLL/CyMessageControlInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+164     24 CvGameCoreDLL/CyHallOfFameInfo.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+165     20 CvGameCoreDLL/CyRandomInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+166     18 CvGameCoreDLL/ModName.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+167     16 CvGameCoreDLL/PlotRadiusIterator.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 168     11 CvGameCoreDLL/ArithmeticTraits.cpp [PENDING]<-(priority next wip after the first reloop)
-169      5 CvGameCoreDLL/_precompile.cpp [PENDING]
+169      5 CvGameCoreDLL/_precompile.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 
 INITIAL C010 SOURCE IDENTITY
 Branch: main
@@ -157730,4 +157730,2200 @@ checkpoint.
 No gameplay/source files were modified by ChatGPT-5.6-Sol during this audit.
 ===============================================================================
 END C031-WIP449
+===============================================================================
+
+
+===============================================================================
+C031-WIP450 — QUEUE 022 TRUESTARTS.CPP CLOSURE / F624 UNUSED
+===============================================================================
+
+PHYSICAL CONTINUATION BASIS
+---------------------------
+Reconciled current repository album from `AdvCiv-SAS_light_source_20260907T070730.zip`, which
+already contains the C031-WIP449 material through F623 / KI#945. The fresh local source was checked
+against that stone before continuing. No gameplay/source file was modified during this pass.
+
+STARTING STONE
+--------------
+Queue 022 `CvGameCoreDLL/TrueStarts.cpp` OPEN.
+F613 / KI#935 through F623 / KI#945 CONFIRMED.
+F624 / provisional KI#946 UNUSED.
+Latest prior physical checkpoint: C031-WIP449.
+
+RECONCILIATION OF THE FRESH CODEX ALBUM
+---------------------------------------
+The fresh reconciled album contains the full F622 and F623 proofs and still records WIP449 as the
+latest authoritative physical checkpoint. It also carries the queue scheduling rule at the album
+front: after Queue 022 closes, every still-PENDING entry marked `priority next wip` must be processed
+before ordinary queue order. Queue 025 `StartingPositionIteration.cpp` is therefore next ahead of
+ordinary Queue 024 `CyCity.cpp`.
+
+No post-WIP449 gameplay finding had already been promoted by the reconciliation. F624 remained free.
+
+F624 CANDIDATE CLOSED — m_rMedianSpace CANNOT BE ZERO ON THE LIVE PATH
+---------------------------------------------------------------------
+The first continuation cursor from WIP449 was this division in `calcFitness()`:
+
+    scaled rSpace = kStats.areaSpaceWeights() / m_rMedianSpace;
+
+The denominator is built in the constructor as the median of every True-Starts player's
+`SurroundingsStats::areaSpaceWeights()`.
+
+A direct iterator/weight proof shows that each individual sample is at least 1:
+
+1. `getSurroundings()` creates a `PlotCircleIter` with the default `bIncludeCenter=true`.
+2. `SpiralPlotIterator::init` therefore exposes the player's own starting plot as the first element.
+3. At that center, `distWeight(kStart, kStart, radius)` is exactly 1 because plot distance is 0.
+4. The rival-overlap reduction in `calculatePlotWeights()` cannot reduce the center below 1:
+   `rOtherDistWeight <= 1`, while `rDistWeight == 1`, so
+   `max(0, rOtherDistWeight - rDistWeight) == 0` for every rival.
+5. The start necessarily belongs to its own area and is not a lake starting tile, so the
+   `SurroundingsStats` same-area branch executes and adds `sqrt(1) == 1` to
+   `m_rAreaSpaceWeights`.
+
+Thus every `areaSpaceWeights()` sample is >=1, and every nonempty median is >=1. The constructor only
+leaves `m_rMedianSpace` at its default when there are no True-Starts players, in which case
+`calcFitness()` is never invoked for a True-Starts player. The denominator is therefore safe on the
+current live path. No F624.
+
+F624 CANDIDATE DEDUP — DISTINCT-CIV SHORTAGE IS ALREADY F613 / KI#935
+---------------------------------------------------------------------
+A fresh mechanical pass over `changeCivs()` independently rediscovered this suspicious test:
+
+    if (m_validAICivs.size() < m_truPlayers.size() ||
+        aeValidHumanCivs.size() < m_truHumans.size())
+    {
+        bUniqueCivs = false;
+    }
+
+Current shipped True-Starts data has 34 distinct supported civilizations but 52 native
+civ/leader pairs (20 one-leader civs, 10 two-leader civs, 4 three-leader civs). With 35-48 all-random
+players, the 52 pair count can satisfy the first comparison although 34 distinct civilizations
+cannot satisfy uniqueness. The later assignment filter can then exhaust all distinct civs and leave
+late players unassigned.
+
+This is a genuine live defect, but the reconciled album confirms that this exact root and current
+34-vs-52 reproducer are already F613 / KI#935, the first finding of Queue 022. It is therefore an
+important dedup positive control, not F624.
+
+REMAINING LIVE DIVISION / INDEX / STATE SWEEP
+---------------------------------------------
+The remainder of the current-live arithmetic/index/state pass did not produce an independent F624.
+The main denominator checks close as follows:
+
+- `calculateRadius`: current shipped world sizes all have a positive `iDefaultPlayers`
+  (Arena 2 through SAS48 48), while at least one alive player exists when this code is useful;
+  `rCrowdedness` is therefore positive.
+- geographic fitness: `CvTruCivInfo` longitude/latitude domains are fixed at -1800..1800 and
+  -900..900, producing positive `m_iMaxGeoDist`; valid maps have positive `maxPlotDistance()`.
+- average distance error divides only when `iOtherPlayers > 0`.
+- river mean divides only when `areaRiverWeights() > 0`.
+- oceanity normalization guards the zero/one median endpoints before each division.
+- peak-map normalization divides by `m_rMedianPeakScore` only after proving it greater than a
+  positive threshold.
+- horizontal stretch uses `max(areaYSpaceWeights(), scaled::epsilon())`.
+- climate-region mean divides only after rejecting a zero region weight / invalid start region.
+- close-match precipitation ratios are entered only with at least one possible region match.
+- the already-reconciled singleton climate-variation fixed-point 0/0 remains an ugly robustness
+  path but still does not demonstrate a wrong current gameplay result under the established finding
+  threshold.
+- the integer `iMaxTimeDiff==0` contemporaries candidate from the prior tranche remains closed for
+  current shipped data: the only equal-year pair (Qin/Hannibal at -221) cannot form a current
+  candidate set whose maximum contemporary difference stays zero; when China is eligible Mao's
+  1949 record makes the maximum positive, and removing China removes Qin from the candidate matrix.
+
+The first all-random contemporaries fitness pass can also evaluate `0 / sqrt(0)` in AdvC's fixed-point
+`scaled` arithmetic because no leader has yet been locked. The numerator is necessarily zero in that
+state (there are no `m_leaders` entries to add contemporary value), so this follows the same
+fixed-point zero/zero robustness family and does not supply a nonzero gameplay error. It is not
+promoted.
+
+REMAINING LIVE FUNCTION RECONCILIATION
+--------------------------------------
+Every current-live TrueStarts function has now been reconciled against F613-F623, prior album
+coverage, or a clean invariant:
+
+- constructor / player-provenance collection: F620 owns the random-civ/manual-leader overwrite;
+  documented network/scenario broad reassignment behavior remains an explicit design limitation.
+- `overrideScenarioOptions`: latitude-limit changes are propagated correctly because
+  `CvMap::setLatitudeLimits` immediately calls `updateLatitude()` for every plot; no stale cached
+  latitude bug survives.
+- `initTargetLatitudes`: the suspicious scaling expressions remain numerically harmless with current
+  inherited Temperate baseline changes of zero; no current result mismatch proven.
+- `changeCivs`: F613-F616, F618-F621 and F623 own the confirmed candidate-pool, missing-data,
+  empty-New-World, unrestricted-leader, uninitialized-elevation, provenance and oceanity-baseline
+  defects. Remaining assignment/color/team/handicap state checks hold.
+- `initContemporaries`: current candidate data prevents a live zero integer divisor; asymmetry and
+  randomized neighbor count are explicit design choices.
+- `calculateRadius`, `updateFitnessValues`, `calculatePlotWeights`, `getSurroundings`, and
+  `SurroundingsStats`: no independent TrueStarts contradiction survives the denominator/index/state
+  sweep.
+- `calcFitness`: all uncovered live denominators and candidate-state accesses either have a positive
+  invariant/guard or belong to an already-owned finding.
+- `calcClimateFitness`: F622 owns the wrapped-seam directional-filter defect; the remaining
+  singleton-variation arithmetic stays below threshold as above.
+- `precipitation`: F617 owns the live polar-feature enum/boolean bug; no second live enum mix-up was
+  found.
+
+SANITATION-ONLY SOURCE DEBT REMAINS DORMANT
+-------------------------------------------
+The previously observed resource/vegetation mutation defects remain preserved but are not promoted
+under Queue 022's current-live threshold because shipped SAS has normal and scenario True-Starts
+sanitation disabled. In particular, keep the reversed `changeVegetation()` best-destination winner
+assignment and the `sanitize()` bound/order hazard as explicit dormant controls for a future pass if
+those defines are enabled or another shipped caller emerges.
+
+ADJACENT FUTURE ROOT — PLOTRADIUSITERATOR WRAP DUPLICATION
+----------------------------------------------------------
+The closure pass exposed one useful cross-file observation that should be carried to the pending
+`PlotRadiusIterator` audit rather than misassigned to TrueStarts.
+
+`SpiralPlotIterator` keeps unwrapped iterator coordinates but resolves each coordinate through
+`CvMap::plotValidXY`. It has no visited-plot suppression. On a wrapped dimension, once its radius
+reaches at least half that dimension, opposite unwrapped coordinates can therefore resolve to the
+same physical `CvPlot` and be yielded more than once.
+
+A current shipped reproducer exists without exotic mod data:
+
+- `WORLDSIZE_ARENA` grid width is 14;
+- `TrueStarts::calculateRadius()` gives a base surroundings radius of 7 at ordinary 2/2 crowdedness;
+- current `PrivateMaps/Fractal.py` defaults its world-wrap option to cylindrical (`getWrapX()==true`).
+
+At X offsets -7 and +7 from the same Arena start, the two unwrapped coordinates identify the same
+wrapped map column. `PlotCircleIter` can therefore revisit the same physical opposite-seam plots.
+TrueStarts' broad `SurroundingsStats` and bonus loops can then count those physical plots more than
+once.
+
+This looks worth a dedicated root audit because the iterator is general and its own queue is still
+PENDING (Queue 167 in the current album). Do not spend F624 on it here without first determining the
+intended general iterator contract, breadth across callers, and prior dedup when that root file is
+audited. F622 is separate: it is a TrueStarts-specific misuse of raw resolved coordinates even at
+small climate-region radius and does not require duplicate iterator output.
+
+ADJACENT CvMap OBSERVATION PRESERVED
+------------------------------------
+Continue to preserve the WIP449 CvMap helper candidate separately: the `CvWString` overload of
+`isCustomMapOption` drops its own `bCheckContains` / `bIgnoreCase` parameters when forwarding. It is
+not part of F623 and should be deduped/proven in the CvMap audit.
+
+QUEUE 022 FINAL STATE
+---------------------
+Queue 022 `CvGameCoreDLL/TrueStarts.cpp` — COMPLETE.
+F613 / KI#935 CONFIRMED.
+F614 / KI#936 CONFIRMED.
+F615 / KI#937 CONFIRMED.
+F616 / KI#938 CONFIRMED.
+F617 / KI#939 CONFIRMED.
+F618 / KI#940 CONFIRMED.
+F619 / KI#941 CONFIRMED.
+F620 / KI#942 CONFIRMED.
+F621 / KI#943 CONFIRMED.
+F622 / KI#944 CONFIRMED.
+F623 / KI#945 CONFIRMED.
+F624 / provisional KI#946 UNUSED.
+No gameplay/source file modified.
+
+NEXT QUEUE RESOLUTION
+---------------------
+The album-front scheduling rule resolves the earlier Queue024-vs-Queue025 ambiguity. Queue 025
+`CvGameCoreDLL/StartingPositionIteration.cpp` is explicitly marked `priority next wip`, so it is the
+next file after closing Queue 022. Ordinary Queue 024 `CyCity.cpp` remains PENDING and follows after
+priority-next-WIP entries are handled according to the queue rule.
+
+Exact continuation cursor:
+C031-WIP450 physical -> Queue 022 COMPLETE -> F624/KI#946 still unused -> Queue 025
+`StartingPositionIteration.cpp` OPEN (priority-next-WIP) -> establish file lineage/current SAS deltas
+and prior album ownership -> audit live initialization/iteration/scoring/state invariants -> freeze
+next physical checkpoint regardless of whether a finding is promoted.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP450
+===============================================================================
+
+
+===============================================================================
+C031-WIP451 — QUEUE 025 STARTINGPOSITIONITERATION: FIRST CONFIRMED ROOT
+===============================================================================
+
+PHYSICAL CONTINUATION / RECONCILIATION
+--------------------------------------
+This checkpoint continues directly from C031-WIP450. The freshly supplied reconciled
+`AdvCiv-SAS_light_source_20260907T070730.zip` was checked first: its repository album contains the
+WIP449 True-Starts findings F622/F623 and still reserves F624 / provisional KI#946. WIP450 remains
+the later ChatGPT physical closure stone: Queue 022 `TrueStarts.cpp` is COMPLETE, F624 was unused at
+that closure, and Queue 025 `StartingPositionIteration.cpp` is the priority-next-WIP file.
+
+No repository/gameplay source was modified. All investigation below used the local SAS snapshot,
+its locally mirrored reachable-history diffs, Base AdvC 1.14, K-Mod and Civ4CE reference archives.
+
+QUEUE 025 LINEAGE / SAS DELTA BOUNDARY
+--------------------------------------
+`StartingPositionIteration.cpp` is an AdvC-added subsystem (`advc.027`), not inherited BtS/K-Mod
+code. The local history mirror contains 48 commits touching the file. Only two later SAS-branch
+commits touch it materially in the available history:
+
+- SAS practical 5314 changes SPI found-value storage from `short` to `int`, explicitly preventing
+  found-value overflow/underflow; current SAS carries the corresponding custom source comment.
+- SAS practical 5961 is broad signature-formatting/collapse work and does not establish a new
+  gameplay-semantic root in the portion audited so far.
+
+Accordingly, current semantic defects that survive unchanged from the AdvC lineage should be
+classified as inherited AdvC unless a later SAS change is proven causal.
+
+F624 / PROVISIONAL KI#946 — CONFIRMED INHERITED ADVC NORMALIZATION-LEVEL FALLTHROUGH
+------------------------------------------------------------------------------------
+SEVERITY / CLASS: current-live gameplay normalization defect; inherited AdvC control-flow bug.
+ROOT FILE: `CvGameCoreDLL/StartingPositionIteration.cpp`,
+`NormalizationTarget::isReached(..., bNearlyReached=true, ...)`.
+
+CURRENT CODE
+------------
+The current function starts with a base tolerance of 2.5%, then tries to vary the extra tolerance
+by the game's configured starting-plot normalization level:
+
+    scaled rTolerance = fixp(2.5);
+    if (bNearlyReached)
+    {
+        switch(GC.getGame().getStartingPlotNormalizationLevel())
+        {
+        case CvGame::NORMALIZE_HIGH: rTolerance += 2;
+        case CvGame::NORMALIZE_MEDIUM: rTolerance += 4;
+        default: rTolerance += 6;
+        }
+    }
+    rTolerance /= 100;
+    ...
+    return (rIncreaseNeeded <= rTolerance * iCurrFoundVal);
+
+There are no `break` statements and no intentional-fallthrough annotation.
+
+The actual tolerances before the later handicap adjustment are therefore:
+
+- LOW: 2.5 + 6 = 8.5%
+- MEDIUM: 2.5 + 4 + 6 = 12.5%
+- HIGH: 2.5 + 2 + 4 + 6 = 14.5%
+
+This reverses the semantic direction of the normalization levels. The stronger the requested
+normalization, the more tolerant the target becomes and the earlier it can report that a weak start
+is already "nearly reached."
+
+CONTRACT / LIVE CALLER PROOF
+----------------------------
+`CvGame.h` explicitly documents the three levels as:
+
+    1: low    (weak starting plots on average, high variance); for single-player
+    2: medium (strong starting plots, low variance); for multi-player
+    3: high   (very strong starting plots, low variance); BtS/K-Mod behavior
+
+`NormalizationTarget::isNearlyReached` simply forwards to `isReached(..., true)`. The live caller in
+`CvGame::normalizeAddExtras` tests it while traversing candidate resource plots:
+
+    if (pTarget != NULL ? pTarget->isNearlyReached(*pStartingPlot) :
+        citySiteEval.evaluate(*pStartingPlot) >= rTargetValue)
+    {
+        ...
+        goto done_placing_resources;
+    }
+
+So a *larger* tolerance means "nearly reached" succeeds sooner and resource normalization stops
+sooner. HIGH and MEDIUM should not be more permissive than LOW here; that directly contradicts the
+level contract.
+
+A simple boundary illustrates the live effect. Suppose a site's computed `rIncreaseNeeded` is 10%
+of its current found value before the common handicap adjustment:
+
+- the structurally intended HIGH tolerance (4.5%; see history below) would return false and continue
+  trying to normalize the site;
+- current HIGH fallthrough gives 14.5%, returns true, and stops adding normalization bonuses;
+- current MEDIUM likewise stops at 12.5%;
+- LOW at 8.5% would continue.
+
+The result can therefore be the opposite of the configured normalization strength.
+
+CURRENT-LIVE ACTIVATION
+-----------------------
+Current SAS has:
+
+    ENABLE_STARTING_POSITION_ITERATION = 1
+    NORMALIZE_STARTPLOTS_AGGRESSIVELY = 0
+
+So SPI and its `NormalizationTarget` are live on supported map scripts that do not override the
+relevant starting-position path. With the default normalization define, ordinary single-player is
+normally LOW and therefore hits only the `default` arm; that common case masks the bug. The other
+supported current paths do not:
+
+- `CvGame::setStartingPlotNormalizationLevel` promotes multiplayer games with more than one human
+  from LOW to MEDIUM;
+- the "Balanced" map option explicitly sets normalization to HIGH;
+- HIGH is also the documented aggressive/BtS/K-Mod level and can be selected through the existing
+  normalization setting path.
+
+Thus this is not an unreachable configuration or mod-data hypothetical. MEDIUM multiplayer and HIGH
+Balanced/aggressive normalization are current supported paths, and the only `isNearlyReached`
+caller is specifically part of start normalization.
+
+HISTORY — MISSING BREAKS ARE PROVABLE, NOT A STYLE GUESS
+---------------------------------------------------------
+The local reachable-history mirror gives unusually strong intent evidence.
+
+AdvC practical 2302 (`d6ea7fc8701bfe2d4353437da01e5d5b392d8b7e`, title
+"Starting positions (cont.), normalization.") introduced this code as:
+
+    scaled rTolerance = 2;
+    if (bNearlyReached)
+    {
+        switch(GC.getGame().getStartingPlotNormalizationLevel())
+        {
+        case CvGame::NORMALIZE_HIGH: rTolerance = 4;
+        case CvGame::NORMALIZE_MEDIUM: rTolerance = 6;
+        default: rTolerance = 8;
+        }
+    }
+
+Without breaks, HIGH sets 4, then 6, then 8; MEDIUM sets 6, then 8. All three levels therefore
+collapse to 8%. That already defeats the purpose of switching on the normalization level.
+
+Just three practical commits later, AdvC practical 2305
+(`82c08218c66b1a01049f4bf81647a77ab3949573`, title
+"More tweaks, fixed miscalculations for starting positions") changed the base from 2 to 2.5 and
+changed those assignments to additions:
+
+    HIGH:   rTolerance += 2;
+    MEDIUM: rTolerance += 4;
+    default:rTolerance += 6;
+
+but retained the missing breaks. With normal non-fallthrough switch semantics, this is an extremely
+coherent adjustment of the earlier intended 4/6/8 values to 4.5/6.5/8.5 — each target rises by
+exactly 0.5 while preserving HIGH < MEDIUM < LOW. With the inherited fallthrough, the same tweak
+instead produces 14.5/12.5/8.5 and reverses that ordering.
+
+That two-commit evolution makes the omitted breaks a concrete control-flow error rather than an
+argument about preferred tuning. Current Base AdvC 1.14 retains the same fallthrough unchanged.
+K-Mod and Civ4CE do not contain this AdvC-created SPI implementation, so the root is inherited AdvC,
+not BtS/K-Mod/Civ4CE and not introduced by SAS.
+
+DEDUP
+-----
+Focused searches of the reconciled audit album and Known Issues found no existing owner for the
+`NormalizationTarget` normalization-level tolerance fallthrough or the HIGH/MEDIUM/LOW reversal.
+
+The only prior StartingPositionIteration-specific KI found in the current Known-Issues corpus is
+KI#492 / album F169, which is a separate performance defect: workable-plot precomputation performs
+and discards full city-site evaluations. It does not overlap this normalization stop condition.
+
+The repository Known-Issues file currently carries KI#946 only as the WIP449 reservation saying
+F624 remained unassigned while Queue 022 was open. WIP450 subsequently closed Queue 022 without
+using it. F624 is now legitimately consumed here by the first independent Queue-025 root.
+
+REPAIR BOUNDARY
+---------------
+The narrow semantic repair is to terminate each explicit case, preserving the apparent intended
+values from practical 2305:
+
+    case CvGame::NORMALIZE_HIGH:
+        rTolerance += 2;
+        break;
+    case CvGame::NORMALIZE_MEDIUM:
+        rTolerance += 4;
+        break;
+    default:
+        rTolerance += 6;
+        break;
+
+That yields 4.5% HIGH, 6.5% MEDIUM and 8.5% LOW before the existing common handicap adjustment. It
+restores the documented direction: stronger normalization requires a site to get closer to target
+before `isNearlyReached` stops resource placement.
+
+Regression coverage should evaluate the same SPI-produced `NormalizationTarget` / start state at
+LOW, MEDIUM and HIGH and assert monotonicity:
+
+    HIGH tolerance < MEDIUM tolerance < LOW tolerance
+
+and, for a boundary state such as a required increase around 10%, verify that LOW may call the site
+nearly reached while MEDIUM/HIGH continue normalization — never the reverse solely because the
+normalization level is stronger.
+
+OTHER QUEUE-025 CONTROLS FROM THIS TRANCHE
+------------------------------------------
+No other root is promoted in this checkpoint.
+
+1. `DistanceTable` stores Dijkstra distances and queue-node distances as signed `short`. In theory a
+   sufficiently labyrinthine <=12,000-plot supported custom map could make a simple shortest path
+   exceed 32,767 weighted distance units and narrow on queue insertion. Ordinary current map-script
+   geometry is far below that threshold, and no shipped reproducer has been established yet. Keep
+   this as robustness debt/candidate only; do not spend F625 without a supported current path.
+
+2. The cross-file `PlotCircleIter` wrap-duplication observation carried from WIP450 is directly
+   relevant here: `PotentialSites::recordSite` uses `PlotCircleIter(kPlot, 8, false)`, enough to
+   exceed half-width on 14-wide wrapped Arena maps. This reinforces Queue 167
+   `PlotRadiusIterator.cpp` as the likely root owner. Do not duplicate it into Queue 025 before the
+   iterator contract/root is audited.
+
+CURRENT STONE AFTER C031-WIP451
+-------------------------------
+Queue 022 `CvGameCoreDLL/TrueStarts.cpp` — COMPLETE.
+Queue 025 `CvGameCoreDLL/StartingPositionIteration.cpp` — OPEN (priority-next-WIP).
+F613-F623 / KI#935-KI#945 — confirmed prior TrueStarts roots.
+F624 / provisional KI#946 — CONFIRMED here: inherited AdvC normalization-level tolerance switch
+fallthrough makes MEDIUM/HIGH stop "nearly reached" normalization too early and reverses the
+intended strength ordering.
+F625 / provisional KI#947 — UNUSED next root ID.
+No repository/gameplay source modified.
+
+Exact continuation cursor:
+C031-WIP451 physical -> Queue 025 OPEN -> exclude F624 -> continue PotentialSites/DistanceTable /
+SpaceEvaluator / iteration-step / team-assignment / NormalizationTarget state and arithmetic audit ->
+dedup against F169/KI#492 and all prior album findings -> preserve general PlotRadiusIterator wrap
+candidate for Queue 167 -> freeze next physical checkpoint regardless of whether F625 is promoted.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP451
+===============================================================================
+
+
+===============================================================================
+C031-WIP452 — QUEUE 025 DISTANCETABLE WATER-FALLBACK DISTANCE UNIT MISMATCH
+===============================================================================
+
+PHYSICAL CONTINUATION
+---------------------
+This checkpoint continues directly from C031-WIP451 / Queue 025
+`CvGameCoreDLL/StartingPositionIteration.cpp`. F624 / provisional KI#946 remains the confirmed
+normalization-level fallthrough from WIP451. F625 / provisional KI#947 was unused at that stone.
+
+No repository/gameplay source was modified. Investigation used the current reconciled SAS snapshot,
+its local reachable-history mirror, Base AdvC 1.14, and the current XML data.
+
+F625 / PROVISIONAL KI#947 — CONFIRMED INHERITED ADVC DISTANCETABLE UNIT MISMATCH
+---------------------------------------------------------------------------------
+SEVERITY / CLASS: current-live starting-position space-evaluation defect; inherited AdvC arithmetic /
+metric mismatch.
+ROOT FILE: `CvGameCoreDLL/StartingPositionIteration.cpp`,
+`StartingPositionIteration::DistanceTable::DistanceTable` water-destination fallback.
+
+CURRENT CODE / CONTRACT
+-----------------------
+`DistanceTable` is explicitly a weighted path-distance system. `computeDistances` runs Dijkstra and
+`stepDist` assigns ordinary land movement costs of 9 for cardinal steps and 12 for diagonal steps:
+
+    if (!kTo.isWater())
+        return (bDiagonal ? 12 : 9);
+
+The header documents the same scale through:
+
+    /* Typical distance according to DistanceTable::stepDist
+       between two friendly adjacent cities. */
+    short getAvgCityDist() const { return 40; }
+
+and the source immediately above `stepDist` warns:
+
+    /* If the scale of the distances is changed, the value returned by
+       getAvgCityDist needs to be adjusted. */
+
+Water work tiles need special handling because a city can work them without a settler/ship path to
+the water tile. The constructor therefore replaces a water destination's ordinary Dijkstra value
+with the distance to a nearby legal land city site, plus working/improvement adjustments.
+
+For land sites that are themselves destinations this is scale-consistent:
+
+    short iDist = d(kSource, *it);
+    ...
+    iShortestDist = iDist;
+
+But the explicitly documented fallback for a legal low-value city site that was omitted from the
+DestinationTable does this instead:
+
+    else if (!bDest && it->sameArea(kSource))
+    {
+        short iDist = static_cast<short>(kMap.plotDistance(&kSource, &*it));
+        ...
+        iShortestDist = iDist;
+    }
+
+It then immediately adds values expressed in the weighted DistanceTable scale:
+
+    iShortestDist += getAvgCityDist() / 5;          // +8
+    if (!bInnerRing)
+        iShortestDist += getAvgCityDist() / 4;      // +10
+    if (kWaterDest.getBonusType(NO_TEAM) != NO_BONUS)
+        iShortestDist += (5 * getAvgCityDist()) / 8;// +25
+
+`CvMap::plotDistance`, however, is the normal octile geometric metric in tile-distance units. A
+10-tile cardinal separation returns 10, while `DistanceTable::stepDist` assigns 90 to the same ten
+ordinary cardinal land steps. The fallback therefore mixes two incompatible units in one stored
+`DistanceTable` value.
+
+CONCRETE CURRENT-LIVE OCEAN-FISH / SNOW PATH
+---------------------------------------------
+The source itself names the intended fallback case:
+
+    "Bad land tiles aren't stored in the DistanceTable, so this will fail for e.g.
+     an Ocean Fish workable only from a Snow tile. Fall back on CvMap::plotDist ..."
+
+Current SAS XML makes this a concrete supported map state rather than a historical comment:
+
+- `TERRAIN_SNOW` has no base yields (`<Yields/>`), is land (`bWater=0`), passable
+  (`bImpassable=0`) and city-foundable (`bFound=1`).
+- `BONUS_FISH` has no reveal-tech gate, adds +1 food, and is allowed on both Coast and Ocean.
+
+The SPI precompute stores a plot in `relevantPlots` only when its SPI workable-plot value is positive
+or it is already a candidate/current city site:
+
+    if (yieldValues.get(eLoopPlotNum) > 0 ||
+        sitePlotNums.count(eLoopPlotNum) > 0)
+        relevantPlots.push_back(...);
+
+For an ordinary featureless/resource-less Snow tile, `CitySiteEvaluator::evaluateWorkablePlot`
+starts from zero natural yields. The future-improvement multiplier cannot make zero positive; the
+population-sustenance subtraction leaves no positive yield contribution, and the later marginal
+space term also adds nothing because its `iVal` is zero. The function returns `max(r, 0)`, so such a
+Snow tile can legitimately have value 0 and be omitted from `relevantPlots` despite being a legal
+city site.
+
+An Ocean Fish, by contrast, has positive food/resource value and can be retained as a water
+destination. If its only legal working city site is one of those omitted Snow tiles, `bDest` remains
+false and the raw-`plotDistance` fallback is taken exactly as the source comment anticipates.
+
+NUMERIC COUNTEREXAMPLE
+----------------------
+Use an ordinary passable same-landmass source S and a legal zero-value Snow city site L ten cardinal
+land steps away. Let an inner-ring Ocean Fish W be workable from L and from no retained land
+destination.
+
+The weighted land-path part of the intended `DistanceTable` metric is:
+
+    10 cardinal land steps * 9 = 90
+
+The current fallback instead stores:
+
+    plotDistance(S,L) = 10
+
+For an inner-ring Fish, both branches then add the same water-working/resource adjustments:
+
+    + getAvgCityDist()/5       = +8
+    + 5*getAvgCityDist()/8     = +25
+
+So current fallback result is:
+
+    10 + 8 + 25 = 43
+
+where the same geometry expressed in the surrounding `DistanceTable` scale is approximately:
+
+    90 + 8 + 25 = 123
+
+For an outer-ring working site both receive the same additional +10, giving 53 versus roughly 133.
+The error grows with land separation because every additional ordinary cardinal land tile adds only
+1 in the fallback instead of 9 in the path metric.
+
+This is not merely a display value. `SpaceEvaluator` consumes the stored distance directly:
+
+    short iDist = kDists.d(kStartPlot, kLoopPlot) - iDistSubtr;
+    ...
+    rSum += claim_t(1, max(1, iDist));
+
+and later uses the same distance for claim competition and cached access/delay factors before:
+
+    rSpaceVal += rYieldVal * rAccessFactor;
+
+The under-scaled fallback therefore makes affected remote water yields/resources look much closer
+and more readily claimable than equivalent land/path geometry warrants, feeding the actual SPI
+start-space score and consequently start-position iteration decisions.
+
+The geometric fallback also does not preserve the obstacle/path semantics of Dijkstra's `stepDist`;
+`sameArea` is only a coarse landmass check. The unit mismatch alone is sufficient to establish the
+current defect, so no stronger path-topology assumption is needed for F625.
+
+HISTORY / INHERITANCE
+---------------------
+AdvC practical 2302 (`d6ea7fc8701bfe2d4353437da01e5d5b392d8b7e`, "Starting positions (cont.),
+normalization.") introduced the water-destination fallback and the current weighted-distance scale
+in the same change.
+
+That introduction already contains, together:
+
+- the raw `kMap.plotDistance(&kSource, &*it)` fallback;
+- ordinary land `stepDist` costs of 9/12;
+- `getAvgCityDist() == 40` with the comment that it is the typical `stepDist` distance between
+  adjacent cities; and
+- the warning that changing the distance scale requires changing `getAvgCityDist`.
+
+So the mismatch did not arise because a later commit rescaled `DistanceTable` while forgetting an
+old fallback. It entered in practical 2302 already mixing raw tile distance with the new weighted
+path metric. Focused local-history search finds the exact Ocean-Fish comment and raw fallback only in
+that introduction; no later corrective change is present in the reachable mirror.
+
+Current Base AdvC 1.14 retains the same raw fallback and the same 9/12 path costs unchanged. K-Mod
+and Civ4CE do not contain this AdvC-created SPI subsystem. Classification is therefore inherited
+AdvC, not SAS/BtS/K-Mod/Civ4CE.
+
+DEDUP
+-----
+Focused searches of the reconciled album, WIP451 and current Known Issues found no existing owner
+for this water-fallback metric/unit mismatch, Ocean-Fish/Snow fallback, or raw `plotDistance` inside
+SPI `DistanceTable`.
+
+F169 / KI#492 remains a separate SPI performance defect (discarded full city-site evaluations).
+F624 / KI#946 is the separate normalization-level switch fallthrough. The general
+`PlotRadiusIterator` wrapped-map duplicate-yield candidate remains reserved for Queue 167 and does
+not overlap this distance root.
+
+REPAIR BOUNDARY
+---------------
+The semantic requirement is narrow: any fallback value written into `DistanceTable` must use the
+same weighted path-distance units and reachability semantics as `d()` / `computeDistances` before
+the existing +8/+10/+25 water-work adjustments are applied.
+
+A robust repair should therefore obtain the Dijkstra/`stepDist` distance to the otherwise-omitted
+legal land city site (for example by retaining/querying full per-source Dijkstra distances for this
+fallback, or by explicitly making the necessary fallback land sites distance destinations). Merely
+copying raw `CvMap::plotDistance` into the table is not scale-compatible. Multiplying geometric
+distance by an arbitrary constant would improve units but would still lose `stepDist`'s diagonal,
+impassability/isthmus and frontier/path semantics, so it is a weaker approximation rather than the
+clean contract repair.
+
+Regression coverage should construct a positive water destination whose only legal working city
+site is a zero-valued omitted land tile and assert that:
+
+1. increasing ordinary cardinal source-to-city-site separation by one tile changes the fallback by
+   the ordinary land `stepDist` scale (9), not by raw geometric 1;
+2. the fallback is comparable to a retained-land-destination case with identical geometry; and
+3. unreachable/blocked path geometry is not converted into a deceptively tiny finite access value
+   merely because the plots share a `CvArea`.
+
+OTHER QUEUE-025 CONTROL — REMOTE DOUBLE-MOVE SEARCH PRUNING
+-----------------------------------------------------------
+A separate code-shape candidate remains below promotion threshold for now. In `currAltSites`, remote
+alternatives are iterated as:
+
+    eRemoteSite = m_pPotentialSites->getRemoteSite(i);
+    if (eRemoteSite == NO_PLOT_NUM || eRemoteSite == eTakenSite)
+        break;
+
+For the second half of a double move, `eTakenSite` is the first player's chosen site. If that site is
+remote candidate 0 (or 1), `break` discards all later remote candidates even though only the taken
+site is forbidden; `continue` would match the local comment "Don't move the second player to the
+same site as the first." This can prune valid heuristic alternatives, but it is still being held as
+a lower-severity search-quality candidate rather than consumed as F626 without a stronger outcome
+proof.
+
+CURRENT STONE AFTER C031-WIP452
+-------------------------------
+Queue 022 `CvGameCoreDLL/TrueStarts.cpp` — COMPLETE.
+Queue 025 `CvGameCoreDLL/StartingPositionIteration.cpp` — OPEN (priority-next-WIP).
+F624 / provisional KI#946 — confirmed inherited AdvC normalization-level tolerance fallthrough.
+F625 / provisional KI#947 — CONFIRMED here: documented low-value-land fallback stores raw
+`CvMap::plotDistance` tile units in the weighted SPI `DistanceTable` (9/12 land-step units), making
+Ocean-Fish/Snow and analogous water access dramatically too cheap in space evaluation.
+F626 / provisional KI#948 — UNUSED next root ID.
+No repository/gameplay source modified.
+
+Exact continuation cursor:
+C031-WIP452 physical -> Queue 025 OPEN -> exclude F624/F625 -> continue DistanceTable overflow and
+metric invariants / SpaceEvaluator / PotentialSites / currAltSites search completeness / iteration
+step state / team assignment / NormalizationTarget closure -> dedup all survivors -> preserve general
+PlotRadiusIterator wrapped-map duplicate root for Queue 167 -> freeze next physical checkpoint
+regardless of whether F626 is promoted.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP452
+===============================================================================
+
+===============================================================================
+C031-WIP453 — QUEUE 025 STARTINGPOSITIONITERATION.CPP / F626 CONFIRMED
+===============================================================================
+
+CONTINUATION / RECONCILIATION
+-----------------------------
+This checkpoint continues directly from C031-WIP452 / Queue 025
+`CvGameCoreDLL/StartingPositionIteration.cpp`. F624 / provisional KI#946 remains the
+confirmed inherited normalization-level fallthrough. F625 / provisional KI#947 remains the
+confirmed inherited `DistanceTable` water-fallback metric mismatch. F626 / provisional KI#948
+was unused at WIP452.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified during this tranche.
+
+The first post-WIP452 suspicion about `startingPositionValue()` dividing by
+`PlayerIter<CIV_ALIVE>::nextIndex()` after the iterator finishes was closed as a negative control:
+`AgentIterator::nextIndex()` at end is the number of agents visited in the filtered sequence, not
+an absolute player-slot ID. Sparse player IDs therefore do not skew that denominator.
+
+F626 / PROVISIONAL KI#948 — CONFIRMED INHERITED ADVC SPI UNEQUAL-TEAM ROUND-ROBIN OVERFILLS COMPLETED TEAMS
+------------------------------------------------------------------------------------------------------------
+
+ROOT FILES:
+- `CvGameCoreDLL/StartingPositionIteration.cpp`,
+  `StartingPositionIteration::assignSitesToTeams` / `getTeamSite`;
+- downstream contract in `CvGameCoreDLL/CvGame.cpp`, `CvGame::assignStartingPlots`;
+- `CvGameCoreDLL/CvPlayer.cpp`, `CvPlayer::setStartingPlot`, for duplicate-start persistence.
+
+ROOT DEFECT
+-----------
+`assignSitesToTeams()` distributes the already-generated SPI sites among teams by rotating through
+all alive teams, normally placing two sites for one team before advancing:
+
+    m_sitesPerTeam[eCurrTeam].push_back(*itCurrSite);
+    aeAvailableSites.erase(itCurrSite);
+    int const iLoopTeamSites = m_sitesPerTeam[eCurrTeam].size();
+    if (GET_TEAM(eCurrTeam).getNumMembers() <= iLoopTeamSites ||
+        iLoopTeamSites % 2 == 0)
+    {
+        iLoopTeamIndex++;
+        iLoopTeamIndex %= aieTeamsBySize.size();
+    }
+
+The first condition advances away from a team once it has received all of its members' sites, but
+the completed team remains in `aieTeamsBySize`. Nothing skips it when the round-robin later wraps
+back around. If unassigned sites still remain, the completed team receives another site before the
+same condition advances away again.
+
+The assignment-count error depends only on team sizes, not on `teamValue` or map geometry.
+
+MINIMAL CURRENT SUPPORTED COUNTEREXAMPLE
+----------------------------------------
+Two alive teams of sizes 5 and 1 (six civilization players total) are sufficient.
+
+The current rotation is:
+
+    Team 5: +2  -> 2/5
+    Team 1: +1  -> 1/1 complete
+    Team 5: +2  -> 4/5
+    Team 1: +1  -> 2/1 overfilled; no sites remain
+
+Final `m_sitesPerTeam` cardinalities are therefore 4 and 2 rather than the required 5 and 1.
+
+This setup is not excluded by SPI's large-team safety gate. For six players and two alive teams:
+
+    players^2 = 36
+    36 * aliveTeams = 72
+
+and the constructor bails only when `players^2 > 36 * aliveTeams`. Thus 5+1 is on the ordinary
+supported SPI team-game path. Many other supported unequal arrangements fail similarly (for
+example 5+2, 5+1+1, 5+2+1); this is not a single exotic partition.
+
+CALLER CONTRACT / DEBUG FAILURE
+-------------------------------
+`CvGame::assignStartingPlots()` consumes the SPI result by asking for exactly one stored site for
+each actual member of each team:
+
+    apStartsPerPlayer[itMember->getID()] = spi.getTeamSite(
+            itTeam->getID(), itMember.nextIndex() - 1);
+
+`getTeamSite()` returns NULL when the requested member index is outside that team's stored vector.
+For the 5+1 example, the fifth member of the size-5 team therefore receives NULL.
+
+The caller explicitly states the intended invariant:
+
+    // SPI should do all the work or none
+    FAssert(itPlayer.nextIndex() == 1 && pNormalizationTarget == NULL);
+
+But a completed SPI run has already executed `doIterations()`, which sets
+`m_bNormalizationTargetReady = true`; `createNormalizationTarget()` therefore returns a non-NULL
+target. The missing fifth site consequently violates this assertion in an FAssert-enabled build.
+This is not merely a preference disagreement inside the greedy scorer; the producer returns a
+shape the consumer explicitly declares invalid.
+
+RELEASE-PATH PARTIAL-APPLICATION / DUPLICATE-START HAZARD
+----------------------------------------------------------
+The Release path is also behaviorally unsafe. The caller applies the SPI site permutation in alive
+player order and breaks at the first NULL:
+
+    if (apStartsPerPlayer[itPlayer->getID()] != NULL)
+        itPlayer->setStartingPlot(apStartsPerPlayer[itPlayer->getID()]);
+    else
+    {
+        bTeamAssignmentDone = false;
+        ...
+        break;
+    }
+
+The values stored in `m_sitesPerTeam` are player IDs only as *placeholders for their current start
+sites*; `teamValue()` is free to assign any available placeholder site to any team. Consequently an
+earlier player can be reassigned to the original start of a later player. If the underfilled team's
+NULL member is then encountered before that later player is processed, the loop breaks and the
+later player keeps the same original start.
+
+A concrete legal placeholder shape for 5+1 illustrates the leak:
+
+    large-team stored placeholders: [5, 0, 1, 2]   (only four entries)
+    small-team stored placeholders: [3, 4]          (two entries)
+
+If players 0..4 are the large team and player 5 is the solo team, the caller can perform:
+
+    player 0 -> original site of player 5
+    player 1 -> original site of player 0
+    player 2 -> original site of player 1
+    player 3 -> original site of player 2
+    player 4 -> NULL => break
+
+Player 5 is never reached and still points at its original site. Players 0 and 5 now both point at
+that same plot.
+
+`CvPlayer::setStartingPlot()` only decrements/increments area starting-plot counters and assigns the
+player's `m_pStartingPlot`; it does not evict or rewrite another player whose starting-plot pointer
+already names `pNewValue`. Duplicate starts are therefore allowed to persist through this partial
+application.
+
+The subsequent old BtS fallback does not restore the omitted unique-site permutation:
+
+- its preliminary loop only calls `findStartingPlot()` for players whose start pointer is NULL;
+  the partially applied players all still have non-NULL pointers;
+- `rearrangeTeamStarts(false, 0)` only swaps the existing player->start assignments, so it preserves
+  the multiset of currently referenced plots and cannot recreate a unique start that was lost when
+  the partial permutation broke;
+- its distance precomputation / team-closeness logic assumes ordinary distinct starts and can itself
+  encounter zero distances if duplicate starts survived;
+- `applyStartingLocHandicaps()` explicitly returns early for unequal team sizes, so that later phase
+  does not rebuild the assignment either.
+
+Thus the defect ranges from a guaranteed Debug assertion / loss of the SPI team solution to a
+Release-path duplicate-start state for reachable site-placeholder permutations. The duplicate
+manifestation does not require any illegal team configuration or water start; only ordinary unequal
+team sizes plus a site ordering that assigns a later player's placeholder to an earlier player.
+
+HISTORY / INHERITANCE
+---------------------
+AdvC practical 2708 (`9a623ad895c73c2ce0fe4d5f5cf668ab04848307`, 2020-12-12), titled
+"Let SPI handle team games, plus other changes to starting sites", introduced together:
+
+- `m_sitesPerTeam`;
+- `assignSitesToTeams()` with the current round-robin;
+- `getTeamSite()`;
+- the `CvGame::assignStartingPlots()` consumer and its explicit
+  "SPI should do all the work or none" assertion.
+
+The full commit message describes the new code as a greedy algorithm for assigning starting sites in
+team games and says SPI is deliberately skipped only for team games with sufficiently high player
+count / average team size because the greedy algorithm handles those poorly. The 5+1 counterexample
+passes that very gate, so it is within the feature's intended active domain rather than a bypassed
+large-team case.
+
+Focused reachable-history search finds `assignSitesToTeams` only in the original team-support work,
+a later merge carrying the same implementation, a broad refactor/header touch and SAS formatting
+churn. No semantic completed-team skip was subsequently added.
+
+Current Base AdvC 1.14 retains the same rotation and the same `CvGame` all-or-none consumer
+unchanged. K-Mod and Civ4CE do not contain this AdvC-created SPI team assignment subsystem.
+Classification: inherited AdvC defect, not a SAS regression.
+
+DEDUP
+-----
+Focused album / Known-Issues searches found no prior owner for SPI overfilling a completed team,
+`m_sitesPerTeam` cardinality mismatch, or the resulting partial-permutation/duplicate-start hazard.
+
+Keep separate from earlier starting-position findings:
+
+- F017 / KI#338: sorted-site volatility safeguard evaluates the human's old site;
+- F018 / KI#339: StartingLoc handicap tie random offset is computed but unused;
+- F019 / KI#340: the *fallback* BtS team-start rotation mixes compact alive-team count with absolute
+  team IDs (now repaired in current SAS);
+- F624 / KI#946: SPI normalization-level tolerance switch fallthrough;
+- F625 / KI#947: SPI `DistanceTable` fallback metric/unit mismatch.
+
+F019 concerns random priority *inside the legacy fallback*. F626 is an earlier producer/consumer
+cardinality failure that can incorrectly force that fallback and can partially corrupt the start
+permutation before fallback begins. They are independent roots.
+
+REPAIR BOUNDARY
+---------------
+Preserve the intended "two members at a time" greedy rotation, but never select a team that has
+already received `getNumMembers()` sites.
+
+A narrow repair can advance past completed teams before assigning the next site (or remove completed
+teams from the active rotation). Because the total number of available placeholder sites equals the
+total number of alive civilization players/team members, successful completion should establish:
+
+    m_sitesPerTeam[eTeam].size() == GET_TEAM(eTeam).getNumMembers()
+
+for every alive civilization team.
+
+Add a post-assignment assertion for that exact invariant before exposing `m_sitesPerTeam` to
+`CvGame`. The consumer's existing all-or-none assertion is too late because it detects the mismatch
+only while already applying the permutation.
+
+Regression coverage should include at least:
+
+1. 5+1 teams: expected stored counts 5+1, never 4+2;
+2. 5+2 teams: expected 5+2, never 4+3;
+3. 5+1+1 and 5+2+1 mixed teams;
+4. a placeholder ordering where the large team selects the original site of a later player, proving
+   that the fixed producer lets the caller apply a complete permutation with no duplicate starts;
+5. existing equal-size 2+2 / 3+3 cases to ensure the two-at-a-time clustering behavior is retained;
+6. the existing large-team SPI bail condition, which should remain unchanged unless deliberately
+   redesigned separately.
+
+OTHER QUEUE-025 CONTROLS CARRIED FORWARD
+----------------------------------------
+- `currAltSites` still uses `break` when a strict remote candidate equals `eTakenSite`, pruning later
+  remote alternatives for the second half of some double moves. This remains below finding threshold
+  pending a stronger gameplay/search-completeness proof; do not conflate it with F626.
+- General wrapped-map plot duplication from `PlotRadiusIterator` remains reserved for Queue 167 as
+  the likely iterator-root owner rather than duplicated into SPI.
+- The `startingPositionValue()` `nextIndex()` denominator suspicion is closed: end-of-iterator
+  `nextIndex()` is the filtered visited count.
+
+CURRENT STONE AFTER C031-WIP453
+-------------------------------
+Queue 022 `CvGameCoreDLL/TrueStarts.cpp` — COMPLETE.
+Queue 025 `CvGameCoreDLL/StartingPositionIteration.cpp` — OPEN (priority-next-WIP).
+F624 / provisional KI#946 — confirmed inherited AdvC normalization-level tolerance fallthrough.
+F625 / provisional KI#947 — confirmed inherited AdvC `DistanceTable` fallback metric mismatch.
+F626 / provisional KI#948 — CONFIRMED here: SPI's round-robin revisits already-completed teams in
+unequal team games, producing wrong `m_sitesPerTeam` cardinalities, violating the all-or-none caller
+contract and permitting partial-permutation duplicate starting plots.
+F627 / provisional KI#949 — UNUSED next root ID.
+No repository/gameplay source modified.
+
+Exact continuation cursor:
+C031-WIP453 physical -> Queue 025 OPEN -> exclude F624/F625/F626 -> continue teamValue / team
+assignment invariants, SpaceEvaluator / PotentialSites / currAltSites search completeness,
+DistanceTable overflow/metric edge cases, iteration Step state and NormalizationTarget closure ->
+dedup all survivors -> preserve general PlotRadiusIterator wrapped-map duplicate root for Queue 167
+-> freeze next physical checkpoint regardless of whether F627 is promoted.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP453
+===============================================================================
+
+
+===============================================================================
+C031-WIP454 — QUEUE 025 DISTANCETABLE STALE DIJKSTRA ENTRIES OVERWRITE SHORTEST PATHS
+===============================================================================
+
+PHYSICAL CONTINUATION
+---------------------
+This checkpoint continues directly from C031-WIP453 / Queue 025
+`CvGameCoreDLL/StartingPositionIteration.cpp`. F624 / provisional KI#946 remains the confirmed
+normalization-level fallthrough, F625 / provisional KI#947 remains the confirmed water-fallback
+metric mismatch, and F626 / provisional KI#948 remains the confirmed unequal-team round-robin /
+partial-permutation defect. F627 / provisional KI#949 was unused at that stone.
+
+No repository/gameplay source was modified. Investigation used the current reconciled SAS snapshot,
+its local reachable-history mirror, Base AdvC 1.14 and focused whole-album / current-Known-Issues
+dedup searches.
+
+F627 / PROVISIONAL KI#949 — CONFIRMED INHERITED ADVC STALE DIJKSTRA QUEUE ENTRIES OVERWRITE SETTLED SHORTEST DISTANCES
+----------------------------------------------------------------------------------------------------------------------
+SEVERITY / CLASS: current-live central starting-position metric defect; inherited AdvC shortest-path
+bookkeeping/order bug.
+ROOT FILE: `CvGameCoreDLL/StartingPositionIteration.cpp`,
+`StartingPositionIteration::DistanceTable::computeDistances`.
+
+CURRENT CODE / ALGORITHM CONTRACT
+---------------------------------
+`DistanceTable::computeDistances` explicitly describes itself as:
+
+    // Plain old Dijkstra's algorithm
+
+It uses an inverse-ordered `std::priority_queue<Node>` so that the smallest queued distance is popped
+first:
+
+    bool operator<(Node const& kOther) const
+    {
+        return m_iDistance > kOther.m_iDistance;
+    }
+
+and keeps a reached/settled map because the same physical plot can occur in the queue more than once.
+The source comment says this directly:
+
+    /* Note: even if not yet reached, it may already be in q;
+       that's what the abReached[...] check above is for. */
+
+The current loop, however, writes the popped distance into the public `DistanceTable` BEFORE testing
+whether that queue entry is stale:
+
+    Node v = q.top();
+    q.pop();
+    CvPlot const& kAt = v.get();
+    setDistance(kSource, kAt, v.getDistance());
+    {
+        PlotNumTypes eAt = kAt.plotNum();
+        if (abReached.get(eAt))
+            continue;
+        abReached.set(eAt, true);
+    }
+
+The first pop of a reachable plot is the shortest path under Dijkstra's positive edge weights and is
+correctly marked reached. But any longer copy that had already been queued later reaches the top,
+executes `setDistance` FIRST, overwrites the correct settled value, and only then notices
+`abReached[eAt]` and discards itself.
+
+`setDistance` is a plain assignment for destinations:
+
+    m_distances[eSource][eDestination] = iDistance;
+
+There is no minimum check that could preserve the earlier shortest value.
+
+MINIMAL CURRENT-LIVE GRID COUNTEREXAMPLE
+----------------------------------------
+Take a normal passable land corner/patch with source S, two cardinal neighbors A and B, and diagonal
+destination D:
+
+    B -- D
+    |  / |
+    S -- A
+
+For ordinary land, `stepDist` is 9 cardinal and 12 diagonal:
+
+    if (!kTo.isWater())
+        return (bDiagonal ? 12 : 9);
+
+Queue evolution is therefore:
+
+1. Start with `S(0)`.
+2. Pop S. Queue direct `A(9)`, `B(9)` and diagonal `D(12)`.
+3. Pop A(9) before D(12). Because D is not reached yet, A queues an alternate `D(18)`.
+4. Pop B(9) before D(12). B can likewise queue another `D(18)`.
+5. Pop the direct D(12). Current code stores 12 and marks D reached. This is the correct shortest
+   path.
+6. Later pop stale D(18). Current code stores 18 first, THEN sees that D is reached and continues.
+
+The final table therefore contains 18, not 12. This does not require a rare obstacle, water frontier,
+wrapping map or special game option. It arises from an ordinary diagonal destination with a second
+cardinal route. Larger open neighborhoods can have additional stale alternatives; the exact final
+overwrite can depend on which longer copies had entered the queue, but it cannot be assumed to remain
+the first settled shortest value.
+
+The reproducer is current-live in SPI. During construction, all candidate/current starting sites are
+explicitly forced into `relevantPlots` via `sitePlotNums`, and any other workable plot with positive
+SPI yield value is also a destination:
+
+    if (yieldValues.get(eLoopPlotNum) > 0 ||
+        sitePlotNums.count(eLoopPlotNum) > 0)
+    {
+        relevantPlots.push_back(...);
+    }
+
+So D can simply be another starting/candidate site; no yield/XML edge case is needed.
+
+DOWNSTREAM GAMEPLAY CONSEQUENCE
+-------------------------------
+The corrupted table is a central SPI input rather than temporary debug state.
+
+`SpaceEvaluator` reads `DistanceTable::d` for every retained yield destination when building claim
+competition:
+
+    short iDist = kDists.d(kStartPlot, kLoopPlot) - iDistSubtr;
+    ...
+    rSum += claim_t(1, std::max<short>(1, iDist));
+
+and later directly reads the stored source/destination entry again to derive each player's claim and
+access/delay factor before adding yield to expansion-space value.
+
+More importantly, original/current starting sites are destinations too, and
+`computeRivalDistFactors` uses these same corrupted values as the path distances between starting
+sites:
+
+    aiRivalDists.push_back(m_pPathDists->d(
+        kStartPlot, *itRival->getStartingPlot()));
+
+Those factors feed ordinary per-player start-value scoring. Consequently F627 can alter both
+expansion-space ownership/access estimates and the rival-spacing component used to decide which
+starting-position solution SPI prefers.
+
+The bug generally biases a destination toward whichever stale longer queue copy is written last,
+not toward its shortest path. It is therefore not a simple uniform rescale that would cancel in
+relative comparisons.
+
+HISTORY / INHERITANCE
+---------------------
+AdvC practical 2280 (`a70e4ce3a1db01c51da7fa370a706d8784191b38`,
+"Algorithm for fairer starting positions (wip)", 2020-05-28) CREATED
+`StartingPositionIteration.cpp` and introduced `DistanceTable::computeDistances` with this exact
+ordering:
+
+    setDistance(kSource, kAt, v.getDistance());
+    if (abReached[iAt])
+        continue;
+    abReached[iAt] = true;
+
+The introduction already contained the explicit duplicate-queue comment, so duplicate entries were
+part of the intended algorithm from the start; only the placement of the table write is wrong.
+
+AdvC practical 2302 changed distance/frontier semantics but retained the ordering. Practical 3134
+refactored the reached state to `EnumMap`, again preserving `setDistance` before the guard. The later
+3392 merge likewise preserves it. SAS practical 5961 is signature/formatting cleanup only and does
+not semantically touch this loop.
+
+Current Base AdvC 1.14 still has the same `setDistance`-before-`abReached` sequence. K-Mod and Civ4CE
+do not contain the AdvC-created StartingPositionIteration subsystem. Classification is therefore an
+inherited AdvC defect, not a SAS/BtS/K-Mod/Civ4CE regression.
+
+DEDUP
+-----
+Focused whole-album and current `README_Known_Issues.md` searches for `computeDistances`, Dijkstra,
+priority-queue, reached/settled and stale-distance wording found no prior owner for this SPI shortest-
+path overwrite.
+
+The nearby Queue-025 findings are independent:
+
+- F624 / KI#946: `NormalizationTarget::isReached` switch fallthrough changes normalization-level
+  tolerance ordering.
+- F625 / KI#947: the special low-value-land water fallback writes raw `CvMap::plotDistance` units
+  into the weighted `DistanceTable` metric. F625 remains real after F627 is repaired because its
+  fallback explicitly replaces the ordinary Dijkstra result with a separate raw geometric value.
+- F626 / KI#948: unequal-team round-robin overfills completed teams and can cause partial starting-
+  plot permutation/duplicate starts.
+- F169 / KI#492: discarded full city-site evaluations are a performance issue, not path correctness.
+
+No semantic duplicate was found.
+
+REPAIR BOUNDARY
+---------------
+The narrow semantic repair is to discard already-settled queue entries BEFORE publishing their
+queue distance:
+
+    CvPlot const& kAt = v.get();
+    PlotNumTypes eAt = kAt.plotNum();
+    if (abReached.get(eAt))
+        continue;
+    abReached.set(eAt, true);
+    setDistance(kSource, kAt, v.getDistance());
+
+With the current nonnegative/positive `stepDist` costs, the first popped entry for a plot is the
+Dijkstra shortest path. Writing only that settled entry restores the intended contract without
+changing path weights, frontier heuristics, destination selection or `SpaceEvaluator` formulas.
+
+An alternative defensive `min(old,new)` write could mask the symptom for destinations, but moving
+the write behind the reached guard is the clearer algorithmic fix and avoids unnecessary stale
+writes entirely.
+
+Regression coverage should include at least:
+
+1. ordinary land S -> diagonal D returns 12 even after cardinal alternate D(18) entries are queued;
+2. several small obstacle/open-grid cases compared against a reference shortest-path calculation;
+3. inter-start distances used by `computeRivalDistFactors`, not just yield destinations;
+4. water/frontier routes to ensure only stale-entry publication changes, not the intended 4/5/9/12
+   and frontier edge costs; and
+5. F625's Ocean-Fish/omitted-land fallback separately, because fixing F627 must not be mistaken for
+   fixing that independent metric mismatch.
+
+POST-F627 CONTROLS / CONTINUATION
+--------------------------------
+The following candidates remain intentionally unpromoted:
+
+- `DistanceTable` signed-short overflow on pathological long/thin custom maps remains generic
+  mod-data robustness until a supported shipped-map path is established.
+- `currAltSites` uses `break` when a remote alternative equals the first move's taken site; this can
+  prune later remote alternatives but remains a lower-severity search-completeness concern pending a
+  stronger outcome proof.
+- `SpaceEvaluator`'s static delay-factor cache is safe under the current contract because
+  `DistanceTable::getLongDist()` is constant (`8 * 40`), making the cache threshold invariant.
+- `startingPositionValue`'s end-of-iterator `nextIndex()` divisor is safe because `AgentIterator`
+  defines end `nextIndex()` as the filtered iteration count, not the absolute player ID.
+- General wrapped-map `PlotRadiusIterator` duplicate visits remain reserved for Queue 167 rather than
+  being consumed as a Queue-025 root.
+
+CURRENT LEDGER / RESUME STONE
+-----------------------------
+Queue 025 `CvGameCoreDLL/StartingPositionIteration.cpp` — OPEN (priority-next-WIP).
+F624 / provisional KI#946 — confirmed inherited AdvC normalization-level tolerance fallthrough.
+F625 / provisional KI#947 — confirmed inherited AdvC water-fallback distance metric mismatch.
+F626 / provisional KI#948 — confirmed inherited AdvC unequal-team round-robin/cardinality defect.
+F627 / provisional KI#949 — CONFIRMED here: stale duplicate Dijkstra queue entries overwrite already-
+settled shortest distances because `setDistance` precedes the reached guard.
+F628 / provisional KI#950 — UNUSED next root ID.
+
+Exact continuation:
+C031-WIP454 physical -> Queue 025 OPEN -> exclude F624/F625/F626/F627 -> continue `SpaceEvaluator`,
+solution/double-move and normalization-target producer/consumer invariants -> revisit remote-site
+`break` only if a concrete gameplay/search failure survives -> history/dedup every survivor -> freeze
+next physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP454
+===============================================================================
+
+
+===============================================================================
+C031-WIP455 — QUEUE 025 SPI SCENARIO OWNERSHIP + POST-F627 CLOSURE PASS
+===============================================================================
+
+PHYSICAL CONTINUATION
+---------------------
+This checkpoint continues directly from C031-WIP454. Queue 025
+`CvGameCoreDLL/StartingPositionIteration.cpp` remains OPEN. F624-F627 remain confirmed and
+excluded from rediscovery. F628 / provisional KI#950 was unused at the start of this tranche.
+
+The current SAS snapshot, its local reachable-history mirror, Base AdvC 1.14 and the local Civ4CE
+reference scenario files were used. No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified.
+
+POST-F627 NEGATIVE CONTROLS / CLOSED LEADS
+------------------------------------------
+Several remaining SPI producer/consumer and lifecycle suspicions were reduced before spending a new
+finding number:
+
+1. `CvPlot::isPotentialCityWork` does not admit geometrically unreachable water yield into SPI's
+   expansion-space table. `updatePotentialCityWork()` only marks a tile if at least one plot in its
+   city radius can `canEverFound()`, and `CitySiteEvaluator::evaluateWorkablePlot` again searches
+   city-radius plots that the representative player can found. The isolated-water-resource lead is
+   therefore closed.
+
+2. The narrower WorldBuilder `RandomStartLocation` lead is also below finding threshold. Practical
+   2708's contract is to skip the direct assignment of a pre-marked `StartingPlot` for such a player
+   and run the randomized `findStartingPlot` path instead; it does not promise that the randomized
+   search can never coincidentally choose a marked tile. Current SPI preserves the player's random-WB
+   flag when it calls `findStartingPlot`.
+
+3. `CvArea::getNumStartingPlots()` stays synchronized with SPI's speculative and committed moves.
+   `CvPlayer::setStartingPlot` decrements the old area's starting-plot count and increments the new
+   area's count, so `teamValue` is not reading a stale area cardinality merely because SPI has moved
+   sites.
+
+4. The broader scenario/fixed-start team-permutation suspicion remains closed. The AdvC practical
+   2708 contract is preservation of the physical set of scenario `StartingPlot` tiles, not permanent
+   ownership of each marked tile by the player temporarily assigned there. Team permutation keeps the
+   physical set.
+
+5. `m_rMedianLandYieldVal` is an unguarded divisor downstream, but no bundled map-script path was
+   established where at least half of potential-work land evaluates to exactly zero. Keep as
+   custom-map/mod-data robustness only.
+
+6. `currAltSites` still has a real search-pruning oddity: when adding the top strict-remote sites it
+   does `break` rather than `continue` if one entry equals the first move's `eTakenSite`, so later
+   strict-remote candidates are discarded for a second move. History shows this shape is inherited.
+   It remains below numbered-finding threshold because the demonstrated consequence is heuristic
+   search incompleteness, not a hard state/correctness failure.
+
+7. `teamValue`'s nested closeness loop repeats a team's full assigned-site vector once per member of
+   that team already in the candidate area. Uniform repetition does not change friendly min/mean; with
+   several rival teams it implicitly weights rivals by same-area presence. The shape is original to
+   AdvC team support, and no contrary contract was found. Preserve as opaque heuristic, not a bug.
+
+8. The exact `>= getLongDist()` versus `> getLongDist()` remote-step boundary remains a tiny search
+   inconsistency only.
+
+9. `SpaceEvaluator`'s process-static delay cache is safe under the current contract because
+   `DistanceTable::getLongDist()` is invariant at `8 * 40`, hence the cached threshold is always 400.
+
+10. `startingPositionValue()` dividing by end-of-iteration `it.nextIndex()` is safe: the iterator
+    contract makes that value the filtered sequence length at end, not the absolute player slot ID.
+
+11. Several pointer members (`m_pYieldValues`, `m_pYieldsPerArea`, `m_pPotentialSites`) become dangling
+    when constructor-local precomputation objects leave scope, but all public post-construction paths
+    avoid them. This is latent source debt rather than a live use-after-scope.
+
+12. The constructor's early "Revert any changes and bail" branch has a genuine scenario-robustness
+    flaw: on a partially fixed scenario, if `findStartingPlot` fails for a missing player, it clears
+    *all* alive starting plots, including pre-existing marked scenario starts, instead of only sites
+    generated by SPI. The caller does not reload those authored assignments. A concrete supported
+    custom-WB failure can therefore destroy fixed state. However, no bundled scenario was established
+    to make `findStartingPlot` return NULL in this branch, so preserve this as scenario robustness/source
+    debt rather than consuming F628.
+
+F628 / PROVISIONAL KI#950 — CONFIRMED INHERITED ADVC SCENARIO NORMALIZATION-TARGET LEAK
+---------------------------------------------------------------------------------------
+SEVERITY / CLASS: current-live one-time scenario memory/resource leak; inherited AdvC ownership bug.
+ROOT FILES:
+- `CvGameCoreDLL/StartingPositionIteration.cpp` (`doIterations`, `createNormalizationTarget`)
+- `CvGameCoreDLL/CvGame.cpp` (`assignStartingPlots`, `setInitialItems`)
+
+ROOT / OWNERSHIP CONTRACT
+-------------------------
+`StartingPositionIteration::createNormalizationTarget()` explicitly allocates a target for the caller:
+
+    // To be (safe-)deleted by caller!
+    NormalizationTarget* createNormalizationTarget() const;
+
+and the implementation performs a heap allocation:
+
+    if (!m_bNormalizationTargetReady)
+        return NULL;
+    NormalizationTarget& kResult = *new NormalizationTarget(
+            *createSiteEvaluator(true), m_currSolutionAttribs);
+    return &kResult;
+
+The target itself owns another heap allocation: `NormalizationTarget::~NormalizationTarget()` deletes
+its `m_pEval` `CitySiteEvaluator`.
+
+The ordinary top-level owner is `CvGame::setInitialItems()`:
+
+    NormalizationTarget* pNormalizationTarget = assignStartingPlots();
+    normalizeStartingPlots(pNormalizationTarget);
+    SAFE_DELETE(pNormalizationTarget);
+
+So `assignStartingPlots()` must either return the allocated target to this owner or delete it itself.
+
+SCENARIO PATH LOSES THE ONLY POINTER
+------------------------------------
+Current `CvGame::assignStartingPlots()` constructs SPI and obtains the target:
+
+    StartingPositionIteration spi;
+    pNormalizationTarget = spi.createNormalizationTarget();
+
+It deliberately uses that pointer before normalization when sorting/reassigning starts by handicap:
+
+    applyStartingLocHandicaps(pNormalizationTarget);
+
+but then returns:
+
+    return (bScenario ? NULL : pNormalizationTarget);
+
+Therefore, whenever a scenario SPI run has produced a non-NULL target:
+
+1. `new NormalizationTarget(...)` allocates the target;
+2. its constructor owns a newly allocated normalization `CitySiteEvaluator`;
+3. `applyStartingLocHandicaps` reads the target but does not take ownership or delete it;
+4. the scenario return expression discards the sole `pNormalizationTarget` pointer and returns NULL;
+5. `setInitialItems()` receives NULL, so its `SAFE_DELETE` cannot free either allocation.
+
+This is a true leak, not delayed ownership or an object retained for later scenario normalization.
+The scenario path intentionally returns NULL because scenarios are not supposed to receive the later
+normalization-target phase; the allocation nevertheless already happened and has no remaining owner.
+
+WHY A SCENARIO TARGET CAN NOW EXIST
+-----------------------------------
+The history removes any ambiguity about whether scenario targets are supposed to remain NULL.
+
+Before AdvC team/scenario starting-site work, practical 2685 explicitly made readiness conditional:
+
+    m_bNormalizationTargetReady = !m_bScenario;
+
+so `createNormalizationTarget()` returned NULL in scenarios and there was no target to leak.
+
+AdvC practical 2708 (`9a623ad895`, "Let SPI handle team games, plus other changes to starting sites")
+changed that exact line to:
+
+    m_bNormalizationTargetReady = true;
+
+while the same practical moved SPI/target creation into the shared scenario-capable
+`CvGame::assignStartingPlots()` flow and added the final:
+
+    return (bScenario ? NULL : pNormalizationTarget);
+
+The reason for making the target available in scenarios is visible in the new caller ordering:
+`applyStartingLocHandicaps(pNormalizationTarget)` can use SPI's richer physical-site values before the
+function suppresses the target from the later normalization phase. What practical 2708 omitted is the
+corresponding ownership cleanup after that final scenario use.
+
+CURRENT-LIVE / BUNDLED-CONTENT ACTIVATION
+-----------------------------------------
+This is not limited to malformed XML or an external mod-mod. AdvC/SAS explicitly support legacy WB
+scenario maps and even special-case them in current `TrueStarts.cpp`; `Africa.Civ4WorldBuilderSave`
+is named there directly for latitude handling.
+
+The local Civ4CE/base-game reference copy of that supported map has:
+
+- grid 54 x 66 = 3,564 plots, well below current `SPI_PLOT_LIMIT = 12,000`;
+- 18 player slots with `LeaderType=NONE` / `CivType=NONE` and distinct one-player teams;
+- 9 physical `StartingPlot` markers.
+
+That is exactly the partial-start scenario class practical 2708 describes in the SPI constructor:
+
+    "Respect the per-plot StartingPlot flags in scenarios.
+     But there can be fewer such plots than players. We'll
+     deal with any players that don't have a starting site yet."
+
+When such a scenario is started with more marked-site-eligible players than marked plots and SPI
+successfully completes the missing starts, `doIterations()` marks the normalization target ready and
+`createNormalizationTarget()` allocates it. The leak then follows deterministically from the scenario
+return expression above. The allocation is only once per game/scenario initialization, so this is not
+a runaway per-turn leak, but it is current live and unnecessary.
+
+The supported-content link is especially strong because current Base AdvC 1.14 and current SAS both
+explicitly recognize the filename `Africa.Civ4WorldBuilderSave` in `TrueStarts.cpp`; this is not an
+unknown third-party scenario format inferred only from Civ4CE data.
+
+HISTORY / INHERITANCE
+---------------------
+The ownership mismatch is introduced by the AdvC practical-2708 scenario/team expansion:
+
+- practical 2685: scenario runs explicitly leave `m_bNormalizationTargetReady` false;
+- practical 2708: readiness becomes unconditional true, the target is consumed by the new shared
+  handicap-reassignment flow, and `assignStartingPlots` simultaneously suppresses the pointer on its
+  scenario return without deleting it.
+
+Current Base AdvC 1.14 retains both:
+
+    m_bNormalizationTargetReady = true;
+
+and:
+
+    return (bScenario ? NULL : pNormalizationTarget);
+
+unchanged. Current SAS inherits the same ownership behavior. K-Mod/Civ4CE do not contain the AdvC-created
+SPI `NormalizationTarget` subsystem in this form. Classification is therefore inherited AdvC, not a SAS
+regression.
+
+DEDUP
+-----
+Focused whole-album and current Known-Issues searches for scenario `NormalizationTarget` ownership,
+scenario target leaks, `createNormalizationTarget`, and the conditional scenario return found no prior
+owner. F624 concerns the target's normalization-level tolerance fallthrough, not target lifetime.
+F626 concerns team-site cardinality/partial permutation. The constructor rollback robustness note above
+is also independent: F628 requires a *successful* scenario SPI run that creates a target, not the early
+failure path.
+
+REPAIR BOUNDARY
+---------------
+The narrow repair is to preserve the scenario target through its last intended consumer, then delete it
+instead of discarding the pointer. For example, after `applyStartingLocHandicaps`:
+
+    if (bScenario)
+    {
+        SAFE_DELETE(pNormalizationTarget);
+        return NULL;
+    }
+    return pNormalizationTarget;
+
+or equivalent ownership-safe restructuring.
+
+Do not simply restore `m_bNormalizationTargetReady = !m_bScenario`: practical 2708 deliberately made
+scenario targets available so `applyStartingLocHandicaps` can use SPI's start values. The repair should
+retain that behavior and fix only ownership after the last scenario use.
+
+Regression coverage should include:
+
+1. ordinary non-scenario game: target still returned to `setInitialItems` and deleted after normalizing;
+2. all-starts-fixed scenario: target stays NULL as before;
+3. partial-start scenario where SPI completes: target is usable by `applyStartingLocHandicaps`, then
+   destroyed exactly once before returning NULL;
+4. debug/SPI-log branch: preserve its explicit early return semantics if that mode intentionally hands
+   ownership to the outer caller.
+
+POST-F628 CURSOR
+----------------
+Queue 025 remains OPEN. F629 / provisional KI#951 is UNUSED.
+
+The next pass should continue the remaining remote-site ranking/search semantics, then do a final
+function-by-function reconciliation against F624-F628 and prior album owners. Do not promote the
+`m_remoteSitesByAreaSize` weighting merely from its name: current ranking uses
+`areaTiles * 100 + foundValue`, and history must prove whether area size was intended as a strict
+primary key or merely one weighted component. Likewise keep the partial-scenario rollback as robustness
+unless bundled/current activation is established.
+
+CURRENT LEDGER / RESUME STONE
+-----------------------------
+Queue 025 `CvGameCoreDLL/StartingPositionIteration.cpp` — OPEN.
+F624 / provisional KI#946 — confirmed inherited AdvC normalization-level tolerance fallthrough.
+F625 / provisional KI#947 — confirmed inherited AdvC water-fallback distance metric mismatch.
+F626 / provisional KI#948 — confirmed inherited AdvC unequal-team round-robin/cardinality defect.
+F627 / provisional KI#949 — confirmed inherited AdvC stale-Dijkstra overwrite defect.
+F628 / provisional KI#950 — CONFIRMED here: successful scenario SPI target is consumed for handicap
+reassignment, then the only pointer is discarded by `return (bScenario ? NULL : pNormalizationTarget)`,
+leaking the `NormalizationTarget` and its owned `CitySiteEvaluator`.
+F629 / provisional KI#951 — UNUSED next root ID.
+
+Exact continuation:
+C031-WIP455 physical -> Queue 025 OPEN -> exclude F624-F628 -> finish remote-site ranking/search and
+remaining lifecycle/normalization invariants -> function-by-function reconciliation -> close Queue 025
+if no independent current-live root survives -> freeze next physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP455
+===============================================================================
+
+===============================================================================
+C031-WIP456 — QUEUE 025 CONTINUATION / F629 CONFIRMED
+===============================================================================
+Physical parent: C031-WIP455
+Audit target: `CvGameCoreDLL/StartingPositionIteration.cpp`
+Gameplay source status: UNTOUCHED.
+
+POST-WIP455 NEGATIVE CONTROLS / CLOSURE
+----------------------------------------
+1. The `SpaceEvaluator` near-start exclusion
+
+       if (kMap.plotDistance(&kStartPlot, &kLoopPlot) <= 2)
+           // Accounted for by found values
+
+   does NOT accidentally remove the four 5x5 outer corners that are outside a Civ4 21-tile city
+   radius. Current `CvMap::plotDistance` uses the AdvC octile approximation; at delta (2,2) it returns
+   3, not 2. Thus the four corners survive this exclusion. This candidate is CLOSED.
+
+2. The `isPotentialCityWork` water-reachability concern remains CLOSED: the cached predicate requires
+   a geometrically legal city site in the tile's workable radius, so isolated water yield with no
+   possible land city does not enter the SPI expansion-space destination set through that predicate.
+
+3. The narrower WorldBuilder `RandomStartLocation` concern remains below finding threshold. The
+   practical-2708 contract is to avoid directly assigning a pre-marked scenario site to that player
+   and instead run the randomized starting-plot finder; it does not promise that the randomized path
+   can never coincidentally select a marked plot.
+
+F629 / PROVISIONAL KI#951 — CONFIRMED INHERITED ADVC TEAM-SITE FALLBACK MISCLASSIFIES COMPLETED RIVAL SITES AS "UNASSIGNED"
+------------------------------------------------------------------------------------------------------------------------
+SEVERITY / CLASS: current-live team-start placement defect; deterministic greedy-ranking corruption;
+inherited AdvC practical-2708 implementation/contract mismatch.
+ROOT FILE: `CvGameCoreDLL/StartingPositionIteration.cpp`, `StartingPositionIteration::teamValue`.
+
+LOCAL CONTRACT AND CONTRADICTION
+--------------------------------
+When `teamValue` evaluates the first site of a team in an area, it first builds rival-closeness data.
+The code explicitly excludes rival teams that have already received all their members:
+
+    if (!bFriendly &&
+        /* Ignore closeness to sites of rivals that have already
+           placed all there members */
+        m_sitesPerTeam[i].size() == GET_TEAM(eLoopTeam).getNumMembers())
+    {
+        continue;
+    }
+
+That exclusion is semantically important: a completed rival cannot later add another teammate near the
+candidate, so it should not influence the "leave room for possible future rival members" term.
+
+If there are no friendly sites and no non-completed rival samples, the immediately following fallback
+states a second, equally explicit contract:
+
+    /* When placing the first site of a team in an area,
+       try to keep a distance from rival sites in case that
+       those rivals will add more members to the area.
+       When there are no rival sites either, try to maximize
+       the distance from the unassigned sites, if any. */
+
+But the implementation does not iterate the unassigned-site set used by `assignSitesToTeams`. It loops
+through every alive player's physical starting site:
+
+    for (PlayerIter<CIV_ALIVE> itOther; itOther.hasNext(); ++itOther)
+    {
+        if (itOther->getID() != eSitePlayer)
+        {
+            short iCloseness = m_pPathDists->getLongDist() -
+                    m_pPathDists->d(kSite, *itOther->getStartingPlot());
+            if (iCloseness > 0)
+                arUnassignedCloseness.push_back(iCloseness);
+        }
+    }
+
+Player IDs are merely placeholders for physical sites in this phase. Players/sites already present in
+`m_sitesPerTeam` are ASSIGNED, yet this fallback adds them to `arUnassignedCloseness` anyway. In the
+specific state that activates the fallback, this means sites of completed rivals that the preceding
+loop deliberately excluded can be immediately reintroduced under the opposite label "unassigned."
+
+CURRENT-LIVE SUPPORTED 2+1+1+1 REPRODUCER
+-----------------------------------------
+A 5-player game with team sizes 2+1+1+1 stays inside SPI's team-game support gate:
+
+    SQR(5) = 25 <= 36 * 4 = 144.
+
+It also avoids F626's unequal-team round-robin overfill root. `assignSitesToTeams` gives the size-2 team
+its first two sites, advances after that team is complete, then each singleton receives one site. The
+loop never wraps back to the completed size-2 team before the five sites are exhausted.
+
+Now put all five candidate starts on one ordinary, sufficiently large, non-wrapping-equivalent landmass
+so the normal SPI weighted land metric is 9 per cardinal step and 12 per diagonal step. One concrete
+layout is:
+
+    completed rival A1 = (0, 0)
+    completed rival A2 = (0,10)
+    remaining candidate X = (0,20)
+    remaining candidate Y = (0,30)
+    remaining candidate Z = (5,45)
+
+When the next singleton team is choosing its first site, A1/A2 belong to a rival team that has already
+placed all two members. The explicit completed-rival branch therefore excludes A1/A2, leaving
+`arRivalCloseness` empty and activating the alleged "unassigned sites" fallback.
+
+With `DistanceTable::getLongDist() = 320`, relevant shortest weighted land distances are:
+
+    A1-A2 =  90
+    A1-X  = 180        A2-X =  90
+    A1-Y  = 270        A2-Y = 180
+    A1-Z  = 420        A2-Z = 330
+    X-Y   =  90
+    X-Z   = 240
+    Y-Z   = 150
+
+and closeness is `max(0, 320 - distance)`.
+
+INTENDED FALLBACK — ONLY THE OTHER UNASSIGNED SITES
+----------------------------------------------------
+For X, compare only Y/Z: closeness {230,80}; vicinity penalty about -118.
+For Y, compare only X/Z: closeness {230,170}; vicinity penalty -185.
+For Z, compare only X/Y: closeness {80,170}; vicinity penalty about -103.
+
+So the intended "maximize distance from the unassigned sites" rule chooses Z.
+
+CURRENT FALLBACK — COMPLETED A1/A2 ARE ADDED BACK
+--------------------------------------------------
+For X, the fallback samples A1/A2/Y/Z: {140,230,230,80}; penalty about -125.
+For Y, it samples A1/A2/X/Z: {50,140,230,170}; penalty about -99.
+For Z, A1/A2 are beyond `getLongDist` and contribute no positive closeness, leaving {80,170}; penalty
+about -103.
+
+The current code therefore chooses Y instead of Z. This is a deterministic greedy ranking inversion
+caused solely by sites that the function has already classified as completed-rival/assigned being fed
+back into the vector documented as "unassigned."
+
+All sites are in the same area, so the dominant `iRemainingSiteWeight * iRemainingAreaSites` and the
+`iAreaSites` tiebreaker are identical for X/Y/Z. At this point five area sites exist, two have been
+assigned and three remain, so the `iRemainingAreaSites == 1` final-site balancing branch is inactive.
+The vicinity term above therefore decides this comparison directly.
+
+The exact half-value rounding convention for the approximate -118/-103 displays is irrelevant to the
+inversion: intended Z remains better than X/Y by a wide margin, while current Y is better than Z.
+
+WHY THIS IS DISTINCT FROM HEURISTIC DISAGREEMENT
+------------------------------------------------
+This finding does not claim that AdvC should use a different notion of team clustering. Both intended
+rules are already stated by the source itself:
+
+1. completed rival teams are to be ignored by this closeness term;
+2. when no relevant rival sample remains, only unassigned sites are to be considered.
+
+The bug is that the implementation of rule 2 does not know which placeholders remain unassigned and
+therefore violates both local contracts at once. Moving already-completed rival sites while holding
+unassigned-site geometry fixed can change the fallback result, even though the source says those rivals
+are to be ignored.
+
+HISTORY / INHERITANCE
+---------------------
+AdvC practical 2708 (`9a623ad895c73c2ce0fe4d5f5cf668ab04848307`, "Let SPI handle team games, plus
+other changes to starting sites") introduced `assignSitesToTeams`, `teamValue`, the completed-rival
+exclusion, the "unassigned sites" comment, and the broad `PlayerIter<CIV_ALIVE>` fallback together.
+Thus the contradiction was present from the first team-support implementation rather than being a SAS
+regression.
+
+Later history contains no semantic correction making the fallback truly unassigned-only. Practical
+2723 only fixes an assert typo around this area; later appearances are refactors/merges rather than a
+contract rewrite. Current Base AdvC 1.14 retains the same completed-rival exclusion and the same broad
+alive-player fallback unchanged. Current SAS likewise inherits it; the recent SAS semantic change in
+this file is the separate found-value `short` -> `int` widening, plus broad formatting/refactor churn.
+
+DEDUP
+-----
+Focused current Known-Issues and whole-album searches found no existing owner for this exact
+completed-rival/unassigned fallback root.
+
+- F626 is the unequal-team round-robin/cardinality defect. The 2+1+1+1 reproducer above is chosen
+  specifically so F626 does not activate.
+- F627 corrupts `DistanceTable` shortest distances through stale Dijkstra queue overwrites. F629
+  survives with ideal/correct weighted distances as shown above.
+- F624, F625 and F628 concern normalization tolerances, water fallback units, and scenario target
+  ownership respectively.
+- Existing older team-start findings such as sparse team-ID/BtS fallback issues do not own this
+  AdvC-created `teamValue` fallback misclassification.
+
+REPAIR BOUNDARY
+---------------
+The narrow repair is to make the fallback iterate only the same currently available placeholder sites
+that `assignSitesToTeams` calls unassigned, excluding `eSitePlayer` itself.
+
+A clean structural repair is to pass `aeAvailableSites` (or an equivalent const view/set of currently
+unassigned placeholders) into `teamValue`, then build `arUnassignedCloseness` only from that set.
+Alternatively, `teamValue` could derive an assigned-placeholder set from `m_sitesPerTeam` and skip those
+IDs, but passing the authoritative available set avoids reconstructing state and makes the local comment
+contract explicit.
+
+Do NOT remove the completed-rival exclusion, change the broader team-clustering weights, or retune the
+vicinity formula as part of this root fix. The defect is membership of the fallback sample, not the
+chosen min/mean heuristic.
+
+Regression coverage:
+1. supported 2+1+1+1 team game after the size-2 team completes;
+2. fallback sample contains exactly the other still-available placeholder sites;
+3. moving completed-rival physical sites while holding available-site geometry constant cannot alter
+   this fallback's ranking;
+4. ordinary cases with an unfinished rival keep using `arRivalCloseness` exactly as before;
+5. separately retain F626 coverage for 5+1 / unequal-team completed-team skipping.
+
+POST-F629 CURSOR
+----------------
+Queue 025 remains OPEN. F630 / provisional KI#952 is UNUSED.
+
+Continue a closure-oriented function-by-function pass over `PotentialSites`, `SpaceEvaluator`, `Step`,
+normalization and remaining history strata. Preserve the low-grade `currAltSites` taken-site `break`,
+the exact remote-threshold `>=`/`>` mismatch, `teamValue`'s same-area rival repetition, short-distance
+pathological overflow, and wrapped-radius duplicate visitation as controls unless a stronger current-live
+contract emerges. The wrapped-radius issue remains best rooted in the later PlotRadiusIterator queue.
+
+CURRENT LEDGER / RESUME STONE
+-----------------------------
+Queue 025 `CvGameCoreDLL/StartingPositionIteration.cpp` — OPEN.
+F624 / provisional KI#946 — confirmed inherited AdvC normalization-level tolerance fallthrough.
+F625 / provisional KI#947 — confirmed inherited AdvC water-fallback distance metric mismatch.
+F626 / provisional KI#948 — confirmed inherited AdvC unequal-team round-robin/cardinality defect.
+F627 / provisional KI#949 — confirmed inherited AdvC stale-Dijkstra overwrite defect.
+F628 / provisional KI#950 — confirmed inherited AdvC scenario normalization-target ownership leak.
+F629 / provisional KI#951 — CONFIRMED here: `teamValue`'s fallback documented as "unassigned sites"
+iterates all alive player placeholders and therefore reintroduces assigned/completed rival sites that
+its immediately preceding branch explicitly excluded, producing live team-site ranking inversions.
+F630 / provisional KI#952 — UNUSED next root ID.
+
+Exact continuation:
+C031-WIP456 physical -> Queue 025 OPEN -> exclude F624-F629 -> finish remaining SPI state/producer-
+consumer/history reconciliation -> close Queue 025 if no independent current-live root survives ->
+freeze next physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP456
+===============================================================================
+
+===============================================================================
+C031-WIP457 — QUEUE 025 CLOSURE / FINAL RECONCILIATION
+===============================================================================
+Physical parent: C031-WIP456
+Audit target: `CvGameCoreDLL/StartingPositionIteration.cpp`
+Gameplay source status: UNTOUCHED.
+
+FINAL NEGATIVE-CONTROL RECONCILIATION
+-------------------------------------
+This closure pass completed the remaining constructor / PotentialSites / DistanceTable /
+SpaceEvaluator / Step / normalization / team-assignment producer-consumer checks and the
+full semantic-history sweep of every commit touching `StartingPositionIteration.cpp`.
+
+The following late candidates were explicitly investigated and CLOSED below finding threshold:
+
+1. MAP-SCRIPT RESTRICTED-AREA UNION — INTENTIONAL SHIPPED CONTRACT
+   `m_bRestrictedAreas` causes `PotentialSites` to retain the union of areas occupied by the
+   initial map-script-selected sites rather than preserving a separate per-player area mask.
+   This initially looked capable of moving a player into another player's script-selected area.
+   Bundled script evidence closes the concern:
+   - `Water.py`, `Fantasy_Realm.py`, and `Lakes.py` simply force every player to the same biggest
+     land area.
+   - `PerfectMongoose.py` explicitly documents that it supplies one area per player but accepts
+     that SPI may move players between those starting areas; only the broader Old-World/New-World
+     split is intended to survive SPI. The shared union therefore matches the shipped contract.
+
+2. TEAM REASSIGNMENT VS. NORMALIZATION-TARGET ATTRIBUTES — PHYSICAL-PLOT KEYING IS CORRECT
+   `assignSitesToTeams()` computes a later permutation of the physical sites, while
+   `m_currSolutionAttribs` was evaluated before that permutation. This looked at first like the
+   subsequent `NormalizationTarget` might key a newly assigned plot with another plot's old
+   attributes. The exact caller ordering disproves that: `CvGame::assignStartingPlots()` calls
+   `spi.createNormalizationTarget()` before it applies `spi.getTeamSite()` to actual players.
+   `NormalizationTarget` therefore records the pre-team physical plot -> breakdown mapping while
+   it is still valid. Later player permutations look up by physical plot, which deliberately
+   preserves the correct site data through team and handicap reassignment.
+
+3. STEP ACCEPT / ROLLBACK AND SOLUTION-ATTRIBUTE SYNCHRONIZATION — CURRENT CODE SYMMETRIC
+   `Step::take()` applies every requested move; rejected steps restore the complete original
+   player-position snapshot via `takeBack()`. Accepted steps retain the physical moves and copy the
+   full `SolutionAttributes` object. The old pre-practical-3183 manual-copy path that could omit
+   members is no longer current.
+
+4. `SpaceEvaluator` DELAY-CACHE INDEXING — BOUNDED
+   The cache is sized to `m_iDistThresh`; each consumer first subtracts `m_iDistSubtr` from a raw
+   distance already constrained to the threshold. Thus the effective `iDist` used as the cache
+   index remains below the vector size. No current out-of-bounds path was established.
+
+5. `SpaceEvaluator` EXCLUSION OF PLOTS WITHIN ANY STARTING BFC — DELIBERATE ACCOUNTING SPLIT
+   Those tiles are intentionally omitted from expansion-space claims because their value is already
+   represented by the city-site found-value component. The earlier geometric concern about the four
+   5x5 outer corners is also closed: AdvC `CvMap::plotDistance(2,2)` is 3, not 2, so those non-BFC
+   corners are not accidentally suppressed by the `<= 2` check.
+
+6. OCC / REPRESENTATIVE-PLAYER CITY-SITE EVALUATOR CONCERN — NO CURRENT SETUP CONTRADICTION
+   Before initial cities exist, the one-city-challenge limit does not invalidate first-city founding
+   evaluation. No supported setup was found where choosing the least-tech representative player makes
+   all viable starting sites disappear or creates a current-live invalid state.
+
+7. WORLD-BUILDER `RandomStartLocation` — CONTRACT PRESERVED
+   Practical 2708's contract is to avoid directly assigning one of the pre-marked scenario starts and
+   instead invoke the randomized `findStartingPlot` path. It does not guarantee that randomized search
+   can never coincidentally select a tile that was also marked. Current code preserves the flag/path.
+
+8. LOW-GRADE HEURISTIC / PATHOLOGICAL CONTROLS — NOT PROMOTED
+   The previously recorded `currAltSites` taken-site `break`, exact remote-threshold `>=`/`>` mismatch,
+   same-area teamValue repetition, remote-site area-size/found-value weighting, and pathological short
+   distance-overflow possibilities remain below the album's independent current-live finding threshold.
+   General wrapped-map duplicate visitation remains reserved for Queue 167 `PlotRadiusIterator.cpp`,
+   which owns the iterator-level root rather than SPI.
+
+FULL HISTORY SWEEP
+------------------
+Every recorded semantic stratum touching `StartingPositionIteration.cpp` was reconciled, including the
+initial WIP series and later corrections/tuning/refactors: practical 2280, 2284, 2302, 2305, 2322,
+2337, 2354, 2355, 2382, 2394, 2402, 2404, 2431, 2441, 2446, 2503, 2535, 2562, 2567, 2571, 2595,
+2617, 2685, 2698, 2708, 2723, 2998, 3029, 3109, 3134, 3158, 3183, 3208, 3209, 3234, 3392,
+3605, 3880 and 3898, plus current SAS semantic work (notably the found-value short->int pipeline)
+and later formatting/refactor churn.
+
+No additional one-line regression or producer/consumer mismatch survives independently of F624-F629.
+In particular, practical 2322 repairs an earlier distance-variable mistake; 2394's rival-volatility
+change is immediately amended by 2402; 2567 establishes safe pointer initialization for early-return
+construction; 2617 is an adjacency-iteration refactor; 3183 replaces the older manual
+`SolutionAttributes` copy with whole-object assignment; and 3605's water-yield destination filtering is
+coherent with the later water-distance path (apart from the separately confirmed F625 fallback-unit root).
+
+QUEUE 025 — CLOSED
+------------------
+Queue 025 `CvGameCoreDLL/StartingPositionIteration.cpp` is COMPLETE.
+
+Confirmed independent roots owned by this queue:
+
+F624 / provisional KI#946 — inherited AdvC normalization-level tolerance switch fallthrough.
+F625 / provisional KI#947 — inherited AdvC water fallback mixes raw plot-distance units with SPI
+                                weighted path-distance units.
+F626 / provisional KI#948 — inherited AdvC unequal-team round-robin can revisit/overfill a completed
+                                team and violate team/site cardinality.
+F627 / provisional KI#949 — inherited AdvC Dijkstra destination distances can be overwritten by stale
+                                later priority-queue entries because `setDistance` precedes the reached check.
+F628 / provisional KI#950 — inherited AdvC partial-scenario normalization-target allocation is leaked
+                                after its scenario-only handicap consumer because the caller returns NULL.
+F629 / provisional KI#951 — inherited AdvC `teamValue` fallback documented as using unassigned sites
+                                iterates all alive placeholders, reintroducing already-assigned/completed
+                                rival sites and causing deterministic team-site ranking inversions.
+
+F630 / provisional KI#952 remains UNUSED.
+
+No gameplay source file was modified during Queue 025. The only physical change is this durable audit
+checkpoint.
+
+NEXT QUEUE
+----------
+The priority-next-WIP override that selected Queue 025 has now been consumed. Resume ordinary queue
+order at the still-PENDING Queue 024 `CvGameCoreDLL/CyCity.cpp`.
+
+Preserve Queue 167 `PlotRadiusIterator.cpp` as the owner/candidate location for the wrapped-map radius
+iterator duplicate-visitation root; do not duplicate it into Queue 024 or retroactively into Queue 025.
+
+Exact continuation stone:
+C031-WIP457 physical -> Queue 025 COMPLETE -> F624-F629 confirmed -> F630/KI#952 UNUSED ->
+Queue 024 `CvGameCoreDLL/CyCity.cpp` OPEN next -> establish current source / lineage / SAS deltas ->
+perform deep method-by-method audit under existing dedup and source-ownership rules -> freeze next
+physical checkpoint regardless of finding count.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP457
+===============================================================================
+
+===============================================================================
+C031-WIP458 — QUEUE 024 CyCity.cpp — F630 / KI#952 CONFIRMED
+===============================================================================
+Physical parent: C031-WIP457
+Audit target: `CvGameCoreDLL/CyCity.cpp`
+Gameplay source status: UNTOUCHED.
+
+F630 / provisional KI#952 — CONFIRMED — INHERITED ADVCIV PYTHON-WRAPPER SEMANTIC REGRESSION
+------------------------------------------------------------------------------------------------
+
+TITLE
+-----
+CyCity.AI_cityValue forwards AdvCiv's sign-flipped AI_splitEmpireValue, while the shipped colony
+advisor still uses K-Mod's old `< 0` city-value test, reversing colony-advice polarity.
+
+CURRENT LIVE CHAIN
+------------------
+The current native function is explicitly sign-flipped:
+
+    // CvCityAI.cpp
+    int CvCityAI::AI_splitEmpireValue() const
+    {
+        ...
+        int iValue = ...; // city output/value minus colony/maintenance costs
+        ...
+        iValue -= iCosts;
+        return -iValue; // advc.ctr: Sign flipped to match the new function name
+    }
+
+Current native empire-splitting code consumes that new polarity consistently:
+
+    // CvPlayerAI.cpp
+    mapAreaValues[pLoopCity->getArea().getID()] += pLoopCity->AI_splitEmpireValue();
+    ...
+    // advc.ctr: First condition inverted to match new semantics of AI_splitEmpireValue
+    if (it->second <= 0 && !bForce)
+        continue;
+
+So under current semantics:
+- positive `AI_splitEmpireValue` means splitting that area is attractive;
+- negative means the city/area is valuable enough that splitting is unattractive.
+
+But the public Python wrapper retained its old K-Mod name while forwarding the new, opposite-sign
+native function:
+
+    // CyCity.cpp
+    int CyCity::AI_cityValue()
+    {
+        return m_pCity ? m_pCity->AI_splitEmpireValue() : -1;
+    }
+
+And current shipped `Assets/Python/CvAdvisorUtils.py` still uses the original K-Mod predicate:
+
+    elif (gc.getPlayer(iPlayer).canSplitEmpire() and
+          gc.getPlayer(iPlayer).canSplitArea(pCity.area().getID()) and
+          pCity.AI_cityValue() < 0):
+        ... TXT_KEY_POPUP_COLONY_DEMAND ...
+
+That callback is live: `CvEventManager.onCityDoTurn` calls `CvAdvisorUtils.cityAdvise(pCity,
+iPlayer)` for ordinary city turns. The surrounding gates merely require the human advisor-popup
+option, a non-network game, the periodic city-advice turn, a city old enough to advise, no current
+liberation target, and a splittable empire/area.
+
+POLARITY PROOF
+--------------
+K-Mod's original `CvCityAI::AI_cityValue()` computed:
+
+    iValue = useful city output/value - colony/maintenance costs;
+    return iValue;
+
+and K-Mod's unchanged advisor reasonably prompted a colony when:
+
+    pCity.AI_cityValue() < 0
+
+i.e. the city was a net burden under that heuristic.
+
+AdvCiv practical 2176 changed the native semantic to:
+
+    return -iValue;
+
+so the same bad/burdensome city now yields a positive split value, while a strong/profitable city
+yields a negative split value. The unchanged Python `< 0` predicate therefore does the opposite of
+its original meaning:
+
+- strong/profitable city: old `iValue > 0` -> new wrapper value `< 0` -> colony nag CAN fire;
+- costly/split-worthy city: old `iValue < 0` -> new wrapper value `> 0` -> colony nag is SUPPRESSED.
+
+This is not merely a stale method name. The one current shipped consumer branches on the old sign and
+therefore receives behavior opposite to the current native split heuristic.
+
+HISTORY / INTRODUCTION
+----------------------
+AdvCiv practical 2176, commit
+`a5a55a4760176372f73087ece2fcbf373f0c2a3c`, title:
+
+    Use AI_assetVal in a couple of additional places
+
+contains the complete introduction fingerprint in four C++ files only:
+
+1. `CvCityAI::AI_cityValue` -> `AI_splitEmpireValue`;
+2. `return iValue` -> `return -iValue`, with the explicit comment
+   "Sign flipped to match the new function name";
+3. `CvPlayerAI::AI_doSplit` changes its area acceptance condition to match the new polarity;
+4. `CyCity::AI_cityValue` is changed only from forwarding `AI_cityValue()` to forwarding
+   `AI_splitEmpireValue()`.
+
+The commit does NOT touch `Assets/Python/CvAdvisorUtils.py`.
+
+Current Base AdvCiv 1.14 retains the same wrapper forwarding and the same shipped Python `< 0`
+predicate. Current SAS differs from Base AdvCiv in `CyCity.cpp` only through the already-fixed
+KI#480 `getOrderFromQueue` ownership copy; it inherits this AI-city-value wrapper semantic unchanged.
+K-Mod 1.46 retains the original internally consistent pair: native `AI_cityValue()` returns `iValue`,
+and `CvAdvisorUtils.py` tests `< 0`.
+
+DEDUP
+-----
+Whole-album and current Known-Issues searches found no existing owner for this exact CyCity/Python
+colony-advice polarity mismatch.
+
+- Earlier audits of native `AI_splitEmpireValue` correctly found no current SAS-vs-Base semantic
+  regression in the native function itself; F630 is the cross-boundary stale Cy/Python consumer
+  contract introduced upstream in AdvCiv.
+- KI#213's `AI_countBestBuilds` / good-plot-policy family is unrelated.
+- KI#480 concerns `OrderData` Python ownership in this same wrapper file, not AI-value semantics.
+- Ordinary native `AI_doSplit` uses the sign-flipped value correctly and is not the defect.
+
+REPAIR BOUNDARY
+---------------
+The smallest current-behavior repair is to restore the old Python-facing `AI_cityValue` polarity
+rather than silently changing every potential Python caller:
+
+    int CyCity::AI_cityValue()
+    {
+        return m_pCity ? -m_pCity->AI_splitEmpireValue() : -1;
+    }
+
+That preserves the historical/public method name and its K-Mod/BtS value semantics, making the
+existing shipped `< 0` advisor test correct again.
+
+An alternative is to rename/expose a new Python `AI_splitEmpireValue` method and change the shipped
+advisor to test `> 0`, but that is a broader public-API change and should not masquerade as the
+minimal bug repair.
+
+Regression coverage:
+1. construct a splittable human overseas/colony city with old-style net city value < 0; the Python
+   wrapper's legacy `AI_cityValue()` must remain < 0 and the periodic colony advice may trigger;
+2. a clearly profitable/high-output city with old-style value > 0 must return > 0 through the legacy
+   wrapper and must not trigger the `< 0` colony nag;
+3. native `CvPlayerAI::AI_doSplit` must continue using `AI_splitEmpireValue()` with its current
+   positive-means-split semantics;
+4. Base/K-Mod comparison should retain K-Mod's original wrapper/consumer polarity as the semantic
+   oracle.
+
+POST-F630 CURSOR
+----------------
+Queue 024 `CvGameCoreDLL/CyCity.cpp` remains OPEN.
+F631 / provisional KI#953 is UNUSED.
+
+Current SAS delta is otherwise only the already-fixed KI#480 `getOrderFromQueue` value-copy repair.
+Continue the AdvC-vs-K-Mod semantic wrapper pass, then Boost binding/return-policy, enum/sentinel,
+argument-null/live-call-site and Python-consumer reconciliation. Do not rediscover KI#480 or spend a
+finding on unsupported Python-None arguments without a stronger public/live contract.
+
+CURRENT LEDGER / RESUME STONE
+-----------------------------
+Queue 025 `CvGameCoreDLL/StartingPositionIteration.cpp` — COMPLETE.
+Queue 024 `CvGameCoreDLL/CyCity.cpp` — OPEN.
+F630 / provisional KI#952 — CONFIRMED here: inherited AdvCiv sign-polarity regression across
+`CvCityAI::AI_splitEmpireValue` -> `CyCity::AI_cityValue` -> shipped `CvAdvisorUtils.cityAdvise`.
+F631 / provisional KI#953 — UNUSED next root ID.
+
+Exact continuation:
+C031-WIP458 physical -> Queue 024 OPEN -> exclude F630 and KI#480 -> finish current/Base/K-Mod/Civ4CE
+wrapper/native signature and public Python consumer reconciliation -> promote only an independent
+mechanical/current-live or strong public-API root -> freeze next physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP458
+===============================================================================
+
+===============================================================================
+C031-WIP459 — QUEUE 024 CyCity.cpp — POST-F630 WRAPPER-CONTRACT RECONCILIATION
+===============================================================================
+Physical parent: C031-WIP458
+Audit target: `CvGameCoreDLL/CyCity.cpp`
+Gameplay source status: UNTOUCHED.
+
+QUEUE STATE
+-----------
+Queue 024 remains OPEN.
+F630 / provisional KI#952 remains CONFIRMED exactly as frozen in WIP458.
+F631 / provisional KI#953 remains UNUSED.
+
+CURRENT SAS VS BASE ADVC 1.14
+----------------------------
+After normalizing line endings/format-only noise, current SAS `CyCity.cpp` differs executably from
+Base AdvC 1.14 only in the already-owned KI#480 `getOrderFromQueue` repair: SAS returns an independent
+`OrderData` copy to make the existing Boost `manage_new_object` policy truthful. Do not rediscover
+that ownership root in this queue.
+
+BOOST BINDING / IMPLEMENTATION SYMMETRY
+----------------------------------------
+Reconciled both `CyCityInterface1.cpp` and `CyCityInterface2.cpp` against current `CyCity.cpp/.h`:
+- 435 unique bound Python method names;
+- all 435 resolve to a current body or inline implementation;
+- no duplicate Python method names across the two interface files;
+- only two current implementation methods are unbound: `getBonusBadHappiness` and
+  `getNumTrainUnitAI`.
+Both omissions already exist in K-Mod/Civ4CE and neither has a shipped current Python caller. Treat
+as dormant legacy API omissions, not current F631 evidence.
+
+MANAGED POINTER RETURNS
+-----------------------
+Every currently bound `manage_new_object` Cy object return was checked:
+- `getCityIndexPlot` -> allocates `new CyPlot(...)`;
+- `plot` -> allocates `new CyPlot(...)`;
+- `area` -> allocates `new CyArea(...)`;
+- `waterArea` -> allocates `new CyArea(...)`;
+- `getRallyPlot` -> allocates `new CyPlot(...)`;
+- `getTradeCity` -> allocates `new CyCity(...)`;
+- `getOrderFromQueue` -> SAS now allocates `new OrderData(copy)` (KI#480).
+No second current owning-policy mismatch was found.
+
+POINTER-ARGUMENT / NULL CONTRACT PASS
+-------------------------------------
+Potentially unsafe top-level Python pointer arguments include `getCityPlotIndex`, `canWork`,
+`addProductionExperience`, `atPlot`, `isBombardable`, `calculateTradeProfit`, `isWorkingPlot`, and
+`AI_countBestBuilds` (while `isConnectedTo` already checks both wrapper and native pointer).
+
+Shipped current Python call sites were reconciled:
+- `canWork` / `isWorkingPlot`: called only with concrete map/city-radius plots after caller checks;
+- `calculateTradeProfit`: current trade UI/BUG paths obtain a trade-city wrapper and validate owner /
+  iterate only active trade routes before use;
+- `AI_countBestBuilds`: called with the concrete `pCity.area()`;
+- `addProductionExperience`, `atPlot`, `isBombardable`, `getCityPlotIndex`: no shipped current Python
+  callers.
+Thus missing Python-`None` hardening by itself remains below the current-live finding threshold.
+
+ADVC.901 LEGACY FEATURE-NAME WRAPPERS — CLOSED CONTROL
+------------------------------------------------------
+Practical 1732 deliberately broadened the native feature-only health/happiness concept to
+"surroundings" so accessible improvement effects can participate. It intentionally changed the four
+legacy Cy bodies:
+
+    getFeatureGoodHealth      -> getSurroundingGoodHealth
+    getFeatureBadHealth       -> getSurroundingBadHealth
+    getFeatureGoodHappiness   -> getSurroundingGoodHappiness
+    getFeatureBadHappiness    -> getSurroundingBadHappiness
+
+without renaming the Python-facing methods. No shipped current Python code calls those four names.
+This is stale public naming / compatibility shape, not a demonstrated current semantic regression.
+
+ADVC-ADDED LIVE WRAPPER CONSUMERS — RECONCILED
+-----------------------------------------------
+`GPProjection`:
+- wrapper returns the requested unit's projected percentage or -1;
+- current BUG `GPUtil.py` accepts only values >0;
+- the native disorder guard was deliberately added, briefly reverted, then restored in adjacent
+  AdvC history; no wrapper drift found.
+
+Production turns / food turns / decay:
+- production-turn wrappers map native `MAX_INT` to -1, and shipped UI displays only values >0;
+- `getFoodTurnsLeft` maps native stagnation `MAX_INT` to 0; current city-screen/domestic-advisor
+  callers gate on food difference and explicitly treat zero-food growth as no growth;
+- BULL production-decay wrappers and current queue UI use the same countdown semantics introduced
+  together.
+No independent root found.
+
+Revolt/culture-flip wrappers:
+- `revoltProbability()` exports the native [0,1]-style probability as float;
+- Domestic Advisor multiplies it by 100 for display;
+- `canCultureFlip()` is used only to color that display according to whether a flip is possible.
+The pair was introduced with its consumer and remains coherent.
+
+Partisan wrapper:
+- `getNumPartisanUnits(ePlayer)` was introduced together with the Python Partisans event rewrite and
+  forwards the native culture-level-minus-one helper exactly; current Python uses it consistently.
+
+`AI_neededFloatingDefenders`:
+- exposed primarily for OOS logging with the const-cache-safe arguments (`false, true`); no gameplay
+  decision consumes the wrapper result.
+
+FRACTIONAL-TRADE PROBE — CLOSED FALSE LEAD
+------------------------------------------
+Current BUG `TradeUtil.initFractionalTrade()` probes for `CyCity.calculateTradeProfitTimes100`; that
+method is not exposed, while native AdvC does have `CvCity::calculateTradeProfitTimes100`.
+This initially looks like a missing binding, but history proves it is intentional:
+- practical 2187 renamed the native helper and increased its precision specifically so trade-route
+  candidate assignment has fewer ties;
+- the public/actual trade-profit function remains `calculateTradeProfitTimes100(...) / 100`;
+- practical 2986 explicitly removed `_MOD_FRACTRADE` support from AdvC as untested.
+Therefore BUG is correct to detect fractional trade as inactive. Exposing the internal times-100
+ranking helper as though it were BULL fractional-trade support would make the Python UI use the wrong
+units. No F631.
+
+TRADE-CITY NULL CHAIN — CLOSED CONTROL
+--------------------------------------
+`CvCity` keeps its trade-city vector sized to `MAX_TRADE_ROUTES`. `CyCity::getTradeCity(i)` can return
+a valid Cy wrapper whose native pointer is null for an unused slot; current UI paths either:
+- iterate only `range(city.getTradeRoutes())`, or
+- scan MAX routes and require `getOwner() >= 0` before using `calculateTradeProfit`.
+No live null-native dereference was established.
+
+DESTRUCTIVE-WRAPPER LIFETIME CURSOR
+-----------------------------------
+`CyCity::kill()` is live through the Tsunami random event and calls native `CvCity::kill(true)`.
+That native call removes/destroys the city while the local Cy wrapper still physically stores the old
+pointer. The current Tsunami handler does not access that wrapper after `kill()`, so no live
+use-after-free has yet been demonstrated. Continue checking destructive wrappers (`kill`, `doTask`,
+`liberate`) and callbacks before treating this generic Civ4 wrapper lifetime shape as a finding.
+
+OTHER PRESERVED LOW-GRADE CONTROLS
+----------------------------------
+- `setWallOverridePoints(tuple)` reads coordinates in pairs and would read past an odd-length tuple;
+  no shipped current Python caller exists. Keep as public-input hardening debt unless a live source
+  contract appears.
+- legacy interface documentation has stale signatures in places (e.g. liberation docs), while Boost
+  binds the actual C++ function pointer and current callers use the true arity. Documentation-only.
+- `getTradeCultureRateTimes100(iLevel)` retains an unused Python parameter, but K-Mod already ignored
+  that parameter natively; current AdvC merely removed it from the native signature. No behavior
+  change.
+- enum/index wrappers generally assume valid Python enum values, as in Firaxis/K-Mod. Do not promote
+  invalid-input crashes without a shipped/current producer that can supply the invalid value.
+
+CURRENT LEDGER / EXACT RESUME
+-----------------------------
+Queue 025 `StartingPositionIteration.cpp` — COMPLETE.
+Queue 024 `CvGameCoreDLL/CyCity.cpp` — OPEN.
+F630 / provisional KI#952 — CONFIRMED (AI_cityValue / AI_splitEmpireValue polarity regression).
+F631 / provisional KI#953 — UNUSED.
+
+Exact continuation:
+C031-WIP459 physical -> Queue 024 OPEN -> exclude F630 + KI#480 -> audit inherited Firaxis/K-Mod
+wrapper contracts beyond the small AdvC delta: destructive-call lifetime/callbacks, enum/index
+producers, object-return nullable chains, old Python API semantics and any current shipped callers ->
+trace any surviving candidate into native source + K-Mod/Civ4CE + commit history -> freeze WIP460 at
+the next clean checkpoint regardless of finding count.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP459
 ===============================================================================

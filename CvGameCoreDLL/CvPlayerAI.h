@@ -762,6 +762,8 @@ protected:
 	// </advc.ctr>
 	enum CancelCode { NO_CANCEL = -1, RENEGOTIATE, DO_CANCEL };
 	CancelCode AI_checkCancel(CvDeal const& d, PlayerTypes ePlayer);
+	// <!-- custom: Preserve one combined human notification while applying queued deal cancellations before later economic checks read live state. See KI#661. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	void AI_applyHumanDealCancellations(PlayerTypes eOther, std::vector<CvDeal*>& apDeals, CLinkList<TradeData>& kHumanReceived, CLinkList<TradeData>& kHumanGave, int& iHumanReceivedGold, int& iHumanGaveGold);
 	bool AI_doDeals(PlayerTypes eOther);
 	// </advc>
 	bool AI_proposeResourceTrade(PlayerTypes eTo); // advc.133

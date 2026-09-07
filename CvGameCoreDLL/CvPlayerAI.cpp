@@ -22566,6 +22566,45 @@ CvPlayerAI::CancelCode CvPlayerAI::AI_checkCancel(CvDeal const& kDeal, PlayerTyp
 	return NO_CANCEL;
 }
 
+// <!-- custom: AdvCiv queued AI-human cancellations to combine their notification, leaving already-rejected GPT obligations economically active during its later per-rival cap check.
+// Capture the notification payload and end those deals now, so the cap sees projected surviving state; reuse this after the cap for any additional cancellations it selects. See KI#661. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+void CvPlayerAI::AI_applyHumanDealCancellations(PlayerTypes eOther, std::vector<CvDeal*>& apDeals, CLinkList<TradeData>& kHumanReceived, CLinkList<TradeData>& kHumanGave, int& iHumanReceivedGold, int& iHumanGaveGold)
+{
+	for (size_t i = 0; i < apDeals.size(); i++)
+	{
+		CvDeal& kDeal = *apDeals[i];
+		FOR_EACH_TRADE_ITEM(kDeal.getGivesList(getID()))
+		{
+			if (pItem->m_eItemType == TRADE_GOLD_PER_TURN)
+				iHumanReceivedGold += pItem->m_iData;
+			else kHumanReceived.insertAtEnd(*pItem);
+			/*	<advc.074> Remember the canceled resources to avoid
+				excluding them in CvPlayer::buildTradeTable. I've put
+				similar code in CvPlayer::read so that m_cancelingExport
+				is also set properly after loading a savegame. */
+			if (pItem->m_eItemType == TRADE_RESOURCES)
+			{
+				m_cancelingExport.insertAtEnd(std::make_pair(
+						eOther, (BonusTypes)pItem->m_iData));
+			} // </advc.074>
+		}
+		FOR_EACH_TRADE_ITEM(kDeal.getGivesList(eOther))
+		{
+			if (pItem->m_eItemType == TRADE_GOLD_PER_TURN)
+				iHumanGaveGold += pItem->m_iData;
+			else kHumanGave.insertAtEnd(*pItem);
+			// <advc.074>
+			if (pItem->m_eItemType == TRADE_RESOURCES)
+			{
+				GET_PLAYER(eOther).m_cancelingExport.insertAtEnd(std::make_pair(
+						getID(), (BonusTypes)pItem->m_iData));
+			} // </advc.074>
+		}
+		kDeal.kill();
+	}
+	apDeals.clear();
+}
+
 // advc: Body cut and pasted from AI_doDiplo. Returns true iff eOther contacted.
 bool CvPlayerAI::AI_doDeals(PlayerTypes eOther)
 {
@@ -22574,6 +22613,11 @@ bool CvPlayerAI::AI_doDeals(PlayerTypes eOther)
 	// <advc.133>
 	std::vector<CvDeal*> aapDealsPerPlayer[MAX_CIV_PLAYERS];
 	std::vector<CvDeal*> apHumanDealsToCancel; // </advc.133>
+	// <!-- custom: Keep the combined-popup payload alive across both cancellation passes now that already-rejected deals are ended before the GPT-cap pass. See KI#661. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	CLinkList<TradeData> humanReceived;
+	CLinkList<TradeData> humanGave;
+	int iHumanReceivedGold = 0;
+	int iHumanGaveGold = 0;
 	FOR_EACH_DEAL_VAR(pLoopDeal)
 	{
 		if (!pLoopDeal->isBetween(getID(), eOther) || // advc: Ensure this upfront
@@ -22645,6 +22689,9 @@ bool CvPlayerAI::AI_doDeals(PlayerTypes eOther)
 			before a diplomacy window. */
 	}
 	// <advc.133>
+	// <!-- custom: Remove deals already selected for cancellation before measuring the remaining GPT capacity.
+	// Their payload remains available for the one combined popup below. See KI#661. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	AI_applyHumanDealCancellations(eOther, apHumanDealsToCancel, humanReceived, humanGave, iHumanReceivedGold, iHumanGaveGold);
 	// Enforce GPT limit
 	FOR_EACH_ENUM(CivPlayer)
 	{
@@ -22683,42 +22730,7 @@ bool CvPlayerAI::AI_doDeals(PlayerTypes eOther)
 		}
 	}
 	// One diplo popup for all canceled non-vassal deals
-	CLinkList<TradeData> humanReceived;
-	CLinkList<TradeData> humanGave;
-	int iHumanReceivedGold = 0;
-	int iHumanGaveGold = 0;
-	for (size_t i = 0; i < apHumanDealsToCancel.size(); i++)
-	{
-		CvDeal& kDeal = *apHumanDealsToCancel[i];
-		FOR_EACH_TRADE_ITEM(kDeal.getGivesList(getID()))
-		{
-			if (pItem->m_eItemType == TRADE_GOLD_PER_TURN)
-				iHumanReceivedGold += pItem->m_iData;
-			else humanReceived.insertAtEnd(*pItem);
-			/*	<advc.074> Remember the canceled resources to avoid
-				excluding them in CvPlayer::buildTradeTable. I've put
-				similar code in CvPlayer::read so that m_cancelingExport
-				is also set properly after loading a savegame. */
-			if (pItem->m_eItemType == TRADE_RESOURCES)
-			{
-				m_cancelingExport.insertAtEnd(std::make_pair(
-						eOther, (BonusTypes)pItem->m_iData));
-			} // </advc.074>
-		}
-		FOR_EACH_TRADE_ITEM(kDeal.getGivesList(eOther))
-		{
-			if (pItem->m_eItemType == TRADE_GOLD_PER_TURN)
-				iHumanGaveGold += pItem->m_iData;
-			else humanGave.insertAtEnd(*pItem);
-			// <advc.074>
-			if (pItem->m_eItemType == TRADE_RESOURCES)
-			{
-				GET_PLAYER(eOther).m_cancelingExport.insertAtEnd(std::make_pair(
-						getID(), (BonusTypes)pItem->m_iData));
-			} // </advc.074>
-		}
-		kDeal.kill();
-	}
+	AI_applyHumanDealCancellations(eOther, apHumanDealsToCancel, humanReceived, humanGave, iHumanReceivedGold, iHumanGaveGold);
 	if (humanReceived.getLength() +
 		humanGave.getLength() + iHumanReceivedGold + iHumanGaveGold > 0)
 	{
