@@ -707,7 +707,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#608 - (Fixed inherited AdvCiv deal-list regression) Embargo denial misses opposite-list peace reparations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-608)\
 [KI#609 - (Provisional Pending AdvCiv transaction-lifetime defect) Mixed alliance or vassal bundles can delete their active deal](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-609)\
 [KI#610 - (Provisional Pending inherited deal-granularity defect amplified by AdvCiv) Annual-item failure can terminate a protected peace treaty](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-610)\
-[KI#611 - (Provisional Pending AdvCiv team-state regression) A Permanent Alliance plus vassal bundle can create a self-vassal](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-611)\
+[KI#611 - (Fixed AdvCiv team-state regression) A Permanent Alliance plus vassal bundle could create a self-vassal](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-611)\
 [KI#612 - (Fixed inherited brokered-war defect exposed more broadly by SAS) A vassal could hire war against its own master coalition](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-612)\
 [KI#613 - (Fixed inherited K-Mod/AdvCiv teardown-identity defect) Permanent Alliance cleanup ended a Defensive Pact as a self-pact](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-613)\
 [KI#614 - (Provisional Pending inherited civic-deal defect) One bundled civic change becomes several forced revolutions](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-614)\
@@ -717,7 +717,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#618 - (Fixed AdvCiv war-bribe valuation defect) Shared Open Borders and Defensive Pact losses were priced once per team member](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-618)\
 [KI#619 - (Fixed AdvCiv attitude-cache timing regression) Annual deals deferred cache refresh in only one direction](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-619)\
 [KI#620 - (Fixed inherited legacy-war-AI bundle defect exposed by AdvCiv) Defensive Pact cascade wars could be purchased twice](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-620)\
-[KI#621 - (Provisional Pending inherited bundle incompatibility worsened by AdvCiv) Vassalage and a Defensive Pact can create an orphan relation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-621)\
+[KI#621 - (Fixed inherited BtS/K-Mod bundle incompatibility made deterministic by AdvCiv) Vassalage and a Defensive Pact could create an orphan relation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-621)\
 [KI#622 - (Fixed inherited BUG/K-Mod integration and AdvCiv shortcut handoff) Consumed input and Ctrl+Z debug toggle](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-622)\
 [KI#623 - (Pending Architectural inherited K-Mod pathfinder defect incompletely addressed by AdvCiv) Reparented paths retain stale danger legality](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-623)\
 [KI#624 - (Provisional Pending inherited K-Mod pathfinder defect) An over-limit route can overwrite a valid bounded path](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-624)\
@@ -14285,11 +14285,15 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` au
 
 <a id="ki-611"></a>
 
-## KI#611 - (Provisional Pending AdvCiv team-state regression) A Permanent Alliance plus vassal bundle can create a self-vassal
+## KI#611 - (Fixed AdvCiv team-state regression) A Permanent Alliance plus vassal bundle could create a self-vassal
 
-Album F288 finds that a supported human deal can contain both a Permanent Alliance and voluntary vassalage between the same teams. Vassalage is applied first; when the lower-ID team then absorbs its master or vassal, AdvCiv's single-`m_eMaster` migration can leave the survivor with `m_eMaster == getID()`. K-Mod allowed the mixed bundle but its older relation matrix excluded the merging team IDs during migration; Base AdvCiv 1.14 contains the regressed single-master logic inherited by SAS. Pending bundle-level validation or normalization before either state transition is committed.
+Album F288 finds that a supported human deal could contain both a Permanent Alliance and voluntary vassalage between the same teams. Vassalage was applied first; when the lower-ID team then absorbed its master or vassal, AdvCiv's single-`m_eMaster` migration could leave the survivor with `m_eMaster == getID()`. K-Mod allowed the mixed bundle but its older relation matrix excluded the merging team IDs during migration; AdvCiv practical 1840 introduced the regressed single-master migration retained by Base AdvCiv 1.14 and inherited by SAS.
 
-Found and documented provisionally during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+Backend whole-bundle validation now rejects Permanent Alliance plus vassal/surrender combinations before any trade item changes team state. This covers EXE, script and forced/direct deal callers rather than relying only on diplomacy-screen filtering; the still-empty `CvDeal` is then removed by the existing `implementAndReturnDeal` contract. Negotiation inventory filtering also hides either incompatible counterpart as soon as the other relationship item is offered, in either deal direction. Ordinary Permanent Alliances, vassalage, surrender and all compatible mixed terms retain their existing execution order.
+
+After compilation, `SASGameRecord_20260907T055059Z_new1.log` confirms that a Debug-opt Huge Normal Pangaea autoplay with Permanent Alliances enabled, 16 players across 12 starting teams and full UWAI completed normally at the turn-500 Time victory. The run exercised several voluntary-vassal and surrender transitions and formed a Permanent Alliance on turn 419 without an observed issue. The exact rejected Permanent-Alliance-plus-vassal human bundle remains source-verified rather than manually forced.
+
+Found during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` audit; independently reviewed, fixed and documented with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-612"></a>
 
@@ -14389,11 +14393,15 @@ Found during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` audit; independently reviewed, 
 
 <a id="ki-621"></a>
 
-## KI#621 - (Provisional Pending inherited bundle incompatibility worsened by AdvCiv) Vassalage and a Defensive Pact can create an orphan relation
+## KI#621 - (Fixed inherited BtS/K-Mod bundle incompatibility made deterministic by AdvCiv) Vassalage and a Defensive Pact could create an orphan relation
 
-Album F298 finds voluntary vassalage and a Defensive Pact individually valid between two free teams but mutually incompatible as one final state. AdvCiv's deterministic vassal-last execution first signs the pact, then vassalization cancels its proxies; processing the reciprocal pact item afterward can fail nested proxy creation under the new vassal state while outer `startTrade` still sets the team flag unconditionally, leaving a one-way master/vassal Defensive Pact bit with no backing deal. The underlying incompatible bundle is inherited from BtS/K-Mod, while current Base AdvCiv 1.14 supplies the deterministic orphan-state sequence inherited by SAS. Pending backend bundle rejection, matching UI hiding and defensive propagation of team-proxy creation failure.
+Album F298 finds voluntary vassalage and a Defensive Pact individually valid between two free teams but mutually incompatible as one final state. AdvCiv's deterministic vassal-last execution first signed the pact, then vassalization canceled its proxies; processing the reciprocal pact item afterward could fail nested proxy creation under the new vassal state while outer `startTrade` still set the team flag unconditionally, leaving a one-way master/vassal Defensive Pact bit with no backing deal. The incompatible bundle is inherited from BtS/K-Mod. K-Mod moved vassal terms last for correct power handling, and AdvCiv replaced that ordering with the deterministic two-pass implementation retained by Base AdvCiv 1.14 and inherited by SAS.
 
-Found and documented provisionally during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` audit; disposition indexed with the help of GPT-5.6-Sol, thanks.
+The shared backend validation now rejects vassal/surrender plus Defensive Pact bundles before either relation begins, preventing the pact's valuation, synthetic cancellation memory and orphan state rather than weakening the correct rule that vassals cannot retain Defensive Pacts. The diplomacy inventory mirrors the backend rule by hiding the incompatible counterpart across both offer directions. Ordinary Defensive Pacts and vassal transitions remain unchanged, including vassal-last execution for valid deals; no downstream proxy-failure workaround is needed for this root because the impossible transaction can no longer reach `startTrade`.
+
+The same Debug-opt Huge Normal Pangaea autoplay completed normally at the turn-500 Time victory with full UWAI and mixed teams. `SASGameRecord_20260907T055059Z_new1.log` records several voluntary-vassal and surrender transitions, extensive Defensive Pact creation and teardown, and a turn-419 Permanent Alliance without an observed issue. The exact rejected vassalage-plus-Defensive-Pact human bundle remains source-verified rather than manually forced.
+
+Found during ChatGPT-5.6-Sol's C025 `CvDeal.cpp` audit; independently reviewed, fixed and documented with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-622"></a>
 

@@ -187,6 +187,15 @@ void CvDeal::addTradeItems(CLinkList<TradeData>& kFirstList, CLinkList<TradeData
 {
 	if (isVassalTrade(kFirstList) && isVassalTrade(kSecondList))
 		return;
+	// <!-- custom: Item-by-item prevalidation accepts vassalage together with a Permanent Alliance or Defensive Pact while both teams are still free, but those relationship states cannot coexist after execution.
+	// Reject the whole malformed bundle before any item mutates team state; implementAndReturnDeal then removes this still-empty CvDeal. See KI#611 and KI#621. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool const bVassalTrade = (isVassalTrade(kFirstList) || isVassalTrade(kSecondList));
+	if (bVassalTrade &&
+		(hasTradeItem(kFirstList, TRADE_PERMANENT_ALLIANCE) || hasTradeItem(kSecondList, TRADE_PERMANENT_ALLIANCE) ||
+		hasTradeItem(kFirstList, TRADE_DEFENSIVE_PACT) || hasTradeItem(kSecondList, TRADE_DEFENSIVE_PACT)))
+	{
+		return;
+	}
 	if (bCheckAllowed) // advc.opt (moved up)
 	{
 		FOR_EACH_TRADE_ITEM_VAR(kFirstList)
@@ -507,12 +516,14 @@ bool CvDeal::verify(PlayerTypes eRecipient, PlayerTypes eGiver)
 // Restore whole-deal classification for expiry and every other consumer. See KI#604. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 bool CvDeal::hasTradeItem(TradeableItems eItem) const
 {
-	FOR_EACH_TRADE_ITEM(getFirstList())
-	{
-		if (pItem->m_eItemType == eItem)
-			return true;
-	}
-	FOR_EACH_TRADE_ITEM(getSecondList())
+	return (hasTradeItem(getFirstList(), eItem) || hasTradeItem(getSecondList(), eItem));
+}
+
+
+// <!-- custom: Keep proposed-list item detection consistent with whole-deal detection and bundle validation. See KI#611 and KI#621. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+bool CvDeal::hasTradeItem(CLinkList<TradeData> const& kList, TradeableItems eItem)
+{
+	FOR_EACH_TRADE_ITEM(kList)
 	{
 		if (pItem->m_eItemType == eItem)
 			return true;

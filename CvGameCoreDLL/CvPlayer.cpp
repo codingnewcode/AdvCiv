@@ -19513,6 +19513,11 @@ void CvPlayer::updateTradeList(PlayerTypes eOtherPlayer, CLinkList<TradeData>& k
 		if (bCurrentDeals)
 			return;
 	} // </advc.ctr>
+	// <!-- custom: Prevent the negotiation UI from offering team-status combinations that backend validation must reject: vassalage cannot coexist with a Permanent Alliance or Defensive Pact between the same teams.
+	// Check both offer directions because human deals may place the relationship item on either side. See KI#611 and KI#621. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool const bVassalOffered = (CvDeal::isVassalTrade(kOurOffer) || CvDeal::isVassalTrade(kTheirOffer));
+	bool const bPermanentAllianceOffered = (CvDeal::hasTradeItem(kOurOffer, TRADE_PERMANENT_ALLIANCE) || CvDeal::hasTradeItem(kTheirOffer, TRADE_PERMANENT_ALLIANCE));
+	bool const bDefensivePactOffered = (CvDeal::hasTradeItem(kOurOffer, TRADE_DEFENSIVE_PACT) || CvDeal::hasTradeItem(kTheirOffer, TRADE_DEFENSIVE_PACT));
 	FOR_EACH_TRADE_ITEM_VAR(kOurInventory)
 	{
 		pItem->m_bHidden = false;
@@ -19554,6 +19559,11 @@ void CvPlayer::updateTradeList(PlayerTypes eOtherPlayer, CLinkList<TradeData>& k
 		case TRADE_VASSAL:
 		case TRADE_SURRENDER:
 		{
+			if (bPermanentAllianceOffered || bDefensivePactOffered)
+			{
+				pItem->m_bHidden = true;
+				break;
+			}
 			FOR_EACH_TRADE_ITEM2(pOfferItem, kTheirOffer)
 			{
 				// Don't show vassal deals if another type of vassal deal is on the table
@@ -19579,6 +19589,12 @@ void CvPlayer::updateTradeList(PlayerTypes eOtherPlayer, CLinkList<TradeData>& k
 			}
 			break;
 		}
+		// <!-- custom: Hide the alliance and pact counterparts after either side offers vassalage, complementing the vassal-item branch above. See KI#611 and KI#621. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		case TRADE_DEFENSIVE_PACT:
+		case TRADE_PERMANENT_ALLIANCE:
+			if (bVassalOffered)
+				pItem->m_bHidden = true;
+			break;
 		/*// <advc.004> Only one side can pay gold  [better keep all gold on display I guess]
 		case TRADE_GOLD:
 		case TRADE_GOLD_PER_TURN:
