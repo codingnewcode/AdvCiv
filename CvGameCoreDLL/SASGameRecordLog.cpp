@@ -697,6 +697,86 @@ static void seedSASGameRecordTeamPreviousFromCurrentState(TeamTypes eTeam)
 	kPrevious.iMetTeams = getSASGameRecordMetTeamCount(eTeam);
 }
 
+// <!-- custom: Project completion rows alone do not show whether a project-based victory has its minimum/full component set or an active launch countdown. Build one compact shared state for periodic progress and later explicit launch actions. (GPT-5.6-Sol) -->
+static bool getSASGameRecordVictoryProjectState(TeamTypes eTeam, VictoryTypes eVictory, int& iPartsBuilt, int& iPartsMinimum, int& iPartsMaximum, bool& bMinimumComplete, CvString& szProjectParts)
+{
+	iPartsBuilt = 0;
+	iPartsMinimum = 0;
+	iPartsMaximum = 0;
+	bMinimumComplete = true;
+	szProjectParts.clear();
+	CvTeam const& kTeam = GET_TEAM(eTeam);
+	FOR_EACH_ENUM(Project)
+	{
+		CvProjectInfo const& kProject = GC.getInfo(eLoopProject);
+		int const iMinimum = kProject.getVictoryMinThreshold(eVictory);
+		int const iMaximum = kProject.getVictoryThreshold(eVictory);
+		if (iMinimum <= 0 && iMaximum <= 0)
+			continue;
+		int const iBuilt = kTeam.getProjectCount(eLoopProject);
+		iPartsBuilt += iBuilt;
+		iPartsMinimum += iMinimum;
+		iPartsMaximum += iMaximum;
+		if (iBuilt < iMinimum)
+			bMinimumComplete = false;
+		CvString szItem;
+		szItem.Format(szProjectParts.empty() ? "%s:%d/%d/%d" : ",%s:%d/%d/%d", getSASGameRecordProjectType(eLoopProject), iBuilt, iMinimum, iMaximum);
+		szProjectParts += szItem;
+	}
+	return !szProjectParts.empty();
+}
+
+static char const* getSASGameRecordVictoryType(VictoryTypes eVictory)
+{
+	return eVictory == NO_VICTORY ? "-" : GC.getInfo(eVictory).getType();
+}
+
+typedef std::pair<int, CvCity const*> SASGameRecordCultureCity;
+
+static bool compareSASGameRecordCultureCities(SASGameRecordCultureCity const& kFirst, SASGameRecordCultureCity const& kSecond)
+{
+	return kFirst.first > kSecond.first;
+}
+
+static CvString getSASGameRecordCultureVictoryCities(TeamTypes eTeam, int iRequired, int iThreshold, int& iComplete)
+{
+	std::vector<SASGameRecordCultureCity> aCities;
+	for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
+	{
+		CvPlayer const& kMember = GET_PLAYER((PlayerTypes)iI);
+		if (!kMember.isAlive() || kMember.getTeam() != eTeam)
+			continue;
+		int iLoop = 0;
+		for (CvCity const* pCity = kMember.firstCity(&iLoop); pCity != NULL; pCity = kMember.nextCity(&iLoop))
+			aCities.push_back(std::make_pair(pCity->getCulture(pCity->getOwner()), pCity));
+	}
+	std::sort(aCities.begin(), aCities.end(), compareSASGameRecordCultureCities);
+	iComplete = 0;
+	for (int iI = 0; iI < (int)aCities.size(); iI++)
+	{
+		if (aCities[iI].first >= iThreshold)
+			iComplete++;
+	}
+	CvString szCities;
+	for (int iI = 0; iI < std::min(iRequired, (int)aCities.size()); iI++)
+	{
+		CvCity const& kCity = *aCities[iI].second;
+		CvString szItem;
+		szItem.Format(szCities.empty() ? "P%d:C%d@%d:%d=%d/%d" : ",P%d:C%d@%d:%d=%d/%d", kCity.getOwner(), kCity.getID(), kCity.getX(), kCity.getY(), aCities[iI].first, iThreshold);
+		szCities += szItem;
+	}
+	return getSASDiagnosticOrDash(szCities);
+}
+
+static void logSASGameRecordTeamProjects(TeamTypes eTeam, int iGameTurn)
+{
+	CvString szProjects;
+	FOR_EACH_ENUM(Project)
+		appendSASGameRecordTypeCount(szProjects, getSASGameRecordProjectType(eLoopProject), GET_TEAM(eTeam).getProjectCount(eLoopProject));
+	if (!szProjects.empty())
+		logSASGameRecord("GAME_RECORD_TEAM_PROJECTS turn=%d team=%d projects=%s", iGameTurn, eTeam, szProjects.GetCString());
+}
+
 static void logSASGameRecordTeamSnapshot(TeamTypes eTeam, int iGameTurn)
 {
 	CvGame const& kGame = GC.getGame();
@@ -719,6 +799,86 @@ static void logSASGameRecordTeamSnapshot(TeamTypes eTeam, int iGameTurn)
 			getSASGameRecordWarTeams(eTeam).GetCString(), getSASGameRecordVassalTeams(eTeam).GetCString(), eMaster);
 	if (bLogTeamDetails) logSASGameRecordTeamContacts(eTeam, iGameTurn, "snapshot");
 	seedSASGameRecordTeamPreviousFromCurrentState(eTeam);
+
+	VictoryTypes eScoreVictory = NO_VICTORY;
+	VictoryTypes eTimeVictory = NO_VICTORY;
+	VictoryTypes eConquestVictory = NO_VICTORY;
+	VictoryTypes eCultureVictory = NO_VICTORY;
+	VictoryTypes eDiplomaticVictory = NO_VICTORY;
+	int iCultureCitiesRequired = 0;
+	int iCultureThreshold = 0;
+	FOR_EACH_ENUM(Victory)
+	{
+		if (!kGame.isVictoryValid(eLoopVictory))
+			continue;
+		CvVictoryInfo const& kVictory = GC.getInfo(eLoopVictory);
+		if (kVictory.isTargetScore()) eScoreVictory = eLoopVictory;
+		if (kVictory.isEndScore()) eTimeVictory = eLoopVictory;
+		if (kVictory.isConquest()) eConquestVictory = eLoopVictory;
+		if (kVictory.isDiploVote()) eDiplomaticVictory = eLoopVictory;
+		if (kVictory.getCityCulture() != NO_CULTURELEVEL && kVictory.getNumCultureCities() > 0)
+		{
+			eCultureVictory = eLoopVictory;
+			iCultureCitiesRequired = kVictory.getNumCultureCities();
+			iCultureThreshold = kGame.getCultureThreshold((CultureLevelTypes)kVictory.getCityCulture());
+		}
+	}
+	CvString szConquestRivals;
+	int iConquestRivalCities = 0;
+	if (eConquestVictory != NO_VICTORY)
+	{
+		for (int iI = 0; iI < MAX_CIV_TEAMS; iI++)
+		{
+			TeamTypes const eRival = (TeamTypes)iI;
+			CvTeam const& kRival = GET_TEAM(eRival);
+			if (eRival == eTeam || !kRival.isAlive() || kRival.isBarbarian() || kRival.isVassal(eTeam) || kRival.getNumCities() <= 0)
+				continue;
+			appendSASDiagnosticIntListValue(szConquestRivals, eRival);
+			iConquestRivalCities += kRival.getNumCities();
+		}
+	}
+	int iBestRivalScore = -1;
+	for (int iI = 0; iI < MAX_CIV_TEAMS; iI++)
+	{
+		TeamTypes const eRival = (TeamTypes)iI;
+		if (eRival != eTeam && GET_TEAM(eRival).isAlive() && !GET_TEAM(eRival).isBarbarian())
+			iBestRivalScore = std::max(iBestRivalScore, kGame.getTeamScore(eRival));
+	}
+	int const iTeamScore = kGame.getTeamScore(eTeam);
+	int const iTurnsRemaining = (kGame.getMaxTurns() <= 0 ? -1 : std::max(0, kGame.getMaxTurns() - kGame.getElapsedGameTurns()));
+	int iCultureCitiesComplete = 0;
+	CvString szCultureCities;
+	if (eCultureVictory == NO_VICTORY) szCultureCities = "-";
+	else szCultureCities = getSASGameRecordCultureVictoryCities(eTeam, iCultureCitiesRequired, iCultureThreshold, iCultureCitiesComplete);
+	// <!-- custom: Domination and Space already have detailed per-victory rows, and diplomatic vote-source rows can later contain exact vote thresholds.
+	// Add one compact general row per team rather than one new row per missing victory, so Score/Time, Conquest, and Cultural progress become explicit without multiplying snapshot noise.
+	// Culture lists only the required number of leading cities. The vote-source companion rows remain a later periodic/global slice in this incremental 1.14 port. (GPT-5.6-Sol + ChatGPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_VICTORY_PROGRESS_GENERAL turn=%d team=%d scoreVictory=%s timeVictory=%s conquestVictory=%s culturalVictory=%s diplomaticVictory=%s teamScore=%d bestRivalScore=%d scoreLead=%+d targetScore=%d turnsRemaining=%d conquestRivals=%s conquestRivalCities=%d cultureCitiesComplete=%d cultureCitiesRequired=%d cultureThreshold=%d cultureCities=%s",
+			iGameTurn, eTeam, getSASGameRecordVictoryType(eScoreVictory), getSASGameRecordVictoryType(eTimeVictory), getSASGameRecordVictoryType(eConquestVictory), getSASGameRecordVictoryType(eCultureVictory), getSASGameRecordVictoryType(eDiplomaticVictory),
+			iTeamScore, iBestRivalScore, iBestRivalScore < 0 ? iTeamScore : iTeamScore - iBestRivalScore, kGame.getTargetScore(), iTurnsRemaining, getSASDiagnosticOrDash(szConquestRivals).GetCString(), iConquestRivalCities,
+			iCultureCitiesComplete, iCultureCitiesRequired, iCultureThreshold, szCultureCities.GetCString());
+
+	FOR_EACH_ENUM(Victory)
+	{
+		if (!kGame.isVictoryValid(eLoopVictory))
+			continue;
+		const int iLandNeed = kGame.getAdjustedLandPercent(eLoopVictory);
+		const int iPopNeed = kGame.getAdjustedPopulationPercent(eLoopVictory);
+		int iPartsBuilt = 0;
+		int iPartsMinimum = 0;
+		int iPartsMaximum = 0;
+		bool bMinimumComplete = false;
+		CvString szProjectParts;
+		bool const bProjectVictory = getSASGameRecordVictoryProjectState(eTeam, eLoopVictory, iPartsBuilt, iPartsMinimum, iPartsMaximum, bMinimumComplete, szProjectParts);
+		if (iLandNeed > 0 || iPopNeed > 0 || bProjectVictory)
+		{
+			int const iCountdown = kTeam.getVictoryCountdown(eLoopVictory);
+			int const iTravelTurns = (bProjectVictory && bMinimumComplete ? kTeam.getVictoryDelay(eLoopVictory) : -1);
+			logSASGameRecord("GAME_RECORD_VICTORY_PROGRESS turn=%d team=%d victory=%s landPctX100=%d landNeed=%d popPctX100=%d popNeed=%d projectVictory=%d launched=%d countdown=%d arrivalTurn=%d canLaunch=%d launchSuccessPercent=%d travelTurns=%d partsBuilt=%d partsMinimum=%d partsMaximum=%d projectParts=%s",
+				iGameTurn, eTeam, GC.getInfo(eLoopVictory).getType(), iLandPctX100, iLandNeed, iPopPctX100, iPopNeed, bProjectVictory, bProjectVictory && iCountdown >= 0, iCountdown, iCountdown < 0 ? -1 : iGameTurn + iCountdown, bProjectVictory && kTeam.canLaunch(eLoopVictory), bProjectVictory ? kTeam.getLaunchSuccessRate(eLoopVictory) : -1, iTravelTurns, iPartsBuilt, iPartsMinimum, iPartsMaximum, bProjectVictory ? szProjectParts.GetCString() : "-");
+		}
+	}
+	if (bLogTeamDetails) logSASGameRecordTeamProjects(eTeam, iGameTurn);
 }
 
 static bool isSASGameRecordMilitaryUnit(CvUnit const& kUnit)
