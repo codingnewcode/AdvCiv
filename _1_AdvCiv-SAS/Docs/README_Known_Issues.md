@@ -879,7 +879,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#780 - (Pending inherited BtS/K-Mod event-information leak) Global PickPlayer trigger news reveals an unmet civilization](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-780)\
 [KI#781 - (Fixed inherited BtS Permanent-Alliance cache defect) Former allied-border units retained unit-supply costs](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-781)\
 [KI#782 - (Fixed inherited BtS civic-lifecycle defect broadened by SAS) Losing the final building CivicOption left an unavailable civic active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-782)\
-[KI#783 - (Provisional Pending AdvCiv city-trade ordering defect) Outer-ring culture conversion consults a deleted city](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-783)\
+[KI#783 - (Fixed AdvCiv city-trade ordering defect) Outer-ring culture conversion consulted a deleted city](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-783)\
 [KI#784 - (Provisional Pending AdvCiv espionage-latch defect) Full demographics can become visible without being remembered](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-784)\
 [KI#785 - (Provisional Pending AdvCiv espionage wrong-owner regression) Force Civic uses the spy owner's cooldown modifier](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-785)\
 [KI#786 - (Provisional Pending inherited K-Mod espionage wrong-owner defect) Post-sabotage production checks the spy owner](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-786)\
@@ -16099,11 +16099,13 @@ Compiled successfully and directly validated at turn 0 in screenshots 0493-0498:
 
 <a id="ki-783"></a>
 
-## KI#783 - (Provisional Pending AdvCiv city-trade ordering defect) Outer-ring culture conversion consults a deleted city
+## KI#783 - (Fixed AdvCiv city-trade ordering defect) Outer-ring culture conversion consulted a deleted city
 
 AdvCiv expanded city-trade culture conversion to the full city radius and made contested outer-ring conversion depend on whether the traded city has working priority. `acquireCity` deletes that city before invoking the helper, so it can no longer be returned by `defaultWorkingCity` and valid outer-ring conversion is silently skipped. BtS/K-Mod use only the old inner ring and lack this dependency; Base AdvCiv 1.14 and SAS retain the AdvCiv integration defect.
 
 Found as F460/provisional KI#783 during ChatGPT-5.6-Sol's C031-WIP177 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+Fixed by calculating each full-radius culture conversion while the ceded city still exists and can participate in `defaultWorkingCity` priority, then applying the saved amounts at AdvCiv's original safe point after deletion. This preserves the documented outer-ring decision without changing plot culture or working assignments prematurely, and retains the existing inner-ring conversion behavior. The two deterministic `CityPlotIter` passes are guarded by matching-count assertions; direct construction of the specialized contested-culture trade case was not needed for this source-level lifecycle correction. Fixed with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-784"></a>
 

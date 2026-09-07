@@ -1802,19 +1802,33 @@ void CvPlayer::acquireCity(CvCity* pOldCity, bool bConquest, bool bTrade, bool b
 				pOldCity->getBuildingHealthChange(eBuildingClass));
 	}
 
+	// <!-- custom: AdvCiv extended traded-city culture conversion to the full city radius, but the old city was deleted before outer-ring working priority was consulted.
+	// Preserve each conversion amount while the traded city can still be the default working city, then apply it at the original post-deletion point. See KI#783. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	std::vector<int> aiCultureConvertedUponTrade;
+	if (bTrade)
+	{
+		for (CityPlotIter it(kCityPlot); it.hasNext(); ++it)
+		{
+			aiCultureConvertedUponTrade.push_back(cultureConvertedUponCityTrade(kCityPlot, *it, eOldOwner, getID()));
+		}
+	}
+
 	pOldCity->kill(false, /* advc.001: */ false); // Don't bump units yet
 	pOldCity = NULL; // advc: Mustn't be accessed past this point
 
 	if (bTrade) // Repercussions of cession: tile culture, war success (city culture: further down)
 	{
 		// <advc.ctr>
+		// <!-- custom: Apply the conversion amounts captured before the old city was deleted; matching iterator counts ensure each saved outer-ring decision reaches the same plot. See KI#783. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		size_t iCityPlot = 0;
 		for (CityPlotIter it(kCityPlot); it.hasNext(); ++it)
 		{
-			int iConvertedCulture = cultureConvertedUponCityTrade(
-					kCityPlot, *it, eOldOwner, getID());
+			FAssert(iCityPlot < aiCultureConvertedUponTrade.size());
+			int const iConvertedCulture = aiCultureConvertedUponTrade[iCityPlot++];
 			it->changeCulture(eOldOwner, -iConvertedCulture, false);
 			it->changeCulture(getID(), iConvertedCulture, false);
 		}
+		FAssert(iCityPlot == aiCultureConvertedUponTrade.size());
 		// BtS code replaced by the loop above // </advc.ctr>
 		/*for (int iDX = -1; iDX <= 1; iDX++) {
 			for (int iDY = -1; iDY <= 1; iDY++) {
