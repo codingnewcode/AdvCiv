@@ -181,7 +181,7 @@ void CvPlayer::initInGame(PlayerTypes eID)
 			/*	advc.003q: The new team should have only one player, so
 				multiple declarations of war should be impossible here. */
 			FAssert(!kTarget.isAtWar(getTeam()));
-			kTarget.declareWar(getTeam(), false, WARPLAN_LIMITED);
+			kTarget.declareWar(getTeam(), false, WARPLAN_LIMITED, true, NO_PLAYER, false, WAR_DECLARATION_GAME_SETUP);
 		}
 	} // BETTER_BTS_AI_MOD END
 
@@ -3651,7 +3651,7 @@ void CvPlayer::handleDiploEvent(DiploEventTypes eDiploEvent, PlayerTypes ePlayer
 		FAssertMsg(GET_PLAYER(ePlayer).getTeam() != getTeam(), "shouldn't call this function on our own team");
 		if (gTeamLogLevel >= 2) // BETTER_BTS_AI_MOD, AI logging, 10/02/09, jdog5000
 			logBBAI("    Team %d (%S) declares war on team %d due to DIPLOEVENT", getTeam(), getCivilizationDescription(0), ePlayer);
-		GET_TEAM(getTeam()).declareWar(GET_PLAYER(ePlayer).getTeam(), false, WARPLAN_LIMITED);
+		GET_TEAM(getTeam()).declareWar(GET_PLAYER(ePlayer).getTeam(), false, WARPLAN_LIMITED, true, NO_PLAYER, false, WAR_DECLARATION_DIPLOMACY);
 		break;
 
 	case DIPLOEVENT_CONVERT:

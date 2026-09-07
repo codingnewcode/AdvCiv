@@ -30,7 +30,8 @@ public:
 
 	// <kekm.26>
 	static void queueWar(TeamTypes eAttackingTeam, TeamTypes eDefendingTeam,
-			bool bNewDiplo, WarPlanTypes eWarPlan, bool bPrimaryDOW = true);
+			bool bNewDiplo, WarPlanTypes eWarPlan, bool bPrimaryDOW = true,
+			WarDeclarationCause eCause = WAR_DECLARATION_DIRECT);
 	static void triggerWars(/* advc: */ bool bForceUpdateAttitude = false);
 	// </kekm.26>
 
@@ -68,7 +69,8 @@ public:
 	void declareWar(TeamTypes eTeam, bool bNewDiplo, WarPlanTypes eWarPlan,
 			bool bPrimaryDoW = true, // K-Mod added bPrimaryDoW, Exposed to Python
 			PlayerTypes eSponsor = NO_PLAYER, // advc.100
-			bool bRandomEvent = false); // advc.106g
+			bool bRandomEvent = false, // advc.106g
+			WarDeclarationCause eCause = WAR_DECLARATION_DIRECT);
 	void makePeace(TeamTypes eTarget, bool bBumpUnits = true,																		// Exposed to Python
 			TeamTypes eBroker = NO_TEAM, // advc.100b
 			bool bCapitulate = false, // advc.034
@@ -690,6 +692,7 @@ protected:
 	static std::queue<bool> newdiplo_queue;
 	static std::queue<WarPlanTypes> warplan_queue;
 	static std::queue<bool> primarydow_queue;
+	static std::queue<WarDeclarationCause> warcause_queue;
 	static bool bTriggeringWars;
 	// </kekm.26>
 

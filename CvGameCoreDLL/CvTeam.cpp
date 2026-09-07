@@ -44,6 +44,7 @@ std::queue<TeamTypes> CvTeam::defending_queue;
 std::queue<bool> CvTeam::newdiplo_queue;
 std::queue<WarPlanTypes> CvTeam::warplan_queue;
 std::queue<bool> CvTeam::primarydow_queue;
+std::queue<WarDeclarationCause> CvTeam::warcause_queue;
 bool CvTeam::bTriggeringWars = false;
 // </kekm.26>
 
@@ -275,13 +276,13 @@ void CvTeam::addTeam(TeamTypes eTeam)
 		{
 			//declareWar(...);
 			queueWar( // kekm.26
-					getID(), eOther, false, GET_TEAM(eTeam).AI_getWarPlan(eOther));
+					getID(), eOther, false, GET_TEAM(eTeam).AI_getWarPlan(eOther), true, WAR_DECLARATION_PERMANENT_ALLIANCE);
 		}
 		else if (isAtWar(eOther))
 		{
 			//GET_TEAM(eTeam).declareWar(...);
 			queueWar( // kekm.26
-					eTeam, eOther, false, AI().AI_getWarPlan(eOther));
+					eTeam, eOther, false, AI().AI_getWarPlan(eOther), true, WAR_DECLARATION_PERMANENT_ALLIANCE);
 		}
 	}
 	// <kekm.26>
@@ -290,9 +291,9 @@ void CvTeam::addTeam(TeamTypes eTeam)
 	{
 		TeamTypes const eOther = apOther[i]->getID();
 		if (GET_TEAM(eTeam).isAtWar(eOther))
-			queueWar(eOther, getID(), false, WARPLAN_DOGPILE, false);
+			queueWar(eOther, getID(), false, WARPLAN_DOGPILE, false, WAR_DECLARATION_PERMANENT_ALLIANCE);
 		else if (isAtWar(eOther))
-			queueWar(eOther, eTeam, false, WARPLAN_DOGPILE, false);
+			queueWar(eOther, eTeam, false, WARPLAN_DOGPILE, false, WAR_DECLARATION_PERMANENT_ALLIANCE);
 	}
 	triggerWars();
 	// </kekm.26>
@@ -1039,7 +1040,8 @@ bool CvTeam::canEventuallyDeclareWar(TeamTypes eTeam) const
 void CvTeam::declareWar(TeamTypes eTarget, bool bNewDiplo, WarPlanTypes eWarPlan,
 	bool bPrimaryDoW, // K-Mod
 	PlayerTypes eSponsor, // advc.100
-	bool bRandomEvent) // advc.106g
+	bool bRandomEvent, // advc.106g
+	WarDeclarationCause eCause)
 {
 	PROFILE_FUNC();
 	FAssert(eTarget != NO_TEAM);
@@ -1077,6 +1079,8 @@ void CvTeam::declareWar(TeamTypes eTarget, bool bNewDiplo, WarPlanTypes eWarPlan
 	setAtWar(eTarget, true);
 	kTarget.setAtWar(getID(), true);
 	m_abJustDeclaredWar.set(eTarget, true); // advc.162
+	// <!-- custom: Log at the authoritative declaration boundary before secondary queued wars fire, preserving direct/cascade cause, sponsor and primary-war context without altering war behavior. Mature AdvCiv-SAS adds broader war-summary aggregation separately. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordWarStarted(getID(), eTarget, eWarPlan, bPrimaryDoW, bNewDiplo, eSponsor, bRandomEvent, eCause);
 	// BETTER_BTS_AI_MOD (08/21/09, jdog5000, Efficiency): START
 	GC.getMap().invalidateBorderDangerCache(eTarget);
 	GC.getMap().invalidateBorderDangerCache(getID());
@@ -1156,13 +1160,13 @@ void CvTeam::declareWar(TeamTypes eTarget, bool bNewDiplo, WarPlanTypes eWarPlan
 		{
 			//declareWar(kThirdTeam.getID(), bNewDiplo, AI_getWarPlan(eTeam), false);
 			// kekm.26:
-			queueWar(getID(), kThirdTeam.getID(), bNewDiplo, AI().AI_getWarPlan(eTarget), false);
+			queueWar(getID(), kThirdTeam.getID(), bNewDiplo, AI().AI_getWarPlan(eTarget), false, WAR_DECLARATION_VASSAL_ALIGNMENT);
 		}
 		else if (kThirdTeam.isVassal(getID()) || isVassal(kThirdTeam.getID()))
 		{
 			//kThirdTeam.declareWar(eTeam, bNewDiplo, WARPLAN_DOGPILE, false);
 			// kekm.26:
-			queueWar(kThirdTeam.getID(), eTarget, bNewDiplo, WARPLAN_DOGPILE, false);
+			queueWar(kThirdTeam.getID(), eTarget, bNewDiplo, WARPLAN_DOGPILE, false, WAR_DECLARATION_VASSAL_ALIGNMENT);
 		}
 	}
 	/*if (bPrimaryDoW) { // K-Mod. update attitude
@@ -1212,7 +1216,7 @@ void CvTeam::triggerDefensivePacts(TeamTypes eTarget, bool bNewDiplo, bool bPrim
 			FAssert(!kTarget.isAVassal() && !kThirdTeam.isAVassal());
 			//kThirdTeam.declareWar(getID(), bNewDiplo, WARPLAN_DOGPILE, false);
 			// kekm.26:
-			queueWar(kThirdTeam.getID(), getID(), bNewDiplo, WARPLAN_DOGPILE, false);
+			queueWar(kThirdTeam.getID(), getID(), bNewDiplo, WARPLAN_DOGPILE, false, WAR_DECLARATION_DEFENSIVE_PACT);
 			// <advc.104i>
 			bDefPactTriggered = true;
 			if(!isAVassal())
@@ -1226,7 +1230,7 @@ void CvTeam::triggerDefensivePacts(TeamTypes eTarget, bool bNewDiplo, bool bPrim
 		{	// For alliance option.  This teams pacts are canceled above if not using alliance option.
 			//kThirdTeam.declareWar(eTeam, bNewDiplo, WARPLAN_DOGPILE, false);
 			// kekm.26:
-			queueWar(kThirdTeam.getID(), eTarget, bNewDiplo, WARPLAN_DOGPILE, false);
+			queueWar(kThirdTeam.getID(), eTarget, bNewDiplo, WARPLAN_DOGPILE, false, WAR_DECLARATION_DEFENSIVE_PACT);
 		}
 	}
 	if (iDPBehavior == 0)// kekm.3: || (iDPBehavior == 1 && bPrimaryDoW))
@@ -1294,6 +1298,8 @@ void CvTeam::makePeace(TeamTypes eTarget, bool bBumpUnits,  // advc: refactored
 		kMembers[i]->updatePlotGroups();
 	for (size_t i = 0; i < kMembers.size(); i++)
 		kMembers[i]->updateTradeRoutes();
+	// <!-- custom: Base AdvCiv's AI_postMakePeace clears both teams' war-success values. Record final war/peace context after war status changes but before that reset. Broader mature-SAS war summaries remain a later port slice. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordWarEnded(getID(), eTarget, AI().AI_getWarSuccess(eTarget).round(), kTarget.AI().AI_getWarSuccess(getID()).round(), bCapitulate, eBroker, bRandomEvent, pReparations != NULL);
 	// advc: AI code moved down a bit and then into a new function
 	AI().AI_postMakePeace(eTarget);
 	// advc.106o: Vassals now mentioned along with their master
@@ -2933,7 +2939,7 @@ CvPlot* CvTeam::makeHasMet(TeamTypes eOther, bool bNewDiplo,
 		}	
 	} // </advc.071>
 	if (isAlwaysWar() && getID() != eOther)
-		declareWar(eOther, false, NO_WARPLAN);
+		declareWar(eOther, false, NO_WARPLAN, true, NO_PLAYER, false, WAR_DECLARATION_ALWAYS_WAR);
 	else if (!isHuman() && bNewDiplo &&
 		GC.getGame().isFinalInitialized() && !gDLL->GetWorldBuilderMode() &&
 		!isAtWar(eOther))
@@ -3461,7 +3467,7 @@ void CvTeam::setVassal(TeamTypes eMaster, bool bNewValue, bool bCapitulated)
 			{
 				//declareWar((TeamTypes)iI, false, WARPLAN_DOGPILE);
 				// kekm.26: "These wars declared by capitulated vassal don't trigger defensive pacts."
-				queueWar(getID(), eThirdParty, false, WARPLAN_DOGPILE, !bCapitulated);
+				queueWar(getID(), eThirdParty, false, WARPLAN_DOGPILE, !bCapitulated, WAR_DECLARATION_VASSAL_ALIGNMENT);
 			}
 			else if (isAtWar(eThirdParty))
 			{
@@ -3471,7 +3477,7 @@ void CvTeam::setVassal(TeamTypes eMaster, bool bNewValue, bool bCapitulated)
 				{
 					//GET_TEAM(eMaster).declareWar((TeamTypes)iI, false, WARPLAN_DOGPILE);
 					// kekm.26:
-					queueWar(eMaster, eThirdParty, false, WARPLAN_DOGPILE);
+					queueWar(eMaster, eThirdParty, false, WARPLAN_DOGPILE, true, WAR_DECLARATION_VASSAL_ALIGNMENT);
 				}
 			}
 		}
@@ -3752,13 +3758,14 @@ void CvTeam::freeVassal(TeamTypes eVassal) const
 	nest war declarations, now they are queued to trigger defensive pacts and
 	everything else in the correct order." */
 void CvTeam::queueWar(TeamTypes eAttackingTeam, TeamTypes eDefendingTeam,
-		bool bNewDiplo, WarPlanTypes eWarPlan, bool bPrimaryDOW)
+		bool bNewDiplo, WarPlanTypes eWarPlan, bool bPrimaryDOW, WarDeclarationCause eCause)
 {
 	attacking_queue.push(eAttackingTeam);
 	defending_queue.push(eDefendingTeam);
 	newdiplo_queue.push(bNewDiplo);
 	warplan_queue.push(eWarPlan);
 	primarydow_queue.push(bPrimaryDOW);
+	warcause_queue.push(eCause);
 }
 
 void CvTeam::triggerWars(bool bForceUpdateAttitude)
@@ -3771,12 +3778,13 @@ void CvTeam::triggerWars(bool bForceUpdateAttitude)
 	{
 		GET_TEAM(attacking_queue.front()).declareWar(
 				defending_queue.front(), newdiplo_queue.front(),
-				warplan_queue.front(), primarydow_queue.front());
+				warplan_queue.front(), primarydow_queue.front(), NO_PLAYER, false, warcause_queue.front());
 		attacking_queue.pop();
 		defending_queue.pop();
 		newdiplo_queue.pop();
 		warplan_queue.pop();
 		primarydow_queue.pop();
+		warcause_queue.pop();
 		bWarsDeclared = true;
 	}
 	if (bWarsDeclared /* advc: */ || bForceUpdateAttitude)

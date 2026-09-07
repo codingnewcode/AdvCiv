@@ -10,6 +10,7 @@
 #include "CvInfo_Terrain.h"
 #include "CvInfo_GameOption.h"
 #include "BBAILog.h"
+#include "SASGameRecordLog.h" // <!-- custom: Record strategic war-plan transitions without enabling broader BBAI decision spam. (ChatGPT-5.6-Sol) -->
 #include "UWAIAgent.h" // advc.104
 #include <numeric> // K-Mod. used in AI_warSpoilsValue
 
@@ -4790,6 +4791,8 @@ void CvTeamAI::AI_setWarPlan(TeamTypes eTarget, WarPlanTypes eNewValue, bool bWa
 	WarPlanTypes const eOldValue = AI_getWarPlan(eTarget);
 	if (eOldValue == eNewValue || (!bWar && isAtWar(eTarget)))
 		return;
+	// <!-- custom: Log before resetting the state counter below so the record preserves how long the previous preparation/war-plan state lasted. (GPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2 && GC.getGame().isFinalInitialized()) logSASGameRecordWarPlanChanged(getID(), eTarget, eOldValue, eNewValue, bWar, AI_getWarPlanStateCounter(eTarget));
 	AI_updateWarPlanCounts(eTarget, m_aeWarPlan.get(eTarget), eNewValue); // advc.opt
 	m_aeWarPlan.set(eTarget, eNewValue);
 	AI_setWarPlanStateCounter(eTarget, 0);

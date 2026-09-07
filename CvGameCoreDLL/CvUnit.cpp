@@ -3992,7 +3992,7 @@ bool CvUnit::nuke(int iX, int iY)
 		if (abTeamsAffected.get(it->getID()) && !isEnemy(it->getID()))
 		{
 			//GET_TEAM(getTeam()).declareWar(it->getID(), false, WARPLAN_LIMITED);
-			CvTeam::queueWar(getTeam(), it->getID(), false, WARPLAN_LIMITED); // kekm.26
+			CvTeam::queueWar(getTeam(), it->getID(), false, WARPLAN_LIMITED, true, WAR_DECLARATION_NUCLEAR_ATTACK); // kekm.26
 		}
 		CvTeam::triggerWars(); // kekm.26
 	}

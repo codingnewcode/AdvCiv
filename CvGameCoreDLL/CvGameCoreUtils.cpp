@@ -195,6 +195,39 @@ char const* getSASMemoryType(MemoryTypes eMemory)
 	}
 }
 
+char const* getSASWarPlanType(WarPlanTypes eWarPlan)
+{
+	switch (eWarPlan)
+	{
+	case NO_WARPLAN: return "NO_WARPLAN";
+	case WARPLAN_ATTACKED_RECENT: return "WARPLAN_ATTACKED_RECENT";
+	case WARPLAN_ATTACKED: return "WARPLAN_ATTACKED";
+	case WARPLAN_PREPARING_LIMITED: return "WARPLAN_PREPARING_LIMITED";
+	case WARPLAN_PREPARING_TOTAL: return "WARPLAN_PREPARING_TOTAL";
+	case WARPLAN_LIMITED: return "WARPLAN_LIMITED";
+	case WARPLAN_TOTAL: return "WARPLAN_TOTAL";
+	case WARPLAN_DOGPILE: return "WARPLAN_DOGPILE";
+	default: return "UNKNOWN_WARPLAN";
+	}
+}
+
+char const* getSASWarDeclarationCause(WarDeclarationCause eCause)
+{
+	switch (eCause)
+	{
+	case WAR_DECLARATION_DIRECT: return "DIRECT";
+	case WAR_DECLARATION_GAME_SETUP: return "GAME_SETUP";
+	case WAR_DECLARATION_ALWAYS_WAR: return "ALWAYS_WAR";
+	case WAR_DECLARATION_PERMANENT_ALLIANCE: return "PERMANENT_ALLIANCE";
+	case WAR_DECLARATION_DEFENSIVE_PACT: return "DEFENSIVE_PACT";
+	case WAR_DECLARATION_VASSAL_ALIGNMENT: return "VASSAL_ALIGNMENT";
+	case WAR_DECLARATION_DIPLOMACY: return "DIPLOMACY";
+	case WAR_DECLARATION_VOTE: return "DIPLOMATIC_VOTE";
+	case WAR_DECLARATION_NUCLEAR_ATTACK: return "NUCLEAR_ATTACK";
+	default: return "UNKNOWN";
+	}
+}
+
 char const* getSASTechAcquisitionCause(TechAcquisitionCause eCause)
 {
 	switch (eCause)

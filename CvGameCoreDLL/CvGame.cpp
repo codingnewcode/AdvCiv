@@ -660,7 +660,7 @@ void CvGame::initDiplomacy()
 			for (TeamIter<CIV_ALIVE> itCiv; itCiv.hasNext(); ++itCiv) // advc.003m: ALIVE
 			{
 				if (itTeam->getID() != itCiv->getID())
-					itTeam->declareWar(itCiv->getID(), false, NO_WARPLAN);
+					itTeam->declareWar(itCiv->getID(), false, NO_WARPLAN, true, NO_PLAYER, false, WAR_DECLARATION_GAME_SETUP);
 			}
 		}
 	}
@@ -7844,7 +7844,7 @@ void CvGame::updateWar()
 						{
 							if (!kTeam1.isAtWar((TeamTypes)iJ))
 							{
-								kTeam1.declareWar(((TeamTypes)iJ), false, NO_WARPLAN);
+								kTeam1.declareWar(((TeamTypes)iJ), false, NO_WARPLAN, true, NO_PLAYER, false, WAR_DECLARATION_ALWAYS_WAR);
 							}
 						}
 					}
@@ -8279,7 +8279,7 @@ void CvGame::processVote(const VoteTriggeredData& kData, int iChange)
 			{
 				// <kekm.26>
 				CvTeam::queueWar(kFullMember.getID(), kTeam.getID(),
-						false, WARPLAN_DOGPILE); // </kekm.26>
+						false, WARPLAN_DOGPILE, true, WAR_DECLARATION_VOTE); // </kekm.26>
 				kTeam.AI_makeUnwillingToTalk(kFullMember.getID()); // advc.104i
 			}
 		}
