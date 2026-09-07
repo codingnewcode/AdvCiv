@@ -4495,6 +4495,10 @@ void CvPlayer::raze(CvCity& kCity) // advc: param was CvCity*
 
 	FAssert(kCity.getOwner() == getID());
 
+	// <!-- custom: Capture rare city-raze context before destruction and finalize after disband so the same GameRecord action contains exact land/population/victory consequences. (ChatGPT-5.6-Sol) -->
+	bool const bLogSASCityRaze = (gGameRecordLogLevel >= 2);
+	if (bLogSASCityRaze) beginSASGameRecordCityRaze(&kCity, getID());
+
 	AI().AI_processRazeMemory(kCity); // advc.003n: Moved into subroutine
 
 	wchar szBuffer[1024];
@@ -4530,6 +4534,7 @@ void CvPlayer::raze(CvCity& kCity) // advc: param was CvCity*
 	kCity.doPartisans(); // advc.003y
 	CvEventReporter::getInstance().cityRazed(&kCity, getID());
 	disband(kCity);
+	if (bLogSASCityRaze) endSASGameRecordCityRaze(getID());
 	// <advc.130w> (Cf. the end of acquireCity)
 	for (PlayerAIIter<MAJOR_CIV,KNOWN_TO> itOther(getTeam());
 		itOther.hasNext(); ++itOther)

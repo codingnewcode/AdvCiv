@@ -21,6 +21,11 @@ void updateSASGameRecordPlayerTurnState(PlayerTypes ePlayer);
 void logSASGameRecordResearchCompleted(TechTypes eTech, TeamTypes eTeam, PlayerTypes ePlayer, int iProgressBefore, int iProgressBeforePostCompletionAdjustment, int iResearchModifier, int iUnmodifiedOverflow);
 // <!-- custom: Added eCause so the TECH_ACQUIRED action can name its explicit source without inferring provenance from announcement or first-discovery flags. (GPT-5.6-Sol + GPT-5.6 Thinking) -->
 void logSASGameRecordTechAcquired(TechTypes eType, TeamTypes eTeam, PlayerTypes ePlayer, TechAcquisitionCause eCause);
+// <!-- custom: City lifecycle actions use the existing Civ4 event boundaries; razing is bracketed directly around CvPlayer::disband so one row can preserve both the live city and exact post-destruction empire/victory consequences. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordCityBuilt(CvCity const* pCity);
+void beginSASGameRecordCityRaze(CvCity const* pCity, PlayerTypes ePlayer);
+void endSASGameRecordCityRaze(PlayerTypes ePlayer);
+void logSASGameRecordCityAcquired(PlayerTypes eOldOwner, PlayerTypes eNewOwner, CvCity const* pCity, bool bConquest, bool bTrade);
 // <!-- custom: War lifecycle hooks preserve factual declaration/cascade and peace context at the authoritative CvTeam boundaries. The incremental 1.14 port intentionally leaves mature per-war aggregate summaries for a later slice. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordWarStarted(TeamTypes eDeclarer, TeamTypes eTarget, WarPlanTypes eWarPlan, bool bPrimaryDoW, bool bNewDiplo, PlayerTypes eSponsor, bool bRandomEvent, WarDeclarationCause eCause);
 void logSASGameRecordWarEnded(TeamTypes eTeam, TeamTypes eOtherTeam, int iTeamAWarSuccess, int iTeamBWarSuccess, bool bCapitulate, TeamTypes eBroker, bool bRandomEvent, bool bReparations);

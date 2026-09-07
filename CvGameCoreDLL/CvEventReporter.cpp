@@ -183,6 +183,7 @@ void CvEventReporter::gotoPlotSet(CvPlot *pPlot, PlayerTypes ePlayer)
 
 void CvEventReporter::cityBuilt(CvCity *pCity)
 {
+	if (gGameRecordLogLevel >= 2) logSASGameRecordCityBuilt(pCity);
 	m_kPythonEventMgr.reportCityBuilt(pCity);
 	m_kStatistics.cityBuilt(pCity);
 }
@@ -195,6 +196,7 @@ void CvEventReporter::cityRazed(CvCity *pCity, PlayerTypes ePlayer)
 
 void CvEventReporter::cityAcquired(PlayerTypes eOldOwner, PlayerTypes iPlayer, CvCity* pCity, bool bConquest, bool bTrade)
 {
+	if (gGameRecordLogLevel >= 2) logSASGameRecordCityAcquired(eOldOwner, iPlayer, pCity, bConquest, bTrade);
 	m_kPythonEventMgr.reportCityAcquired(eOldOwner, iPlayer, pCity, bConquest, bTrade);
 }
 
