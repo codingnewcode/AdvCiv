@@ -24679,7 +24679,9 @@ CvCityAI const* CvPlayerAI::AI_bestRequestCity(PlayerTypes eOwner, scaled rMinVa
 			continue;
 		// Prioritize not making the request too painful for the current owner
 		int iValue = 3 * iOwnerValue - iOurValue;
-		if (iValue < iBestValue &&
+		// <!-- custom: Liberation is the primary selection key, not merely a guard after a liberation city happens to win.
+		// Let the first eligible liberation city replace any non-liberation best regardless of their secondary value order. See KI#675. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		if (((bLiberate && !bBestLiberate) || iValue < iBestValue) &&
 			// (Denial always has to be checked on the owner; handles both sides.)
 			kOwner.AI_cityTrade(*pCity, getID()) == NO_DENIAL)
 		{
@@ -30963,7 +30965,9 @@ bool CvPlayerAI::AI_isSASCityLikelyToBenefitUsLongTerm(CvCity const& kCity) cons
 		}
 	}
 	bool const bRawIntrinsicSiteLikelyToBenefit = !(iVeryBadPlots > iMaxVeryBadPlots && iLowFoodScore > iMaxLowFoodScore);
-	bool const bIntrinsicSiteProtectedByActiveWorldWonder = (bDistanceOverrideActiveWorldWonder && kCity.hasActiveWorldWonder());
+	// <!-- custom: This helper judges the city for this prospective recipient.
+	// Test Wonder obsolescence against our team rather than the foreign/current owner's team; the self-owned post-conquest caller remains equivalent. See KI#652. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool const bIntrinsicSiteProtectedByActiveWorldWonder = (bDistanceOverrideActiveWorldWonder && kCity.getNumActiveWorldWonders(1, getID()) > 0);
 	bool const bIntrinsicSiteLikelyToBenefit = (bRawIntrinsicSiteLikelyToBenefit || bIntrinsicSiteProtectedByActiveWorldWonder);
 	CvCity const* pNearestOwnCitySameArea = GC.getMap().findCity(kCity.getX(), kCity.getY(), getID(), NO_TEAM, true, false, NO_TEAM, NO_DIRECTION, &kCity);
 	int const iNearestOwnCityDistanceSameArea = (pNearestOwnCitySameArea == NULL ? -1 : plotDistance(kCity.getX(), kCity.getY(), pNearestOwnCitySameArea->getX(), pNearestOwnCitySameArea->getY()));

@@ -590,9 +590,9 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#497 - (Provisional Pending inherited AdvCiv information leak) Raw city-radius counters expose hidden cities](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-497)\
 [KI#498 - (Provisional Pending inherited AdvCiv information leak) Culture valuation reads exact hidden working-city state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-498)\
 [KI#499 - (Provisional Pending inherited AdvCiv information leak) Found value reads live hidden plot culture](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-499)\
-[KI#500 - (Provisional Pending AdvCiv-SAS first-settler regression) Runtime evaluation retains starting-location omniscience](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-500)\
-[KI#501 - (Provisional Pending inherited AdvCiv information leak) Foreign pressure reads hidden current culture level](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-501)\
-[KI#502 - (Provisional Pending inherited AdvCiv information leak) Runtime city-site evaluation reads hidden area topology](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-502)\
+[KI#500 - (Pending Knowledge-Boundary AdvCiv-SAS first-settler regression) Runtime evaluation retains starting-location omniscience](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-500)\
+[KI#501 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Foreign pressure reads hidden current culture level](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-501)\
+[KI#502 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Runtime city-site evaluation reads hidden area topology](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-502)\
 [KI#503 - (Fixed AdvCiv-SAS low-food valuation defect) Already-irrigated Farm food was omitted](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-503)\
 [KI#504 - (Fixed inherited AdvCiv production-estimate defect) Existing improvement count was mistaken for build capability](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-504)\
 [KI#505 - (Fixed inherited AdvCiv diagnostic defect) Found-value logging always reported zero unrevealed tiles](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-505)\
@@ -748,7 +748,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#649 - (Fixed SAS civic-value formula regression) Restore ordinary commerce normalization without removing specialist tuning](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-649)\
 [KI#650 - (Fixed inherited K-Mod civic-value regression) Use the candidate's war-weariness modifier](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-650)\
 [KI#651 - (Pending Architectural inherited K-Mod/AdvCiv civic-value defect) A -100% modifier erases its active maintenance value](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-651)\
-[KI#652 - (Provisional Pending SAS prospective-owner defect) World-Wonder protection uses the city's current team](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-652)\
+[KI#652 - (Fixed SAS prospective-owner defect) World-Wonder protection used the city's current team](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-652)\
 [KI#653 - (Fixed inherited AdvCiv regression) Barbarian AI_bestTech obeys the no-innovation rule](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-653)\
 [KI#654 - (Fixed SAS KI#83 defect) Dead teams no longer trigger a widely-known-technology fire sale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-654)\
 [KI#655 - (Fixed inherited AdvCiv deal-folding defect) Preserve mature resource-deal age](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-655)\
@@ -771,7 +771,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#672 - (Fixed inherited K-Mod accumulator defect) Tech-theft counts leaked across rivals](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-672)\
 [KI#673 - (Fixed inherited AdvCiv decay defect) Gold-trade memory could become permanent](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-673)\
 [KI#674 - (Fixed inherited AdvCiv control-flow defect) A rejected city-for-war fallback could execute](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-674)\
-[KI#675 - (Provisional Pending AdvCiv selection defect) City-request liberation priority depends on iteration order](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-675)\
+[KI#675 - (Fixed AdvCiv selection defect) City-request liberation priority depended on iteration order](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-675)\
 [KI#676 - (Fixed inherited BtS event-value defect) BonusRevealed read BonusType](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-676)\
 [KI#677 - (Fixed inherited BtS event-value omission) Non-city building yield and commerce were ignored](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-677)\
 [KI#678 - (Fixed inherited BtS event-value scope defect) Building happiness and health became empire-wide](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-678)\
@@ -13002,25 +13002,25 @@ Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-So
 
 <a id="ki-500"></a>
 
-## KI#500 - (Provisional Pending AdvCiv-SAS first-settler regression) Runtime evaluation retains starting-location omniscience
+## KI#500 - (Pending Knowledge-Boundary AdvCiv-SAS first-settler regression) Runtime evaluation retains starting-location omniscience
 
-Album F177 finds the SAS runtime wrapper disabling allSeeing while leaving starting-location-only helpers omniscient. Pending independent implementation review.
+Album F177 finds the SAS runtime wrapper disabling allSeeing while leaving starting-location-only helpers omniscient. Independent implementation review confirmed that a safe repair must separate starting-capital weights from map-generation knowledge and audit every reachable `isStartingLoc()` branch rather than merely patching one helper. Deferred as a knowledge-boundary pass.
 
 Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-501"></a>
 
-## KI#501 - (Provisional Pending inherited AdvCiv information leak) Foreign pressure reads hidden current culture level
+## KI#501 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Foreign pressure reads hidden current culture level
 
-Album F178 finds a known or deduced foreign city's live hidden culture level changing pressure radius and strength without remembered team knowledge. Pending independent implementation review.
+Album F178 finds a known or deduced foreign city's live hidden culture level changing pressure radius and strength without remembered team knowledge. Independent implementation review confirmed that `CvCity` has no per-team remembered culture-level value, so a repair first needs an explicit stale/conservative knowledge policy or new remembered state. Deferred as a knowledge-boundary pass.
 
 Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-502"></a>
 
-## KI#502 - (Provisional Pending inherited AdvCiv information leak) Runtime city-site evaluation reads hidden area topology
+## KI#502 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Runtime city-site evaluation reads hidden area topology
 
-Album F179 finds later-city canal, access and small-area heuristics consuming complete unrevealed CvArea size/connectivity. Pending independent implementation review.
+Album F179 finds later-city canal, access and small-area heuristics consuming complete unrevealed CvArea size/connectivity. Independent implementation review confirmed that `CvArea` has no team-revealed topology equivalent for these consumers; a repair needs a consistent known-area model rather than isolated substitutions. Deferred as a knowledge-boundary pass.
 
 Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -14684,11 +14684,15 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C031 `CvPlayerAI.cpp
 
 <a id="ki-652"></a>
 
-## KI#652 - (Provisional Pending SAS prospective-owner defect) World-Wonder protection uses the city's current team
+## KI#652 - (Fixed SAS prospective-owner defect) World-Wonder protection used the city's current team
 
 Album F329 finds SAS's KI#186/KI#186.2 `AI_isSASCityLikelyToBenefitUsLongTerm` helper asking whether a still-foreign or seller-owned city has an active World Wonder through `hasActiveWorldWonder()`. That query tests obsolescence against the city's current team even though city-trade and overseas-conquest callers ask whether the city would benefit a different prospective recipient. A city containing the Great Lighthouse can therefore be rejected when its current owner knows Astronomy but the evaluating recipient does not, even though the Wonder would become active after transfer; the reverse technology state can protect a poor site through a Wonder that would immediately become obsolete for its recipient.
 
-This is a SAS-local prospective-state regression. AdvCiv already exposes the required hypothetical-owner contract through `getNumActiveWorldWonders(..., PlayerTypes eOwner)`, and `AI_targetCityValue` uses that API correctly for the prospective attacker. Pending the narrow repair of evaluating World-Wonder protection with the current AI player's identity while retaining the already-correct post-conquest caller behavior.
+This is a SAS-local prospective-state regression. AdvCiv already exposes the required hypothetical-owner contract through `getNumActiveWorldWonders(..., PlayerTypes eOwner)`, and `AI_targetCityValue` uses that API correctly for the prospective attacker.
+
+Fixed by evaluating active World Wonders against the current AI player as the prospective recipient. Foreign city-trade and pre-conquest target checks now use the Wonder state that would apply after acquisition, while the already-owned post-conquest caller remains equivalent.
+
+Validated with the matching Debug-opt DLL through a complete Huge Pangaea autoplay with 16 independent teams. The land-heavy game reached a turn-470 Space Race victory without an observed issue (`SASGameRecord_20260907T134344Z_new1.log`); the rare differing-obsolescence acquisition branch is additionally source-verified.
 
 Found and documented provisionally during ChatGPT-5.6-Sol's C031 `CvPlayerAI.cpp` deep re-audit; disposition reconciled with the help of GPT-5.6-Sol, thanks.
 
@@ -14940,9 +14944,13 @@ Found and investigated during ChatGPT-5.6-Sol's C031-WIP41 `CvPlayerAI.cpp` deep
 
 <a id="ki-675"></a>
 
-## KI#675 - (Provisional Pending AdvCiv selection defect) City-request liberation priority depends on iteration order
+## KI#675 - (Fixed AdvCiv selection defect) City-request liberation priority depended on iteration order
 
-Album F352 finds `AI_bestRequestCity` claiming that liberation takes precedence while using a single numeric-best comparison that can let an earlier non-liberation city block every later liberation city. Help or tribute city requests therefore depend on city iteration order. Pending lexicographic selection by liberation status first and the existing value second.
+Album F352 found `AI_bestRequestCity` claiming that liberation takes precedence while using a single numeric-best comparison that could let an earlier non-liberation city block every later liberation city. Help or tribute city requests therefore depended on city iteration order.
+
+Fixed by making liberation status the primary selection key and retaining the existing city value as the secondary key. The first eligible liberation city can now replace a non-liberation best regardless of iteration order; later candidates of the same kind continue to use the established value comparison.
+
+Validated by the same complete Huge Pangaea Debug-opt autoplay through turn 470 without an observed issue (`SASGameRecord_20260907T134344Z_new1.log`). The rare help/tribute city-request comparator is additionally source-verified.
 
 Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP42 `CvPlayerAI.cpp` deep re-audit; disposition reconciled with the help of GPT-5.6-Sol, thanks.
 
