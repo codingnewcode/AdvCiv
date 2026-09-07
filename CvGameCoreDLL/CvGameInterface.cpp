@@ -2321,7 +2321,7 @@ void CvGame::cheatSpaceship() const
 			//cheat required techs
 			TechTypes eRequiredTech = kProject.getTechPrereq();
 			if (!kTeam.isHasTech(eRequiredTech))
-				kTeam.setHasTech(eRequiredTech, true, getActivePlayer(), true, true);
+				kTeam.setHasTech(eRequiredTech, true, getActivePlayer(), true, true, false, TECH_ACQUISITION_DEBUG);
 
 			//cheat one space component
 			if (kTeam.getProjectCount(eProject) < kProject.getMaxTeamInstances())

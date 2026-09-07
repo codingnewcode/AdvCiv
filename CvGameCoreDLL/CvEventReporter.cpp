@@ -337,8 +337,10 @@ void CvEventReporter::projectBuilt(CvCity *pCity, ProjectTypes eProject)
 	m_kPythonEventMgr.reportProjectBuilt(pCity, eProject);
 }
 
-void CvEventReporter::techAcquired(TechTypes eType, TeamTypes eTeam, PlayerTypes ePlayer, bool bAnnounce)
+// <!-- custom: Added eCause only for SASGameRecord provenance; the Python tech-acquired event keeps its original signature below. (GPT-5.6-Sol + GPT-5.6 Thinking) -->
+void CvEventReporter::techAcquired(TechTypes eType, TeamTypes eTeam, PlayerTypes ePlayer, bool bAnnounce, TechAcquisitionCause eCause)
 {
+	if (gGameRecordLogLevel >= 2) logSASGameRecordTechAcquired(eType, eTeam, ePlayer, eCause);
 	m_kPythonEventMgr.reportTechAcquired(eType, eTeam, ePlayer, bAnnounce);
 }
 

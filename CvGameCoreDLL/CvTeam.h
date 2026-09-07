@@ -419,9 +419,10 @@ public:
 	void changeObsoleteBuildingCount(BuildingTypes eIndex, int iChange);
 
 	int getResearchProgress(TechTypes eIndex) const;																						// Exposed to Python
-	void setResearchProgress(TechTypes eIndex, int iNewValue, PlayerTypes ePlayer);									// Exposed to Python
-	void changeResearchProgress(TechTypes eIndex, int iChange, PlayerTypes ePlayer);								// Exposed to Python
-	int changeResearchProgressPercent(TechTypes eIndex, int iPercent, PlayerTypes ePlayer);
+	// <!-- custom: Added eCause to research-progress helpers. Carry the source through threshold completion so GameRecord does not mislabel Great-Person, event, Barbarian, or scripted progress as ordinary research; defaults preserve existing Python/script calls as UNKNOWN. (GPT-5.6-Sol + GPT-5.6 Thinking) -->
+	void setResearchProgress(TechTypes eIndex, int iNewValue, PlayerTypes ePlayer, TechAcquisitionCause eCause = TECH_ACQUISITION_UNKNOWN); // Exposed to Python
+	void changeResearchProgress(TechTypes eIndex, int iChange, PlayerTypes ePlayer, TechAcquisitionCause eCause = TECH_ACQUISITION_UNKNOWN); // Exposed to Python
+	int changeResearchProgressPercent(TechTypes eIndex, int iPercent, PlayerTypes ePlayer, TechAcquisitionCause eCause = TECH_ACQUISITION_UNKNOWN);
 
 	int getTechCount(TechTypes eIndex) const;																										// Exposed to Python
 	// BETTER_BTS_AI_MOD, General AI, 07/27/09, jdog5000:
@@ -474,8 +475,9 @@ public:
 	bool isParent(TeamTypes eChildTeam) const;
 
 	bool isHasTech(TechTypes eIndex) const;																																			// Exposed to Python
+	// <!-- custom: Added eCause to setHasTech for exact GameRecord provenance; it does not affect technology rules, and legacy/Python callers default safely to UNKNOWN. (GPT-5.6-Sol + GPT-5.6 Thinking) -->
 	void setHasTech(TechTypes eTech, bool bNewValue, PlayerTypes ePlayer,				// Exposed to Python
-			bool bFirst, bool bAnnounce, /* advc.121: */ bool bEndOfTurn = false);
+			bool bFirst, bool bAnnounce, /* advc.121: */ bool bEndOfTurn = false, TechAcquisitionCause eCause = TECH_ACQUISITION_UNKNOWN);
 	/* advc.004a: A hack that allows other classes to pretend that a team knows
 	   a tech for some computation. Should be toggled back afterwards. */
 	void setHasTechTemporarily(TechTypes eTech, bool b) { m_abHasTech.set(eTech, b); }

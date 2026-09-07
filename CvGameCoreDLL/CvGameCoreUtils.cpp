@@ -195,6 +195,28 @@ char const* getSASMemoryType(MemoryTypes eMemory)
 	}
 }
 
+char const* getSASTechAcquisitionCause(TechAcquisitionCause eCause)
+{
+	switch (eCause)
+	{
+	case TECH_ACQUISITION_RESEARCH: return "RESEARCH";
+	case TECH_ACQUISITION_TRADE: return "TRADE";
+	case TECH_ACQUISITION_FREE_CHOICE: return "FREE_CHOICE";
+	case TECH_ACQUISITION_GOODY: return "GOODY";
+	case TECH_ACQUISITION_GREAT_PERSON: return "GREAT_PERSON";
+	case TECH_ACQUISITION_ESPIONAGE: return "ESPIONAGE";
+	case TECH_ACQUISITION_RANDOM_EVENT: return "RANDOM_EVENT";
+	case TECH_ACQUISITION_TECH_SHARE: return "TECH_SHARE";
+	case TECH_ACQUISITION_TEAM_MERGE: return "TEAM_MERGE";
+	case TECH_ACQUISITION_INHERITANCE: return "INHERITANCE";
+	case TECH_ACQUISITION_ADVANCED_START: return "ADVANCED_START";
+	case TECH_ACQUISITION_BARBARIAN_RESEARCH: return "BARBARIAN_RESEARCH";
+	case TECH_ACQUISITION_GAME_SETUP: return "GAME_SETUP";
+	case TECH_ACQUISITION_DEBUG: return "DEBUG";
+	default: return "UNKNOWN";
+	}
+}
+
 // <!-- custom: Victory-stage state is a bitfield; share this helper because BBAI/game-record diagnostics and AI logic all need the same compact 0..4 level without repeating four AI_atVictoryStage-style checks. (GPT-5.5) -->
 int getSASVictoryStageLevel(AIVictoryStage eVictoryStageHash, AIVictoryStage eStage1, AIVictoryStage eStage2, AIVictoryStage eStage3, AIVictoryStage eStage4)
 {

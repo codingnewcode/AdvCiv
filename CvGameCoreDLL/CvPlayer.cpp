@@ -4800,13 +4800,13 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 		CvTeam& kOurTeam = GET_TEAM(getTeam());
 		if (iGold <= 0 || fixp(0.8) * kOurTeam.getResearchLeft(eBestTech) <= iGold)
 		{
-			kOurTeam.setHasTech(eBestTech, true, getID(), true, true);
+			kOurTeam.setHasTech(eBestTech, true, getID(), true, true, false, TECH_ACQUISITION_GOODY);
 			if(isSignificantDiscovery(eBestTech))
 				kOurTeam.setNoTradeTech(eBestTech, true);
 		}
 		else
 		{
-			kOurTeam.changeResearchProgress(eBestTech, iGold, getID());
+			kOurTeam.changeResearchProgress(eBestTech, iGold, getID(), TECH_ACQUISITION_GOODY);
 			szBuffer = gDLL->getText("TXT_KEY_MISC_PROGRESS_TOWARDS_TECH", iGold,
 					GC.getInfo(eBestTech).getDescription());
 		}
@@ -11658,7 +11658,7 @@ void CvPlayer::doResearch()
 			GET_TEAM(getTeam()).changeResearchProgress(eCurrentTech,
 					// K-Mod (replacing the minimum which used to be in calculateResearchRate)
 					std::max(1, calculateResearchRate()) +
-					iOverflowResearch, getID());
+					iOverflowResearch, getID(), TECH_ACQUISITION_RESEARCH);
 		}
 
 		if (bForceResearchChoice)
@@ -12546,7 +12546,7 @@ bool CvPlayer::doEspionageMission(EspionageMissionTypes eMission, PlayerTypes eT
 		TechTypes eTech = (TechTypes)iExtraData;
 		szBuffer = gDLL->getText("TXT_KEY_ESPIONAGE_TARGET_TECH_BOUGHT",
 				GC.getInfo(eTech).getDescription()).GetCString();
-		GET_TEAM(getTeam()).setHasTech(eTech, true, getID(), false, true);
+		GET_TEAM(getTeam()).setHasTech(eTech, true, getID(), false, true, false, TECH_ACQUISITION_ESPIONAGE);
 		if(isSignificantDiscovery(eTech)) // advc.550e
 			GET_TEAM(getTeam()).setNoTradeTech(eTech, true);
 		bSomethingHappened = true;
@@ -13086,7 +13086,7 @@ void CvPlayer::doAdvancedStartAction(AdvancedStartActionTypes eAction, int iX, i
 		{
 			if (getAdvancedStartPoints() >= iCost)
 			{
-				GET_TEAM(getTeam()).setHasTech(eTech, true, getID(), false, false);
+				GET_TEAM(getTeam()).setHasTech(eTech, true, getID(), false, false, false, TECH_ACQUISITION_ADVANCED_START);
 				changeAdvancedStartPoints(-iCost);
 			}
 		}
@@ -16044,7 +16044,7 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 		if (eBestTech != NO_TECH)
 		{
 			int const iBeakers = GET_TEAM(getTeam()).changeResearchProgressPercent(
-					eBestTech, kEvent.getTechPercent(), getID());
+					eBestTech, kEvent.getTechPercent(), getID(), TECH_ACQUISITION_RANDOM_EVENT);
 			if (iBeakers > 0)
 			{	// advc: Was effectively itMember(getID()); previously fixed by kmodx.
 				for (MemberIter itMember(getTeam()); itMember.hasNext(); ++itMember)
@@ -17431,7 +17431,7 @@ bool CvPlayer::splitEmpire(CvArea& kArea) // advc: was iAreaId
 		{
 			if (GET_TEAM(getTeam()).isHasTech(eLoopTech))
 			{
-				kNewTeam.setHasTech(eLoopTech, true, eNewPlayer, false, false);
+				kNewTeam.setHasTech(eLoopTech, true, eNewPlayer, false, false, false, TECH_ACQUISITION_INHERITANCE);
 				if (GET_TEAM(getTeam()).isNoTradeTech(eLoopTech) ||
 					(kGame.isOption(GAMEOPTION_NO_TECH_BROKERING) &&
 					isSignificantDiscovery(eLoopTech))) // advc.550e
@@ -19983,7 +19983,7 @@ void CvPlayer::cheat(bool bCtrl, bool bAlt, bool bShift)
 {
 	//if (gDLL->getChtLvl() > 0)
 	if(GC.getGame().isDebugMode()) // advc.007b
-		GET_TEAM(getTeam()).setHasTech(getCurrentResearch(), true, getID(), true, false);
+		GET_TEAM(getTeam()).setHasTech(getCurrentResearch(), true, getID(), true, false, false, TECH_ACQUISITION_DEBUG);
 }
 
 

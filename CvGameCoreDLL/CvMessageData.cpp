@@ -418,7 +418,7 @@ void CvNetResearch::Execute()
 		CvPlayer& kPlayer = GET_PLAYER(m_ePlayer);
 		if (m_iDiscover > 0)
 		{
-			GET_TEAM(kPlayer.getTeam()).setHasTech(m_eTech, true, m_ePlayer, true, true);
+			GET_TEAM(kPlayer.getTeam()).setHasTech(m_eTech, true, m_ePlayer, true, true, false, TECH_ACQUISITION_FREE_CHOICE);
 			if (m_iDiscover > 1)
 			{
 				if (m_ePlayer == GC.getGame().getActivePlayer())

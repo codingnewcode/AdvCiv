@@ -872,7 +872,7 @@ void CvGame::initFreeState()
 		{
 			for (TeamIter<ALIVE> itTeam; itTeam.hasNext(); ++itTeam)
 			{
-				itTeam->setHasTech(eLoopTech, true, NO_PLAYER, false, false);
+				itTeam->setHasTech(eLoopTech, true, NO_PLAYER, false, false, false, TECH_ACQUISITION_GAME_SETUP);
 			}
 		}
 		// advc.tsl: Free techs from other sources now handled by initFreeCivState
@@ -926,7 +926,7 @@ void CvGame::initFreeCivState()
 			}
 			if (bValid) // (advc.051: Don't take away techs granted by scenario)
 			{
-				kTeam.setHasTech(eLoopTech, true, NO_PLAYER, false, false);
+				kTeam.setHasTech(eLoopTech, true, NO_PLAYER, false, false, false, TECH_ACQUISITION_GAME_SETUP);
 				// (advc: Already handled by setHasTech)
 				/*if (GC.getInfo(eLoopTech).isMapVisible())
 					GC.getMap().setRevealedPlots(kTeam.getID(), true, true);*/

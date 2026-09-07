@@ -106,7 +106,8 @@ public:
 	void buildingBuilt(CvCity *pCity, BuildingTypes eBuilding);
 	void projectBuilt(CvCity *pCity, ProjectTypes eProject);
 
-	void techAcquired(TechTypes eType, TeamTypes eTeam, PlayerTypes ePlayer, bool bAnnounce);
+	// <!-- custom: Added eCause to forward explicit technology provenance to SASGameRecord while preserving the existing Python event arguments. (GPT-5.6-Sol + GPT-5.6 Thinking) -->
+	void techAcquired(TechTypes eType, TeamTypes eTeam, PlayerTypes ePlayer, bool bAnnounce, TechAcquisitionCause eCause);
 	void techSelected(TechTypes eTech, PlayerTypes ePlayer);
 
 	void religionFounded(ReligionTypes eType, PlayerTypes ePlayer);

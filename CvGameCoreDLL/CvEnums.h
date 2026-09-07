@@ -1113,6 +1113,26 @@ ENUM_START(Function, FUNC)
 	FUNC_STEPKEY,	// = NiAnimationKey::STEPKEY,
 ENUM_END(Function, FUNC)
 
+// <!-- custom: DLL-only acquisition metadata carried to GameRecord when a technology is completed or granted. This is not XML-indexed, Python-exposed, savegame-serialized, or gameplay-evaluated; Python/script callers that cannot provide reliable context remain UNKNOWN. (GPT-5.6-Sol + GPT-5.6 Thinking) -->
+enum TechAcquisitionCause
+{
+	TECH_ACQUISITION_UNKNOWN,
+	TECH_ACQUISITION_RESEARCH,
+	TECH_ACQUISITION_TRADE,
+	TECH_ACQUISITION_FREE_CHOICE,
+	TECH_ACQUISITION_GOODY,
+	TECH_ACQUISITION_GREAT_PERSON,
+	TECH_ACQUISITION_ESPIONAGE,
+	TECH_ACQUISITION_RANDOM_EVENT,
+	TECH_ACQUISITION_TECH_SHARE,
+	TECH_ACQUISITION_TEAM_MERGE,
+	TECH_ACQUISITION_INHERITANCE,
+	TECH_ACQUISITION_ADVANCED_START,
+	TECH_ACQUISITION_BARBARIAN_RESEARCH,
+	TECH_ACQUISITION_GAME_SETUP,
+	TECH_ACQUISITION_DEBUG
+};
+
 enum TradeableItems
 {
 	NO_TRADE_ITEM = -1,
