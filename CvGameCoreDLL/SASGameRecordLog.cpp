@@ -994,6 +994,40 @@ static void getSASGameRecordPlayerExtraSources(CvPlayer const& kPlayer, CvString
 }
 
 
+// <!-- custom: Objective victory progress does not show which route currently guides AI strategy. Record the compact 0..4 route stages once per AI snapshot so city production and war choices can be interpreted without enabling detailed BBAI decisions. (GPT-5.6-Sol) -->
+static void logSASGameRecordAIVictoryStages(PlayerTypes ePlayer, int iGameTurn)
+{
+	CvPlayerAI const& kPlayer = GET_PLAYER(ePlayer);
+	if (kPlayer.isHuman() && !kPlayer.isHumanDisabled())
+		return;
+	AIVictoryStage const eStages = kPlayer.AI_getVictoryStageHash();
+	int const iCultureStage = getSASCultureVictoryStageLevel(eStages);
+	int const iSpaceStage = getSASSpaceVictoryStageLevel(eStages);
+	int const iConquestStage = getSASConquestVictoryStageLevel(eStages);
+	int const iDominationStage = getSASDominationVictoryStageLevel(eStages);
+	int const iDiplomacyStage = getSASDiplomacyVictoryStageLevel(eStages);
+	int const iPlayerMaxStage = std::max(std::max(iCultureStage, iSpaceStage), std::max(std::max(iConquestStage, iDominationStage), iDiplomacyStage));
+	logSASGameRecord("GAME_RECORD_AI_VICTORY_STAGES turn=%d player=%d team=%d playerMaxStage=%d teamMaxStage=%d culture=%d space=%d conquest=%d domination=%d diplomacy=%d",
+			iGameTurn, ePlayer, kPlayer.getTeam(), iPlayerMaxStage, getSASTeamMaxVictoryStage(kPlayer.getTeam()), iCultureStage, iSpaceStage, iConquestStage, iDominationStage, iDiplomacyStage);
+}
+
+// <!-- custom: Keep a compact periodic military-production pressure snapshot in the GameRecord so low/high army phases can be diagnosed even without detailed BBAI logging. The no-area maximum is a player-level reference; AI_chooseProduction can use a different city-area ceiling. (ChatGPT-5.6-Sol) -->
+static void logSASGameRecordAIMilitaryProduction(PlayerTypes ePlayer, int iGameTurn)
+{
+	CvPlayerAI const& kPlayer = GET_PLAYER(ePlayer);
+	if (kPlayer.isHuman() && !kPlayer.isHumanDisabled())
+		return;
+	CvTeamAI const& kTeam = GET_TEAM(kPlayer.getTeam());
+	int const iPersonalityBuildProb = GC.getInfo(kPlayer.getPersonalityType()).getBuildUnitProb();
+	int const iUnitSpending = kPlayer.AI_unitCostPerMil();
+	int const iMaxUnitSpendingNoArea = kPlayer.AI_maxUnitCostPerMil();
+	logSASGameRecord("GAME_RECORD_AI_MILITARY_PRODUCTION turn=%d player=%d personalityBuildProb=%d unitSpending=%d maxUnitSpendingNoArea=%d spendingGapNoArea=%d aggressiveAI=%d financialTrouble=%d economyFocus=%d getBetterUnits=%d focusWar=%d dagger=%d alert1=%d alert2=%d finalWar=%d totalWarPlans=%d preparingTotalWarPlans=%d sneakPreparing=%d sneakReady=%d",
+		iGameTurn, ePlayer, iPersonalityBuildProb, iUnitSpending, iMaxUnitSpendingNoArea, iMaxUnitSpendingNoArea - iUnitSpending, GC.getGame().isOption(GAMEOPTION_AGGRESSIVE_AI),
+		kPlayer.AI_isFinancialTrouble(), kPlayer.AI_isDoStrategy(AI_STRATEGY_ECONOMY_FOCUS), kPlayer.AI_isDoStrategy(AI_STRATEGY_GET_BETTER_UNITS), kPlayer.AI_isFocusWar(), kPlayer.AI_isDoStrategy(AI_STRATEGY_DAGGER),
+		kPlayer.AI_isDoStrategy(AI_STRATEGY_ALERT1), kPlayer.AI_isDoStrategy(AI_STRATEGY_ALERT2), kPlayer.AI_isDoStrategy(AI_STRATEGY_FINAL_WAR), kTeam.AI_getNumWarPlans(WARPLAN_TOTAL), kTeam.AI_getNumWarPlans(WARPLAN_PREPARING_TOTAL),
+		kTeam.AI_isSneakAttackPreparing(), kTeam.AI_isSneakAttackReady());
+}
+
 static void logSASGameRecordPolicies(PlayerTypes ePlayer, int iGameTurn)
 {
 	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
@@ -2164,6 +2198,8 @@ static void logSASGameRecordPlayerSnapshot(PlayerTypes ePlayer, int iGameTurn)
 	if (bLogPlayerDetails)
 	{
 		logSASGameRecordPlayerBonuses(ePlayer, iGameTurn, kPrevious);
+		logSASGameRecordAIVictoryStages(ePlayer, iGameTurn);
+		logSASGameRecordAIMilitaryProduction(ePlayer, iGameTurn);
 		logSASGameRecordPolicies(ePlayer, iGameTurn);
 		logSASGameRecordEconomy(ePlayer, iGameTurn);
 		logSASGameRecordEspionage(ePlayer, iGameTurn);
@@ -2174,7 +2210,6 @@ static void logSASGameRecordPlayerSnapshot(PlayerTypes ePlayer, int iGameTurn)
 		logSASGameRecordUnitPosture(ePlayer, iGameTurn);
 		logSASGameRecordCities(ePlayer, iGameTurn);
 		logSASGameRecordWorkedPlots(ePlayer, iGameTurn);
-		// <!-- custom: Mature AdvCiv-SAS also emits level-3 city-by-city economic, happiness/health, building, trade-partner and garrison detail here. Keep this first city port independently testable by landing the aggregate/worked-plot layer first; the verbose per-city rows follow in the next city slice. (ChatGPT-5.6-Sol) -->
 	}
 	kPrevious.bValid = true;
 	kPrevious.iScore = iScore;

@@ -195,6 +195,37 @@ char const* getSASMemoryType(MemoryTypes eMemory)
 	}
 }
 
+// <!-- custom: Victory-stage state is a bitfield; share this helper because BBAI/game-record diagnostics and AI logic all need the same compact 0..4 level without repeating four AI_atVictoryStage-style checks. (GPT-5.5) -->
+int getSASVictoryStageLevel(AIVictoryStage eVictoryStageHash, AIVictoryStage eStage1, AIVictoryStage eStage2, AIVictoryStage eStage3, AIVictoryStage eStage4)
+{
+	if ((eVictoryStageHash & eStage4) != 0)
+		return 4;
+	if ((eVictoryStageHash & eStage3) != 0)
+		return 3;
+	if ((eVictoryStageHash & eStage2) != 0)
+		return 2;
+	if ((eVictoryStageHash & eStage1) != 0)
+		return 1;
+	return 0;
+}
+
+int getSASCultureVictoryStageLevel(AIVictoryStage eVictoryStageHash) { return getSASVictoryStageLevel(eVictoryStageHash, AI_VICTORY_CULTURE1, AI_VICTORY_CULTURE2, AI_VICTORY_CULTURE3, AI_VICTORY_CULTURE4); }
+int getSASSpaceVictoryStageLevel(AIVictoryStage eVictoryStageHash) { return getSASVictoryStageLevel(eVictoryStageHash, AI_VICTORY_SPACE1, AI_VICTORY_SPACE2, AI_VICTORY_SPACE3, AI_VICTORY_SPACE4); }
+int getSASConquestVictoryStageLevel(AIVictoryStage eVictoryStageHash) { return getSASVictoryStageLevel(eVictoryStageHash, AI_VICTORY_CONQUEST1, AI_VICTORY_CONQUEST2, AI_VICTORY_CONQUEST3, AI_VICTORY_CONQUEST4); }
+int getSASDominationVictoryStageLevel(AIVictoryStage eVictoryStageHash) { return getSASVictoryStageLevel(eVictoryStageHash, AI_VICTORY_DOMINATION1, AI_VICTORY_DOMINATION2, AI_VICTORY_DOMINATION3, AI_VICTORY_DOMINATION4); }
+int getSASDiplomacyVictoryStageLevel(AIVictoryStage eVictoryStageHash) { return getSASVictoryStageLevel(eVictoryStageHash, AI_VICTORY_DIPLOMACY1, AI_VICTORY_DIPLOMACY2, AI_VICTORY_DIPLOMACY3, AI_VICTORY_DIPLOMACY4); }
+int getSASTeamMaxVictoryStage(TeamTypes eTeam)
+{
+	int iMaxVictoryStage = 0;
+	for (MemberAIIter it(eTeam); it.hasNext(); ++it)
+	{
+		AIVictoryStage const eVictoryStageHash = it->AI_getVictoryStageHash();
+		int const iMemberMaxVictoryStage = std::max(std::max(getSASCultureVictoryStageLevel(eVictoryStageHash), getSASSpaceVictoryStageLevel(eVictoryStageHash)), std::max(std::max(getSASConquestVictoryStageLevel(eVictoryStageHash), getSASDominationVictoryStageLevel(eVictoryStageHash)), getSASDiplomacyVictoryStageLevel(eVictoryStageHash)));
+		iMaxVictoryStage = std::max(iMaxVictoryStage, iMemberMaxVictoryStage);
+	}
+	return iMaxVictoryStage;
+}
+
 char const* getSASTradeItemType(TradeableItems eItem)
 {
 	switch (eItem)
