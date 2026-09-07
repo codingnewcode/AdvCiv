@@ -20,6 +20,7 @@
 #include "CvBugOptions.h"
 #include "CvDLLFlagEntityIFaceBase.h" // BBAI
 #include "BBAILog.h"
+#include "SASGameRecordLog.h" // <!-- custom: Research application and finalized-target boundaries feed compact SASGameRecord research lifecycle rows. (ChatGPT-5.6-Sol) -->
 #include "RiseFall.h" // advc.708: Needed only for savegame compatibility
 #include "SelfMod.h" // advc.092b
 
@@ -2829,6 +2830,8 @@ void CvPlayer::doTurn()
 	//doUpdateCacheOnTurn(); // advc: removed
 	kGame.verifyDeals();
 	AI().AI_doTurnPre();
+	// <!-- custom: At this point AI_doResearch has finalized the turn's target, while doResearch below has not yet applied science. The incremental 1.14 port pre-gates at level 2 because this helper currently contains only research-target observation. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) updateSASGameRecordPlayerTurnState(getID());
 
 	if (getRevolutionTimer() > 0)
 		changeRevolutionTimer(-1);
@@ -3746,6 +3749,7 @@ void CvPlayer::handleDiploEvent(DiploEventTypes eDiploEvent, PlayerTypes ePlayer
 		break;
 
 	case DIPLOEVENT_RESEARCH_TECH:
+		if (gGameRecordLogLevel >= 2) noteSASGameRecordResearchTargetChangeCause(getID(), RESEARCH_TARGET_CHANGE_DIPLO_RESEARCH_COORDINATION);
 		pushResearch((TechTypes)iData1, true);
 		break;
 
@@ -11652,13 +11656,15 @@ void CvPlayer::doResearch()
 		}
 		else
 		{
-			int iOverflowResearch = (getOverflowResearch() *
-					calculateResearchModifier(eCurrentTech)) / 100;
+			int const iResearchModifier = calculateResearchModifier(eCurrentTech);
+			int const iIncomingOverflowUnmodified = getOverflowResearch();
+			int const iOverflowResearch = (iIncomingOverflowUnmodified * iResearchModifier) / 100;
+			// K-Mod (replacing the minimum which used to be in calculateResearchRate)
+			int const iResearchRate = std::max(1, calculateResearchRate());
+			// <!-- custom: These values are already required by gameplay. Preserve their exact split only at SASGameRecord level 2+, before stored overflow is consumed, so a completion row can distinguish fresh research from carried overflow without a per-turn log row. (ChatGPT-5.6-Sol) -->
+			if (gGameRecordLogLevel >= 2) noteSASGameRecordResearchApplication(getID(), eCurrentTech, iResearchRate, iIncomingOverflowUnmodified, iOverflowResearch);
 			setOverflowResearch(0);
-			GET_TEAM(getTeam()).changeResearchProgress(eCurrentTech,
-					// K-Mod (replacing the minimum which used to be in calculateResearchRate)
-					std::max(1, calculateResearchRate()) +
-					iOverflowResearch, getID(), TECH_ACQUISITION_RESEARCH);
+			GET_TEAM(getTeam()).changeResearchProgress(eCurrentTech, iResearchRate + iOverflowResearch, getID(), TECH_ACQUISITION_RESEARCH);
 		}
 
 		if (bForceResearchChoice)

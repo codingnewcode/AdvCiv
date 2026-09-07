@@ -1133,6 +1133,17 @@ enum TechAcquisitionCause
 	TECH_ACQUISITION_DEBUG
 };
 
+// <!-- custom: DLL-only shared metadata for why an already selected research target is intentionally reconsidered or replaced. This is not XML-indexed, Python-exposed, savegame-serialized, or itself an AI decision; SASGameRecord uses it now and other diagnostics can reuse the same factual cause vocabulary. (ChatGPT-5.6-Sol) -->
+enum ResearchTargetChangeCause
+{
+	RESEARCH_TARGET_CHANGE_UNKNOWN = 0,
+	RESEARCH_TARGET_CHANGE_GREAT_PERSON_REEVALUATION,
+	RESEARCH_TARGET_CHANGE_FIRST_DISCOVERY_PERK_INVALIDATION,
+	RESEARCH_TARGET_CHANGE_DIPLO_RESEARCH_COORDINATION,
+	RESEARCH_TARGET_CHANGE_PLAYER_RESEARCH_COMMAND,
+	RESEARCH_TARGET_CHANGE_FREE_TECH_REEVALUATION
+};
+
 enum TradeableItems
 {
 	NO_TRADE_ITEM = -1,

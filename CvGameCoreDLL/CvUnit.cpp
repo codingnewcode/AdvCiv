@@ -19,6 +19,7 @@
 #include "BBAILog.h" // BETTER_BTS_AI_MOD, AI logging, 02/24/10, jdog5000
 #include "CvBugOptions.h" // advc.002e
 #include "CvDLLPythonIFaceBase.h" // for CvEventReporter::genericEvent
+#include "SASGameRecordLog.h" // <!-- custom: Great-Person discovery can tag research-plan reevaluation for compact SASGameRecord target history. (ChatGPT-5.6-Sol) -->
 
 
 CvUnit::CvUnit() // advc.003u: Body cut from the deleted reset function
@@ -5821,7 +5822,10 @@ bool CvUnit::discover()
 	// K-Mod. If the AI bulbs something, let them reconsider their current research.
 	CvPlayerAI& kOwner = GET_PLAYER(getOwner());
 	if (!kOwner.isHuman() && kOwner.getCurrentResearch() != eDiscoveryTech)
+	{
+		if (gGameRecordLogLevel >= 2) noteSASGameRecordResearchTargetChangeCause(getOwner(), RESEARCH_TARGET_CHANGE_GREAT_PERSON_REEVALUATION);
 		kOwner.clearResearchQueue();
+	}
 	// K-Mod end
 
 	if (getPlot().isActiveVisible(false))

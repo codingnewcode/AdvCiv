@@ -19,6 +19,7 @@
 #include "CvPopupInfo.h"
 #include "BBAILog.h" // BETTER_BTS_AI_MOD, AI logging, 10/02/09, jdog5000
 #include "CvBugOptions.h" // advc.071
+#include "SASGameRecordLog.h" // <!-- custom: Research completion accounting and first-discovery reevaluation feed SASGameRecord lifecycle rows. (ChatGPT-5.6-Sol) -->
 
 // advc.003u: Statics moved from CvTeamAI
 CvTeamAI** CvTeam::m_aTeams = NULL;
@@ -4058,7 +4059,8 @@ int CvTeam::getResearchProgress(TechTypes eIndex) const
 // <!-- custom: Added eCause and pass it through research-progress helpers to setHasTech when this change completes the technology, preserving the action that actually crossed the threshold. (GPT-5.6-Sol + GPT-5.6 Thinking) -->
 void CvTeam::setResearchProgress(TechTypes eIndex, int iNewValue, PlayerTypes ePlayer, TechAcquisitionCause eCause)
 {
-	if(getResearchProgress(eIndex) == iNewValue)
+	int const iOldProgress = getResearchProgress(eIndex);
+	if (iOldProgress == iNewValue)
 		return;
 
 	m_aiResearchProgress.set(eIndex, iNewValue);
@@ -4080,14 +4082,21 @@ void CvTeam::setResearchProgress(TechTypes eIndex, int iNewValue, PlayerTypes eP
 		} // </advc.004x>
 	}
 
-	if (getResearchProgress(eIndex) >= getResearchCost(eIndex))
+	int const iResearchCost = getResearchCost(eIndex);
+	if (getResearchProgress(eIndex) >= iResearchCost)
 	{
-		int iOverflow = (100 * (getResearchProgress(eIndex) - getResearchCost(eIndex))) /
-				std::max(1, GET_PLAYER(ePlayer).calculateResearchModifier(eIndex));
-		GET_PLAYER(ePlayer).changeOverflowResearch(iOverflow);
+		CvPlayer& kResearcher = GET_PLAYER(ePlayer);
+		int const iResearchModifier = std::max(1, kResearcher.calculateResearchModifier(eIndex));
+		int const iProgressBeforePostCompletionAdjustment = getResearchProgress(eIndex);
+		int const iOverflow = (100 * (iProgressBeforePostCompletionAdjustment - iResearchCost)) / iResearchModifier;
+		kResearcher.changeOverflowResearch(iOverflow);
 		// <advc> Cleaner to subtract the overflow. Cf. comment in getResearchProgress.
+		// <!-- custom: Preserve unmodified AdvCiv 1.14 gameplay semantics in this upstream logging port. Mature AdvCiv-SAS separately fixes this inherited stored-progress adjustment as KI#404; that gameplay fix is intentionally not bundled into SASGameRecord. The completion row below records the actual resulting base-AdvCiv state. (ChatGPT-5.6-Sol) -->
 		m_aiResearchProgress.add(eIndex,
-				getResearchProgress(eIndex) - getResearchCost(eIndex)); // </advc>
+				getResearchProgress(eIndex) - iResearchCost); // </advc>
+		// <!-- custom: Only a genuine CvPlayer::doResearch threshold crossing has meaningful research-overflow accounting. Log after the existing AdvCiv post-completion adjustment, but before setHasTech emits generic TECH_ACQUIRED, so the two factual rows stay chronological. (ChatGPT-5.6-Sol) -->
+		if (gGameRecordLogLevel >= 2 && eCause == TECH_ACQUISITION_RESEARCH)
+			logSASGameRecordResearchCompleted(eIndex, getID(), ePlayer, iOldProgress, iProgressBeforePostCompletionAdjustment, iResearchModifier, iOverflow);
 		setHasTech(eIndex, true, ePlayer, true, true, /* advc.121: */ true, eCause);
 		/*if (!GC.getGame().isMPOption(MPOPTION_SIMULTANEOUS_TURNS) && !GC.getGame().isOption(GAMEOPTION_NO_TECH_BROKERING))
 			setNoTradeTech(eIndex, true);*/ // BtS
@@ -4659,6 +4668,8 @@ void CvTeam::setHasTech(TechTypes eTech, bool bNewValue, PlayerTypes ePlayer,
 					{
 						/*	K-Mod note: we just want to flag it for re-evaluation.
 							Clearing the queue is currently the only way to do that. */
+						// <!-- custom: A first-discovery perk can invalidate another AI's target without completing it. Preserve that factual trigger for the later invested-target observer. (ChatGPT-5.6-Sol) -->
+						if (gGameRecordLogLevel >= 2) noteSASGameRecordResearchTargetChangeCause(itOther->getID(), RESEARCH_TARGET_CHANGE_FIRST_DISCOVERY_PERK_INVALIDATION);
 						itOther->clearResearchQueue();
 					}
 				}

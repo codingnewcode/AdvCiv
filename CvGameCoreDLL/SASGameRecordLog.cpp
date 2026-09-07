@@ -3,6 +3,7 @@
 #include "CvGame.h" // <!-- custom: Needed for game-record turn, game-state, victory, RNG, and map-classification context rows. (GPT-5.5) -->
 #include "CvPlayer.h" // <!-- custom: Needed directly for active-player civilization/handicap context in this smaller AdvCiv 1.14 port slice; do not rely on later SASGameRecord headers to complete CvPlayer transitively. (ChatGPT-5.6-Sol) -->
 #include "CvPlayerAI.h" // <!-- custom: Needed for attitude/glance values in game-record advisor rows. (ChatGPT-5.5) -->
+#include "AgentIterator.h" // <!-- custom: Needed directly for MemberIter in compact team-aware research-redirection context; do not rely on unrelated gameplay headers to provide the iterator transitively. (ChatGPT-5.6-Sol) -->
 #include "CvTeamAI.h" // <!-- custom: Needed for team-level worst-enemy state in game-record diplomacy-status rows. (ChatGPT-5.5) -->
 #include "CvCity.h" // <!-- custom: Needed to count player-city religions and corporations in periodic policy snapshots. (ChatGPT-5.6-Sol) -->
 #include "CvCityAI.h" // <!-- custom: Needed only to read the existing Avoid Growth AI emphasis flag in city snapshots/aggregates; CvCity.h only forward-declares CvCityAI. This is a compile-time type dependency and does not alter AI state or gameplay. (ChatGPT-5.6-Sol) -->
@@ -203,6 +204,29 @@ struct SASGameRecordPlayerPrevious
 
 static SASGameRecordPlayerPrevious g_akSASGameRecordPlayerPrevious[MAX_PLAYERS];
 
+// <!-- custom: Observe each player's finalized research target once per player turn. This recorder-local state detects real incomplete-tech redirections without instrumenting every queue-mutating gameplay path or inventing a cause that the observation cannot prove. Repeat-tech counts distinguish a completed repeat from a true redirect. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordResearchPrevious
+{
+	bool bValid;
+	TeamTypes eTeam;
+	TechTypes eTech;
+	int iTechCount;
+	ResearchTargetChangeCause ePendingCause;
+};
+static SASGameRecordResearchPrevious g_akSASGameRecordResearchPrevious[MAX_PLAYERS];
+
+// <!-- custom: CvPlayer::doResearch knows the exact split between this turn's modified research and previously stored unmodified overflow before both are combined into team progress. Retain that tiny level-2-only application context until an actual same-turn completion consumes it; this keeps RESEARCH_COMPLETED exact without widening generic gameplay research APIs for logging. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordResearchApplication
+{
+	bool bValid;
+	int iGameTurn;
+	TechTypes eTech;
+	int iModifiedResearchRate;
+	int iIncomingOverflowUnmodified;
+	int iIncomingOverflowModified;
+};
+static SASGameRecordResearchApplication g_akSASGameRecordResearchApplication[MAX_PLAYERS];
+
 static int getSASGameRecordDelta(bool bValid, int iCurrent, int iPrevious)
 {
 	return bValid ? iCurrent - iPrevious : 0;
@@ -226,6 +250,16 @@ static void resetSASGameRecordPlayerPrevious()
 {
 	for (int iI = 0; iI < MAX_PLAYERS; iI++)
 		g_akSASGameRecordPlayerPrevious[iI].bValid = false;
+}
+
+static void resetSASGameRecordResearchState()
+{
+	for (int iI = 0; iI < MAX_PLAYERS; iI++)
+	{
+		g_akSASGameRecordResearchPrevious[iI].bValid = false;
+		g_akSASGameRecordResearchPrevious[iI].ePendingCause = RESEARCH_TARGET_CHANGE_UNKNOWN;
+		g_akSASGameRecordResearchApplication[iI].bValid = false;
+	}
 }
 
 static CvString createSASGameRecordUtcTimestamp()
@@ -3609,6 +3643,94 @@ static void logSASGameRecordSnapshot(int iGameTurn, char const* szReason)
 	logSASGameRecord("GAME_RECORD_TURN_END turn=%d reason=%s", iGameTurn, szReason);
 }
 
+// <!-- custom: High-level queue-mutating paths call this only at SASGameRecord level 2+. Keep the latest authoritative cause until the player's next finalized research-target observation. If it produces no invested-tech redirection, the observer discards it rather than emitting a standalone/noisy action. (ChatGPT-5.6-Sol) -->
+void noteSASGameRecordResearchTargetChangeCause(PlayerTypes ePlayer, ResearchTargetChangeCause eCause)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	g_akSASGameRecordResearchPrevious[ePlayer].ePendingCause = eCause;
+}
+
+// <!-- custom: Called only from the level-2-gated ordinary research-application path, using values gameplay already computes. Store the same-turn split so a completion row can distinguish fresh research from carried overflow without logging every non-completing research turn. (ChatGPT-5.6-Sol) -->
+void noteSASGameRecordResearchApplication(PlayerTypes ePlayer, TechTypes eTech, int iModifiedResearchRate, int iIncomingOverflowUnmodified, int iIncomingOverflowModified)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	SASGameRecordResearchApplication& kApplication = g_akSASGameRecordResearchApplication[ePlayer];
+	kApplication.bValid = true;
+	kApplication.iGameTurn = GC.getGame().getGameTurn();
+	kApplication.eTech = eTech;
+	kApplication.iModifiedResearchRate = iModifiedResearchRate;
+	kApplication.iIncomingOverflowUnmodified = iIncomingOverflowUnmodified;
+	kApplication.iIncomingOverflowModified = iIncomingOverflowModified;
+}
+
+// <!-- custom: AI_doResearch has already finalized this turn's target before the CvPlayer::doTurn hook, while CvPlayer::doResearch has not yet applied this turn's science. Compare that stable boundary with the previous player turn and record only switches away from a still-incomplete technology; routine completed-tech queue progression is deliberately suppressed. Cause comes only from explicit high-level queue-mutating hooks; unknown/uninstrumented paths stay UNKNOWN rather than being inferred from nearby events. (ChatGPT-5.6-Sol) -->
+void updateSASGameRecordPlayerTurnState(PlayerTypes ePlayer)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	if (!kPlayer.isAlive() || kPlayer.isBarbarian())
+		return;
+
+	SASGameRecordResearchPrevious& kPrevious = g_akSASGameRecordResearchPrevious[ePlayer];
+	TeamTypes const eTeam = kPlayer.getTeam();
+	CvTeam const& kTeam = GET_TEAM(eTeam);
+	TechTypes const eResearch = kPlayer.getCurrentResearch();
+	if (kPrevious.bValid && kPrevious.eTeam == eTeam && kPrevious.eTech != NO_TECH && kPrevious.eTech != eResearch)
+	{
+		TechTypes const eOldResearch = kPrevious.eTech;
+		bool const bOldResearchCompleted = (GC.getInfo(eOldResearch).isRepeat() ?
+			kTeam.getTechCount(eOldResearch) > kPrevious.iTechCount : kTeam.isHasTech(eOldResearch));
+		if (!bOldResearchCompleted)
+		{
+			int const iOldProgress = kTeam.getResearchProgress(eOldResearch);
+			// <!-- custom: A zero-progress target change wastes/parks no research and is common enough to be low-value noise. Once progress exists, retain team-game context too: another teammate may still be researching the old technology, so this row must not imply that the team's investment was abandoned. (ChatGPT-5.6-Sol) -->
+			if (iOldProgress > 0)
+			{
+				int iOldTeamResearchersAfter = 0;
+				for (MemberIter it(eTeam); it.hasNext(); ++it)
+				{
+					if (it->getCurrentResearch() == eOldResearch)
+						iOldTeamResearchersAfter++;
+				}
+				int const iOldCost = kTeam.getResearchCost(eOldResearch);
+				int const iNewProgress = (eResearch == NO_TECH ? 0 : kTeam.getResearchProgress(eResearch));
+				int const iNewCost = (eResearch == NO_TECH ? -1 : kTeam.getResearchCost(eResearch));
+				logSASGameRecord("GAME_RECORD_ACTION turn=%d type=RESEARCH_TARGET_CHANGED player=%d team=%d reason=%s oldTech=%s oldTeamProgress=%d oldCost=%d oldTeamResearchersAfter=%d newTech=%s newTeamProgress=%d newCost=%d",
+					GC.getGame().getGameTurn(), ePlayer, eTeam, getSASResearchTargetChangeCause(kPrevious.ePendingCause), getSASGameRecordTechType(eOldResearch), iOldProgress, iOldCost, iOldTeamResearchersAfter, getSASGameRecordTechType(eResearch), iNewProgress, iNewCost);
+			}
+		}
+	}
+	kPrevious.bValid = true;
+	kPrevious.eTeam = eTeam;
+	kPrevious.eTech = eResearch;
+	kPrevious.iTechCount = (eResearch == NO_TECH ? 0 : kTeam.getTechCount(eResearch));
+	// <!-- custom: Any tagged cause belongs only to mutations observed since the previous player-turn boundary. If no invested-tech redirection resulted, discard it here so it cannot be misattributed to a later unrelated switch. (ChatGPT-5.6-Sol) -->
+	kPrevious.ePendingCause = RESEARCH_TARGET_CHANGE_UNKNOWN;
+}
+
+// <!-- custom: Keep exact research-overflow arithmetic separate from TECH_ACQUIRED because only ordinary research completion has meaningful progress/overflow conversion. The threshold caller supplies its exact arithmetic while recorder-local same-turn application context supplies the fresh-research/carried-overflow split without widening generic research APIs. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordResearchCompleted(TechTypes eTech, TeamTypes eTeam, PlayerTypes ePlayer, int iProgressBefore, int iProgressBeforePostCompletionAdjustment, int iResearchModifier, int iUnmodifiedOverflow)
+{
+	CvTeam const& kTeam = GET_TEAM(eTeam);
+	int const iResearchCost = kTeam.getResearchCost(eTech);
+	int const iProgressAdded = iProgressBeforePostCompletionAdjustment - iProgressBefore;
+	int const iRawModifiedOverflow = std::max(0, iProgressBeforePostCompletionAdjustment - iResearchCost);
+	SASGameRecordResearchApplication& kApplication = g_akSASGameRecordResearchApplication[ePlayer];
+	bool const bApplicationKnown = (kApplication.bValid && kApplication.iGameTurn == GC.getGame().getGameTurn() && kApplication.eTech == eTech);
+	int const iModifiedResearchRate = (bApplicationKnown ? kApplication.iModifiedResearchRate : -1);
+	int const iIncomingOverflowUnmodified = (bApplicationKnown ? kApplication.iIncomingOverflowUnmodified : -1);
+	int const iIncomingOverflowModified = (bApplicationKnown ? kApplication.iIncomingOverflowModified : -1);
+	// <!-- custom: Preserve mature SASGameRecord field names for schema compatibility. `teamProgressBeforeClamp` is the progress immediately before AdvCiv's post-completion adjustment; this logging-only 1.14 port intentionally does not import mature SAS's separate KI#404 gameplay correction, so `teamStoredProgressAfter` reports the actual unmodified AdvCiv 1.14 result. (ChatGPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=RESEARCH_COMPLETED player=%d team=%d tech=%s researchCost=%d teamProgressBefore=%d applicationBreakdownKnown=%d modifiedResearchRateApplied=%d incomingOverflowUnmodified=%d incomingOverflowModifiedApplied=%d modifiedProgressAdded=%d teamProgressBeforeClamp=%d researchModifier=%d rawModifiedOverflow=%d outgoingOverflowUnmodified=%d playerOverflowAfter=%d teamStoredProgressAfter=%d",
+			GC.getGame().getGameTurn(), ePlayer, eTeam, getSASGameRecordTechType(eTech), iResearchCost, iProgressBefore, bApplicationKnown ? 1 : 0,
+			iModifiedResearchRate, iIncomingOverflowUnmodified, iIncomingOverflowModified, iProgressAdded, iProgressBeforePostCompletionAdjustment, iResearchModifier, iRawModifiedOverflow, iUnmodifiedOverflow,
+			GET_PLAYER(ePlayer).getOverflowResearch(), kTeam.getResearchProgress(eTech));
+	kApplication.bValid = false;
+}
+
 // <!-- custom: Write the acquisition source supplied by gameplay code instead of inferring it from ambiguous announcement/first-discovery flags. (GPT-5.6-Sol + GPT-5.6 Thinking) -->
 void logSASGameRecordTechAcquired(TechTypes eType, TeamTypes eTeam, PlayerTypes ePlayer, TechAcquisitionCause eCause)
 {
@@ -3628,6 +3750,7 @@ void startSASGameRecordLogForNewGame()
 	resetSASGameRecordTeamPrevious();
 	resetSASGameRecordPlayerPrevious();
 	resetSASGameRecordGlobalPrevious();
+	resetSASGameRecordResearchState();
 	CvString const szLogName = getSASGameRecordLogName();
 	logSASGameRecord("GAME_RECORD_NEW_GAME_INITIALIZING utc=%s logFile=%s", getSASGameRecordLogTimestamp().GetCString(), getSASDiagnosticQuoted(szLogName.GetCString()).GetCString());
 	logSASGameRecordLogSettings();
@@ -3655,6 +3778,7 @@ void startSASGameRecordLogForLoadedSave()
 	resetSASGameRecordTeamPrevious();
 	resetSASGameRecordPlayerPrevious();
 	resetSASGameRecordGlobalPrevious();
+	resetSASGameRecordResearchState();
 	logSASGameRecordGameState("GAME_RECORD_SAVE_LOADED");
 	logSASGameRecordLogSettings();
 	logSASGameRecordTechCapabilitySources();

@@ -154,6 +154,7 @@ namespace hotkeyDescr
 bool atWar(TeamTypes eTeamA, TeamTypes eTeamB);												// Exposed to Python
 char const* getSASMemoryType(MemoryTypes eMemory); // <!-- custom: Shared raw enum-token text for diplomatic memories because static enum values have no CvInfo type strings. (GPT-5.6-Sol) -->
 char const* getSASTechAcquisitionCause(TechAcquisitionCause eCause); // <!-- custom: Shared stable labels for technology-acquisition origins so callers pass semantic context instead of GameRecord guessing from ambiguous flags. (GPT-5.6-Sol + GPT-5.6 Thinking) -->
+char const* getSASResearchTargetChangeCause(ResearchTargetChangeCause eCause); // <!-- custom: Shared stable labels for factual research-target redirection causes so SASGameRecord and later diagnostics can reuse one vocabulary. (ChatGPT-5.6-Sol) -->
 int getSASVictoryStageLevel(AIVictoryStage eVictoryStageHash, AIVictoryStage eStage1, AIVictoryStage eStage2, AIVictoryStage eStage3, AIVictoryStage eStage4); // <!-- custom: Shared victory-stage bitfield helper for compact AI victory diagnostics without repeating AI_atVictoryStage checks. (GPT-5.5) -->
 int getSASCultureVictoryStageLevel(AIVictoryStage eVictoryStageHash); // <!-- custom: Named wrappers avoid repeating four enum constants at every logging/evaluation call site. (GPT-5.5) -->
 int getSASSpaceVictoryStageLevel(AIVictoryStage eVictoryStageHash);

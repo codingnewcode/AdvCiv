@@ -20,6 +20,7 @@
 #include "CvInfo_Civics.h"
 #include "BBAILog.h"
 #include "CvPopupInfo.h"
+#include "SASGameRecordLog.h" // <!-- custom: Free-tech research-plan reevaluation can tag its factual cause for later compact target-redirection history. (ChatGPT-5.6-Sol) -->
 
 //#define GREATER_FOUND_RANGE			(5)
 #define CIVIC_CHANGE_DELAY				(20) // was 25
@@ -7327,6 +7328,8 @@ int CvPlayerAI::AI_cultureVictoryTechValue(TechTypes eTech) const
 
 void CvPlayerAI::AI_chooseFreeTech(/* advc.121: */ bool bEndOfTurn)
 {
+	// <!-- custom: Choosing a free technology intentionally clears the ordinary research plan first. Tag that high-level cause for SASGameRecord only when enabled; the later observer suppresses it unless an invested incomplete target truly changes. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) noteSASGameRecordResearchTargetChangeCause(getID(), RESEARCH_TARGET_CHANGE_FREE_TECH_REEVALUATION);
 	clearResearchQueue();
 
 	TechTypes eBestTech = GC.getPythonCaller()->AI_chooseTech(getID(), true); 

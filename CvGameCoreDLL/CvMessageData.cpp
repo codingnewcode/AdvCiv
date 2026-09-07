@@ -5,6 +5,7 @@
 #include "CvCity.h"
 #include "CvUnit.h"
 #include "CvSelectionGroup.h"
+#include "SASGameRecordLog.h" // <!-- custom: Player research commands can tag an authoritative cause for later compact SASGameRecord target-redirection history. (ChatGPT-5.6-Sol) -->
 
 
 CvMessageData* CvMessageData::createMessage(GameMessageTypes eType)
@@ -427,6 +428,8 @@ void CvNetResearch::Execute()
 		}
 		else
 		{
+			// <!-- custom: This is the authoritative player research command boundary. Tag it before any clear/push work; the SASGameRecord observer emits the cause only if the command actually redirects an invested incomplete technology. (ChatGPT-5.6-Sol) -->
+			if (gGameRecordLogLevel >= 2) noteSASGameRecordResearchTargetChangeCause(m_ePlayer, RESEARCH_TARGET_CHANGE_PLAYER_RESEARCH_COMMAND);
 			if (m_eTech == NO_TECH)
 				kPlayer.clearResearchQueue();
 			else if (kPlayer.canEverResearch(m_eTech))

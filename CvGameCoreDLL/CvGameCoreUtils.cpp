@@ -217,6 +217,20 @@ char const* getSASTechAcquisitionCause(TechAcquisitionCause eCause)
 	}
 }
 
+char const* getSASResearchTargetChangeCause(ResearchTargetChangeCause eCause)
+{
+	switch (eCause)
+	{
+	case RESEARCH_TARGET_CHANGE_GREAT_PERSON_REEVALUATION: return "GREAT_PERSON_REEVALUATION";
+	case RESEARCH_TARGET_CHANGE_FIRST_DISCOVERY_PERK_INVALIDATION: return "FIRST_DISCOVERY_PERK_INVALIDATION";
+	case RESEARCH_TARGET_CHANGE_DIPLO_RESEARCH_COORDINATION: return "DIPLO_RESEARCH_COORDINATION";
+	case RESEARCH_TARGET_CHANGE_PLAYER_RESEARCH_COMMAND: return "PLAYER_RESEARCH_COMMAND";
+	case RESEARCH_TARGET_CHANGE_FREE_TECH_REEVALUATION: return "FREE_TECH_REEVALUATION";
+	case RESEARCH_TARGET_CHANGE_UNKNOWN:
+	default: return "UNKNOWN";
+	}
+}
+
 // <!-- custom: Victory-stage state is a bitfield; share this helper because BBAI/game-record diagnostics and AI logic all need the same compact 0..4 level without repeating four AI_atVictoryStage-style checks. (GPT-5.5) -->
 int getSASVictoryStageLevel(AIVictoryStage eVictoryStageHash, AIVictoryStage eStage1, AIVictoryStage eStage2, AIVictoryStage eStage3, AIVictoryStage eStage4)
 {
