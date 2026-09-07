@@ -329,6 +329,16 @@ static const char* getSASGameRecordCivicType(CivicTypes eCivic)
 	return (eCivic == NO_CIVIC ? "-" : GC.getInfo(eCivic).getType());
 }
 
+static const char* getSASGameRecordVoteSourceType(VoteSourceTypes eVoteSource)
+{
+	return (eVoteSource == NO_VOTESOURCE ? "-" : GC.getInfo(eVoteSource).getType());
+}
+
+static const char* getSASGameRecordVoteType(VoteTypes eVote)
+{
+	return (eVote == NO_VOTE ? "-" : GC.getInfo(eVote).getType());
+}
+
 static const char* getSASGameRecordEraType(EraTypes eEra)
 {
 	return (eEra == NO_ERA ? "-" : GC.getInfo(eEra).getType());
@@ -1450,6 +1460,54 @@ static void logSASGameRecordEnvironment(int iGameTurn)
 	g_kSASGameRecordGlobalPrevious.iOwnedLand = iOwnedLand;
 	g_kSASGameRecordGlobalPrevious.iUnownedLand = iUnownedLand;
 }
+
+static void logSASGameRecordVoteSources(int iGameTurn)
+{
+	CvGame const& kGame = GC.getGame();
+	FOR_EACH_ENUM(VoteSource)
+	{
+		CvCity const* pSourceCity = kGame.getVoteSourceCity(eLoopVoteSource, NO_TEAM, true);
+		ReligionTypes eReligion = kGame.getVoteSourceReligion(eLoopVoteSource);
+		TeamTypes eSecretary = kGame.getSecretaryGeneral(eLoopVoteSource);
+		CvString szVotingTeams;
+		CvString szFullTeams;
+		CvString szVotes;
+		for (int iI = 0; iI < MAX_CIV_TEAMS; iI++)
+		{
+			TeamTypes eLoopTeam = (TeamTypes)iI;
+			CvTeam const& kLoopTeam = GET_TEAM(eLoopTeam);
+			if (!kLoopTeam.isAlive() || kLoopTeam.isBarbarian())
+				continue;
+			if (kLoopTeam.isVotingMember(eLoopVoteSource))
+				appendSASDiagnosticIntListValue(szVotingTeams, eLoopTeam);
+			if (kLoopTeam.isFullMember(eLoopVoteSource))
+				appendSASDiagnosticIntListValue(szFullTeams, eLoopTeam);
+			const int iVotes = kLoopTeam.getVotes(NO_VOTE, eLoopVoteSource);
+			if (iVotes > 0)
+			{
+				CvString szItem;
+				szItem.Format(szVotes.empty() ? "%d:%d" : ",%d:%d", eLoopTeam, iVotes);
+				szVotes += szItem;
+			}
+		}
+		CvString szVictoryVotes;
+		FOR_EACH_ENUM(Vote)
+		{
+			if (!GC.getInfo(eLoopVote).isVoteSourceType(eLoopVoteSource) || !GC.getInfo(eLoopVote).isVictory())
+				continue;
+			CvString szItem;
+			szItem.Format(szVictoryVotes.empty() ? "%s:required=%d,possible=%d" : ",%s:required=%d,possible=%d", getSASGameRecordVoteType(eLoopVote), kGame.getVoteRequired(eLoopVote, eLoopVoteSource), kGame.countPossibleVote(eLoopVote, eLoopVoteSource));
+			szVictoryVotes += szItem;
+		}
+		if (pSourceCity == NULL && eReligion == NO_RELIGION && eSecretary == NO_TEAM && szVotingTeams.empty() && szVictoryVotes.empty())
+			continue;
+		logSASGameRecord("GAME_RECORD_DIPLO_VOTE_SOURCE turn=%d source=%s secretaryTeam=%d secretaryTimer=%d voteTimer=%d religion=%s sourceOwner=%d sourceCityId=%d sourceCity=%S sourceX=%d sourceY=%d votingTeams=%s fullTeams=%s votes=%s victoryVotes=%s",
+			iGameTurn, getSASGameRecordVoteSourceType(eLoopVoteSource), eSecretary, kGame.getSecretaryGeneralTimer(eLoopVoteSource), kGame.getVoteTimer(eLoopVoteSource), getSASGameRecordReligionType(eReligion),
+			pSourceCity == NULL ? -1 : pSourceCity->getOwner(), pSourceCity == NULL ? -1 : pSourceCity->getID(), getSASGameRecordQuotedCityName(pSourceCity).GetCString(), pSourceCity == NULL ? -1 : pSourceCity->getX(), pSourceCity == NULL ? -1 : pSourceCity->getY(),
+			getSASDiagnosticOrDash(szVotingTeams).GetCString(), getSASDiagnosticOrDash(szFullTeams).GetCString(), getSASDiagnosticOrDash(szVotes).GetCString(), getSASDiagnosticOrDash(szVictoryVotes).GetCString());
+	}
+}
+
 
 static void logSASGameRecordPlayerBonuses(PlayerTypes ePlayer, int iGameTurn, SASGameRecordPlayerPrevious const& kPrevious)
 {
@@ -3280,6 +3338,7 @@ static void logSASGameRecordSnapshot(int iGameTurn, char const* szReason)
 	{
 		logSASGameRecordMapBonusTotals(iGameTurn);
 		logSASGameRecordEnvironment(iGameTurn);
+		logSASGameRecordVoteSources(iGameTurn);
 	}
 	for (int iI = 0; iI < MAX_CIV_TEAMS; iI++)
 	{
