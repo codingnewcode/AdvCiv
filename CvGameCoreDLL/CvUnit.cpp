@@ -1068,6 +1068,9 @@ void CvUnit::updateAirCombat(bool bQuick)
 	be changed if the combat resolution rules are changed. */
 void CvUnit::resolveCombat(CvUnit* pDefender, CvPlot* pPlot, bool bVisible)
 {
+	// <!-- custom: Level-3 SASGameRecord captures attacker identity and exact pre-combat odds only at real combat resolution, never in AI candidate-odds loops. Cache the gate because nonlethal combat reuses it after resolution. (ChatGPT-5.6-Sol) -->
+	bool const bLogExactCombat = (gGameRecordLogLevel >= 3);
+	if (bLogExactCombat) noteSASGameRecordCombatStarted(this, pDefender, pPlot);
 	// <advc.048c> Preserve info for interface message (based on K-Mod code)
 	m_iAttackOdds = -1;
 #ifndef LOG_COMBAT_OUTCOMES
@@ -1275,6 +1278,12 @@ void CvUnit::resolveCombat(CvUnit* pDefender, CvPlot* pPlot, bool bVisible)
 			ExecuteMove(0.5f, true);
 			gDLL->getEntityIFace()->AddMission(&kBattle);
 		}
+	}
+	// <!-- custom: combatResult only fires on lethal combat. Keep withdrawals and combat-limit outcomes in the exact battle chronology too, using the same pre-combat attacker/odds context. (ChatGPT-5.6-Sol) -->
+	if (bLogExactCombat && !isDead() && !pDefender->isDead())
+	{
+		bool const bCombatLimitReached = (combatLimit() < GC.getMAX_HIT_POINTS() && pDefender->getDamage() >= combatLimit());
+		logSASGameRecordNonlethalCombat(this, pDefender, pPlot, bCombatLimitReached);
 	}
 #ifdef LOG_COMBAT_OUTCOMES
 	// (don't log barb battles, because they have special rules.)
@@ -1542,7 +1551,7 @@ void CvUnit::updateCombat(bool bQuick, /* <advc.004c> */ bool* pbIntercepted,
 
 		addDefenseSuccessMessages(*pDefender); // advc: Moved into new function
 		// report event to Python, along with some other key state
-		CvEventReporter::getInstance().combatResult(pDefender, this);
+		CvEventReporter::getInstance().combatResult(pDefender, this, pPlot);
 	}
 	else if (pDefender->isDead())
 	{
@@ -1589,7 +1598,7 @@ void CvUnit::updateCombat(bool bQuick, /* <advc.004c> */ bool* pbIntercepted,
 			}
 		} // <advc.130m>
 		// report event to Python, along with some other key state
-		CvEventReporter::getInstance().combatResult(this, pDefender);
+		CvEventReporter::getInstance().combatResult(this, pDefender, pPlot);
 		bool bAdvance = false;
 		bool bCapture = false; // advc.010
 		if (isSuicide())

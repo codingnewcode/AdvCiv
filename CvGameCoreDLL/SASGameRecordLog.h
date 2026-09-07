@@ -26,6 +26,10 @@ void logSASGameRecordCityBuilt(CvCity const* pCity);
 void beginSASGameRecordCityRaze(CvCity const* pCity, PlayerTypes ePlayer);
 void endSASGameRecordCityRaze(PlayerTypes ePlayer);
 void logSASGameRecordCityAcquired(PlayerTypes eOldOwner, PlayerTypes eNewOwner, CvCity const* pCity, bool bConquest, bool bTrade);
+// <!-- custom: Exact level-3 combat chronology keeps transient attacker/target context across Civ4's combat callbacks. Aggregate battle-quality, XP-flow and per-war statistics remain a later slice so this batch cannot emit partially populated summary counters. (ChatGPT-5.6-Sol) -->
+void noteSASGameRecordCombatStarted(CvUnit const* pAttacker, CvUnit const* pDefender, CvPlot const* pBattlePlot);
+void logSASGameRecordNonlethalCombat(CvUnit const* pAttacker, CvUnit const* pDefender, CvPlot const* pBattlePlot, bool bCombatLimitReached);
+void logSASGameRecordCombatResult(CvUnit const* pWinner, CvUnit const* pLoser, CvPlot const* pBattlePlot);
 // <!-- custom: War lifecycle hooks preserve factual declaration/cascade and peace context at the authoritative CvTeam boundaries. The incremental 1.14 port intentionally leaves mature per-war aggregate summaries for a later slice. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordWarStarted(TeamTypes eDeclarer, TeamTypes eTarget, WarPlanTypes eWarPlan, bool bPrimaryDoW, bool bNewDiplo, PlayerTypes eSponsor, bool bRandomEvent, WarDeclarationCause eCause);
 void logSASGameRecordWarEnded(TeamTypes eTeam, TeamTypes eOtherTeam, int iTeamAWarSuccess, int iTeamBWarSuccess, bool bCapitulate, TeamTypes eBroker, bool bRandomEvent, bool bReparations);

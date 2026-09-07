@@ -13,6 +13,7 @@
 #include "CvArea.h" // <!-- custom: Needed for area-wide city happiness/health detail rows. (ChatGPT-5.5) -->
 #include "CvTeam.h" // <!-- custom: Needed directly for finalized initial-team state and technology grouping in this smaller AdvCiv 1.14 port slice; GET_TEAM is defined by CvTeam.h. (ChatGPT-5.6-Sol) -->
 #include "CvUnit.h" // <!-- custom: Needed for the mature SASGameRecord distinction between actual combat-capable units and Civ4's separate bMilitarySupport counter in periodic player snapshots. (ChatGPT-5.6-Sol) -->
+#include "CombatOdds.h" // <!-- custom: Needed only for exact pre-combat odds on real level-2+ battle outcomes; AI candidate valuation remains untouched. (ChatGPT-5.6-Sol) -->
 #include "CvSelectionGroup.h" // <!-- custom: Needed to inspect worker/settler mission queues in game-record rows. (ChatGPT-5.5) -->
 #include "CvInfo_Organization.h" // <!-- custom: Needed for religion/corporation type names in game-record action rows. (GPT-5.5) -->
 #include "CvInfo_Civics.h" // <!-- custom: Needed for policy/civic names in game-record advisor rows. (ChatGPT-5.5) -->
@@ -262,6 +263,15 @@ static int g_aiSASGameRecordCitiesLostByConquest[MAX_PLAYERS];
 static int g_aiSASGameRecordCitiesTradedIn[MAX_PLAYERS];
 static int g_aiSASGameRecordCitiesTradedOut[MAX_PLAYERS];
 
+struct SASGameRecordCombatPending
+{
+	PlayerTypes eAttacker, eDefender;
+	int iAttackerUnitId, iDefenderUnitId;
+	int iX, iY;
+	int iAttackerCombatOddsPermille;
+};
+static std::vector<SASGameRecordCombatPending> g_aSASGameRecordCombatPending;
+
 static int getSASGameRecordDelta(bool bValid, int iCurrent, int iPrevious)
 {
 	return bValid ? iCurrent - iPrevious : 0;
@@ -288,6 +298,11 @@ static void resetSASGameRecordCityLifecycleState()
 		g_aiSASGameRecordCitiesTradedIn[iI] = 0;
 		g_aiSASGameRecordCitiesTradedOut[iI] = 0;
 	}
+}
+
+static void resetSASGameRecordCombatState()
+{
+	g_aSASGameRecordCombatPending.clear();
 }
 
 static void resetSASGameRecordGlobalPrevious()
@@ -3991,6 +4006,85 @@ void logSASGameRecordCityAcquired(PlayerTypes eOldOwner, PlayerTypes eNewOwner, 
 	logSASGameRecordCityBFC(*pCity, "acquired");
 }
 
+// <!-- custom: Exact battle chronology is ported before mature battle-quality/player-flow/per-war aggregates. Keep only transient identity/odds state here so level-3 rows are truthful without introducing partially populated level-2 statistics. (ChatGPT-5.6-Sol) -->
+static bool popSASGameRecordCombatPending(CvUnit const* pUnitA, CvUnit const* pUnitB, CvPlot const* pBattlePlot, SASGameRecordCombatPending& kResult)
+{
+	if (pUnitA == NULL || pUnitB == NULL || pBattlePlot == NULL)
+		return false;
+	for (int iI = (int)g_aSASGameRecordCombatPending.size() - 1; iI >= 0; iI--)
+	{
+		SASGameRecordCombatPending const& kPending = g_aSASGameRecordCombatPending[iI];
+		bool const bSameUnits =
+				((pUnitA->getOwner() == kPending.eAttacker && pUnitA->getID() == kPending.iAttackerUnitId &&
+				  pUnitB->getOwner() == kPending.eDefender && pUnitB->getID() == kPending.iDefenderUnitId) ||
+				 (pUnitB->getOwner() == kPending.eAttacker && pUnitB->getID() == kPending.iAttackerUnitId &&
+				  pUnitA->getOwner() == kPending.eDefender && pUnitA->getID() == kPending.iDefenderUnitId));
+		if (!bSameUnits || pBattlePlot->getX() != kPending.iX || pBattlePlot->getY() != kPending.iY)
+			continue;
+		kResult = kPending;
+		g_aSASGameRecordCombatPending.erase(g_aSASGameRecordCombatPending.begin() + iI);
+		return true;
+	}
+	return false;
+}
+
+void noteSASGameRecordCombatStarted(CvUnit const* pAttacker, CvUnit const* pDefender, CvPlot const* pBattlePlot)
+{
+	if (pAttacker == NULL || pDefender == NULL || pBattlePlot == NULL)
+		return;
+	SASGameRecordCombatPending kPending;
+	kPending.eAttacker = pAttacker->getOwner();
+	kPending.eDefender = pDefender->getOwner();
+	kPending.iAttackerUnitId = pAttacker->getID();
+	kPending.iDefenderUnitId = pDefender->getID();
+	kPending.iX = pBattlePlot->getX();
+	kPending.iY = pBattlePlot->getY();
+	bool const bCivilizationBattle =
+			(pAttacker->getOwner() >= 0 && pAttacker->getOwner() < MAX_CIV_PLAYERS &&
+			 pDefender->getOwner() >= 0 && pDefender->getOwner() < MAX_CIV_PLAYERS &&
+			 !pAttacker->isBarbarian() && !pDefender->isBarbarian());
+	// <!-- custom: Barbarian free-win rules can make the ordinary odds calculation a misleading statement of actual resolution probability; mature SAS therefore leaves those exact odds unknown. (ChatGPT-5.6-Sol) -->
+	kPending.iAttackerCombatOddsPermille = (bCivilizationBattle ? calculateCombatOdds(*pAttacker, *pDefender) : -1);
+	g_aSASGameRecordCombatPending.push_back(kPending);
+}
+
+void logSASGameRecordNonlethalCombat(CvUnit const* pAttacker, CvUnit const* pDefender, CvPlot const* pBattlePlot, bool bCombatLimitReached)
+{
+	if (pAttacker == NULL || pDefender == NULL || pBattlePlot == NULL)
+		return;
+	SASGameRecordCombatPending kPending;
+	bool const bPending = popSASGameRecordCombatPending(pAttacker, pDefender, pBattlePlot, kPending);
+	logSASGameRecord("GAME_RECORD_BATTLE_NONLETHAL turn=%d attacker=%d defender=%d attackerUnit=%s attackerUnitId=%d defenderUnit=%s defenderUnitId=%d reason=%s x=%d y=%d cityPlot=%d attackerBaseStr=%d defenderBaseStr=%d attackerDamage=%d defenderDamage=%d attackerCombatLimit=%d attackerWithdrawal=%d attackerCombatOddsPermille=%d attackerXP=%d attackerLevel=%d defenderXP=%d defenderLevel=%d",
+			GC.getGame().getGameTurn(), pAttacker->getOwner(), pDefender->getOwner(), getSASGameRecordUnitType(pAttacker->getUnitType()), pAttacker->getID(),
+			getSASGameRecordUnitType(pDefender->getUnitType()), pDefender->getID(), bCombatLimitReached ? "COMBAT_LIMIT" : "WITHDRAWAL",
+			pBattlePlot->getX(), pBattlePlot->getY(), pBattlePlot->isCity(),
+			pAttacker->baseCombatStr(), pDefender->baseCombatStr(), pAttacker->getDamage(), pDefender->getDamage(), pAttacker->combatLimit(), pAttacker->withdrawalProbability(),
+			bPending ? kPending.iAttackerCombatOddsPermille : -1, pAttacker->getExperience(), pAttacker->getLevel(), pDefender->getExperience(), pDefender->getLevel());
+}
+
+void logSASGameRecordCombatResult(CvUnit const* pWinner, CvUnit const* pLoser, CvPlot const* pBattlePlot)
+{
+	if (pWinner == NULL || pLoser == NULL || pBattlePlot == NULL)
+		return;
+	SASGameRecordCombatPending kPending;
+	bool const bPending = popSASGameRecordCombatPending(pWinner, pLoser, pBattlePlot, kPending);
+	int const iWinnerOddsPermille = (!bPending || kPending.iAttackerCombatOddsPermille < 0 ? -1 :
+			(pWinner->getOwner() == kPending.eAttacker && pWinner->getID() == kPending.iAttackerUnitId ?
+			kPending.iAttackerCombatOddsPermille : 1000 - kPending.iAttackerCombatOddsPermille));
+	if (pWinner->getOwner() == BARBARIAN_PLAYER || pLoser->getOwner() == BARBARIAN_PLAYER)
+	{
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=BARBARIAN_COMBAT winnerPlayer=%d winnerUnitId=%d winnerUnit=%s winnerAI=%s winnerDamage=%d loserPlayer=%d loserUnitId=%d loserUnit=%s loserAI=%s loserDamage=%d x=%d y=%d cityPlot=%d",
+				GC.getGame().getGameTurn(), pWinner->getOwner(), pWinner->getID(), getSASGameRecordUnitType(pWinner->getUnitType()), getSASGameRecordUnitAIType(pWinner->AI_getUnitAIType()), pWinner->getDamage(),
+				pLoser->getOwner(), pLoser->getID(), getSASGameRecordUnitType(pLoser->getUnitType()), getSASGameRecordUnitAIType(pLoser->AI_getUnitAIType()), pLoser->getDamage(),
+				pBattlePlot->getX(), pBattlePlot->getY(), pBattlePlot->isCity());
+	}
+	logSASGameRecord("GAME_RECORD_BATTLE turn=%d winner=%d loser=%d winnerUnit=%s winnerUnitId=%d loserUnit=%s loserUnitId=%d attacker=%d attackerUnitId=%d attackerCombatOddsPermille=%d winnerCombatOddsPermille=%d x=%d y=%d cityPlot=%d winnerBaseStr=%d loserBaseStr=%d winnerDamage=%d loserDamage=%d winnerXP=%d winnerLevel=%d loserXP=%d loserLevel=%d winnerLeaderUnit=%s loserLeaderUnit=%s",
+			GC.getGame().getGameTurn(), pWinner->getOwner(), pLoser->getOwner(), getSASGameRecordUnitType(pWinner->getUnitType()), pWinner->getID(), getSASGameRecordUnitType(pLoser->getUnitType()), pLoser->getID(),
+			bPending ? kPending.eAttacker : NO_PLAYER, bPending ? kPending.iAttackerUnitId : -1, bPending ? kPending.iAttackerCombatOddsPermille : -1, iWinnerOddsPermille,
+			pBattlePlot->getX(), pBattlePlot->getY(), pBattlePlot->isCity(), pWinner->baseCombatStr(), pLoser->baseCombatStr(), pWinner->getDamage(), pLoser->getDamage(),
+			pWinner->getExperience(), pWinner->getLevel(), pLoser->getExperience(), pLoser->getLevel(), getSASGameRecordUnitType(pWinner->getLeaderUnitType()), getSASGameRecordUnitType(pLoser->getLeaderUnitType()));
+}
+
 // <!-- custom: Keep this incremental upstream slice to event chronology only. Mature AdvCiv-SAS additionally maintains per-war aggregate combat/city summaries and victory-denial context; those depend on later battle/city hooks and are deliberately deferred instead of emitting partial aggregates here. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordWarStarted(TeamTypes eDeclarer, TeamTypes eTarget, WarPlanTypes eWarPlan, bool bPrimaryDoW, bool bNewDiplo, PlayerTypes eSponsor, bool bRandomEvent, WarDeclarationCause eCause)
 {
@@ -4037,6 +4131,7 @@ void startSASGameRecordLogForNewGame()
 	resetSASGameRecordGlobalPrevious();
 	resetSASGameRecordResearchState();
 	resetSASGameRecordCityLifecycleState();
+	resetSASGameRecordCombatState();
 	CvString const szLogName = getSASGameRecordLogName();
 	logSASGameRecord("GAME_RECORD_NEW_GAME_INITIALIZING utc=%s logFile=%s", getSASGameRecordLogTimestamp().GetCString(), getSASDiagnosticQuoted(szLogName.GetCString()).GetCString());
 	logSASGameRecordLogSettings();
@@ -4066,6 +4161,7 @@ void startSASGameRecordLogForLoadedSave()
 	resetSASGameRecordGlobalPrevious();
 	resetSASGameRecordResearchState();
 	resetSASGameRecordCityLifecycleState();
+	resetSASGameRecordCombatState();
 	logSASGameRecordGameState("GAME_RECORD_SAVE_LOADED");
 	logSASGameRecordLogSettings();
 	logSASGameRecordTechCapabilitySources();
