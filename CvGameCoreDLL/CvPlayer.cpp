@@ -3384,6 +3384,22 @@ void CvPlayer::updateMilitaryHappinessUnits()
 		pCity->updateMilitaryHappinessUnits();
 }
 
+// <!-- custom: Movement maintains this cache incrementally, but team reassignment can change every stationary unit's supply status at once. See KI#781. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+void CvPlayer::updateNumOutsideUnits()
+{
+	int iNumOutsideUnits = 0;
+	FOR_EACH_UNIT(pUnit, *this)
+	{
+		CvPlot const& kPlot = pUnit->getPlot();
+		if (pUnit->getTeam() != kPlot.getTeam() && (kPlot.getTeam() == NO_TEAM ||
+			!GET_TEAM(kPlot.getTeam()).isVassal(pUnit->getTeam())))
+		{
+			iNumOutsideUnits++;
+		}
+	}
+	changeNumOutsideUnits(iNumOutsideUnits - getNumOutsideUnits());
+}
+
 void CvPlayer::updateTimers()
 {
 	FOR_EACH_GROUP_VAR(pLoopSelectionGroup, *this)

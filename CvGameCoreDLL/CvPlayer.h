@@ -182,6 +182,8 @@ public:
 	void updateTradeRoutes();
 	void updatePlunder(int iChange, bool bUpdatePlotGroups);
 	void updateMilitaryHappinessUnits(); // advc.184
+	// <!-- custom: Recount units whose supply status depends on current team/vassal borders after relational changes. See KI#781. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	void updateNumOutsideUnits();
 
 	void updateTimers();
 

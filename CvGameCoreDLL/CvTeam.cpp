@@ -562,6 +562,17 @@ void CvTeam::addTeam(TeamTypes eTeam)
 			kPlot.setRevealed(getID(), true, false, eTeam, false);
 		kPlot.updateTeam(); // advc.opt: Need to update cached team
 	}
+	// <!-- custom: Reassigning Permanent-Alliance members changes whether their stationary units are allied garrisons or outside friendly borders.
+	// Rebuild both relational caches only after plot teams reflect the merged team; scan players directly because a human-involved alliance can leave AgentIterator membership stale at this boundary. See KI#778, KI#781 and KI#793. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		CvPlayer& kPlayer = GET_PLAYER((PlayerTypes)i);
+		if (kPlayer.isAlive() && kPlayer.getTeam() == getID())
+		{
+			kPlayer.updateMilitaryHappinessUnits();
+			kPlayer.updateNumOutsideUnits();
+		}
+	}
 
 	kGame.updatePlotGroups();
 	int const iSecondTeamSize = getNumMembers() - iOriginalTeamSize; // kekm.26

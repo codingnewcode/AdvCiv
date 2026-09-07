@@ -874,10 +874,10 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#775 - (Provisional Pending AdvCiv Culture Globe buffer defect) A fifth culture color overwrites the next plot](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-775)\
 [KI#776 - (Pending Architectural inherited BtS research-path defect) Shared prerequisites can make the automatic queue choose a costlier route](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-776)\
 [KI#777 - (Provisional Pending AdvCiv espionage-announcement leak) Third parties receive an unrevealed capital's coordinates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-777)\
-[KI#778 - (Pending inherited AdvCiv cache-invalidation issue) Permanent Alliances do not recount military-happiness garrisons](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-778)\
+[KI#778 - (Fixed inherited AdvCiv cache-invalidation issue) Permanent Alliances did not recount military-happiness garrisons](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-778)\
 [KI#779 - (Pending inherited AdvCiv Random Personalities issue) Missionary strategy reads the hidden personality's favorite civic](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-779)\
 [KI#780 - (Pending inherited BtS/K-Mod event-information leak) Global PickPlayer trigger news reveals an unmet civilization](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-780)\
-[KI#781 - (Provisional Pending inherited BtS Permanent-Alliance cache defect) Former allied-border units retain unit-supply costs](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-781)\
+[KI#781 - (Fixed inherited BtS Permanent-Alliance cache defect) Former allied-border units retained unit-supply costs](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-781)\
 [KI#782 - (Provisional Pending inherited BtS civic-lifecycle defect broadened by SAS) Losing the final building CivicOption leaves an unavailable civic active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-782)\
 [KI#783 - (Provisional Pending AdvCiv city-trade ordering defect) Outer-ring culture conversion consults a deleted city](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-783)\
 [KI#784 - (Provisional Pending AdvCiv espionage-latch defect) Full demographics can become visible without being remembered](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-784)\
@@ -16041,11 +16041,15 @@ The neighboring ordinary religion-change announcement already uses observer-awar
 
 <a id="ki-778"></a>
 
-## KI#778 - (Pending inherited AdvCiv cache-invalidation issue) Permanent Alliances do not recount military-happiness garrisons
+## KI#778 - (Fixed inherited AdvCiv cache-invalidation issue) Permanent Alliances did not recount military-happiness garrisons
 
 AdvCiv made `CvUnit::isMilitaryHappiness` depend on whether a unit is a garrison in the same, master or vassal team's city. It consequently added full cached military-happiness recounts when vassal relations change, but a Permanent Alliance can make stationary units newly eligible by reassigning a player to the surviving team without performing the same recount. The city can therefore miss valid Hereditary Rule happiness; when such a unit later leaves, movement bookkeeping can decrement the stale zero cache to -1 and trip its debug assertion.
 
 K-Mod's predicate only read the unit XML flag and did not have this relational cache dependency. AdvCiv practical `advc.184` introduced it, and a later AdvCiv repair covered master/vassal transitions but omitted the ordinary independent-team Permanent Alliance path; Base AdvCiv 1.14 and AdvCiv-SAS retain the omission. Found as F455/provisional KI#778 during ChatGPT-5.6-Sol's C031-WIP168 `CvPlayer.cpp` deep re-audit; disposition independently reviewed and reconciled with the help of GPT-5.6-Sol, thanks.
+
+Prepared together with KI#781 by rebuilding the surviving team's military-happiness city caches after Permanent-Alliance member reassignment and after every plot's cached team reflects the merger. This makes newly allied stationary garrisons authoritative immediately and prevents later movement from decrementing a stale zero count. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Compiled successfully and directly exercised in `SASGameRecord_20260907T172657Z_new1.log`: a Huge Pangaea Debug-opt autoplay with mixed starting teams and Permanent Alliances enabled records team 3 absorbing team 11 on turn 328, then continues without an assertion or gameplay failure through a turn-435 Space Race victory.
 
 <a id="ki-779"></a>
 
@@ -16065,11 +16069,15 @@ BtS/Civ4CE and K-Mod contain the flawed condition. AdvCiv practical 1648 hoisted
 
 <a id="ki-781"></a>
 
-## KI#781 - (Provisional Pending inherited BtS Permanent-Alliance cache defect) Former allied-border units retain unit-supply costs
+## KI#781 - (Fixed inherited BtS Permanent-Alliance cache defect) Former allied-border units retained unit-supply costs
 
 Permanent Alliance absorption changes stationary units in the former ally's territory from outside-border to same-team units, but does not recount the owning player's cached `m_iNumOutsideUnits`. The stale count is serialized and continues charging authoritative unit supply; later movement from and back to merged-team territory returns to the same stale baseline. BtS already performs the necessary relational adjustment for vassal transitions but omits it for Permanent Alliances; Civ4CE, K-Mod, Base AdvCiv 1.14 and AdvCiv-SAS retain the omission.
 
 Found as F458/provisional KI#781 during ChatGPT-5.6-Sol's C031-WIP171 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+Prepared together with KI#778 by adding an exact outside-unit recount and applying it to every surviving-team member after Permanent-Alliance member and plot-team reassignment. The recount uses the same team/vassal-border predicate as incremental unit movement, so authoritative unit supply no longer retains the pre-alliance border relation. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Compiled successfully and directly exercised by the same turn-328 Permanent Alliance in `SASGameRecord_20260907T172657Z_new1.log`; the Debug-opt autoplay continued through turn 435 and ended normally in a Space Race victory.
 
 <a id="ki-782"></a>
 
