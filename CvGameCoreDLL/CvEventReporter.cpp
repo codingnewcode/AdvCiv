@@ -286,6 +286,9 @@ void CvEventReporter::unitLost(CvUnit *pUnit)
 
 void CvEventReporter::unitPromoted(CvUnit *pUnit, PromotionTypes ePromotion)
 {
+	// <!-- custom: Record authoritative promotion applications after CvUnit::promote succeeds.
+	// The recorder separates ordinary player/AI choices from fixed Great-General leader promotions and aggregates the common case instead of emitting level-2 per-unit spam. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordUnitPromoted(pUnit, ePromotion);
 	m_kPythonEventMgr.reportUnitPromoted(pUnit, ePromotion);
 }
 

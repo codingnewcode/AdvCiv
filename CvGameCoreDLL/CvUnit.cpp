@@ -567,6 +567,9 @@ void CvUnit::kill(bool bDelay, PlayerTypes ePlayer)
 	kOwner.uwai().getCache().reportUnitDestroyed(getUnitType());
 
 	kOwner.AI_changeNumAIUnits(AI_getUnitAIType(), -1);
+	// <!-- custom: Preserve the original identity across deleteUnit so the upstream-only direct capture logger can describe what was captured after the replacement unit is created. (ChatGPT-5.6-Sol) -->
+	PlayerTypes const eLostOwner = getOwner();
+	UnitTypes const eLostUnitType = getUnitType();
 	PlayerTypes const eCapturingPlayer = getCapturingPlayer();
 	UnitTypes const eCaptureUnitType = (eCapturingPlayer == NO_PLAYER ? NO_UNIT :
 			getCaptureUnitType(GET_PLAYER(eCapturingPlayer).getCivilizationType()));
@@ -588,6 +591,8 @@ void CvUnit::kill(bool bDelay, PlayerTypes ePlayer)
 					eCaptureUnitType, kPlot.getX(), kPlot.getY());
 			if (pCapturedUnit != NULL)
 			{
+				// <!-- custom: Mature AdvCiv-SAS forwards this through an added Python capture event; the upstream 1.14 telemetry port logs directly here after successful capture creation to avoid changing Python API surface solely for GameRecord. (ChatGPT-5.6-Sol) -->
+				if (gGameRecordLogLevel >= 2) logSASGameRecordUnitCaptured(eLostOwner, eLostUnitType, pCapturedUnit);
 				CvWString szBuffer;
 				szBuffer = gDLL->getText("TXT_KEY_MISC_YOU_CAPTURED_UNIT",
 						GC.getInfo(eCaptureUnitType).getTextKeyWide());
@@ -3231,6 +3236,7 @@ void CvUnit::scrap()
 {
 	if (!canScrap())
 		return;
+	if (gGameRecordLogLevel >= 2) logSASGameRecordUnitScrapped(this);
 	kill(true);
 }
 
@@ -6489,6 +6495,7 @@ bool CvUnit::lead(int iUnitId)
 
 		pUnit->joinGroup(NULL, true, true);
 		pUnit->promote(eLeaderPromotion, getID());
+		if (gGameRecordLogLevel >= 2) logSASGameRecordGreatGeneralAttached(this, pUnit, eLeaderPromotion);
 
 		if (getPlot().isActiveVisible(false))
 			NotifyEntity(MISSION_LEAD);
@@ -6883,7 +6890,8 @@ CvUnit* CvUnit::upgrade(UnitTypes eUnit) // K-Mod: this now returns the new unit
 		return this;
 
 	CvPlayerAI& kOwner = GET_PLAYER(getOwner());
-	kOwner.changeGold(-upgradePrice(eUnit));
+	const int iUpgradeCost = upgradePrice(eUnit);
+	kOwner.changeGold(-iUpgradeCost);
 	CvUnit* pUpgradeUnit = kOwner.initUnit(eUnit, getX(), getY(), AI_getUnitAIType());
 	FAssert(pUpgradeUnit != NULL);
 
@@ -6905,6 +6913,7 @@ CvUnit* CvUnit::upgrade(UnitTypes eUnit) // K-Mod: this now returns the new unit
 	pUpgradeUnit->finishMoves();
 	// advc.080: Moved into subroutine
 	pUpgradeUnit->changeExperience(pUpgradeUnit->upgradeXPChange(eUnit));
+	if (gGameRecordLogLevel >= 2) logSASGameRecordUnitUpgraded(this, pUpgradeUnit, iUpgradeCost);
 	if (gUnitLogLevel > 2)
 	{
 		CvWString szString;
@@ -9223,6 +9232,10 @@ void CvUnit::setExperience(int iNewValue, int iMax)
 void CvUnit::changeExperience(int iChange, int iMax, bool bFromCombat, bool bInBorders,
 	int iGlobalPercent) // advc.312: was bUpdateGlobal
 {
+	// <!-- custom: Current UNIT_POSTURE XP falls when veterans die and therefore cannot measure how much unit experience a civilization actually generated.
+	// Preserve the real before/after delta only at SASGameRecord level 2+, after all combat modifiers and caps below are applied; reuse one recorder-level gate for both sides of this hot experience change. (ChatGPT-5.6-Sol) -->
+	bool const bLogExperienceChange = (gGameRecordLogLevel >= 2);
+	int const iSASGameRecordExperienceBefore = (bLogExperienceChange ? getExperience() : 0);
 	int iUnitExperience = iChange;
 	if (bFromCombat)
 	{
@@ -9247,6 +9260,7 @@ void CvUnit::changeExperience(int iChange, int iMax, bool bFromCombat, bool bInB
 		}
 	}
 	setExperience((getExperience() + iUnitExperience), iMax);
+	if (bLogExperienceChange) logSASGameRecordExperienceChange(this, iUnitExperience, getExperience() - iSASGameRecordExperienceBefore, bFromCombat);
 }
 
 // advc.312:

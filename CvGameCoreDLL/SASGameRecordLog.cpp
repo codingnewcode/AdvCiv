@@ -309,6 +309,93 @@ static SASGameRecordBattleQuality g_akSASGameRecordBattleQuality[MAX_PLAYERS];
 static SASGameRecordBattleQuality g_akSASGameRecordTotalBattleQuality[MAX_PLAYERS];
 static int g_iSASGameRecordBattleStartTurn = 0;
 
+// <!-- custom: Incremental upstream port of the military subset of mature SASGameRecordPlayerFlow.
+// Keep the mature field names/schema so later production/population-flow slices can extend this struct without rewriting the already-reviewed military accounting. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordPlayerFlow
+{
+	int iUpgrades;
+	int iUpgradeGold;
+	int iScrapped;
+	int iScrappedProductionNeeded;
+	int iCaptured;
+	int iCapturedProductionNeeded;
+	int iCombatWins;
+	int iCombatLosses;
+	int iCityPlotWins;
+	int iCityPlotLosses;
+	int iEnemyProductionNeededDestroyed;
+	int iOwnProductionNeededLost;
+	int iExperienceGained;
+	int iCombatExperienceGained;
+	int iNonCombatExperienceGained;
+	int iExperiencePreventedByCap;
+	int iExperienceLostAdjustments;
+	int iPromotionsChosen;
+	int iLeaderPromotionApplications;
+	int iEnemyExperienceDestroyed;
+	int iOwnExperienceLost;
+	std::vector<int> aiPromotionChoices;
+	void reset()
+	{
+		iUpgrades = 0;
+		iUpgradeGold = 0;
+		iScrapped = 0;
+		iScrappedProductionNeeded = 0;
+		iCaptured = 0;
+		iCapturedProductionNeeded = 0;
+		iCombatWins = 0;
+		iCombatLosses = 0;
+		iCityPlotWins = 0;
+		iCityPlotLosses = 0;
+		iEnemyProductionNeededDestroyed = 0;
+		iOwnProductionNeededLost = 0;
+		iExperienceGained = 0;
+		iCombatExperienceGained = 0;
+		iNonCombatExperienceGained = 0;
+		iExperiencePreventedByCap = 0;
+		iExperienceLostAdjustments = 0;
+		iPromotionsChosen = 0;
+		iLeaderPromotionApplications = 0;
+		iEnemyExperienceDestroyed = 0;
+		iOwnExperienceLost = 0;
+		aiPromotionChoices.assign(GC.getNumPromotionInfos(), 0);
+	}
+	bool hasMilitary() const
+	{
+		return (iUpgrades > 0 || iScrapped > 0 || iCaptured > 0 || iCombatWins > 0 || iCombatLosses > 0 || iExperienceGained > 0 || iExperiencePreventedByCap > 0 || iExperienceLostAdjustments > 0 || iPromotionsChosen > 0 || iLeaderPromotionApplications > 0 || iEnemyExperienceDestroyed > 0 || iOwnExperienceLost > 0);
+	}
+};
+static SASGameRecordPlayerFlow g_akSASGameRecordPlayerFlow[MAX_PLAYERS];
+static int g_iSASGameRecordMilitaryFlowStartTurn = 0;
+
+// <!-- custom: Session totals complement current-unit XP snapshots: veteran deaths, upgrades and captures no longer erase evidence of XP generated, promotion decisions made or veteran quality exchanged in combat.
+// Promotion-type detail stays interval-only to avoid repeating a growing lifetime list. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordMilitaryQualityTotals
+{
+	int iExperienceGained;
+	int iCombatExperienceGained;
+	int iNonCombatExperienceGained;
+	int iExperiencePreventedByCap;
+	int iExperienceLostAdjustments;
+	int iPromotionsChosen;
+	int iLeaderPromotionApplications;
+	int iEnemyExperienceDestroyed;
+	int iOwnExperienceLost;
+	void reset()
+	{
+		iExperienceGained = 0;
+		iCombatExperienceGained = 0;
+		iNonCombatExperienceGained = 0;
+		iExperiencePreventedByCap = 0;
+		iExperienceLostAdjustments = 0;
+		iPromotionsChosen = 0;
+		iLeaderPromotionApplications = 0;
+		iEnemyExperienceDestroyed = 0;
+		iOwnExperienceLost = 0;
+	}
+};
+static SASGameRecordMilitaryQualityTotals g_akSASGameRecordMilitaryQualityTotals[MAX_PLAYERS];
+
 struct SASGameRecordCombatPending
 {
 	PlayerTypes eAttacker, eDefender;
@@ -364,6 +451,16 @@ static void resetSASGameRecordCombatState()
 		g_akSASGameRecordTotalBattleQuality[iI].reset();
 	}
 	g_iSASGameRecordBattleStartTurn = GC.getGame().getGameTurn();
+}
+
+static void resetSASGameRecordMilitaryFlowState()
+{
+	for (int iI = 0; iI < MAX_PLAYERS; iI++)
+	{
+		g_akSASGameRecordPlayerFlow[iI].reset();
+		g_akSASGameRecordMilitaryQualityTotals[iI].reset();
+	}
+	g_iSASGameRecordMilitaryFlowStartTurn = GC.getGame().getGameTurn();
 }
 
 static void resetSASGameRecordGlobalPrevious()
@@ -3785,6 +3882,30 @@ static void logSASGameRecordBattleBuckets(int iGameTurn)
 	g_iSASGameRecordBattleStartTurn = iGameTurn + 1;
 }
 
+// <!-- custom: Military-flow rows reuse the mature SAS schema but this incremental port currently owns only the military subset of SASGameRecordPlayerFlow; production and natural-population flow arrive in later coherent slices. (ChatGPT-5.6-Sol) -->
+static void logSASGameRecordMilitaryFlowBuckets(int iGameTurn)
+{
+	for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
+	{
+		PlayerTypes const ePlayer = (PlayerTypes)iI;
+		SASGameRecordPlayerFlow& kFlow = g_akSASGameRecordPlayerFlow[iI];
+		if (kFlow.hasMilitary())
+		{
+			CvString szPromotionChoices;
+			FOR_EACH_ENUM(Promotion)
+				appendSASGameRecordTypeCount(szPromotionChoices, getSASGameRecordPromotionType(eLoopPromotion), kFlow.aiPromotionChoices[eLoopPromotion]);
+			logSASGameRecord("GAME_RECORD_MILITARY_FLOW turn=%d range=%d-%d player=%d combatWins=%d combatLosses=%d cityPlotWins=%d cityPlotLosses=%d enemyProductionNeededDestroyed=%d ownProductionNeededLost=%d enemyXpDestroyed=%d ownXpLost=%d xpGained=%d combatXpGained=%d nonCombatXpGained=%d xpPreventedByCap=%d xpLostAdjustments=%d promotionsChosen=%d leaderPromotionApplications=%d promotionChoices=%s upgrades=%d upgradeGold=%d scrapped=%d scrappedProductionNeeded=%d captured=%d capturedProductionNeeded=%d",
+				iGameTurn, g_iSASGameRecordMilitaryFlowStartTurn, iGameTurn, ePlayer, kFlow.iCombatWins, kFlow.iCombatLosses, kFlow.iCityPlotWins, kFlow.iCityPlotLosses, kFlow.iEnemyProductionNeededDestroyed, kFlow.iOwnProductionNeededLost, kFlow.iEnemyExperienceDestroyed, kFlow.iOwnExperienceLost,
+				kFlow.iExperienceGained, kFlow.iCombatExperienceGained, kFlow.iNonCombatExperienceGained, kFlow.iExperiencePreventedByCap, kFlow.iExperienceLostAdjustments, kFlow.iPromotionsChosen, kFlow.iLeaderPromotionApplications, getSASDiagnosticOrDash(szPromotionChoices).GetCString(),
+				kFlow.iUpgrades, kFlow.iUpgradeGold, kFlow.iScrapped, kFlow.iScrappedProductionNeeded, kFlow.iCaptured, kFlow.iCapturedProductionNeeded);
+		}
+		kFlow.reset();
+	}
+	for (int iI = MAX_CIV_PLAYERS; iI < MAX_PLAYERS; iI++)
+		g_akSASGameRecordPlayerFlow[iI].reset();
+	g_iSASGameRecordMilitaryFlowStartTurn = iGameTurn + 1;
+}
+
 static void logSASGameRecordSnapshot(int iGameTurn, char const* szReason)
 {
 	CvGame const& kGame = GC.getGame();
@@ -3814,6 +3935,7 @@ static void logSASGameRecordSnapshot(int iGameTurn, char const* szReason)
 	{
 		logSASGameRecordBarbarians(iGameTurn);
 		logSASGameRecordBattleBuckets(iGameTurn);
+		logSASGameRecordMilitaryFlowBuckets(iGameTurn);
 	}
 	logSASGameRecord("GAME_RECORD_TURN_END turn=%d reason=%s", iGameTurn, szReason);
 }
@@ -4224,24 +4346,40 @@ void logSASGameRecordCombatResult(CvUnit const* pWinner, CvUnit const* pLoser, C
 		recordSASGameRecordBattleLuck(kPending.eAttacker, kPending.iAttackerCombatOddsPermille, bAttackerWon);
 		recordSASGameRecordBattleLuck(kPending.eDefender, 1000 - kPending.iAttackerCombatOddsPermille, !bAttackerWon);
 	}
+	int const iLoserProductionNeeded = (eLoser >= 0 && eLoser < MAX_PLAYERS ? GET_PLAYER(eLoser).getProductionNeeded(pLoser->getUnitType()) : 0);
 	if (eWinner >= 0 && eWinner < MAX_PLAYERS)
 	{
 		g_aiSASGameRecordBattleWins[eWinner]++;
 		g_aiSASGameRecordTotalBattleWins[eWinner]++;
+		SASGameRecordPlayerFlow& kWinnerFlow = g_akSASGameRecordPlayerFlow[eWinner];
+		kWinnerFlow.iCombatWins++;
+		if (eLoser >= 0 && eLoser < MAX_PLAYERS)
+		{
+			kWinnerFlow.iEnemyProductionNeededDestroyed += iLoserProductionNeeded;
+			kWinnerFlow.iEnemyExperienceDestroyed += pLoser->getExperience();
+			g_akSASGameRecordMilitaryQualityTotals[eWinner].iEnemyExperienceDestroyed += pLoser->getExperience();
+		}
 		if (bCityPlot)
 		{
 			g_aiSASGameRecordCityBattleWins[eWinner]++;
 			g_aiSASGameRecordTotalCityBattleWins[eWinner]++;
+			kWinnerFlow.iCityPlotWins++;
 		}
 	}
 	if (eLoser >= 0 && eLoser < MAX_PLAYERS)
 	{
 		g_aiSASGameRecordBattleLosses[eLoser]++;
 		g_aiSASGameRecordTotalBattleLosses[eLoser]++;
+		SASGameRecordPlayerFlow& kLoserFlow = g_akSASGameRecordPlayerFlow[eLoser];
+		kLoserFlow.iCombatLosses++;
+		kLoserFlow.iOwnProductionNeededLost += iLoserProductionNeeded;
+		kLoserFlow.iOwnExperienceLost += pLoser->getExperience();
+		g_akSASGameRecordMilitaryQualityTotals[eLoser].iOwnExperienceLost += pLoser->getExperience();
 		if (bCityPlot)
 		{
 			g_aiSASGameRecordCityBattleLosses[eLoser]++;
 			g_aiSASGameRecordTotalCityBattleLosses[eLoser]++;
+			kLoserFlow.iCityPlotLosses++;
 		}
 	}
 	if (!bLogExactBattle)
@@ -4261,7 +4399,120 @@ void logSASGameRecordCombatResult(CvUnit const* pWinner, CvUnit const* pLoser, C
 		pWinner->getExperience(), pWinner->getLevel(), pLoser->getExperience(), pLoser->getLevel(), getSASGameRecordUnitType(pWinner->getLeaderUnitType()), getSASGameRecordUnitType(pLoser->getLeaderUnitType()));
 }
 
-// <!-- custom: Keep this incremental upstream slice to combat/battle-quality chronology only. Mature AdvCiv-SAS additionally maintains player-flow, XP/promotion and per-war aggregate accounting; those remain deferred to later coherent batches rather than being partially populated here. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordExperienceChange(CvUnit const* pUnit, int iAdjustedChange, int iActualChange, bool bFromCombat)
+{
+	if (pUnit == NULL)
+		return;
+	PlayerTypes const ePlayer = pUnit->getOwner();
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	int const iGained = std::max(0, iActualChange);
+	int const iLostAdjustment = std::max(0, -iActualChange);
+	int const iPreventedByCap = (iAdjustedChange > 0 ? std::max(0, iAdjustedChange - iGained) : 0);
+	if (iGained <= 0 && iLostAdjustment <= 0 && iPreventedByCap <= 0)
+		return;
+	SASGameRecordPlayerFlow& kFlow = g_akSASGameRecordPlayerFlow[ePlayer];
+	kFlow.iExperienceGained += iGained;
+	if (bFromCombat) kFlow.iCombatExperienceGained += iGained;
+	else kFlow.iNonCombatExperienceGained += iGained;
+	kFlow.iExperiencePreventedByCap += iPreventedByCap;
+	kFlow.iExperienceLostAdjustments += iLostAdjustment;
+	SASGameRecordMilitaryQualityTotals& kTotal = g_akSASGameRecordMilitaryQualityTotals[ePlayer];
+	kTotal.iExperienceGained += iGained;
+	if (bFromCombat) kTotal.iCombatExperienceGained += iGained;
+	else kTotal.iNonCombatExperienceGained += iGained;
+	kTotal.iExperiencePreventedByCap += iPreventedByCap;
+	kTotal.iExperienceLostAdjustments += iLostAdjustment;
+}
+
+void logSASGameRecordUnitPromoted(CvUnit const* pUnit, PromotionTypes ePromotion)
+{
+	if (pUnit == NULL || ePromotion == NO_PROMOTION)
+		return;
+	PlayerTypes const ePlayer = pUnit->getOwner();
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	bool const bLeaderPromotion = GC.getInfo(ePromotion).isLeader();
+	SASGameRecordPlayerFlow& kFlow = g_akSASGameRecordPlayerFlow[ePlayer];
+	SASGameRecordMilitaryQualityTotals& kTotal = g_akSASGameRecordMilitaryQualityTotals[ePlayer];
+	if (bLeaderPromotion)
+	{
+		kFlow.iLeaderPromotionApplications++;
+		kTotal.iLeaderPromotionApplications++;
+		return; // <!-- custom: GREAT_GENERAL_ATTACHED already provides the exact level-2 action with both source and target units. (ChatGPT-5.6-Sol) -->
+	}
+	kFlow.iPromotionsChosen++;
+	kTotal.iPromotionsChosen++;
+	int const iPromotion = (int)ePromotion;
+	if (iPromotion >= 0 && iPromotion < (int)kFlow.aiPromotionChoices.size())
+		kFlow.aiPromotionChoices[iPromotion]++;
+	if (gGameRecordLogLevel >= 3)
+	{
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=UNIT_PROMOTED player=%d unitId=%d unit=%s unitAI=%s promotion=%s x=%d y=%d xp=%d level=%d",
+			GC.getGame().getGameTurn(), ePlayer, pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()),
+			getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()), getSASGameRecordPromotionType(ePromotion),
+			pUnit->getX(), pUnit->getY(), pUnit->getExperience(), pUnit->getLevel());
+	}
+}
+
+void logSASGameRecordGreatGeneralAttached(CvUnit const* pGreatGeneral, CvUnit const* pTargetUnit, PromotionTypes ePromotion)
+{
+	if (pGreatGeneral == NULL || pTargetUnit == NULL)
+		return;
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=GREAT_GENERAL_ATTACHED player=%d generalUnitId=%d generalUnit=%s targetUnitId=%d targetUnit=%s targetUnitAI=%s x=%d y=%d promotion=%s targetXP=%d targetLevel=%d",
+		GC.getGame().getGameTurn(), pGreatGeneral->getOwner(), pGreatGeneral->getID(), getSASGameRecordUnitType(pGreatGeneral->getUnitType()), pTargetUnit->getID(), getSASGameRecordUnitType(pTargetUnit->getUnitType()), getSASGameRecordUnitAIType(pTargetUnit->AI_getUnitAIType()), pTargetUnit->getX(), pTargetUnit->getY(), ePromotion == NO_PROMOTION ? "-" : GC.getInfo(ePromotion).getType(), pTargetUnit->getExperience(), pTargetUnit->getLevel());
+}
+
+void logSASGameRecordUnitScrapped(CvUnit const* pUnit)
+{
+	if (pUnit == NULL)
+		return;
+	PlayerTypes const ePlayer = pUnit->getOwner();
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	SASGameRecordPlayerFlow& kFlow = g_akSASGameRecordPlayerFlow[ePlayer];
+	kFlow.iScrapped++;
+	kFlow.iScrappedProductionNeeded += GET_PLAYER(ePlayer).getProductionNeeded(pUnit->getUnitType());
+	if (gGameRecordLogLevel >= 3)
+	{
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=UNIT_SCRAPPED player=%d unitId=%d unit=%s unitAI=%s x=%d y=%d damage=%d xp=%d level=%d age=%d cargo=%d cargoSpace=%d",
+			GC.getGame().getGameTurn(), ePlayer, pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()), pUnit->getX(), pUnit->getY(), pUnit->getDamage(), pUnit->getExperience(), pUnit->getLevel(), GC.getGame().getGameTurn() - pUnit->getGameTurnCreated(), pUnit->getCargo(), pUnit->cargoSpace());
+	}
+}
+
+void logSASGameRecordUnitUpgraded(CvUnit const* pOldUnit, CvUnit const* pNewUnit, int iCost)
+{
+	if (pOldUnit == NULL || pNewUnit == NULL)
+		return;
+	PlayerTypes const ePlayer = pNewUnit->getOwner();
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	SASGameRecordPlayerFlow& kFlow = g_akSASGameRecordPlayerFlow[ePlayer];
+	kFlow.iUpgrades++;
+	kFlow.iUpgradeGold += iCost;
+	if (gGameRecordLogLevel >= 3)
+	{
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=UNIT_UPGRADED player=%d oldUnitId=%d newUnitId=%d fromUnit=%s toUnit=%s unitAI=%s x=%d y=%d cost=%d oldXP=%d newXP=%d oldLevel=%d newLevel=%d",
+			GC.getGame().getGameTurn(), ePlayer, pOldUnit->getID(), pNewUnit->getID(), getSASGameRecordUnitType(pOldUnit->getUnitType()), getSASGameRecordUnitType(pNewUnit->getUnitType()), getSASGameRecordUnitAIType(pNewUnit->AI_getUnitAIType()), pNewUnit->getX(), pNewUnit->getY(), iCost, pOldUnit->getExperience(), pNewUnit->getExperience(), pOldUnit->getLevel(), pNewUnit->getLevel());
+	}
+}
+
+void logSASGameRecordUnitCaptured(PlayerTypes eOldOwner, UnitTypes eOldUnitType, CvUnit const* pNewUnit)
+{
+	if (pNewUnit == NULL)
+		return;
+	PlayerTypes const eNewOwner = pNewUnit->getOwner();
+	if (eNewOwner < 0 || eNewOwner >= MAX_PLAYERS)
+		return;
+	SASGameRecordPlayerFlow& kFlow = g_akSASGameRecordPlayerFlow[eNewOwner];
+	kFlow.iCaptured++;
+	kFlow.iCapturedProductionNeeded += GET_PLAYER(eNewOwner).getProductionNeeded(pNewUnit->getUnitType());
+	// <!-- custom: Upstream AdvCiv 1.14 has no mature-SAS unitCaptured Python event. Log directly at the successful initUnit boundary so this telemetry port stays factual without expanding the Python event API merely for recorder plumbing. (ChatGPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=UNIT_CAPTURED oldOwner=%d newOwner=%d oldUnit=%s newUnitId=%d newUnit=%s newUnitAI=%s x=%d y=%d",
+		GC.getGame().getGameTurn(), eOldOwner, eNewOwner, getSASGameRecordUnitType(eOldUnitType), pNewUnit->getID(), getSASGameRecordUnitType(pNewUnit->getUnitType()), getSASGameRecordUnitAIType(pNewUnit->AI_getUnitAIType()), pNewUnit->getX(), pNewUnit->getY());
+}
+
+// <!-- custom: Per-war aggregate accounting and the final all-purpose statistics row remain deferred until the remaining combat/city/unit action families are complete. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordWarStarted(TeamTypes eDeclarer, TeamTypes eTarget, WarPlanTypes eWarPlan, bool bPrimaryDoW, bool bNewDiplo, PlayerTypes eSponsor, bool bRandomEvent, WarDeclarationCause eCause)
 {
 	if (eDeclarer < 0 || eDeclarer >= MAX_TEAMS || eTarget < 0 || eTarget >= MAX_TEAMS)
@@ -4308,6 +4559,7 @@ void startSASGameRecordLogForNewGame()
 	resetSASGameRecordResearchState();
 	resetSASGameRecordCityLifecycleState();
 	resetSASGameRecordCombatState();
+	resetSASGameRecordMilitaryFlowState();
 	CvString const szLogName = getSASGameRecordLogName();
 	logSASGameRecord("GAME_RECORD_NEW_GAME_INITIALIZING utc=%s logFile=%s", getSASGameRecordLogTimestamp().GetCString(), getSASDiagnosticQuoted(szLogName.GetCString()).GetCString());
 	logSASGameRecordLogSettings();
@@ -4338,6 +4590,7 @@ void startSASGameRecordLogForLoadedSave()
 	resetSASGameRecordResearchState();
 	resetSASGameRecordCityLifecycleState();
 	resetSASGameRecordCombatState();
+	resetSASGameRecordMilitaryFlowState();
 	logSASGameRecordGameState("GAME_RECORD_SAVE_LOADED");
 	logSASGameRecordLogSettings();
 	logSASGameRecordTechCapabilitySources();
