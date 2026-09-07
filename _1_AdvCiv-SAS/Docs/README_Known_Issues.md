@@ -582,7 +582,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#489 - (Fixed AdvCiv-SAS regression against AdvCiv Barbarian normalization) First Barbarian city received capital-only gates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-489)\
 [KI#490 - (Fixed AdvCiv-SAS first-city gate defect) Unusable overlapping plots affected preliminary BFC quality](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-490)\
 [KI#491 - (Provisional Pending inherited AdvCiv found-value defect) Duplicate-resource value depends on BFC enumeration order](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-491)\
-[KI#492 - (Provisional Pending inherited AdvCiv performance defect) StartingPositionIteration discards full city-site evaluations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-492)\
+[KI#492 - (Fixed inherited AdvCiv performance defect) StartingPositionIteration discarded full city-site evaluations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-492)\
 [KI#493 - (Provisional Pending inherited AdvCiv information leak) First-colony value reads hidden foreign city counts](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-493)\
 [KI#494 - (Provisional Pending inherited AdvCiv regression) Fog hardening defeats deadlocked-resource allowance](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-494)\
 [KI#495 - (Provisional Pending inherited AdvCiv information leak) Culture modifier reads hidden area city totals](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-495)\
@@ -1042,14 +1042,20 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#943 - (Provisional Pending inherited AdvC True Starts weighting defect) Civilizations are counted once per native leader](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-943)\
 [KI#944 - (Provisional Pending inherited AdvC True Starts wrap defect) Diagonal climate regions disappear across seams](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-944)\
 [KI#945 - (Provisional Pending inherited AdvC True Starts locale defect) English option text controls Old-World filtering](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-945)\
-[KI#946 - (Provisional Pending inherited AdvC normalization defect) Normalization-level tolerance falls through and reverses its strength](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-946)\
+[KI#946 - (Fixed inherited AdvC normalization defect) Normalization-level tolerance fell through and reversed its strength](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-946)\
 [KI#947 - (Provisional Pending inherited AdvC starting-distance defect) A water fallback mixes tile and weighted-path units](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-947)\
 [KI#948 - (Provisional Pending inherited AdvC team-start defect) Unequal-team round-robin overfills completed teams](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-948)\
-[KI#949 - (Provisional Pending inherited AdvC shortest-path defect) Stale Dijkstra entries overwrite settled distances](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-949)\
-[KI#950 - (Provisional Pending inherited AdvC scenario ownership defect) A normalization target and evaluator are leaked](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-950)\
+[KI#949 - (Fixed inherited AdvC shortest-path defect) Stale Dijkstra entries overwrote settled distances](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-949)\
+[KI#950 - (Fixed inherited AdvC scenario ownership defect) A normalization target and evaluator were leaked](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-950)\
 [KI#951 - (Provisional Pending inherited AdvC team-start defect) Assigned rival sites are reused as unassigned fallback sites](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-951)\
 [KI#952 - (Provisional Pending inherited AdvC Python-wrapper regression) Colony advice tests the reversed city-value polarity](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-952)\
-[KI#953 - (Provisional Pending investigation) F631 remains unassigned in the open CyCity audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-953)\
+[KI#953 - (Provisional Pending inherited AdvC map-option regression) Wide translated comparisons narrow text and drop matching controls](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-953)\
+[KI#954 - (Provisional Pending inherited AdvC shelf-cache ownership defect) Final Shelf objects leak at map teardown](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-954)\
+[KI#955 - (Provisional Pending inherited BtS/BBAI/K-Mod dual-coast defect) Closest upgrade-city search ignores the second water area](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-955)\
+[KI#956 - (Provisional Pending inherited AdvC lake-cache regression) Normalization-created lakes retain stale non-lake state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-956)\
+[KI#957 - (Provisional Pending AdvC human group-cycle regression) Fully-ready groups receive the partial-readiness penalty](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-957)\
+[KI#958 - (Provisional Pending inherited AdvC scenario-topology defect) City-bearing scenarios retain pre-Ice water areas](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-958)\
+[KI#959 - (Provisional Pending investigation) F637 remains unassigned before the CombatOdds audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-959)\
 
 <a id="ki-1"></a>
 
@@ -12930,11 +12936,13 @@ Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-So
 
 <a id="ki-492"></a>
 
-## KI#492 - (Provisional Pending inherited AdvCiv performance defect) StartingPositionIteration discards full city-site evaluations
+## KI#492 - (Fixed inherited AdvCiv performance defect) StartingPositionIteration discarded full city-site evaluations
 
-Album F169 finds that workable-plot precomputation constructs AIFoundValue and performs a complete evaluation for every candidate before using the separate workable-plot path. Pending independent implementation review.
+Album F169 found that workable-plot precomputation constructed `AIFoundValue` and performed a complete evaluation for every candidate before using its independent workable-plot path. The constructor can now initialize its shared immutable context without evaluating the full city site; only SPI's workable-plot caller requests that lightweight path, while ordinary callers retain immediate evaluation.
 
-Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+After compilation, an ordinary starting-position/autoplay run completed successfully without an observed issue. The removed work has no intended output difference and its exact independence remains source verified.
+
+Found in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; independently reviewed, fixed and documented with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-493"></a>
 
@@ -17352,11 +17360,13 @@ Found as F623 during ChatGPT-5.6-Sol's C031-WIP449 audit; reconciled into Known 
 
 <a id="ki-946"></a>
 
-## KI#946 - (Provisional Pending inherited AdvC normalization defect) Normalization-level tolerance falls through and reverses its strength
+## KI#946 - (Fixed inherited AdvC normalization defect) Normalization-level tolerance fell through and reversed its strength
 
-Album F624 finds every `NormalizationTarget::isReached` switch case falling through while adding the extra "nearly reached" tolerance. LOW therefore uses 8.5%, MEDIUM 12.5% and HIGH 14.5% before handicap adjustment, making stronger normalization more tolerant of a weak result and allowing it to stop earlier. Pending adding mutually exclusive level adjustments while preserving the shared base tolerance.
+Album F624 found every `NormalizationTarget::isReached` switch case falling through while adding the extra "nearly reached" tolerance. LOW therefore used 8.5%, MEDIUM 12.5% and HIGH 14.5% before handicap adjustment, making stronger normalization more tolerant of a weak result and allowing it to stop earlier. Each level now adds only its intended 6%, 4% or 2% adjustment to the shared 2.5% base tolerance.
 
-Found during ChatGPT-5.6-Sol's C031-WIP451 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+The compiled ordinary starting-position/autoplay run completed successfully. Exact LOW, MEDIUM and HIGH stopping thresholds remain source verified because the normalization level is not a normal game-setup control.
+
+Found during ChatGPT-5.6-Sol's C031-WIP451 `StartingPositionIteration.cpp` audit; independently reviewed, fixed and documented with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-947"></a>
 
@@ -17376,19 +17386,23 @@ Found during ChatGPT-5.6-Sol's C031-WIP453 `StartingPositionIteration.cpp` audit
 
 <a id="ki-949"></a>
 
-## KI#949 - (Provisional Pending inherited AdvC shortest-path defect) Stale Dijkstra entries overwrite settled distances
+## KI#949 - (Fixed inherited AdvC shortest-path defect) Stale Dijkstra entries overwrote settled distances
 
-Album F627 finds `DistanceTable::computeDistances` writing each popped queue value before checking whether that plot was already reached. A longer stale entry can consequently overwrite the correct shortest distance that Dijkstra settled earlier, corrupting the central metric used for starting-position scoring. Pending rejecting reached entries before `setDistance` while retaining ordinary neighbor expansion for the first pop.
+Album F627 found `DistanceTable::computeDistances` writing each popped queue value before checking whether that plot was already reached. A longer stale entry could consequently overwrite the correct shortest distance that Dijkstra settled earlier, corrupting the central metric used for starting-position scoring. Reached entries are now rejected before `setDistance`, while the first and therefore shortest pop retains ordinary neighbor expansion.
 
-Found during ChatGPT-5.6-Sol's C031-WIP454 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+The compiled ordinary starting-position/autoplay run completed successfully, exercising the repaired distance-table construction without an observed issue. The stale-entry ordering itself remains source verified.
+
+Found during ChatGPT-5.6-Sol's C031-WIP454 `StartingPositionIteration.cpp` audit; independently reviewed, fixed and documented with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-950"></a>
 
-## KI#950 - (Provisional Pending inherited AdvC scenario ownership defect) A normalization target and evaluator are leaked
+## KI#950 - (Fixed inherited AdvC scenario ownership defect) A normalization target and evaluator were leaked
 
-Album F628 finds scenario starting-plot assignment creating and using a heap-owned `NormalizationTarget`, then returning `NULL` so later normalization is skipped without deleting the target or its owned `CitySiteEvaluator`. AdvC practical 2708 made scenario targets constructible while retaining that pointer-discarding return. Pending deleting the scenario-only target after its handicap consumer or otherwise preserving one clear owner.
+Album F628 found scenario starting-plot assignment creating and using a heap-owned `NormalizationTarget`, then returning `NULL` so later normalization was skipped without deleting the target or its owned `CitySiteEvaluator`. AdvC practical 2708 made scenario targets constructible while retaining that pointer-discarding return. The scenario path now deletes the target after its last handicap consumer; ordinary games continue returning it to the established later normalization owner.
 
-Found during ChatGPT-5.6-Sol's C031-WIP455 `StartingPositionIteration.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+The compiled build successfully loaded the existing `custom_game_sas_save_example.CivBeyondSwordWBSave` WorldBuilder scenario without an observed issue. The one-time ownership release is not player-visible and remains source verified.
+
+Found during ChatGPT-5.6-Sol's C031-WIP455 `StartingPositionIteration.cpp` audit; independently reviewed, fixed and documented with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-951"></a>
 
@@ -17408,8 +17422,56 @@ Found during ChatGPT-5.6-Sol's C031-WIP458 `CyCity.cpp` audit; reconciled into K
 
 <a id="ki-953"></a>
 
-## KI#953 - (Provisional Pending investigation) F631 remains unassigned in the open CyCity audit
+## KI#953 - (Provisional Pending inherited AdvC map-option regression) Wide translated comparisons narrow text and drop matching controls
 
-Queue 024 `CyCity.cpp` remains open at C031-WIP459 after confirming F630/KI#952. Keep F631/KI#953 reserved until a later checkpoint proves another distinct current-live root or closes the file.
+Album F631 finds the `CvWString` overload of `CvMap::isCustomMapOption`, specifically provided for translated option text, narrowing through the codebase's documented non-ASCII-unsafe conversion and failing to forward `bCheckContains` or `bIgnoreCase`. The shipped French `Equilibré` Balanced-resource option provides a live localization path, while every wide caller silently receives the narrow overload's default matching modes. Pending comparing wide option descriptions directly and forwarding both controls.
 
-Reserved as F631 during ChatGPT-5.6-Sol's C031-WIP459 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+Found during ChatGPT-5.6-Sol's C031-WIP461 `CvMap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-954"></a>
+
+## KI#954 - (Provisional Pending inherited AdvC shelf-cache ownership defect) Final Shelf objects leak at map teardown
+
+Album F632 finds `CvMap::computeShelves` deleting old heap-owned `Shelf` objects before rebuilding the cache, while `CvMap::uninit` and destruction clear no final objects. The last computed shelf cache therefore leaks at teardown. Pending giving teardown the same explicit ownership cleanup without changing synchronous raw-pointer consumers.
+
+Found during ChatGPT-5.6-Sol's C031-WIP462 `CvMap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-955"></a>
+
+## KI#955 - (Provisional Pending inherited BtS/BBAI/K-Mod dual-coast defect) Closest upgrade-city search ignores the second water area
+
+Album F633 finds `CvMap::findCity` with same-area and coastal-only filtering recognizing a coastal city's land area and primary water area but not its supported `secondWaterArea`. A naval unit beside an isthmus city can therefore fail the closest-city upgrade lookup even though exhaustive upgrade-city search accepts that same city. Pending safely accepting either adjacent accessible water area.
+
+Found during ChatGPT-5.6-Sol's C031-WIP463 `CvMap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-956"></a>
+
+## KI#956 - (Provisional Pending inherited AdvC lake-cache regression) Normalization-created lakes retain stale non-lake state
+
+Album F634 finds AdvC's cached `CvArea::m_bLake` remaining false when normalization incrementally creates a new lake. Later steps in the same normalization pass can consequently miss lake food and fresh-water value and add unnecessary compensation before the eventual whole-map rebuild refreshes the cache. Pending refreshing lake state after the incremental topology change at the point where subsequent normalization can observe it.
+
+Found during ChatGPT-5.6-Sol's C031-WIP465 `CvMap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-957"></a>
+
+## KI#957 - (Provisional Pending AdvC human group-cycle regression) Fully-ready groups receive the partial-readiness penalty
+
+Album F635 finds AdvC's human group-cycle ranking multiplying distance for groups whose every unit is ready, despite its comment and eligibility broadening intending to place partially-ready groups last. The `readyToSelect()` polarity is inverted at the ranking test. Pending applying the penalty only when some but not all units can move.
+
+Found during ChatGPT-5.6-Sol's C031-WIP466 `CvMap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-958"></a>
+
+## KI#958 - (Provisional Pending inherited AdvC scenario-topology defect) City-bearing scenarios retain pre-Ice water areas
+
+Album F636 finds WorldBuilder loading calculating water areas before features are applied, while AdvC scenarios containing preplaced cities skip the later Ice-aware rebuild. With default `PASSABLE_AREAS`, stock Earth1000AD therefore begins with Arctic water connectivity computed before its Ice barriers and can report an invalid ordinary-ship route. Pending using the existing water-only rebuild after scenario features while preserving preplaced land/city area bookkeeping.
+
+Found during ChatGPT-5.6-Sol's C031-WIP467 `CvMap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-959"></a>
+
+## KI#959 - (Provisional Pending investigation) F637 remains unassigned before the CombatOdds audit
+
+Queue 036 `CvMap.cpp` closed at C031-WIP468 after confirming F631-F636. Keep F637/KI#959 reserved for the next independent root while priority Queue 057 `CombatOdds.cpp` begins.
+
+Reserved as F637 during ChatGPT-5.6-Sol's C031-WIP468 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.

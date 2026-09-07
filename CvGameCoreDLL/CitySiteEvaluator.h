@@ -99,7 +99,8 @@ class AIFoundValue
 {
 public:
 	// <!-- custom: A non-null breakdown output enables diagnostic accounting; normal evaluation passes NULL and keeps that work disabled. (GPT-5.5) -->
-	AIFoundValue(CvPlot const& kPlot, CitySiteEvaluator const& kSettings, CvString* pszBreakdown = NULL);
+	// <!-- custom: Let SPI construct the shared workable-plot context without also running and discarding a complete city-site evaluation. See KI#492. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	AIFoundValue(CvPlot const& kPlot, CitySiteEvaluator const& kSettings, CvString* pszBreakdown = NULL, bool bEvaluateSite = true);
 	int get() const { return m_iResult; }
 	scaled evaluateWorkablePlot(CvPlot const& p) const; // advc.027
 

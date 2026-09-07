@@ -1319,7 +1319,14 @@ NormalizationTarget* CvGame::assignStartingPlots()
 		But that would require a NormalizationTarget member function for
 		updating the start values. */
 	applyStartingLocHandicaps(pNormalizationTarget);
-	return (bScenario ? NULL : pNormalizationTarget); // advc.027
+	// <!-- custom: Scenarios skip the later normalization phase, but AdvCiv began constructing a target for their handicap reassignment and then discarded its sole pointer.
+	// Delete that target and its owned evaluator here. See KI#950. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (bScenario)
+	{
+		SAFE_DELETE(pNormalizationTarget);
+		return NULL;
+	}
+	return pNormalizationTarget; // advc.027
 }
 
 /*	advc.108b: Based on code cut from assignStartingPlots.

@@ -2,12 +2,12 @@ AdvCiv-SAS C++ File Audit Album
 Generated from local light-source snapshot only; no web/GitHub lookup used.
 
 CURRENT PROGRESS SUMMARY
-Files complete: 34 / 169
-Files open: 1 / 169
-Last completed file: queue 025 CvGameCoreDLL/StartingPositionIteration.cpp (2,247 queued lines) - CLOSED AT C031-WIP457
-Current file: queue 024 CvGameCoreDLL/CyCity.cpp (2,399 queued lines) - OPEN AT C031-WIP459
-Latest confirmed audit findings: F624-F630 / KI#946-KI#952 in the Queue 025 closure and open Queue 024 re-audit. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
-Next new root ID: F631 unused / provisional KI#953 next
+Files complete: 36 / 169
+Files open: 0 / 169
+Last completed file: queue 036 CvGameCoreDLL/CvMap.cpp (1,596 queued lines) - CLOSED AT C031-WIP468
+Next file: priority queue 057 CvGameCoreDLL/CombatOdds.cpp (713 queued lines)
+Latest confirmed audit findings: F631-F636 / KI#953-KI#958 in the Queue 024 and Queue 036 closures. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
+Next new root ID: F637 unused / provisional KI#959 next
 
 The durable checkpoints and current cursor below are authoritative for finding status; the initial C010 snapshot and later WIP appends preserve their own historical source identities.
 
@@ -18,7 +18,7 @@ METHOD
 - Do not promote tuning disagreements, theoretical unsupported configurations, dead paths, or already-fixed history into new findings.
 - One root cause gets one finding even when several callers expose different symptoms.
 - False positives are recorded when useful so they are not rediscovered later.
-- After closing the current file, process every still-PENDING queue entry explicitly marked `priority next wip` before resuming ordinary queue order; among equally marked entries, follow queue order. Queue 025 `StartingPositionIteration.cpp` is therefore next after Queue 022 closes, ahead of ordinary Queue 024. This preserves the user's requested stronger-WIP priorities without making ChatGPT choose between competing continuation notes.
+- Process every still-PENDING queue entry explicitly marked `priority next wip` before resuming ordinary queue order; among equally marked entries, follow queue order. Queue 057 `CombatOdds.cpp` is next after the Queue 036 closure. This preserves the user's requested stronger-WIP priorities without making ChatGPT choose between competing continuation notes.
 
 QUEUE (current .cpp files, longest -> shortest)
 001  32205 CvGameCoreDLL/CvPlayerAI.cpp [COMPLETE ORIGINAL PASS / DEEP-METHOD RE-AUDIT CLOSED - C031-WIP65 / F321-F374]
@@ -44,7 +44,7 @@ QUEUE (current .cpp files, longest -> shortest)
 021   2503 CvGameCoreDLL/CyPlayer.cpp [COMPLETE - C031-WIP438]
 022   2448 CvGameCoreDLL/TrueStarts.cpp [COMPLETE - SEE C031-WIP450 DURABLE CHECKPOINT]
 023   2430 CvGameCoreDLL/InvasionGraph.cpp [COMPLETE - SEE C022 DURABLE CHECKPOINT]
-024   2399 CvGameCoreDLL/CyCity.cpp [OPEN - C031-WIP459]
+024   2399 CvGameCoreDLL/CyCity.cpp [COMPLETE - SEE C031-WIP460 DURABLE CHECKPOINT]
 025   2247 CvGameCoreDLL/StartingPositionIteration.cpp [COMPLETE - SEE C031-WIP457 DURABLE CHECKPOINT]
 026   2132 CvGameCoreDLL/CvInitCore.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 027   2099 CvGameCoreDLL/CvInfo_RandomEvent.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -56,7 +56,7 @@ QUEUE (current .cpp files, longest -> shortest)
 033   1672 CvGameCoreDLL/CvInfo_Terrain.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 034   1637 CvGameCoreDLL/CvInfo_Civilization.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 035   1619 CvGameCoreDLL/CvInfo_GameOption.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-036   1596 CvGameCoreDLL/CvMap.cpp [PENDING]<-(priority next wip after the first reloop)
+036   1596 CvGameCoreDLL/CvMap.cpp [COMPLETE - SEE C031-WIP468 DURABLE CHECKPOINT]
 037   1576 CvGameCoreDLL/CvPythonCaller.cpp [COMPLETE - SEE C025 DURABLE CHECKPOINT]
 038   1555 CvGameCoreDLL/RiseFall.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 039   1461 CvGameCoreDLL/CvGameCoreUtils.cpp [COMPLETE - SEE C023 DURABLE CHECKPOINT]
@@ -77,7 +77,7 @@ QUEUE (current .cpp files, longest -> shortest)
 054    844 CvGameCoreDLL/GroupPathFinder.cpp [COMPLETE - SEE C028 DURABLE CHECKPOINT]
 055    837 CvGameCoreDLL/CyInfoInterface3.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 056    768 CvGameCoreDLL/CvInfo_Asset.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-057    713 CvGameCoreDLL/CombatOdds.cpp [PENDING]<-(priority next wip after the first reloop)
+057    713 CvGameCoreDLL/CombatOdds.cpp [PENDING]<-(priority current next wip)
 058    693 CvGameCoreDLL/ArmamentForecast.cpp [PENDING]<-(priority next wip after the first reloop)
 059    687 CvGameCoreDLL/CyGlobalContext.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 060    686 CvGameCoreDLL/CvArea.cpp [PENDING]<-(priority next wip after the first reloop)
@@ -159926,4 +159926,1446 @@ the next clean checkpoint regardless of finding count.
 No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
 ===============================================================================
 END C031-WIP459
+===============================================================================
+
+===============================================================================
+C031-WIP460 — QUEUE 024 CyCity.cpp — FINAL CLOSURE / F631 UNUSED
+===============================================================================
+Physical parent: C031-WIP459
+Audit target: `CvGameCoreDLL/CyCity.cpp`
+Gameplay source status: UNTOUCHED.
+
+QUEUE STATE
+-----------
+Queue 024 `CvGameCoreDLL/CyCity.cpp` is now COMPLETE.
+F630 / provisional KI#952 remains CONFIRMED exactly as frozen in WIP458.
+F631 / provisional KI#953 remains UNUSED.
+
+FINAL INHERITED WRAPPER RECONCILIATION
+--------------------------------------
+The remaining Firaxis/K-Mod/AdvC wrapper surface was completed method-by-method after WIP459.
+No second independent current-live or strong public-API root survived.
+
+1. DESTRUCTIVE CyCity WRAPPERS — NO CURRENT PYTHON UAF ROOT
+   - The only shipped direct Python `CyCity.kill()` call is the Tsunami random-event handler.
+     That handler does not read the same CyCity wrapper after `kill()` destroys the native city.
+   - No shipped direct Python callers of `CyCity::liberate(bool)` or `CyCity::doTask(...)` were found.
+   - Native liberation's acquire/destroy boundary already has the separate SAS KI#486.2 repair in
+     `CvCity::liberate`; do not duplicate that root into this wrapper queue.
+   Thus the generic stale-wrapper lifetime shape remains API-hardening debt rather than a demonstrated
+   current CyCity defect.
+
+2. POINTER-ARGUMENT DEREFERENCES — SHIPPED PRODUCERS SATISFY THE CONTRACT
+   The only direct wrapper-argument dereferences in current `CyCity.cpp` are concentrated in
+   `getCityPlotIndex`, `canWork`, `addProductionExperience`, `atPlot`, `isBombardable`,
+   `calculateTradeProfit`, `isWorkingPlot`, and `AI_countBestBuilds`.
+   Current shipped Python either has no caller for the unsafe legacy methods or supplies a concrete
+   wrapper/native object after its own validity checks. AdvC's explicit guards in
+   `getCityPlotIndex`, `canWork`, `isWorkingPlot`, and `isConnectedTo` further reduce the surface.
+   No current Python-None/native-null producer was established.
+
+3. ENUM / INDEX / MUTATING CALLS — LIVE INPUTS VALID
+   - shipped city-index consumers use `0 .. NUM_CITY_PLOTS-1`;
+   - current production/build/hurry/event consumers pass valid enum IDs with the bound arity;
+   - the Influenza random event's `changePopulation(-2)` path first restricts targets to population
+     greater than 2, so it cannot create a negative city population through that call;
+   - odd-length `setWallOverridePoints` input remains an uncalled public-input hardening issue.
+
+4. LEGACY PRODUCTION-TURNS API — PROCESS 0 -> -1 CHANGE IS UI-NEUTRAL
+   Practical 1687 removed native `getGeneralProductionTurnsLeft()` and retained the old Python name as
+   an alias to `getProductionTurnsLeft()`. AdvC's native comment notes the one semantic difference:
+   processes formerly returned 0 while the replacement produces MAX_INT, converted by CyCity to -1.
+   The shipped Domestic Advisor displays this value only when `> 0`; both 0 and -1 therefore render
+   blank for a process. No current user-visible regression survives.
+
+5. CIV4CE / K-MOD ORACLE CROSS-CHECK
+   The comparison trees do not reveal an overlooked current CyCity semantic repair. Relevant
+   differences are already owned/explained: AdvC's stronger pointer/sentinel guards, F630's colony
+   value sign drift, and SAS's KI#480 `OrderData` ownership repair (which Firaxis/K-Mod/Civ4CE still
+   lack). No independent F631 emerged.
+
+6. BINDING / OWNERSHIP / ADVC-DELTA CONTROLS FROM WIP459 RETAINED
+   - 435 unique bound method names resolve to current bodies/inline implementations;
+   - no duplicate Python method names;
+   - the only unbound current bodies are legacy `getBonusBadHappiness` and `getNumTrainUnitAI`, both
+     already unbound in comparison trees and without shipped callers;
+   - every current `manage_new_object` Cy return is an actual allocation, including the SAS KI#480
+     `OrderData` copy;
+   - advc.901 surrounding-health/happiness legacy names, GPProjection, production/food/decay
+     sentinels, revolt/culture-flip, partisan, floating-defender logging, trade-city nullable chains,
+     and the fractional-trade probe all remain reconciled as documented in WIP459.
+
+FULL QUEUE RESULT
+-----------------
+Queue 024 owns one confirmed independent root:
+
+F630 / provisional KI#952 — inherited AdvC practical-2176 Python/native sign-polarity regression:
+`CyCity::AI_cityValue()` forwards sign-flipped native `AI_splitEmpireValue()` while shipped
+`CvAdvisorUtils.cityAdvise` still uses K-Mod's old `< 0` colony-advice predicate.
+
+F631 / provisional KI#953 remains UNUSED. Do not manufacture a second finding from generic wrapper
+hardening, stale names, unsupported Python inputs, or already-owned native lifetime defects.
+
+SCHEDULING RECONCILIATION
+-------------------------
+The album-front method rule is explicit: after closing a file, every still-PENDING entry marked
+`priority next wip after the first reloop` is processed before ordinary queue order, in queue order.
+WIP457's sentence that Queue 025 had consumed the whole priority override was too narrow; it consumed
+only Queue 025 itself. Queue 024 was audited next and is now closed, but the scheduling rule must be
+restored from this point onward rather than continuing directly to ordinary Queue 026.
+
+The next still-PENDING priority-marked entry by queue order is therefore:
+
+    Queue 036 `CvGameCoreDLL/CvMap.cpp` (1,596 queued lines)
+
+After Queue 036, later priority-marked pending entries remain ahead of ordinary queue order unless a
+newer durable checkpoint explicitly changes the scheduling rule.
+
+CURRENT LEDGER / EXACT RESUME
+-----------------------------
+Queue 025 `CvGameCoreDLL/StartingPositionIteration.cpp` — COMPLETE.
+Queue 024 `CvGameCoreDLL/CyCity.cpp` — COMPLETE.
+F630 / provisional KI#952 — CONFIRMED.
+F631 / provisional KI#953 — UNUSED next root ID.
+Queue 036 `CvGameCoreDLL/CvMap.cpp` — OPEN NEXT (priority-next-WIP rule).
+
+Preserve the already-noted adjacent `CvMap::isCustomMapOption(CvWString, bool, bool)` forwarding
+candidate from the True Starts audit as a Queue-036 cursor: the overload appears to drop the two
+Boolean arguments when forwarding. Re-prove it locally and deduplicate before promotion; do not
+pre-assign F631 merely from the old cursor note.
+
+Exact continuation:
+C031-WIP460 physical -> Queue 024 COMPLETE / F630 confirmed / F631 unused -> Queue 036 CvMap.cpp OPEN
+(priority) -> establish current/Base/K-Mod/Civ4CE lineage and SAS delta -> begin with the preserved
+`isCustomMapOption` overload cursor, then audit wrap/distance/area/reset/plot-index and Python map
+contracts -> promote only an independent current-live or strong public-API root -> freeze next WIP.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP460
+===============================================================================
+
+===============================================================================
+C031-WIP461 — QUEUE 036 CvMap.cpp — F631 / KI#953 CONFIRMED
+===============================================================================
+Physical parent: C031-WIP460
+Audit target: `CvGameCoreDLL/CvMap.cpp`
+Gameplay source status: UNTOUCHED.
+
+QUEUE STATE
+-----------
+Queue 036 `CvGameCoreDLL/CvMap.cpp` is OPEN under the restored priority-next-WIP rule.
+F631 / provisional KI#953 is CONFIRMED here.
+F632 / provisional KI#954 is UNUSED next root ID.
+
+F631 / PROVISIONAL KI#953
+-------------------------
+TITLE:
+Inherited AdvC `CvMap::isCustomMapOption(CvWString, ...)` defeats its translated-string contract by
+narrowing through a known non-ASCII-unsafe conversion and also drops both matching-mode arguments.
+
+ROOT
+----
+Current `CvMap.cpp` provides two overloads:
+
+    bool CvMap::isCustomMapOption(char const* szOptionsValue,
+        bool bCheckContains, bool bIgnoreCase) const
+
+and, explicitly "for convenience, especially when working with translated strings":
+
+    bool CvMap::isCustomMapOption(CvWString szOptionsValue,
+        bool bCheckContains, bool bIgnoreCase) const
+    {
+        CvString szNarrow(szOptionsValue);
+        return isCustomMapOption(szNarrow.c_str());
+    }
+
+The wide overload is broken in two coupled ways at the same forwarding boundary:
+
+1. it narrows the translated `CvWString` through `CvString` before comparing it;
+2. it fails to forward `bCheckContains` and `bIgnoreCase`, so the narrow overload silently receives
+   its defaults (`false`, `true`) no matter what the wide caller requested.
+
+The first issue is current-live; the second is an additional explicit public-overload contract defect.
+They share one faulty forwarding implementation and therefore remain one root/finding.
+
+NON-ASCII CONVERSION IS EXPLICITLY KNOWN UNSAFE IN THE CURRENT SOURCE
+---------------------------------------------------------------------
+Current `CvString.h` documents its explicit std::wstring constructor:
+
+    /* This conversion breaks when there are any non-ASCII chars in the wstring. ... */
+    CvString(const std::wstring& s) { Copy(s.c_str()); }
+
+`CvString::Copy(const wchar*)` performs the conversion through:
+
+    sprintf(s, "%S", w);
+
+and `CvWString::Copy(const char*)` converts back through `swprintf(..., L"%S", s)`.
+Thus the `CvMap` overload specifically advertised for translated wide strings routes those strings
+through a conversion that the same current codebase says breaks on any non-ASCII character.
+
+CURRENT SHIPPED FRENCH REPRODUCER — BALANCED RESOURCES
+------------------------------------------------------
+The standard game text defines `TXT_KEY_MAP_BALANCED` as:
+
+    English  = Balanced
+    French   = Equilibré
+    German   = Ausgewogen
+    Italian  = Bilanciato
+    Spanish  = Equilibrado
+
+French therefore contains a non-ASCII `é`.
+
+Bundled standard scripts such as `PrivateMaps/Fractal.py` return the selected map-option description
+through:
+
+    translated_text = unicode(CyTranslator().getText(...))
+
+and use `TXT_KEY_MAP_BALANCED` for the Balanced selection.
+
+Current `CvMapGenerator::generateRandomMap()` correctly attempts a language-independent check:
+
+    if (kMap.isCustomMapOption(gDLL->getText("TXT_KEY_MAP_BALANCED")))
+        GC.getGame().setStartingPlotNormalizationLevel(CvGame::NORMALIZE_HIGH);
+
+`gDLL->getText` supplies the translated wide `Equilibré`, which selects the `CvWString` overload.
+That overload narrows the non-ASCII text through the conversion documented as broken, so it can fail
+to match the map script's still-wide translated option description.
+
+This is gameplay-significant in current SAS. `Assets/XML/GlobalDefines_advc.xml` keeps:
+
+    NORMALIZE_STARTPLOTS_AGGRESSIVELY = 0
+
+and documents that Balanced should override that setting and normalize as in BtS. If the French
+Balanced check is lost, `CvGame::initDiplomacy()` sees that normalization is not HIGH and calls the
+default-level setter, which yields LOW in ordinary single-player. A French Balanced game can therefore
+receive LOW instead of the explicitly intended HIGH start normalization.
+
+`TrueStarts` also calls the same wide overload with translated `TXT_KEY_MAP_BALANCED` when populating
+`m_bBalancedResources`; that is a second consumer of the same broken helper. Its sanitation effect is
+configuration-dependent, so the map-generator normalization path above is the clean current-live
+activation proof.
+
+HISTORY — REGRESSION INTRODUCED BY THE LANGUAGE-INDEPENDENCE CHANGE
+-------------------------------------------------------------------
+AdvC practical 3712 (`756f4f2c2e4edb5224ddd2324e1cf11b7f5853b2`), titled
+"Language-independent check for Balanced Resources option", introduced the wide overload and replaced
+the previous `CvPythonCaller::isAnyCustomMapOptionSetTo(CvWString)` helper.
+
+The removed helper compared two wide strings directly:
+
+    CvWString szOptionDescr(...);
+    if (szOptionDescr == szTranslatedDesc)
+        return true;
+
+so it did not narrow translated text.
+
+The replacement wide `CvMap` overload was introduced in that same practical with the comment about
+translated wide strings, but immediately performed `CvString szNarrow(szOptionsValue)` and then called
+the narrow overload without either Boolean argument. The non-ASCII regression and Boolean-forwarding
+defect therefore existed from the overload's first revision.
+
+Current Base AdvC 1.14 retains the exact same body. Current SAS only reformats the signature and
+inherits the semantics unchanged. K-Mod and Civ4CE predate/do not contain this AdvC-created helper,
+so classification is an inherited AdvC defect rather than a SAS regression.
+
+SECONDARY PUBLIC-API REPRODUCER — DROPPED BOOLEAN FLAGS
+-------------------------------------------------------
+The header publicly declares:
+
+    bool isCustomMapOption(CvWString szOptionsValue,
+        bool bCheckContains = false, bool bIgnoreCase = true) const;
+
+but the implementation ignores both supplied values. For example:
+
+    isCustomMapOption(CvWString(L"Old World"), true, false)
+
+actually runs the narrow overload as though called with `(false, true)`: exact-match rather than
+contains-match, and case-insensitive rather than case-sensitive. Current shipped non-default calls use
+narrow literals, so this secondary symptom is principally a strong public-API defect; it is grouped
+with the current-live translated-string failure because both arise from the same incorrect wide-overload
+forwarding implementation.
+
+DEDUP
+-----
+Focused whole-album/current-KI searches found no prior owner for this helper-level root.
+
+F623 / KI#945 is separate. F623 occurs because `TrueStarts::changeCivs` passes English literal
+`"Old World"` to a helper that compares against localized option descriptions; a correct helper still
+cannot make an English literal equal arbitrary translated text. F631 occurs when a caller does the
+right thing and supplies a translated wide value, but the wide overload itself damages that value and
+ignores its own mode arguments. The French Balanced reproducer activates F631 without relying on F623.
+
+Other prior locale/wide-string findings do not own this map-option matching helper or its explicit
+parameter-forwarding contract.
+
+REPAIR BOUNDARY
+---------------
+Do not repair this by merely adding the two Boolean arguments to the existing narrow forwarding call;
+that would fix only the secondary flag defect while preserving the current-live non-ASCII regression.
+
+A clean repair is to make the wide overload the actual comparison implementation and let the narrow
+ASCII overload convert its input *up* to `CvWString` and forward all arguments, e.g. structurally:
+
+    bool CvMap::isCustomMapOption(char const* s, bool contains, bool ignoreCase) const
+    {
+        return isCustomMapOption(CvWString(s), contains, ignoreCase);
+    }
+
+    bool CvMap::isCustomMapOption(CvWString value, bool contains, bool ignoreCase) const
+    {
+        // perform lowercasing / description iteration directly in wide strings
+    }
+
+That preserves translated Unicode throughout and makes both overloads honor the same matching controls.
+
+Regression coverage:
+1. French + Fractal (or another standard script) + Balanced selected: translated `Equilibré` must be
+   recognized and starting-plot normalization must remain HIGH despite
+   `NORMALIZE_STARTPLOTS_AGGRESSIVELY=0`;
+2. English/German/Italian/Spanish Balanced detection remains unchanged;
+3. a wide-string call with `bCheckContains=true` must perform containment rather than exact matching;
+4. a wide-string call with `bIgnoreCase=false` must preserve case sensitivity;
+5. narrow callers such as True Starts' English-literal contains checks retain their existing behavior;
+6. F623 remains separately covered because English literals cannot safely identify localized option
+   descriptions regardless of this helper repair.
+
+POST-F631 CURSOR
+----------------
+Queue 036 remains OPEN. F632 / provisional KI#954 is UNUSED.
+
+Continue with current-SAS-vs-Base semantic deltas first because this file has several SAS-specific map
+lifecycle repairs/changes (`resetRiverIDs`, `recalculateWaterAreas`, `read` modernization and
+SASGameRecord finalization). Then reconcile inherited wrap/distance/index/area/plot-group/random-plot,
+serialization and Python-exposed map contracts. Deduplicate against prior map/area/river/load findings
+before promotion.
+
+CURRENT LEDGER / EXACT RESUME
+-----------------------------
+Queue 024 `CvGameCoreDLL/CyCity.cpp` — COMPLETE.
+Queue 036 `CvGameCoreDLL/CvMap.cpp` — OPEN (priority-next-WIP).
+F630 / provisional KI#952 — confirmed inherited AdvC CyCity colony-advice sign regression.
+F631 / provisional KI#953 — CONFIRMED here: inherited AdvC wide custom-map-option forwarding root,
+with current-live French Balanced normalization failure plus dropped wide-overload mode arguments.
+F632 / provisional KI#954 — UNUSED next root ID.
+
+Exact continuation:
+C031-WIP461 physical -> Queue 036 OPEN -> exclude F631 and prior map/load/river roots -> audit SAS-only
+CvMap deltas, especially serialization/read compatibility and water-area/river-ID lifecycle -> then
+inherited wrap/distance/index/area/random-plot/public-Python contracts -> history/dedup any survivor ->
+freeze next physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP461
+===============================================================================
+
+===============================================================================
+C031-WIP463 — QUEUE 036 CvMap.cpp — F633 / KI#955 CONFIRMED
+===============================================================================
+Physical parent: C031-WIP462.
+Audit target: `CvGameCoreDLL/CvMap.cpp`
+Gameplay source status: UNTOUCHED.
+
+F633 / provisional KI#955 — CONFIRMED — INHERITED BTS/BBAI/K-MOD DUAL-COAST AREA OMISSION
+------------------------------------------------------------------------------------------
+
+TITLE
+-----
+`CvMap::findCity(..., bSameArea=true, bCoastalOnly=true)` recognizes only a coastal city's primary
+water area, so a naval unit in that city's second sea can be told that no valid upgrade city exists.
+
+CURRENT ROOT
+------------
+Current `CvMap::findCity` accepts a city under the same-area filter when either its land area equals
+the target plot's area or, for coastal searches, its single primary `waterArea()` equals the target:
+
+    if (!bSameArea || pLoopCity->isArea(getPlot(iX, iY).getArea()) ||
+        (bCoastalOnly && pLoopCity->waterArea() == getPlot(iX, iY).area()))
+
+The DLL nevertheless has an explicit `CvPlot::secondWaterArea()` / `CvCity::secondWaterArea()`
+contract for a land plot/city adjacent to two different accessible water areas. `waterArea()` chooses
+the largest adjacent water area; `secondWaterArea()` chooses the largest other accessible water area.
+Numerous current AI paths correctly test `waterArea(...) == target || secondWaterArea() == target` for
+such dual-coast/isthmus cities. `findCity` does not.
+
+HARD PRODUCER / CONSUMER CONTRADICTION
+--------------------------------------
+`CvUnit::getUpgradeCity(UnitTypes, bool bSearch, ...)` documents the distinction as exhaustive search
+versus checking the closest valid city; it is not supposed to change which coastal areas make a city
+valid.
+
+For a naval unit, the exhaustive (`bSearch=true`) branch loops every team city, requires a coastal
+city that `canUpgradeTo(eUnit)`, scores distance, and checks `generatePath`. It does not reject a city
+merely because the unit is in that city's second water area.
+
+The non-search (`bSearch=false`) branch instead calls:
+
+    GC.getMap().findCity(getX(), getY(), NO_PLAYER, getTeam(), true, bCoastalOnly)
+
+and then asks whether the returned city `canUpgradeTo(eUnit)`. Because `findCity` recognizes only the
+primary `waterArea()`, the same physical city can therefore satisfy `getUpgradeCity(eUnit, true)` but
+be invisible to `getUpgradeCity(eUnit, false)`.
+
+MINIMAL CURRENT-LIVE REPRODUCER
+-------------------------------
+Take a normal dual-coast/isthmus city C adjacent to two separate non-lake water areas:
+- area A is larger, so `C.waterArea() == A`;
+- area B is the city's accessible second sea, so `C.secondWaterArea() == B`;
+- a naval unit U belonging to C's team is on an owned water plot in B;
+- C can upgrade U to target unit type T;
+- no other eligible coastal city has B as its primary water area.
+
+Then:
+1. `U.getUpgradeCity(T, true)` can evaluate C, path to C and return it;
+2. `U.getUpgradeCity(T, false)` calls `findCity` on U's B-area plot;
+3. C's land area is not B and `C.waterArea()` is A, so C is discarded before `canUpgradeTo(T)`;
+4. the non-search result is NULL despite C being a valid, reachable upgrade city.
+
+This topology is not a custom-data fiction. The current DLL explicitly models dual-coast cities
+through `secondWaterArea()`, and existing SAS Known Issues/history already exercise isthmus/dual-coast
+capital behavior (e.g. KI#194). Current AI code also repeatedly checks both primary and second water
+areas for sea-worker/resource and assault-transport logic.
+
+PLAYER-FACING / AI CONSEQUENCE
+------------------------------
+`CvUnit::hasUpgrade(eUnit, false)` is exactly `getUpgradeCity(eUnit, false) != NULL`, and ordinary
+`canUpgrade()` falls through to that test. `CvUnit::canDoCommand(COMMAND_UPGRADE, ...)` calls
+`canUpgrade`, while UI upgrade help also calls `canUpgrade(eTo, true)`. Thus a naval unit standing in
+its city's second sea can have the ordinary upgrade command/help suppressed until its position changes,
+even though the exhaustive upgrade-city search recognizes a usable city.
+
+AI code can also underestimate local upgrade availability where it calls the same primary-only
+`findCity`/non-search path. The exact broader policy that `getUpgradeCity(false)` checks only one
+nearest city is separate; this finding is the narrower map-area omission that makes an otherwise
+qualifying dual-coast city absent from the nearest-city candidate set at all.
+
+LINEAGE / BIRTH
+---------------
+The mismatch is inherited rather than SAS-local.
+- At the earliest available K-Mod boundary (`KMod_3_2414225e64`), the imported Better BTS AI
+  `CvPlot::secondWaterArea()` helper and `CvCity::secondWaterArea()` wrapper are already present.
+- In that same boundary, `CvMap::findCity` already contains the primary-only coastal condition:
+  `pLoopCity->waterArea() == target->area()`.
+- Later AdvC changes add observer/no-cheat handling, constness, optimizations and formatting but retain
+  the primary-only area test through current SAS.
+- The architectural shape is therefore best described as an inherited BtS/BBAI integration omission
+  retained by K-Mod and AdvC: the general nearest-city helper never learned the multi-water-area
+  model that BBAI itself added and other callers use.
+
+DEDUP / OWNERSHIP BOUNDARY
+--------------------------
+- KI#194 concerns Settler-site reachability through a capital's second water area; it does not use or
+  repair `CvMap::findCity` or upgrade eligibility.
+- KI#216 concerns duplicate Work Boat demand when primary and second water pointers collapse to the
+  same accessible sea; this finding is the opposite omission (a genuinely distinct second sea is
+  ignored).
+- KI#188.3.3 fixes AI upgrade-city routing that had already found a city with `bSearch=true`: its
+  `bUpgradeCityKnown` flag avoids incorrectly re-running the nearest-city eligibility test. It does
+  not repair ordinary `findCity`/`hasUpgrade(false)` or the missing second-water-area candidate.
+- F632/KI#954 is the unrelated `Shelf*` ownership leak.
+
+REPAIR BOUNDARY
+---------------
+Do not merely call `secondWaterArea()` unconditionally inside the existing first condition: that
+helper assumes a land plot with an adjacent primary water area. Prefer expressing the real coastal
+contract directly and safely.
+
+A robust shape is to cache the valid target plot/area once and, when `bCoastalOnly` and the target is
+water, accept any coastal city whose city plot is adjacent to that target water area (or explicitly
+check primary plus guarded second water area). `CvPlot::isAdjacentToArea` naturally handles the full
+geometric contract, including more than two adjacent water partitions, while a target-water guard
+prevents accidentally treating adjacency to a different land area as same-area eligibility.
+
+Regression coverage:
+1. construct a dual-coast city with primary water area A and second water area B;
+2. place a naval unit in owned B water and make the city capable of its upgrade;
+3. verify `getUpgradeCity(T,false)` and `getUpgradeCity(T,true)` agree that the city is eligible;
+4. verify the normal upgrade command is available under the same gold/movement requirements;
+5. retain ordinary single-coast, inland-land-unit and primary-sea behavior;
+6. include an Ice/passable-area case so the fix does not regress the existing primary/second-water
+   semantics around impassable water.
+
+POST-F632 CONTROLS CLOSED IN THIS TRANCHE
+-----------------------------------------
+- `syncRandPlot` weighted selection: current live weights are nonnegative; `BarbarianWeightMap`
+  deliberately permits zero probability, and `weightedChoice` intentionally returns NULL when all
+  valid candidates have zero total weight. `piValidCount` still reports geometric validity. No F633
+  there.
+- `findCity` ordinary same-area/coastal semantics are sound for primary seas and valid-coordinate
+  current callers; the confirmed defect is specifically omission of secondary adjacent water areas.
+- replay texture: empty `&m_replayTexture[0]` remains formal C++ UB with a zero-byte stream count but
+  still lacks a demonstrated MSVC/current wrong-game consequence, so it remains below finding
+  threshold rather than being folded into F633.
+- point-to-plot exact landscape-edge conversion remains under investigation; no live engine producer
+  has yet been established at the exact positive boundary.
+
+CURRENT LEDGER / EXACT RESUME
+-----------------------------
+Queue 036 `CvGameCoreDLL/CvMap.cpp` — OPEN (priority-next-WIP).
+F631 / provisional KI#953 — CONFIRMED (wide custom-map-option locale/forwarding root).
+F632 / provisional KI#954 — CONFIRMED (final `Shelf*` ownership leak).
+F633 / provisional KI#955 — CONFIRMED here (dual-coast `findCity` area omission).
+F634 / provisional KI#956 — UNUSED next root ID.
+
+Exact continuation:
+C031-WIP463 physical -> Queue 036 OPEN -> exclude F631/F632/F633 and prior map/KI roots -> continue
+point-to-plot edge conversion, replay serialization/lifetime, read/rebuild/area ownership, coordinate
+and public-Python contracts, then history-only semantic strata -> promote only a distinct hard root ->
+freeze WIP464 at the next settled tranche regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP463
+===============================================================================
+
+===============================================================================
+C031-WIP464 — QUEUE 036 CvMap.cpp — POST-F633 CLOSURE TRANCHE / F634 UNUSED
+===============================================================================
+Physical parent: C031-WIP463.
+Audit target: `CvGameCoreDLL/CvMap.cpp`
+Working source base: reconciled `AdvCiv-SAS_light_source_20260907T121108.zip`.
+Gameplay source status: UNTOUCHED.
+
+RECONCILED CURRENT STATE
+------------------------
+Queue 036 remains OPEN. F631/F632/F633 remain confirmed. F634 / provisional KI#956 remains UNUSED.
+This tranche deliberately closes several plausible-looking map-lifecycle/topology/API candidates below
+finding threshold rather than consuming a new root without a current supported consequence.
+
+1. `CvMap::setup()` / GroupPathFinder heuristic — CLOSED
+--------------------------------------------------------
+`CvMap::setup()` derives minimum route movement and flat-movement costs for the reusable group
+pathfinder. The theoretical bad state would leave those minima at `MAX_INT` if no real route supplied
+a cost, but current shipped route XML rules that out:
+- Road: movement cost 30 and flat movement cost 30;
+- Engineering reduces Road movement by 10, leaving 20;
+- Railroad: movement cost 20 and flat movement cost 6.
+
+`GroupPathFinder`/`KmodPathFinder` then clamp the heuristic inputs and `minimumStepCost()` to positive
+values. Under current XML this produces a finite admissible lower bound; no overflow/sentinel misuse or
+path rejection was demonstrated. No F634.
+
+2. StepFinder topology invalidation — CLOSED for shipped/live behavior
+---------------------------------------------------------------------
+`CvMap::calculatePathDistance()` invokes the EXE StepFinder with reuse enabled, so a topology mutation
+that changes passability must reset it. Current live topology paths reconcile correctly:
+- `CvPlot::setPlotType()` resets path-distance state;
+- the only current impassable feature is `FEATURE_ICE`;
+- ordinary feature growth/events/builds do not create/remove Ice;
+- the SAS KI#346 global-warming Ice-melt repair explicitly calls `resetPathDistance()` before rebuilding
+  water areas/plot groups;
+- bundled map scripts either calculate path distance after feature placement, change topology through
+  `setPlotType()`, or (PerfectMongoose) explicitly reset the pathfinder before distance use.
+
+A custom Python/mod-data path that directly toggles Ice through `setFeatureType()` without the SAS
+refresh remains generic API-hardening territory, not a demonstrated current-live F634.
+
+3. `calculateReprAreas()` hard 10-pass guard — CLOSED
+-----------------------------------------------------
+The representative-area loop's `iLoop > 10` emergency stop looked suspicious in isolation. Small
+exhaustive legal passability patterns and larger randomized water/Ice partitions converged on the first
+changing scan, with the second scan merely observing zero changes. This agrees with the dataflow:
+initial area IDs are allocated in first-encounter plot order and representative propagation scans plots
+in that same order, allowing the lowest representative encountered in a component to propagate forward
+within the pass. No legal current topology requiring >10 iterations was established. Treat the guard as
+defensive legacy code, not F634.
+
+4. Coordinate helpers / point conversion — CLOSED below live threshold
+---------------------------------------------------------------------
+Two mathematical/public-API edges remain real but not current-live findings:
+- `coordRange(-range, range, true)` returns `range` rather than 0 because C++ negative modulo yields 0
+  and the function adds `range`. Normal DLL offset callers stay within the local one-map span; no shipped
+  producer requiring exact negative-multiple wrapping was established. General iterator/wrap behavior
+  remains reserved for Queue 167 `PlotRadiusIterator` where the root contract belongs.
+- `pointXToPlotX(+width/2)` / Y analogue can produce `gridWidth`/`gridHeight`; `pointToPlot` then returns
+  NULL on a flat map or wraps to column/row 0 on a wrapped map. There are no shipped Python callers and
+  no current DLL caller outside the wrapper, while normal `plotXToPointX`/`plotYToPointY` center values
+  never generate that exact positive landscape edge. Public API edge only.
+
+Current `xDistance`/`yDistance` consumers inspected pass actual in-map plot coordinates, satisfying the
+helpers' narrower assumptions.
+
+5. Rebuild/read/ordinary ownership lifecycle — CLOSED beyond F632
+-----------------------------------------------------------------
+Current-format `CvMap::read()`/`write()` serialize matching field order. The removed historical
+`uiFlag` compatibility branches are the intentional KI#46 current-version save policy. `reset()` calls
+`uninit()`, removes the old plot array/area container/replay texture and reconstructs nonserialized A*
+state through `setup()`; plot-extra reset behavior matches its current callers. BUG minimap settings are
+intentionally persistent UI-option cache rather than per-map serialized game state.
+
+The one independent ownership omission remains F632: `uninit()` does not delete the heap-owned final
+`Shelf` objects. There is no second generic map-state leak established here.
+
+6. Shelf pointer lifetime across live recomputation — CLOSED beyond F632
+------------------------------------------------------------------------
+Current `getShelves()` consumers in `CvGame` and `CvTeam` copy raw `Shelf*` values into stack-local
+vectors and consume them synchronously inside barbarian/research calculations. `recalculateWaterAreas()`
+/`computeShelves()` is not re-entered from those consumers. Therefore the KI#346 live Ice rebuild does
+not leave a demonstrated cached local `Shelf*` dereference after deletion. F632 remains precisely a
+final-cache ownership leak (and transient stale objects between `uninit()` and a later recomputation),
+not a proven use-after-free root.
+
+7. Coastal-city area-counter check — DEDUP / CLOSED, NOT F634
+-------------------------------------------------------------
+While tracing KI#346, current inherited `CvPlot::processArea` exposes this suspicious expression:
+
+    if (iChange > 0 || (iChange < 0 &&
+        pWaterArea->getCitiesPerPlayer(getOwner()) > 0, true))
+
+The comma operator makes the parenthesized condition true whenever the outer negative-change branch is
+entered, strongly suggesting the intended call had been
+`getCitiesPerPlayer(getOwner(), true) > 0`. However Queue 009 `CvPlot.cpp` already audited this exact
+root and classified it as dormant under supported live topology mutation: current wholesale area
+rebuilds detach plots with `setArea(NULL, false)`, live water/land plot-type changes erase the city
+first, and the SAS Ice repair rebuilds only water topology without invoking the dangerous decrement
+shape. Do not duplicate it into Queue 036.
+
+Likewise, KI#346 restoring only `cityPlot.waterArea(true)` is consistent with normal city-init area
+bookkeeping: the city counter belongs to the canonical primary adjacent water area; `secondWaterArea()`
+is a connectivity/query concept, not a second city-count ownership record. This is separate from F633,
+which concerns city eligibility from a genuinely second sea.
+
+8. Replay texture — CURRENT CONTROL, NOT YET A FINDING
+------------------------------------------------------
+`getReplayTexture()` safely returns NULL whenever the stored size differs from the expected minimap
+pixel count, and `CvReplayInfo` falls back to the live minimap texture. Later-era setup schedules a
+delayed `updateReplayTexture()`, while entering the configured era also captures it if absent.
+
+`CvMap::write()` still forms `&m_replayTexture[0]` even when the vector is empty and then asks the stream
+to write zero bytes. Forming that pointer is formally undefined in standard C++, and an empty cache is
+a normal state before the replay snapshot exists / after `erasePlots()`. However no concrete MSVC 2003
+release/debug runtime read, assertion, crash or serialization corruption has yet been demonstrated from
+the zero-count write. Keep this as a precise robustness/UB control unless runtime/library evidence raises
+it to the audit's current-live threshold.
+
+9. `syncRandPlot`, `findCity`, `findWater`, Python-null boundaries — CLOSED/OWNED
+-------------------------------------------------------------------------------
+- Weighted `syncRandPlot` intentionally permits zero weights; `BarbarianWeightMap` uses zero as
+  suppression and clamps live weights nonnegative. Exhaustive all-zero selection returning NULL is a
+  defined outcome, not an arithmetic bug.
+- `findCity` direction filtering uses `dxWrap`/`dyWrap`; ordinary callers supply valid coordinates.
+  The distinct second-water omission is already F633.
+- `CyMap::findCity` / `CyMap::findWater` dereference object arguments without top-level Python-`None`
+  guards, but no shipped Python caller of these APIs was found; current native callers pass concrete
+  plots/cities. Treat as API hardening, not F634.
+- `findWater`'s current map-generator callers always pass a concrete plot.
+
+10. Selected history fixes — RECONCILED
+----------------------------------------
+History-assisted checks did not uncover a surviving second root in the inspected semantic strata:
+- practical 1965: safe `getPlot` substitution in bounded `syncRandPlot` coordinates;
+- practical 2172: river counter converted to `short`;
+- practical 2571: repaired the missing `else` in river-ID load overflow handling; current code is fixed;
+- practical 2598: plot-count/isthmus caching changes paired with current refresh paths;
+- practical 4007: shelf performance changes preserve recomputation ownership behavior (F632 teardown
+  omission remains separately owned);
+- practical 4030: area rebuild uses `setArea(NULL,false)` to avoid updating objects immediately being
+  deleted and fixes separate lake-generation overflow.
+
+CURRENT LEDGER / EXACT RESUME
+-----------------------------
+Queue 036 `CvGameCoreDLL/CvMap.cpp` — OPEN (priority-next-WIP).
+F631 / provisional KI#953 — CONFIRMED (wide custom-map-option locale/forwarding root).
+F632 / provisional KI#954 — CONFIRMED (`Shelf*` final-cache ownership leak).
+F633 / provisional KI#955 — CONFIRMED (dual-coast `findCity` / naval-upgrade area omission).
+F634 / provisional KI#956 — UNUSED.
+
+Exact continuation:
+C031-WIP464 physical -> Queue 036 OPEN -> exclude F631/F632/F633 and all controls above -> continue
+remaining `CvMap` public/index/area/replay/river/distance contracts and commit-history strata -> inspect
+CyMap wrapper behavior only where shipped callers activate it -> promote only a distinct supported root
+-> otherwise close Queue 036 conservatively -> freeze next physical WIP.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP464
+===============================================================================
+
+===============================================================================
+C031-WIP465 — QUEUE 036 CvMap.cpp — F634 CACHED-LAKE NORMALIZATION REGRESSION
+===============================================================================
+Physical parent: C031-WIP464.
+Audit target: `CvGameCoreDLL/CvMap.cpp` with the owning `CvArea`/`CvPlot`/normalization lifecycle.
+Working source base: reconciled `AdvCiv-SAS_light_source_20260907T121108.zip`.
+Gameplay source status: UNTOUCHED.
+
+RECONCILED CURRENT STATE
+------------------------
+Queue 036 remains OPEN. F631/F632/F633 remain confirmed.
+F634 / provisional KI#956 is CONFIRMED here.
+F635 / provisional KI#957 is UNUSED.
+
+F634 / PROVISIONAL KI#956 — INCREMENTALLY CREATED NORMALIZATION LAKES RETAIN
+`m_bLake=false` UNTIL THE POST-NORMALIZATION WHOLE-MAP AREA REBUILD
+--------------------------------------------------------------------------
+CLASSIFICATION: inherited AdvC regression introduced by advc.030 cached lake state; current-live in
+ordinary shipped map generation, with SAS's current normalization evaluator making the scoring
+consequence especially explicit.
+
+ROOT / CACHE CONTRACT
+---------------------
+K-Mod/BtS derive lake state directly from current area state:
+
+    bool CvArea::isLake() const
+    {
+        return (isWater() && (getNumTiles() <= GC.getLAKE_MAX_AREA_SIZE()));
+    }
+
+AdvC practical 1274 / commit `b50e4a9a5a243f4f582213df1b07bae12dfb142a` (work in progress for
+advc.030, "Ice can separate water areas") replaced that dynamic predicate with cached state:
+
+    m_bLake = false;
+    ...
+    bool isLake() const { return m_bLake; }
+    void updateLake(...);
+
+Practical 1275 / commit `71fa4eef1a22df6b910bb41a5dc68d3ca9c3586d` completed advc.030 and
+centralized whole-map lake refresh through `CvMap::updateLakes()`, but the inherited incremental
+`CvArea::changeNumTiles()` logic was left in its old dynamic-predicate form:
+
+    bool bOldLake = isLake();
+    m_iNumTiles += iChange;
+    if (bOldLake != isLake())
+        ...
+
+Once `isLake()` is cached, nothing between those two calls changes `m_bLake`; the old transition test
+can no longer discover a size/membership-induced lake transition by itself.
+
+CURRENT NORMALIZATION REPRODUCER
+--------------------------------
+`CvGame::normalizeAddLakes()` is a normal native normalization phase for standard shipped map scripts
+such as Fractal, Continents and Pangaea (they do not override `normalizeAddLakes`). For a starting plot
+that lacks fresh water it selects a legal land tile and executes:
+
+    pLakePlot->setPlotType(PLOT_OCEAN);
+
+`normalizeCanAddLakeTo()` explicitly rejects `kPlot.isCoastalLand()`. Therefore the selected land tile
+is not adjacent to pre-existing water. In the normal `CvPlot::setPlotType(..., bRecalculate=true)`
+local-update branch:
+
+1. the land tile becomes water;
+2. no adjacent water `CvArea` exists, so `pNewArea` remains NULL;
+3. `CvMap::addArea()` creates a fresh `CvArea`;
+4. `CvArea::init(true)` resets that area with `m_bLake=false` and zero tiles;
+5. `setArea(pNewArea)` / `processArea(+1)` increments its tile count to 1 through
+   `CvArea::changeNumTiles()`;
+6. `changeNumTiles()` compares cached `isLake()` before/after the count mutation, sees false both
+   times and never calls `updateLake()`;
+7. neither `setArea()` nor the remainder of this incremental `setPlotType()` path calls
+   `CvMap::updateLakes()` or `CvArea::updateLake()`.
+
+The resulting physical topology is an isolated one-tile water area that should unquestionably be a
+lake, but its live state remains:
+
+    isWater() == true
+    getArea().isWater() == true
+    getArea().getNumTiles() == 1
+    getArea().isLake() == false   // stale cached classification
+
+The cache is repaired only later, after *all* start normalization is finished, when
+`CvGame::setInitialItems()` executes the advc.030 whole-map `recalculateAreas(false)`, whose
+`calculateReprAreas()` path ends in `updateLakes()`.
+
+LIVE CONSUMERS RUN BEFORE THAT REPAIR
+-------------------------------------
+`CvGame::normalizeStartingPlots()` orders the phases as:
+
+    normalizeAddRiver
+    normalizeRemovePeaks
+    normalizeAddLakes          <-- stale one-tile lake can be created here
+    normalizeRemoveBadFeatures
+    normalizeRemoveBadTerrain
+    normalizeAddFoodBonuses
+    normalizeAddGoodTerrain
+    normalizeAddExtras
+
+No `updateLakes()`/`recalculateAreas()` occurs between `normalizeAddLakes()` and those later scoring
+and bonus/terrain phases.
+
+Two current values are immediately wrong during that interval:
+
+1. LAKE YIELD
+   Current `CIV4YieldInfos.xml` gives `YIELD_FOOD` an `iLakeChange` of +1. `CvPlot::calculateNatureYield`
+   adds that +1 only when `isLake()` is true. The newly created normalization water tile therefore
+   evaluates one food too low until the post-normalization area rebuild.
+
+2. FRESH WATER / FOUND VALUE
+   `CvPlot::isFreshWater()` treats an adjacent `pAdj->isLake()` as fresh water. Because the new water
+   tile says `isLake()==false`, the starting land plot continues to report no fresh water even though
+   normalization has just deliberately created its fresh-water lake.
+
+   `NormalizationTarget::isReached()` recomputes the current found value through its normalization
+   `CitySiteEvaluator`. That evaluator is constructed with `bStartingLoc=false, bNormalize=true`, so
+   current SAS's generic home river/fresh-water term applies while the separate starting-location-only
+   bonus does not. Current SAS XML sets:
+
+       SAS_EVALUATE_EXTRA_VALUE_HOME_FRESH_WATER_RIVER = 150
+
+   Thus the stale classification suppresses a direct +150 home fresh-water term during normalization,
+   in addition to the lake plot's missing +1 food contribution. (Earlier rough investigation mentioned
+   +250; that was corrected before confirmation after tracing the evaluator flags. The +100
+   `SAS_EVALUATE_STARTING_HOME_FRESH_WATER_VALUE` term is not used by the normalization evaluator.)
+
+NORMALIZATION RESULT CAN DIVERGE
+--------------------------------
+The stale value is consumed as control flow, not merely logging:
+
+- `normalizeAddFoodBonuses()` computes `bTargetReached = pTarget->isReached(*pStartingPlot)` and
+  reduces/continues food-resource placement based on it; after each placed resource it recomputes the
+  same target condition.
+- `normalizeAddExtras()` checks `pTarget->isReached(*pStartingPlot)` before adding food/production
+  features and again in later extra-placement loops.
+
+Therefore the starting site can be treated as still below target after it has already received the
+fresh-water lake that should raise its current score. A borderline site can receive an additional food
+resource/feature/other normalization improvement that it would not have received if the just-created
+lake had its correct classification. The later whole-map rebuild then flips the lake cache to true,
+restoring the +1 lake food and fresh-water value *on top of* any extra normalization granted while the
+cache was stale.
+
+This is current shipped behavior under the native normalization path; no custom map data, runtime
+Python mutation or unsupported topology is required.
+
+LINEAGE / ORACLES
+-----------------
+- K-Mod 1.46 still computes `CvArea::isLake()` dynamically from `isWater()` and `getNumTiles()`, so the
+  one-tile area is a lake immediately after its tile count becomes 1.
+- AdvC practical 1274 introduced `m_bLake=false` + cached `isLake()` as part of the in-progress
+  passable-area/ice work.
+- AdvC practical 1275 retained the cache and centralized `updateLakes()` after whole area
+  calculations, but did not add an incremental refresh for this `setPlotType()` path.
+- Base AdvC 1.14 retains the same cached `isLake`, unchanged `changeNumTiles`, native
+  `normalizeAddLakes`, and incremental `setPlotType` behavior.
+- Current SAS inherits that root. SAS's added found-value home fresh-water term makes the temporary
+  under-evaluation larger and especially easy to trace, but is not the root cause.
+
+DEDUP
+-----
+This is NOT F249 / KI#572.
+
+F249 concerns practical 4030's *batched map-generator* lake creation: multiple accepted lake plots were
+converted without recalculating areas, leaving an earlier new water plot still attached to its stale
+LAND `CvArea` while later generation consumers ran.
+
+F634 begins with a different state and survives an F249 repair:
+- `normalizeAddLakes()` uses ordinary per-plot recalculation;
+- the new plot receives the correct fresh WATER `CvArea` immediately;
+- the defect is specifically that this newly created water area's cached `m_bLake` remains false until
+  the later whole-map update.
+
+The earlier Queue-009 `m_bAnyIsthmus` and `m_bPotentialCityWork` cache controls are likewise separate:
+those were held below current-live threshold and do not own lake classification or normalization
+scoring.
+
+REPAIR BOUNDARY
+---------------
+The required invariant is simple: a topology-changing incremental area update must not leave
+`CvArea::isLake()` stale for live consumers.
+
+For the narrow normalization repair, refresh lake classification before any phase after
+`normalizeAddLakes()` consumes lake/fresh-water state; e.g. one `CvMap::updateLakes()` after the native
+lake-creation loop would make all newly created normalization lakes coherent before food/terrain/extras
+scoring.
+
+A broader repair can instead restore incremental `m_bLake` maintenance when water-area membership/tile
+count changes, but it must be designed around advc.030 representative-area construction so that full
+area recalculation does not repeatedly classify partially built components. Do not simply call
+`updateLake()` blindly from every `changeNumTiles()` during `calculateAreas()` without accounting for
+that lifecycle.
+
+Regression coverage:
+1. standard Fractal/Continents/Pangaea-style native normalization;
+2. start with no river/fresh water and at least one legal isolated lake candidate;
+3. immediately after `normalizeAddLakes`, verify the created water area is `isLake()==true` and the
+   start is `isFreshWater()==true`;
+4. verify `calculateNatureYield(YIELD_FOOD)` on the lake includes `iLakeChange=+1` before later
+   normalization phases;
+5. compare `NormalizationTarget::isReached`/resulting food/extras placement with and without the
+   refresh and ensure no extra compensation is granted solely because of stale lake state;
+6. retain advc.030 Ice-separated representative-water behavior and F249/KI#572 batched generation
+   behavior.
+
+POST-F634 LEDGER / EXACT RESUME
+-------------------------------
+Queue 036 `CvGameCoreDLL/CvMap.cpp` — OPEN (priority-next-WIP).
+F631 / provisional KI#953 — CONFIRMED (wide custom-map-option locale/forwarding root).
+F632 / provisional KI#954 — CONFIRMED (`Shelf*` final-cache ownership leak).
+F633 / provisional KI#955 — CONFIRMED (dual-coast `findCity` / naval-upgrade area omission).
+F634 / provisional KI#956 — CONFIRMED here (incremental normalization lake leaves cached
+`m_bLake=false` through later normalization scoring).
+F635 / provisional KI#957 — UNUSED.
+
+Exact continuation:
+C031-WIP465 physical -> Queue 036 OPEN -> exclude F631-F634 and all WIP464 controls -> continue the
+remaining `CvMap` river/coordinate/index/replay/public/history strata, with Base AdvC/K-Mod/Civ4CE and
+whole-album dedup before consuming F635 -> close Queue 036 conservatively if no distinct supported root
+survives -> freeze the next physical WIP at the next settled tranche regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP465
+===============================================================================
+
+===============================================================================
+C031-WIP466 — QUEUE 036 CvGameCoreDLL/CvMap.cpp — F635 / KI#957 CONFIRMED
+===============================================================================
+
+BASE / SCHEDULING STATE
+-----------------------
+The reconciled light-source ZIP `AdvCiv-SAS_light_source_20260907T121108.zip` remains the source base.
+Queue 036 `CvGameCoreDLL/CvMap.cpp` remains OPEN and priority-next-WIP.
+F631-F634 remain confirmed and are excluded from reuse. F635 / provisional KI#957 is consumed here.
+No gameplay source was modified.
+
+F635 / PROVISIONAL KI#957 — ADVc.153 HUMAN UNIT-CYCLE STARTUP PENALIZES FULLY-READY
+GROUPS INSTEAD OF THE PARTIALLY-READY GROUPS ITS OWN COMMENT SAYS SHOULD BE LAST
+--------------------------------------------------------------------------------
+
+CURRENT CODE
+------------
+`CvMap::findSelectionGroup` currently contains:
+
+    bool const bAIControl = pLoopSelectionGroup->isAIControlled(); // advc.153
+    if (bReadyToSelect && !pLoopSelectionGroup->readyToSelect(
+        !bAIControl)) // advc.153: was false
+    {
+        continue;
+    }
+    ...
+    int iValue = plotDistance(iX, iY,
+            pLoopSelectionGroup->getX(), pLoopSelectionGroup->getY());
+    /*  <advc.153> Select groups where only some units are ready last
+        (unless plotDistance is 0) */
+    if (!bAIControl && pLoopSelectionGroup->readyToSelect())
+        iValue *= 100; // </advc.153>
+
+`CvSelectionGroup::readyToSelect(bool bAny=false)` forwards to `readyToMove(bAny)`:
+
+    return (readyToMove(bAny) && !isAutomated());
+
+and `readyToMove` uses:
+
+    (bAny ? canAnyMove() : canAllMove())
+
+Therefore for a normal human group:
+
+* `readyToSelect(true)` means at least one member can move;
+* `readyToSelect()` / `readyToSelect(false)` means all members can move.
+
+The first advc.153 filter intentionally broadens human cycling so partially-ready groups remain
+eligible. But the immediately following block says that groups where only SOME units are ready should
+be selected LAST, while testing the opposite state: `readyToSelect()` is true for the FULLY-ready
+group. The 100x distance penalty is consequently applied to fully-ready human groups instead.
+
+DETERMINISTIC LIVE RANKING INVERSION
+------------------------------------
+The live caller `CvGame::getNextGroupInCycle` uses this function when no unit is currently selected:
+
+    pCycleUnit = gDLL->UI().getHeadSelectedUnit();
+    ...
+    if (pCycleUnit == NULL)
+    {
+        CvPlot* pPlot = gDLL->UI().getLookAtPlot();
+        pGroup = GC.getMap().findSelectionGroup(
+                pPlot != NULL ? pPlot->getX() : 0,
+                pPlot != NULL ? pPlot->getY() : 0,
+                getActivePlayer(), true, bWorkers);
+    }
+
+That path feeds both `cycleSelectionGroups` and the advc.154 cycle-button resolver. It is ordinary
+human UI behavior, not a Python-only or debug path.
+
+Take two eligible non-automated human groups while no unit is selected:
+
+A. Fully-ready group at plotDistance 1 from the current look-at plot.
+   - `readyToSelect(true)` = true
+   - `readyToSelect(false)` = true
+   - current `iValue = 1 * 100 = 100`
+
+B. Partially-ready group at plotDistance 2, with at least one member able to move and at least one
+   member out of moves.
+   - `readyToSelect(true)` = true, so advc.153 deliberately keeps it in the cycle
+   - `readyToSelect(false)` = false
+   - current `iValue = 2`
+
+Current code therefore selects B (2 < 100), although the local contract explicitly says that B's
+class — “groups where only some units are ready” — should be selected last. With the intended polarity,
+A remains value 1 and B receives the penalty (2 * 100), so A is selected first.
+
+This is not a tie/order artifact. A two-tile partially-ready group beats a one-tile fully-ready group
+deterministically. More generally, a partially-ready group wins over a fully-ready group unless it is
+roughly 100 times farther away. The source's parenthetical “unless plotDistance is 0” is also consistent
+with a multiplicative penalty intended for the partially-ready group: a partial group on the exact
+look-at tile remains value 0 and can sensibly win despite the preference.
+
+PLAYER-FACING CONSEQUENCE
+-------------------------
+AdvC manual change 153 explicitly adds partially-ready human groups to unit cycling so that the player
+is made aware of unspent movement points while avoiding unnecessary group splitting. The current
+ranking inversion does not merely include those groups; when cycling starts with no current selection,
+it strongly prioritizes them over nearby fully-ready groups. The cycle button/hotkey can therefore
+jump first to a mixed spent/unspent stack even when a closer group has all movement available — the
+opposite of the ordering stated in the implementation itself.
+
+LINEAGE
+-------
+K-Mod's inherited `CvMap::findSelectionGroup` required `readyToSelect()` (all units ready) and had no
+partial-group preference because partially-ready groups were not eligible at all.
+
+AdvC practical 2799 refactored the old condition to an equivalent explicit
+`readyToSelect(false)`.
+
+AdvC practical 2810 / commit `9ffb0d869861f50784f03f968fc8acd6a471460f`, titled
+“Merge branch split-groups-after-missions” and identified as change `advc.153`, made both relevant
+changes in the same hunk:
+
+    bool const bAIControl = pLoopSelectionGroup->AI_isControlled();
+    if (bReadyToSelect && !pLoopSelectionGroup->readyToSelect(!bAIControl))
+        continue;
+    ...
+    /* Select groups where only some units are ready last
+       (unless plotDistance is 0) */
+    if (!bAIControl && pLoopSelectionGroup->readyToSelect())
+        iValue *= 100;
+
+For human groups `!bAIControl` is true, so the eligibility test became `readyToSelect(true)` as
+intended. The newly added ranking test, however, retained the default all-ready meaning instead of
+negating it. This is therefore an AdvC practical-2810 polarity bug introduced with the feature itself,
+not a later SAS regression.
+
+Practical 2821 later changed only the worker filter to `hasWorkerWithMoves()`. Practical 4198 renamed
+`AI_isControlled` to `isAIControlled`. Neither changes the inverted readiness predicate.
+
+Supplied Base AdvC 1.14 retains the same executable body. Current SAS is executable-semantically
+identical in this function apart from formatting/source-comment changes.
+
+DEDUP
+-----
+No reconciled album or current Known Issues entry owns this `CvMap::findSelectionGroup` readiness-
+ranking polarity root. Existing unit-cycle findings concern distinct lifetime, stale group-cycle ID,
+selection-popup rebinding, cargo cycling, and `advc.153` movement/regrouping behavior. In particular:
+
+* F155/KI#478 and F156/KI#479 are live-list lifetime hazards during `advc.153` movement/combat;
+* the previously audited group-cycle stale-ID controls establish container lifetime, not ranking;
+* Rapid Unit Cycling popup findings concern actor/selection rebinding after cycling, not which ready
+  group `findSelectionGroup` chooses when cycling begins without a current selection.
+
+F635 is thus a separate ordering/polarity defect in the map-level nearest-group selector.
+
+REPAIR BOUNDARY
+---------------
+The intended invariant is directly stated by the source comment: when `bReadyToSelect` is requested for
+human cycling, groups where only some units can move remain eligible but should rank after fully-ready
+groups unless they are on the exact look-at plot.
+
+A narrow repair is to apply the penalty to the partially-ready state rather than the fully-ready state,
+and to scope the special ranking to the ready-to-select search:
+
+    if (bReadyToSelect && !bAIControl &&
+        !pLoopSelectionGroup->readyToSelect())
+    {
+        iValue *= 100;
+    }
+
+The existing earlier filter has already guaranteed `readyToSelect(true)` for human candidates, so
+`!readyToSelect(false)` at this point means exactly “some can move, but not all.” Keeping the
+`bReadyToSelect` guard also avoids changing the generic public/Python behavior when callers explicitly
+ask `findSelectionGroup` to consider groups regardless of readiness.
+
+Regression coverage:
+1. human player, no current selected unit, current look-at plot fixed;
+2. group A fully ready at distance 1;
+3. group B partially ready at distance 2;
+4. cycle button / ordinary cycle command should choose A first;
+5. after A is cycled/handled, B remains eligible because `readyToSelect(true)` is true;
+6. partial group exactly at distance 0 should retain the source's documented exception;
+7. worker-cycle mode should still require `hasWorkerWithMoves()`;
+8. AI-controlled groups retain the all-ready eligibility/ranking behavior.
+
+POST-F635 CONTROLS / QUEUE STATUS
+---------------------------------
+1. Current SAS vs supplied Base AdvC 1.14 function-body comparison found no missing upstream `CvMap`
+   semantic fix: all 85 common bodies are semantically identical after comment/format normalization
+   except deliberate SAS `read()` and `setupGraphical()` changes; SAS-only `recalculateWaterAreas`
+   and `resetRiverIDs` are already-owned repairs. F635 is therefore an inherited root still present in
+   Base 1.14, as the practical-2810 lineage independently shows.
+2. `setLatitudeLimits` has only current TrueStarts callers; all pass ordered, in-range limits already
+   audited with Queue 022.
+3. WB `CyMap.rebuild` receives explicit WB dimensions/latitudes/wraps and the WB loader explicitly
+   recalculates areas after applying plot types. No independent rebuild-state defect found here.
+4. `plotByIndexExternal` / shipped Python index loops remain bounded. Generic invalid-index behavior is
+   API hardening, not a current finding.
+5. Practical 2172 originally had an out-of-range river-read guard accidentally overwritten by an
+   unconditional cast, but practical 2571 explicitly repaired it with the current `else`; this is a
+   historical fixed control, not a live finding.
+
+POST-F635 LEDGER / EXACT RESUME
+-------------------------------
+Queue 036 `CvGameCoreDLL/CvMap.cpp` — OPEN (priority-next-WIP).
+F631 / provisional KI#953 — CONFIRMED.
+F632 / provisional KI#954 — CONFIRMED.
+F633 / provisional KI#955 — CONFIRMED.
+F634 / provisional KI#956 — CONFIRMED.
+F635 / provisional KI#957 — CONFIRMED here (advc.153 human unit-cycle readiness ranking polarity).
+F636 / provisional KI#958 — UNUSED.
+
+Exact continuation:
+C031-WIP466 physical -> Queue 036 OPEN -> exclude F631-F635 and all WIP464/WIP465 controls -> continue
+remaining inherited `CvMap` semantic-history/public/index/replay/area/path contracts, using K-Mod,
+Civ4CE, Base AdvC 1.14 and whole-album dedup before consuming F636 -> freeze the next physical WIP at
+the next settled tranche regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP466
+===============================================================================
+
+===============================================================================
+C031-WIP467 -- QUEUE 036 CvMap.cpp: STOCK CITY-SCENARIO ICE TOPOLOGY / F636
+Date: 2026-09-07
+STATUS: INCOMPLETE SAFETY CHECKPOINT -- CvMap.cpp remains OPEN
+===============================================================================
+
+PHYSICAL CONTINUATION
+---------------------
+- Parent physical stone: C031-WIP466.
+- Working source base: reconciled `AdvCiv-SAS_light_source_20260907T121108.zip`.
+- Queue 036 `CvGameCoreDLL/CvMap.cpp` remains OPEN (priority-next-WIP).
+- F631/KI#953 through F635/KI#957 remain CONFIRMED from prior physical stones.
+- F636 / provisional KI#958 is CONFIRMED here.
+- F637 / provisional KI#959 is UNUSED.
+- No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified.
+
+-------------------------------------------------------------------------------
+F636 / provisional KI#958 -- city-bearing WorldBuilder scenarios retain the
+pre-feature water-area partition, so stock Earth1000AD ignores Ice barriers in
+PASSABLE_AREAS topology for gameplay
+-------------------------------------------------------------------------------
+
+STATUS
+------
+NEW CURRENT DEFECT ROOT, inherited AdvC scenario/PASSABLE_AREAS initialization
+interaction; stock BtS Earth1000AD reproducer.
+
+ROOT / LOAD ORDER
+-----------------
+Current WorldBuilder map application deliberately performs area calculation before
+features are applied:
+
+    CvWBDesc.applyMap():
+      ... rebuild map ...
+      pDesc.preApply() for every plot    // plot type + terrain
+      CyMap().recalculateAreas()
+      pDesc.apply() for every plot       // rivers/start/bonus/improvement/FEATURE/route
+
+`CvPlotDesc.preApply()` sets PlotType/TerrainType only. `CvPlotDesc.apply()` later
+calls `plot.setFeatureType(...)`, so `FEATURE_ICE` is absent when that preliminary
+area partition is built.
+
+That ordering matters because current/default `PASSABLE_AREAS=1` deliberately makes
+Ice part of water-area topology. `CvMap::calculateAreas_dfs()` skips impassable roots
+on its first pass and does not traverse from an impassable plot back into passable
+water, allowing Ice packs to separate passable seas.
+
+Ordinary newly generated games repair the preliminary partition after Ice/normalization
+through `CvGame::setInitialItems()` -> `GC.getMap().recalculateAreas()`.
+Scenarios do not call `setInitialItems`; they enter `CvGame::initScenario()` instead.
+Current `initScenario()` explicitly refuses the post-feature rebuild whenever any major
+player already has a city:
+
+    if (GC.getDefineBOOL(CvGlobals::PASSABLE_AREAS))
+    {
+        bool bRecalc = true;
+        for (...)
+        {
+            if (GET_PLAYER(...).getNumCities() > 0)
+                bRecalc = false;
+        }
+        if (bRecalc)
+            GC.getMap().recalculateAreas();
+    }
+
+The source comment explains the safety concern: wholesale `recalculateAreas()` was not
+trusted around preplaced scenario cities/free units. The consequence is nevertheless
+that city-bearing scenarios keep the earlier pre-Ice area identities for gameplay.
+
+STOCK CURRENT-LIVE REPRODUCER
+-----------------------------
+The supplied Civ4CE BtS archive contains the stock public scenario
+`BtS/PublicMaps/Earth1000AD.CivBeyondSwordWBSave`, a scenario usable by BtS mods.
+Its map data provides a concrete supported fixture:
+
+- grid: 124 x 68, wrap X = 1, wrap Y = 0;
+- 69 preplaced cities;
+- 537 `FEATURE_ICE` plot entries.
+
+The 69 cities deterministically disable `initScenario()`'s post-feature
+`recalculateAreas()` branch.
+
+Reconstructing Earth1000AD's water graph from the WB plot data with current
+`CvMap::isSeparatedByIsthmus` semantics shows that Ice is not topologically inert.
+Without Ice, several high-Arctic non-Ice waters belong to the giant ocean component.
+When Ice is treated as impassable, that same old giant component is split; concrete
+passable pockets split out include:
+
+- 16 tiles around `(12,64)` ... `(21,62)`;
+- 9 tiles around `(95,65)` ... `(101,66)`;
+- 5 tiles around `(5,66)` ... `(8,66)`;
+- further 2-tile pockets in the same old ocean component.
+
+For reference, the largest non-Ice water connectivity component is 5262 tiles when
+features are ignored and 4775 passable tiles when Ice barriers are honored. The exact
+CvArea tile totals also include the barrier Ice assigned to one side, but the decisive
+fact is the changed connectivity of ordinary non-Ice water plots: plots in the pockets
+and plots in the main sea are in one preliminary area and in different correct
+PASSABLE_AREAS after features.
+
+HARD NATIVE CONTRACT / CONSEQUENCE
+----------------------------------
+This is not merely stale diagnostic metadata. `CvArea::canBeEntered` uses area identity
+as its strongest reachability shortcut:
+
+    if (getID() == kFrom.getID())
+        return true;
+
+For two distinct water areas separated only by Ice, the correct post-Ice topology has
+different area IDs but the same representative BtS water body. The subsequent test then
+returns false for an ordinary sea unit that cannot move through impassable tiles:
+
+    if (isWater() == kFrom.isWater() &&
+        (m_iRepresentativeArea != kFrom.m_iRepresentativeArea ||
+         (u != NULL && !u->canMoveImpassable())))
+        return false;
+
+Thus Earth1000AD's stale pre-feature partition changes this coarse naval reachability
+answer from the intended FALSE to TRUE for ordinary ships across those Ice barriers.
+Current AI/unit code deliberately consumes `CvArea::canBeEntered` and water-area identity
+as coarse reachability/accounting filters before or alongside pathfinding. The scenario
+therefore starts with a topology contract that contradicts the actual feature-level
+passability until some later unrelated full area rebuild happens (if one ever does).
+
+LINEAGE
+-------
+AdvC practical 1274 / commit `b50e4a9a5a...` introduced Ice-sensitive PASSABLE_AREAS
+and explicitly noted that at least the Earth_IceAge scenario places Ice after the first
+`CvMap::calculateAreas` call. It initially attempted a scenario recalculation from
+`setInitialItems`.
+
+Practical 1275 / `71fa4eef1a...` moved the ordinary post-Ice recalculation to after
+starting-position normalization and documented that some scenarios do not call
+`setInitialItems`.
+
+Practical 1347 / `1cfdc903de...` then added the current preplaced-city bailout in
+`initScenario`, explicitly because full `recalculateAreas()` was considered unsafe with
+preplaced cities/other scenario state. Later refactors preserve this behavior. Supplied
+Base AdvC 1.14 retains the same logic; current SAS inherits it.
+
+So this is a deliberate safety workaround with an unintended correctness cost, not a
+SAS formatting regression. The stock Earth1000AD data proves the excluded domain is real.
+
+DEDUP
+-----
+This is independent of the earlier area/Ice findings:
+
+- F025 / KI#346: topology becomes stale when Ice passability changes *during gameplay*
+  (notably global-warming melt) after areas were initially correct. Current SAS repairs
+  that mutation path with deferred `resetPathDistance`, `recalculateWaterAreas`, and
+  plot-group refresh.
+- F249 / KI#572: batched map generation can leave stale area pointers while map plots are
+  being constructed; different lifecycle/root.
+- F634 / KI#956: newly added normalization lakes temporarily retain stale cached `m_bLake`;
+  lake classification/value cache, not scenario Ice-area partition.
+
+No reconciled album/Known-Issues owner was found for the load-time city-bearing scenario
+case proved here. F636 therefore owns only the missing safe post-feature water-area rebuild
+for scenarios that contain cities.
+
+REPAIR BOUNDARY
+---------------
+Do not simply remove the historical city guard and call wholesale `recalculateAreas()`;
+the source explicitly records why that was avoided.
+
+Current SAS now has a much narrower helper introduced for KI#346:
+`CvMap::recalculateWaterAreas()`. It:
+
+1. detaches/deletes only water CvAreas;
+2. leaves land/city area state intact;
+3. rebuilds water areas through `calculateAreas_dfs()`;
+4. runs `calculateReprAreas()` -> `updateLakes()` -> `computeShelves()`;
+5. restores coastal-city counts on the newly built primary water areas.
+
+That helper is therefore the natural repair candidate for the city-bearing scenario branch
+after WB features have been applied. A scenario-start repair should also review whether any
+path-distance / plot-group cache can already exist at that exact initialization point; if so,
+mirror KI#346's invalidation as needed rather than broadening the rebuild indiscriminately.
+
+Regression coverage:
+1. load stock Earth1000AD with `PASSABLE_AREAS=1`;
+2. preserve every preplaced city/unit and its land-area bookkeeping;
+3. after scenario initialization, non-Ice Arctic pocket `(12,64)` and the main ocean should
+   have different water-area IDs where Ice blocks passage;
+4. their representative water-area IDs should still match as the same BtS ocean body;
+5. `CvArea::canBeEntered` for an ordinary non-Ice-capable ship across those areas should be
+   false, while an Ice-capable/submarine-style permitted unit retains the intended exception;
+6. stock Earth_IceAge (no preplaced cities) should remain correct through its existing full
+   scenario recalculation path;
+7. scenarios without Ice should remain behaviorally unchanged.
+
+POST-F635 / PRE-F636 CONTROLS PRESERVED
+---------------------------------------
+1. Older `CvMap` semantic-history strata checked after WIP466 mostly validate current code:
+   practical 2718's `findCity` precedence fix and practical 4030's full-rebuild safety fix are
+   present; old synchronized-random and out-parameter refactors remain paired.
+2. `CvMap::init` still contains an inherited malformed diagnostic format fragment ending in
+   `num custom options=%6`. This is a real malformed printf-style logging expression and may
+   cause formatting retries/empty output, but no gameplay-state corruption was established;
+   retained below finding threshold rather than consuming a root number.
+3. The scenario investigation began from `calculateAreas()`'s own candid comment that some
+   scenarios receive only the preliminary land/sea/peak partition. F636 is promoted only
+   because stock Earth1000AD proves city+Ice activation and because the stale partition flips
+   a concrete `CvArea::canBeEntered` reachability result.
+
+POST-F636 LEDGER / EXACT RESUME
+-------------------------------
+Queue 036 `CvGameCoreDLL/CvMap.cpp` — OPEN (priority-next-WIP).
+F631 / provisional KI#953 — CONFIRMED.
+F632 / provisional KI#954 — CONFIRMED.
+F633 / provisional KI#955 — CONFIRMED.
+F634 / provisional KI#956 — CONFIRMED.
+F635 / provisional KI#957 — CONFIRMED.
+F636 / provisional KI#958 — CONFIRMED here (city-bearing WB scenarios skip the post-feature
+Ice-aware water-area rebuild; stock Earth1000AD reproducer).
+F637 / provisional KI#959 — UNUSED.
+
+Exact continuation:
+C031-WIP467 physical -> Queue 036 OPEN -> exclude F631-F636 plus all recorded negative controls ->
+continue the remaining retained `CvMap` whole-body/history pass (area/path/replay/map option/random
+plot/index/serialization/public API) and whole-album dedup before F637 -> if no new hard root survives,
+move toward formal Queue036 closure -> freeze the next physical WIP regardless at the next settled
+boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP467
+===============================================================================
+
+===============================================================================
+C031-WIP468 -- QUEUE 036 CvMap.cpp DURABLE CLOSURE / NEXT PRIORITY QUEUE 057
+Date: 2026-09-07
+STATUS: QUEUE 036 COMPLETE; Queue 057 CombatOdds.cpp next priority-next-WIP file
+===============================================================================
+
+PHYSICAL CONTINUATION
+---------------------
+- Parent physical stone: C031-WIP467.
+- Working source base: reconciled `AdvCiv-SAS_light_source_20260907T121108.zip`.
+- Queue 036 `CvGameCoreDLL/CvMap.cpp` is now COMPLETE.
+- F631/KI#953 through F636/KI#958 remain CONFIRMED.
+- F637 / provisional KI#959 remains UNUSED; no seventh Queue-036 root was forced.
+- No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified.
+
+QUEUE 036 FINAL RESULT
+----------------------
+Six independent current defect roots survive the full current-body, companion-header,
+SAS-delta, Base-AdvC-1.14, K-Mod/Civ4CE lineage, WorldBuilder/scenario and history-assisted
+reconciliation:
+
+1. F631 / KI#953 -- the translated-string `isCustomMapOption(CvWString,...)` overload
+   narrows non-ASCII text and drops both Boolean forwarding controls; current French Balanced
+   detection is a shipped live reproducer.
+2. F632 / KI#954 -- final `Shelf*` objects owned by `m_shelves` leak at CvMap teardown because
+   recomputation deletes old shelves but `uninit()`/destruction does not delete the final cache.
+3. F633 / KI#955 -- `findCity(...sameArea,coastalOnly...)` ignores a city's second water area,
+   making ordinary naval `canUpgrade` disagree with exhaustive upgrade-city search on dual coasts.
+4. F634 / KI#956 -- normalization-created lakes keep cached `m_bLake=false` until the later full
+   area rebuild, so later normalization misses lake food/fresh-water value and can over-normalize.
+5. F635 / KI#957 -- advc.153 human group cycling penalizes fully-ready groups instead of the
+   intended partially-ready groups because `readyToSelect()` polarity is inverted in ranking.
+6. F636 / KI#958 -- city-bearing WorldBuilder scenarios skip the post-feature Ice-aware water-area
+   rebuild; stock Earth1000AD starts gameplay with pre-Ice PASSABLE_AREAS topology.
+
+FINAL NEGATIVE / DEDUP CONTROLS
+-------------------------------
+The following attractive shapes were explicitly reconciled and are NOT additional Queue-036 roots:
+
+- GroupPathFinder heuristic setup is safe under current route XML; movement-cost minima are real and
+  the pathfinder clamps remain admissible.
+- StepFinder reuse is correctly invalidated on shipped topology mutations: `setPlotType` resets it;
+  current runtime Ice melt is already KI#346 and explicitly resets path distance.
+- `calculateReprAreas()`'s defensive 10-pass cap did not reproduce: exhaustive small and larger
+  randomized legal passability patterns converge in the first changing scan, with the next pass only
+  confirming no changes.
+- `coordRange` has the inherited exact-negative-multiple modulo oddity, but current local-offset
+  callers stay within the supported span; reserve generic wrapped-iterator consequences for Queue167.
+- `pointToPlot`'s exact positive landscape-edge mapping is a public API boundary with no shipped
+  engine/DLL producer reaching the edge coordinate.
+- current-format read/write ordering is paired; historical `uiFlag` branches removed by SAS belong to
+  deliberate KI#46 current-version-only save compatibility policy.
+- SAS `recalculateWaterAreas`, GameRecord quickload hook and `resetRiverIDs` reconcile to KI#346,
+  KI#382 and KI#567 respectively; no duplicate roots.
+- inherited `CvPlot::processArea` comma-expression bug was already audited as a dormant Queue-009
+  control and is not re-owned here.
+- replay serialization's `&m_replayTexture[0]` on a zero-length vector remains formal C++ UB, but the
+  stream count is zero and no MSVC-2003 crash/read/corruption was established; held below threshold.
+- `syncRandPlot` weighted zero weights are intentional suppression; its limited-trial `piValidCount=1`
+  is explicitly only a success indicator and no live consumer treats it as exhaustive cardinality.
+- `findWater`, `xDistance`, `yDistance`, `plotNum`, `directionXY`, `plotCity` and other header helpers
+  have current shipped callers satisfying their documented coordinate/adjacency/enum preconditions;
+  malformed external/Python arguments remain hardening territory.
+- short river ID capacity is safe on the largest shipped SAS world (198x140 = 27,720 plots, below
+  MAX_SHORT); custom super-map overflow remains robustness only.
+- the Ice/lake-yield transition hypothesis was already closed in earlier CvPlot/CvCity work through
+  representative-water-body lake classification; no duplicate.
+- `setPlotExtraYield(PlotNumTypes,...)` does not refresh plot yield, but no current live caller uses that
+  compatibility overload; current Python/event paths use the CvPlot overload that calls updateYield.
+- the inherited `CvMap::init` diagnostic format ending in `num custom options=%6` is malformed and can
+  damage that memory-log line / cause format retries, but no gameplay-state consequence was proven;
+  retained as low-grade diagnostic/performance debt rather than consuming F637.
+- SAS vs supplied Base AdvC 1.14 function-body normalization found no missed later upstream CvMap fix:
+  common executable bodies match except deliberate SAS read/setupGraphical differences and owned SAS
+  repair helpers.
+- final whole-body divisor/pointer/index/enum/cache scan found no additional supported current root.
+
+WHY QUEUE 036 IS CLOSED
+-----------------------
+The audit covered all 89 retained CvMap.cpp functions plus the behaviorally relevant CvMap.h inline
+surface, current SAS-only semantic deltas, the full path-specific history inventory, supplied Base
+AdvC 1.14 comparison, K-Mod/Civ4CE oracle checks, all current custom-map-option/WorldBuilder scenario
+load paths needed for the surviving findings, and a final mechanical pointer/division/index/cache
+pass. Every surviving hard current defect has an owner F631-F636; remaining suspicious shapes are
+explicitly recorded above as fixed, dormant, unsupported-input hardening or below-threshold debt.
+
+PRIORITY SCHEDULING RESOLUTION
+------------------------------
+The reconciled album-front rule says to process every still-PENDING entry explicitly marked
+`priority next wip` before returning to ordinary queue order, following queue order among equally
+marked files. With Queue036 complete, the next still-pending priority marker is:
+
+    Queue 057 -- CvGameCoreDLL/CombatOdds.cpp -- 713 lines
+
+Queue058 ArmamentForecast.cpp and the later priority-marked files follow only after Queue057 closes.
+Ordinary Queue026 and other entries explicitly marked “skip until the priority next wip ones have been
+done first” remain intentionally deferred.
+
+LEDGER / EXACT RESUME
+---------------------
+Queue 036 `CvGameCoreDLL/CvMap.cpp` — COMPLETE.
+F631 / provisional KI#953 — CONFIRMED.
+F632 / provisional KI#954 — CONFIRMED.
+F633 / provisional KI#955 — CONFIRMED.
+F634 / provisional KI#956 — CONFIRMED.
+F635 / provisional KI#957 — CONFIRMED.
+F636 / provisional KI#958 — CONFIRMED.
+F637 / provisional KI#959 — UNUSED.
+
+Exact continuation:
+C031-WIP468 physical -> Queue036 COMPLETE -> open priority Queue057 `CvGameCoreDLL/CombatOdds.cpp` ->
+use F637/KI#959 as the next unused root -> first reconcile current SAS deltas + K-Mod/AdvC lineage +
+album/KI ownership, then perform whole-file arithmetic/probability/index/edge-case audit -> freeze a
+new physical WIP at the next settled tranche regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+END C031-WIP468
 ===============================================================================

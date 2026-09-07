@@ -231,7 +231,8 @@ scaled CitySiteEvaluator::evaluateWorkablePlot(CvPlot const& kPlot) const
 	}
 	if (pBestCityPlot == NULL) // kPlot not workable
 		return 0;
-	AIFoundValue foundVal(*pBestCityPlot, *this);
+	// <!-- custom: The independent workable-plot path needs the evaluator context but not the constructor's full city-site result. See KI#492. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	AIFoundValue foundVal(*pBestCityPlot, *this, NULL, false);
 	CvGame& kGame = GC.getGame();
 	CvGame::StartingPlotNormalizationLevel eOldLevel = kGame.
 			getStartingPlotNormalizationLevel();
@@ -434,7 +435,8 @@ void AIFoundValue::setLoggingEnabled(bool b)
 	bLoggingEnabled = b;
 } // </advc.031c>
 
-AIFoundValue::AIFoundValue(CvPlot const& kPlot, CitySiteEvaluator const& kSettings, CvString* pszBreakdown) : m_iResult(0), m_pszBreakdown(pszBreakdown), kPlot(kPlot), kArea(kPlot.getArea()), kSet(kSettings), kPlayer(kSet.getPlayer()), ePlayer(kPlayer.getID()), eTeam(kPlayer.getTeam()), kTeam(GET_TEAM(eTeam)), kGame(GC.getGame()), iX(kPlot.getX()), iY(kPlot.getY())
+// <!-- custom: Keep ordinary callers evaluating immediately, while allowing SPI's separate workable-plot precomputation to skip the unused full result. See KI#492. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+AIFoundValue::AIFoundValue(CvPlot const& kPlot, CitySiteEvaluator const& kSettings, CvString* pszBreakdown, bool bEvaluateSite) : m_iResult(0), m_pszBreakdown(pszBreakdown), kPlot(kPlot), kArea(kPlot.getArea()), kSet(kSettings), kPlayer(kSet.getPlayer()), ePlayer(kPlayer.getID()), eTeam(kPlayer.getTeam()), kTeam(GET_TEAM(eTeam)), kGame(GC.getGame()), iX(kPlot.getX()), iY(kPlot.getY())
 {
 	PROFILE_FUNC();
 	if (!kPlayer.canFound(kPlot, false,
@@ -462,7 +464,9 @@ AIFoundValue::AIFoundValue(CvPlot const& kPlot, CitySiteEvaluator const& kSettin
 	bFirstColony = false;
 	iUnrevealedTiles = 0;
 
-	m_iResult = evaluate();
+	// <!-- custom: Only the SPI workable-plot caller disables the otherwise immediate full evaluation. See KI#492. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (bEvaluateSite)
+		m_iResult = evaluate();
 }
 
 // <!-- custom: we now return int (no longer short) in AIFoundValue::evaluate, so overflow risk is much lower; keep penalties bounded but don't expect short wraparound behavior here. (GPT-5.2-Codex (summarized)) -->

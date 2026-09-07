@@ -700,13 +700,14 @@ void StartingPositionIteration::DistanceTable::computeDistances(CvPlot const& kS
 		Node v = q.top();
 		q.pop();
 		CvPlot const& kAt = v.get();
-		setDistance(kSource, kAt, v.getDistance());
 		{
 			PlotNumTypes eAt = kAt.plotNum();
 			if (abReached.get(eAt))
 				continue;
 			abReached.set(eAt, true);
 		}
+		// <!-- custom: Store distance only after rejecting stale priority-queue copies, which otherwise overwrote the shortest distance already settled by Dijkstra. See KI#949. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		setDistance(kSource, kAt, v.getDistance());
 		FOR_EACH_ADJ_PLOT(kAt)
 		{
 			/*	Note: even if not yet reached, it may already be in q;
@@ -2191,11 +2192,12 @@ int iCurrFoundVal = -1;
 	{
 		/*	(Not sure if rTolerance really has a big impact in general.
 			It did in some of my tests.) */
+		// <!-- custom: These are alternative tolerance levels; add a break after each because fallthrough inverted their intended strength by cumulatively adding every weaker level. See KI#946. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 		switch(GC.getGame().getStartingPlotNormalizationLevel())
 		{
-		case CvGame::NORMALIZE_HIGH: rTolerance += 2;
-		case CvGame::NORMALIZE_MEDIUM: rTolerance += 4;
-		default: rTolerance += 6;
+		case CvGame::NORMALIZE_HIGH: rTolerance += 2; break;
+		case CvGame::NORMALIZE_MEDIUM: rTolerance += 4; break;
+		default: rTolerance += 6; break;
 		}
 	}
 	rTolerance /= 100;
