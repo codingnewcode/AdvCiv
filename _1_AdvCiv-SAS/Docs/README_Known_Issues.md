@@ -863,14 +863,14 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#764 - (Provisional Pending inherited BtS Advanced Start context defect) Generic unit availability ignores the selected plot's cap](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-764)\
 [KI#765 - (Provisional Pending inherited K-Mod queue-help regression) Continuing Buildings are priced as another new copy](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-765)\
 [KI#766 - (Provisional Pending inherited BtS queue-help defect) Production hover discards the actual queue index](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-766)\
-[KI#767 - (Provisional Pending inherited AdvCiv commerce-rounding defect) Every correction reselects the same remainder](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-767)\
+[KI#767 - (Fixed inherited AdvCiv commerce-rounding defect) Every correction reselected the same remainder](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-767)\
 [KI#768 - (Rejected audit false positive) Capital updates already invalidate yield ranks](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-768)\
 [KI#769 - (Provisional Pending AdvCiv projection regression) Civilian unit changes also alter projected military upkeep](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-769)\
 [KI#770 - (Provisional Pending inherited BtS colony-lifecycle defect) A dead player on a live team can be revived as a malformed colony](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-770)\
 [KI#771 - (Provisional Pending AdvCiv Rise & Fall cache regression) Controller changes retain the former Settler production cost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-771)\
 [KI#772 - (Provisional Pending inherited AdvCiv message-state defect) Hidden observers downgrade later visible Great Person announcements](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-772)\
 [KI#773 - (Provisional Pending inherited AdvCiv Globe arithmetic regression) Military strength is divided by combat strength](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-773)\
-[KI#774 - (Provisional Pending inherited BBAI/K-Mod area-filter omission) Missionaries being trained on other land areas suppress local production](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-774)\
+[KI#774 - (Fixed inherited BBAI/K-Mod area-filter omission) Missionaries being trained on other land areas suppressed local production](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-774)\
 [KI#775 - (Provisional Pending AdvCiv Culture Globe buffer defect) A fifth culture color overwrites the next plot](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-775)\
 [KI#776 - (Pending Architectural inherited BtS research-path defect) Shared prerequisites can make the automatic queue choose a costlier route](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-776)\
 [KI#777 - (Provisional Pending AdvCiv espionage-announcement leak) Third parties receive an unrevealed capital's coordinates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-777)\
@@ -15918,9 +15918,13 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP149 `CvGameT
 
 <a id="ki-767"></a>
 
-## KI#767 - (Provisional Pending inherited AdvCiv commerce-rounding defect) Every correction reselects the same remainder
+## KI#767 - (Fixed inherited AdvCiv commerce-rounding defect) Every correction reselected the same remainder
 
-Album F444 finds `CvPlayer::updateCommerceRates` describing an implicit selection sort but never removing or updating the selected fractional remainder. When more than one whole correction is distributed, every correction can be awarded to the same commerce type. Pending independent implementation review.
+Album F444 found `CvPlayer::updateCommerceRates` describing an implicit selection sort but never removing or updating the selected fractional remainder. When more than one whole correction was distributed, every correction could be awarded to the same commerce type.
+
+Fixed by subtracting the awarded whole commerce from the selected stored residual before the next selection pass. A +90 hundredths remainder that receives +1 therefore becomes -10 rather than remaining the stale maximum; the symmetric negative-rate path is preserved too.
+
+Validated with the matching Debug-opt DLL through a complete Huge Custom Continents autoplay with 16 independent teams. Commerce-rate updates ran through the turn-387 Space Race victory without an observed issue (`SASGameRecord_20260907T140641Z_new1.log`); the multiple-correction arithmetic is additionally source-verified.
 
 Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP151 `CvPlayer.cpp` deep re-audit; disposition reconciled with the help of GPT-5.6-Sol, thanks.
 
@@ -15974,13 +15978,17 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP160 `CvPlaye
 
 <a id="ki-774"></a>
 
-## KI#774 - (Provisional Pending inherited BBAI/K-Mod area-filter omission) Missionaries being trained on other land areas suppress local production
+## KI#774 - (Fixed inherited BBAI/K-Mod area-filter omission) Missionaries being trained on other land areas suppressed local production
 
 `CvPlayer::countReligionSpreadUnits` correctly filters existing missionaries to its requested land area, but the Better BTS AI extension that optionally includes units being trained counts matching production in every city of the empire. The parallel corporation helper applies the missing area condition to both existing and queued executives, confirming the intended local contract.
 
 The live area-specific `AI_missionaryValue` caller compares local cities already following a religion plus this malformed missionary count against all team cities in that area. A missionary queued on another landmass can consequently make the requested area appear fully covered and suppress production even though one of its cities still lacks the religion. Current SAS missionaries and ordinary multi-land-area empires make the path live. KI#668's team-scope repair uses the helper more broadly but did not create this pre-existing single-player defect.
 
-Better BTS AI 0.83 introduced the training-count extension without the area check; K-Mod, Base AdvCiv 1.14 and AdvCiv-SAS retain it. Found as F451/provisional KI#774 during ChatGPT-5.6-Sol's C031-WIP162 `CvPlayer.cpp` deep re-audit; disposition independently reviewed and reconciled with the help of GPT-5.6-Sol, thanks.
+Fixed by applying the helper's existing requested-area contract to cities training missionaries, matching both the completed-missionary half and the parallel corporation helper. A missionary queued on another landmass no longer suppresses production for a local city that still lacks the religion.
+
+Validated by the same complete Huge Custom Continents Debug-opt autoplay through turn 387 without an observed issue (`SASGameRecord_20260907T140641Z_new1.log`). The map's multiple landmasses provide relevant runtime coverage; the precise simultaneous cross-area missionary-production state is additionally source-verified.
+
+Better BTS AI 0.83 introduced the training-count extension without the area check; K-Mod, Base AdvCiv 1.14 and AdvCiv-SAS retained it. Found as F451/provisional KI#774 during ChatGPT-5.6-Sol's C031-WIP162 `CvPlayer.cpp` deep re-audit; disposition independently reviewed and fixed with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-775"></a>
 

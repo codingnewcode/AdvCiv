@@ -3558,6 +3558,9 @@ int CvPlayer::countReligionSpreadUnits(CvArea const* pArea, ReligionTypes eRelig
 	{
 		FOR_EACH_CITY(pLoopCity, *this)
 		{
+			// <!-- custom: Match the completed-unit half and the corporation sibling: a missionary being trained on another land area cannot cover this area's missing religion target. See KI#774. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+			if (!pLoopCity->isArea(*pArea))
+				continue;
 			UnitTypes eUnit = pLoopCity->getProductionUnit();
 			if (eUnit != NO_UNIT)
 			{
@@ -10322,6 +10325,9 @@ void CvPlayer::updateCommerceRates()
 			}
 		}
 		m_aiCommerceRate.add(eArgMax, iSign * 1);
+		// <!-- custom: Awarding one whole commerce changes the selected fractional residual by the opposite 100 hundredths.
+		// Update it before the next implicit-selection-sort pass instead of awarding every correction to the same stale maximum. See KI#767. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		aiError.add(eArgMax, -iSign * 100);
 	}
 	// <advc.004x>
 	static int const iBASE_RESEARCH_RATE = GC.getDefineINT("BASE_RESEARCH_RATE"); // advc.910
