@@ -68,6 +68,26 @@ int getSASGameRecordTurnInterval()
 	return iInterval;
 }
 
+// <!-- custom: Foreign-Advisor market snapshots are intentionally level-3-only and can be disabled independently because enumerating target-specific resource/technology offerability and denial reasons is more expensive than ordinary factual player snapshots.
+// Cache the switch so disabled runs perform no repeated XML lookup or market scan. (ChatGPT-5.6-Sol) -->
+static bool isSASGameRecordTradeMarketEnabled()
+{
+	static const bool bEnabled = (GC.getDefineINT("SAS_GAME_RECORD_TRADE_MARKET_ENABLE") > 0);
+	return bEnabled;
+}
+
+static bool isSASGameRecordTradeMarketBonusGPTQuotesEnabled()
+{
+	static const bool bEnabled = (GC.getDefineINT("SAS_GAME_RECORD_TRADE_MARKET_BONUS_GPT_QUOTES_ENABLE") > 0);
+	return bEnabled;
+}
+
+static bool isSASGameRecordTradeMarketAITechValuesEnabled()
+{
+	static const bool bEnabled = (GC.getDefineINT("SAS_GAME_RECORD_TRADE_MARKET_AI_TECH_VALUES_ENABLE") > 0);
+	return bEnabled;
+}
+
 static CvString g_szSASGameRecordLogTimestamp;
 static int g_iSASGameRecordLogSequence = 0;
 static CvString g_szSASGameRecordLogContext;
@@ -277,8 +297,8 @@ static void appendSASGameRecordType(CvString& szTypes, char const* szType)
 
 static void logSASGameRecordLogSettings()
 {
-	logSASGameRecord("GAME_RECORD_LOG_SETTINGS SAS_GAME_RECORD_LOG_LEVEL=%d SAS_GAME_RECORD_INTERVAL_TURNS_UNSCALED_GAMESPEED=%d SAS_GAME_RECORD_LOG_USE_TIMESTAMPED_FILENAME=%d",
-			getSASGameRecordLogLevel(), getSASGameRecordTurnInterval(), isSASGameRecordTimestampedFilenameEnabled());
+	logSASGameRecord("GAME_RECORD_LOG_SETTINGS SAS_GAME_RECORD_LOG_LEVEL=%d SAS_GAME_RECORD_INTERVAL_TURNS_UNSCALED_GAMESPEED=%d SAS_GAME_RECORD_LOG_USE_TIMESTAMPED_FILENAME=%d SAS_GAME_RECORD_TRADE_MARKET_ENABLE=%d SAS_GAME_RECORD_TRADE_MARKET_BONUS_GPT_QUOTES_ENABLE=%d SAS_GAME_RECORD_TRADE_MARKET_AI_TECH_VALUES_ENABLE=%d",
+			getSASGameRecordLogLevel(), getSASGameRecordTurnInterval(), isSASGameRecordTimestampedFilenameEnabled(), isSASGameRecordTradeMarketEnabled(), isSASGameRecordTradeMarketBonusGPTQuotesEnabled(), isSASGameRecordTradeMarketAITechValuesEnabled());
 }
 
 // <!-- custom: Compact finalized team rows preserve which technologies each team owns and which diplomacy capabilities are active, but replacing setup-time TECH_ACQUIRED spam otherwise loses which technology grants each capability.
@@ -1404,6 +1424,237 @@ static void logSASGameRecordEspionage(PlayerTypes ePlayer, int iGameTurn)
 	kPrevious.iUnspentEP = iUnspentEP;
 }
 
+
+// <!-- custom: Pairwise trade-market rows primarily mirror resolved information available through the active player's Foreign Advisor/diplomacy interface rather than speculative AI candidate reasoning.
+// `NO_TALK` is kept separate from DenialTypes. Optional bonus GPT quotes and AI_techTradeVal fields add compact resolved valuation context under independent gates; they remain const observations and never submit an offer or alter trade state.
+// All market observations use const query APIs, do not consume synchronized RNG, and do not mutate gameplay state. (ChatGPT-5.6-Sol) -->
+static char const* getSASGameRecordDenialType(DenialTypes eDenial)
+{
+	return (eDenial == NO_DENIAL ? "NO_DENIAL" : GC.getInfo(eDenial).getType());
+}
+
+static void appendSASGameRecordMarketReason(CvString& szList, char const* szItem, char const* szReason)
+{
+	CvString szEntry;
+	szEntry.Format(szList.empty() ? "%s=%s" : ",%s=%s", szItem, szReason);
+	szList += szEntry;
+}
+
+static void appendSASGameRecordMarketValue(CvString& szList, char const* szItem, int iValue)
+{
+	CvString szEntry;
+	szEntry.Format(szList.empty() ? "%s=%d" : ",%s=%d", szItem, iValue);
+	szList += szEntry;
+}
+
+// <!-- custom: AI Auto Play temporarily changes the original human slot from isHuman() to isHumanDisabled(), so AI_goldForBonus's human-vs-AI assertion deliberately no longer applies even though a useful controller-to-controller market quote still exists.
+// Reproduce AI_goldForBonus's AI-buyer conversion locally from its public valuation primitives instead of mutating human-control state or weakening the gameplay assertion.
+// Ordinary human-vs-AI snapshots still call AI_goldForBonus directly and therefore retain exact Foreign Advisor hover semantics. (ChatGPT-5.6-Sol) -->
+static int getSASGameRecordBonusGPTQuote(CvPlayerAI const& kBuyer, BonusTypes eBonus, PlayerTypes eSeller)
+{
+	CvPlayerAI const& kSeller = GET_PLAYER(eSeller);
+	if (kBuyer.isHuman() != kSeller.isHuman())
+		return kBuyer.AI_goldForBonus(eBonus, eSeller);
+	if (kBuyer.isHuman())
+		return 0; // <!-- custom: No AI quote is defined for human-vs-human trade. (ChatGPT-5.6-Sol) -->
+
+	int const iTradeVal = kBuyer.AI_bonusTradeVal(eBonus, eSeller, 1);
+	int const iMaxGPT = kBuyer.AI_maxGoldPerTurnTrade(eSeller);
+	int iGPT = 0;
+	while (iGPT < iMaxGPT && kBuyer.AI_goldPerTurnTradeVal(iGPT + 1) <= iTradeVal)
+		iGPT++;
+	return iGPT;
+}
+
+static char const* getSASGameRecordBonusUnavailableReason(CvPlayerAI const& kFrom, CvPlayerAI const& kTo, BonusTypes eBonus)
+{
+	CvTeam const& kFromTeam = GET_TEAM(kFrom.getTeam());
+	CvTeam const& kToTeam = GET_TEAM(kTo.getTeam());
+	if (kToTeam.isBonusObsolete(eBonus))
+		return "RECIPIENT_OBSOLETE";
+	if (kFromTeam.isBonusObsolete(eBonus))
+		return "DONOR_OBSOLETE";
+	if (kFrom.getNumTradeableBonuses(eBonus) <= 0)
+		return "NO_TRADEABLE_COPY";
+	return "OTHER";
+}
+
+static char const* getSASGameRecordTechUnavailableReason(CvPlayerAI const& kFrom, CvPlayerAI const& kTo, TechTypes eTech)
+{
+	if (!GC.getInfo(eTech).isTrade())
+		return "XML_NOT_TRADEABLE";
+	if (GET_TEAM(kFrom.getTeam()).isNoTradeTech(eTech))
+		return "NO_TRADE_TECH";
+	if (!kTo.canResearch(eTech, true))
+		return "RECIPIENT_CANNOT_RESEARCH_VIA_TRADE";
+	return "OTHER";
+}
+
+static void logSASGameRecordTradeMarket(int iGameTurn)
+{
+	if (!isSASGameRecordTradeMarketEnabled())
+		return;
+	CvGame const& kGame = GC.getGame();
+	PlayerTypes const eViewer = kGame.getActivePlayer();
+	if (eViewer == NO_PLAYER)
+		return;
+	CvPlayerAI const& kViewer = GET_PLAYER(eViewer);
+	if (!kViewer.isAlive() || kViewer.isBarbarian() || kViewer.isMinorCiv())
+		return;
+	CvTeam const& kViewerTeam = GET_TEAM(kViewer.getTeam());
+	bool const bBonusGPTQuotesEnabled = isSASGameRecordTradeMarketBonusGPTQuotesEnabled();
+	bool const bAITechValuesEnabled = isSASGameRecordTradeMarketAITechValuesEnabled();
+
+	for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
+	{
+		PlayerTypes const eOther = (PlayerTypes)iI;
+		if (eOther == eViewer)
+			continue;
+		CvPlayerAI const& kOther = GET_PLAYER(eOther);
+		if (!kOther.isAlive() || kOther.isBarbarian() || kOther.isMinorCiv())
+			continue;
+		CvTeam const& kOtherTeam = GET_TEAM(kOther.getTeam());
+		if (!kViewerTeam.isHasMet(kOther.getTeam()))
+			continue;
+
+		bool const bOtherWillingToTalk = kOther.AI_isWillingToTalk(eViewer);
+		bool const bTradeNetwork = kViewer.canTradeNetworkWith(eOther);
+		bool const bGoldTrading = (kViewerTeam.isGoldTrading() || kOtherTeam.isGoldTrading());
+		bool const bTechVisible = kViewer.canSeeTech(eOther);
+		bool const bTechTradingPossible = kOther.canPossiblyTradeItem(eViewer, TRADE_TECHNOLOGIES);
+		int const iOtherMaxGold = (bGoldTrading && bOtherWillingToTalk ? kOther.AI_maxGoldTrade(eViewer) : -1);
+		int const iOtherMaxGPT = (bGoldTrading && bOtherWillingToTalk ? kOther.AI_maxGoldPerTurnTrade(eViewer) : -1);
+		int const iViewerGPTBalance = kViewer.getGoldPerTurnByPlayer(eOther);
+		char const* szBonusGPTQuoteMode = "DISABLED";
+		if (bBonusGPTQuotesEnabled)
+		{
+			if (kViewer.isHuman() && !kOther.isHuman()) szBonusGPTQuoteMode = "FOREIGN_ADVISOR";
+			else if (!kViewer.isHuman() && !kOther.isHuman()) szBonusGPTQuoteMode = (kViewer.isHumanDisabled() ? "AUTOPLAY_AI" : "AI_MARKET");
+			else if (kViewer.isHuman() != kOther.isHuman()) szBonusGPTQuoteMode = "MIXED_AI_HUMAN";
+			else szBonusGPTQuoteMode = "UNAVAILABLE";
+		}
+
+		CvString szViewerCanOfferBonuses;
+		CvString szOtherBonusesForTrade;
+		CvString szOtherBonusDenials;
+		CvString szOtherBonusUnavailable;
+		CvString szOtherBonusAskGPT;
+		CvString szOtherBonusWillPayGPT;
+		// <!-- custom: Resources cannot trade at all without a network, so keep that pair-wide fact in tradeNetwork instead of repeating NO_TRADE_NETWORK after every owned bonus. (ChatGPT-5.6-Sol) -->
+		if (bTradeNetwork)
+		{
+			TradeData kBonusTrade(TRADE_RESOURCES, 0);
+			TradeData const kOneGPTTrade(TRADE_GOLD_PER_TURN, 1);
+			FOR_EACH_ENUM(Bonus)
+			{
+				int const iViewerAvailable = kViewer.getNumAvailableBonuses(eLoopBonus);
+				int const iOtherAvailable = kOther.getNumAvailableBonuses(eLoopBonus);
+				if (iViewerAvailable <= 0 && iOtherAvailable <= 0)
+					continue;
+				kBonusTrade.m_iData = eLoopBonus;
+				if (iViewerAvailable > 0 && kViewer.canTradeItem(eOther, kBonusTrade, true))
+				{
+					appendSASGameRecordType(szViewerCanOfferBonuses, getSASGameRecordBonusType(eLoopBonus));
+					// <!-- custom: Keep quote reconstruction independently optional because bonus trade valuation can perform substantial bonus/building work.
+					// getSASGameRecordBonusGPTQuote preserves exact Foreign Advisor semantics in ordinary human play and switches to the current AI controller's equivalent quote during AI Auto Play. (ChatGPT-5.6-Sol) -->
+					if (bBonusGPTQuotesEnabled && bOtherWillingToTalk && kOther.canTradeItem(eViewer, kOneGPTTrade, false))
+					{
+						int const iWillPayGPT = getSASGameRecordBonusGPTQuote(kOther, eLoopBonus, eViewer);
+						if (iWillPayGPT > 0)
+							appendSASGameRecordMarketValue(szOtherBonusWillPayGPT, getSASGameRecordBonusType(eLoopBonus), iWillPayGPT);
+					}
+				}
+
+				if (iOtherAvailable <= 0)
+					continue;
+				if (!kOther.canTradeItem(eViewer, kBonusTrade, false))
+				{
+					appendSASGameRecordMarketReason(szOtherBonusUnavailable, getSASGameRecordBonusType(eLoopBonus), getSASGameRecordBonusUnavailableReason(kOther, kViewer, eLoopBonus));
+					continue;
+				}
+				DenialTypes const eDenial = kOther.getTradeDenial(eViewer, kBonusTrade);
+				if (eDenial != NO_DENIAL)
+				{
+					appendSASGameRecordMarketReason(szOtherBonusDenials, getSASGameRecordBonusType(eLoopBonus), getSASGameRecordDenialType(eDenial));
+					continue;
+				}
+				if (!bOtherWillingToTalk)
+				{
+					appendSASGameRecordMarketReason(szOtherBonusDenials, getSASGameRecordBonusType(eLoopBonus), "NO_TALK");
+					continue;
+				}
+				appendSASGameRecordType(szOtherBonusesForTrade, getSASGameRecordBonusType(eLoopBonus));
+				if (bBonusGPTQuotesEnabled && kViewer.canTradeItem(eOther, kOneGPTTrade, false))
+				{
+					int const iAskGPT = getSASGameRecordBonusGPTQuote(kViewer, eLoopBonus, eOther);
+					if (iAskGPT > 0)
+						appendSASGameRecordMarketValue(szOtherBonusAskGPT, getSASGameRecordBonusType(eLoopBonus), iAskGPT);
+				}
+			}
+		}
+
+		CvString szViewerTechsForTrade;
+		CvString szOtherTechsForTrade;
+		CvString szOtherTechDenials;
+		CvString szOtherTechUnavailable;
+		CvString szViewerTechReceiveValues;
+		CvString szOtherTechReceiveValues;
+		// <!-- custom: canPossiblyTradeItem is pair-wide for technology trading; when false, techTradingPossible explains the whole tab and avoids per-tech work. (ChatGPT-5.6-Sol) -->
+		if (bTechVisible && bTechTradingPossible)
+		{
+			TradeData kTechTrade(TRADE_TECHNOLOGIES, 0);
+			FOR_EACH_ENUM(Tech)
+			{
+				bool const bViewerHasTech = kViewerTeam.isHasTech(eLoopTech);
+				bool const bOtherHasTech = kOtherTeam.isHasTech(eLoopTech);
+				if (bViewerHasTech == bOtherHasTech)
+					continue;
+				kTechTrade.m_iData = eLoopTech;
+				if (bViewerHasTech)
+				{
+					if (kViewer.canTradeItem(eOther, kTechTrade, false))
+					{
+						if (bAITechValuesEnabled)
+						{
+							int const iReceiveValue = GET_TEAM(kOther.getTeam()).AI_techTradeVal( eLoopTech, kViewer.getTeam());
+							appendSASGameRecordMarketValue(szOtherTechReceiveValues, getSASGameRecordTechType(eLoopTech), iReceiveValue);
+						}
+						if (kViewer.getTradeDenial(eOther, kTechTrade) == NO_DENIAL)
+							appendSASGameRecordType(szViewerTechsForTrade, getSASGameRecordTechType(eLoopTech));
+					}
+					continue;
+				}
+
+				if (kOther.canTradeItem(eViewer, kTechTrade, false))
+				{
+					if (bAITechValuesEnabled)
+					{
+						int const iReceiveValue = GET_TEAM(kViewer.getTeam()).AI_techTradeVal( eLoopTech, kOther.getTeam());
+						appendSASGameRecordMarketValue(szViewerTechReceiveValues, getSASGameRecordTechType(eLoopTech), iReceiveValue);
+					}
+					DenialTypes const eDenial = kOther.getTradeDenial(eViewer, kTechTrade);
+					if (eDenial != NO_DENIAL)
+						appendSASGameRecordMarketReason(szOtherTechDenials, getSASGameRecordTechType(eLoopTech), getSASGameRecordDenialType(eDenial));
+					else if (!bOtherWillingToTalk)
+						appendSASGameRecordMarketReason(szOtherTechDenials, getSASGameRecordTechType(eLoopTech), "NO_TALK");
+					else appendSASGameRecordType(szOtherTechsForTrade, getSASGameRecordTechType(eLoopTech));
+				}
+				else if (kViewer.canResearch(eLoopTech, false))
+				{
+					appendSASGameRecordMarketReason(szOtherTechUnavailable, getSASGameRecordTechType(eLoopTech), getSASGameRecordTechUnavailableReason(kOther, kViewer, eLoopTech));
+				}
+			}
+		}
+
+		// <!-- custom: `viewerGPTBalanceWithOther` uses CvPlayer's signed pair balance: positive means the viewer currently receives GPT from this player, negative means the viewer pays them.
+		// Accepted/ended deal rows remain the canonical item lifecycles; this snapshot supplies the current Foreign-Advisor-style market without duplicating every active deal. (ChatGPT-5.6-Sol) -->
+		logSASGameRecord("GAME_RECORD_TRADE_MARKET turn=%d viewer=%d other=%d viewerTeam=%d otherTeam=%d otherWillingToTalk=%d tradeNetwork=%d goldTrading=%d otherMaxGold=%d otherMaxGPT=%d viewerGPTBalanceWithOther=%+d techVisible=%d techTradingPossible=%d bonusGPTQuotesEnabled=%d bonusGPTQuoteMode=%s aiTechValuesEnabled=%d viewerCanOfferBonuses=%s otherBonusesForTrade=%s otherBonusDenials=%s otherBonusUnavailable=%s otherBonusAskGPT=%s otherBonusWillPayGPT=%s viewerTechsForTrade=%s otherTechsForTrade=%s otherTechDenials=%s otherTechUnavailable=%s viewerTechReceiveValues=%s otherTechReceiveValues=%s",
+				iGameTurn, eViewer, eOther, kViewer.getTeam(), kOther.getTeam(), bOtherWillingToTalk, bTradeNetwork, bGoldTrading, iOtherMaxGold, iOtherMaxGPT, iViewerGPTBalance, bTechVisible, bTechTradingPossible, bBonusGPTQuotesEnabled, szBonusGPTQuoteMode, bAITechValuesEnabled,
+				getSASDiagnosticOrDash(szViewerCanOfferBonuses).GetCString(), getSASDiagnosticOrDash(szOtherBonusesForTrade).GetCString(), getSASDiagnosticOrDash(szOtherBonusDenials).GetCString(), getSASDiagnosticOrDash(szOtherBonusUnavailable).GetCString(),
+				getSASDiagnosticOrDash(szOtherBonusAskGPT).GetCString(), getSASDiagnosticOrDash(szOtherBonusWillPayGPT).GetCString(), getSASDiagnosticOrDash(szViewerTechsForTrade).GetCString(), getSASDiagnosticOrDash(szOtherTechsForTrade).GetCString(), getSASDiagnosticOrDash(szOtherTechDenials).GetCString(), getSASDiagnosticOrDash(szOtherTechUnavailable).GetCString(),
+				getSASDiagnosticOrDash(szViewerTechReceiveValues).GetCString(), getSASDiagnosticOrDash(szOtherTechReceiveValues).GetCString());
+	}
+}
 
 static void logSASGameRecordMapBonusTotals(int iGameTurn)
 {
@@ -3352,6 +3603,8 @@ static void logSASGameRecordSnapshot(int iGameTurn, char const* szReason)
 		if (GET_PLAYER(eLoopPlayer).isAlive() && !GET_PLAYER(eLoopPlayer).isBarbarian())
 			logSASGameRecordPlayerSnapshot(eLoopPlayer, iGameTurn);
 	}
+	// <!-- custom: Reproduce the active player's resolved Foreign Advisor market only at level 3 and only when its independent switch is enabled; lower detail levels and disabled-market runs skip the entire pair/item scan. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 3 && isSASGameRecordTradeMarketEnabled()) logSASGameRecordTradeMarket(iGameTurn);
 	if (gGameRecordLogLevel >= 2) logSASGameRecordBarbarians(iGameTurn);
 	logSASGameRecord("GAME_RECORD_TURN_END turn=%d reason=%s", iGameTurn, szReason);
 }

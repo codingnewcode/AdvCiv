@@ -14,6 +14,23 @@ Created as part of AdvCiv-SAS improvements
 		<DefineName>SAS_GAME_RECORD_LOG_LEVEL</DefineName>
 		<iDefineIntVal>3</iDefineIntVal>
 	</Define>
+	<!-- custom: Level-3 periodic snapshots can also mirror the active player's resolved Foreign Advisor trade market: target-specific bonus/technology offerability, exact denial reasons, current pair GPT balance, and maximum additional gold/GPT. 1 enables this detailed active-viewer market scan; 0 skips all corresponding pair/item enumeration while preserving accepted/rejected deal history, ordinary economy/bonus rows, and every other SASGameRecord feature. (ChatGPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_GAME_RECORD_TRADE_MARKET_ENABLE</DefineName>
+		<iDefineIntVal>1</iDefineIntVal>
+	</Define>
+	<!-- custom: Also record resolved resource GPT ask/pay quotes for tradable bonuses. In ordinary human play these match the Foreign Advisor hover semantics; during AI Auto Play the original human slot is temporarily AI-controlled, so the recorder instead reports the current AI controller's equivalent willingness-to-pay quote without changing player-control state.
+	Bonus valuation can be substantially heavier than ordinary market eligibility checks, so this remains independently pre-gated and can be disabled for performance-sensitive diagnostics. (ChatGPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_GAME_RECORD_TRADE_MARKET_BONUS_GPT_QUOTES_ENABLE</DefineName>
+		<iDefineIntVal>1</iDefineIntVal>
+	</Define>
+	<!-- custom: Also record the pairwise AI_techTradeVal used to value mechanically transferable technologies from each recipient's perspective.
+	This is hidden AI valuation rather than literal Foreign Advisor UI, but it is a compact resolved trade-market number and AI_techTradeVal is comparatively lightweight; keep it separately tunable so level-3 market state can omit these extra evaluations when desired. (ChatGPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_GAME_RECORD_TRADE_MARKET_AI_TECH_VALUES_ENABLE</DefineName>
+		<iDefineIntVal>1</iDefineIntVal>
+	</Define>
 	<!-- custom: Interval in game turns for periodic game-record snapshots. Major chronicle actions such as techs, wars, city captures and Great People still log when they happen at game-record level 2+. Set this to 1 for an every-turn account, 5 or 10 for compact autoplay records, or higher for broad long-game trends. Clamped to at least 1 in SASGameRecordLog.cpp. (ChatGPT-5.5) -->
 	<Define>
 		<DefineName>SAS_GAME_RECORD_INTERVAL_TURNS_UNSCALED_GAMESPEED</DefineName>
