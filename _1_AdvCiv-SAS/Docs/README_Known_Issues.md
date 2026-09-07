@@ -288,7 +288,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#210 - (Fixed Base AdvCiv bug) Vote-selection iterator refactor could pair a voting team with itself, creating bogus self first-contact state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-210)\
 [KI#211 - (Fixed inherited K-Mod/Base AdvCiv bug) Terrain attack bonuses were reversed in AI attacker-strength estimates against unknown defenders](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-211)\
 [KI#212 - (Fixed minor inherited K-Mod/Base AdvCiv bug) AI Barbarian attacker CombatDetails were written to the defender-barbarian field](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-212)\
-[KI#213 - (Pending Architectural) Split city/Worker best-build policies can hide valid custom land jobs from Worker demand](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-213)\
+[KI#213 - (Pending Architectural, broadened by current-tree audit) Split city/Worker best-build policies hide valid custom land jobs from AI planning](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-213)\
 [KI#214 - (Fixed AdvCiv-SAS bug) Irrigation-chain constrained search could discard the only route that satisfied the plot limit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-214)\
 [KI#215 - (Fixed inherited K-Mod/Base AdvCiv bug) No-site Settler cleanup could unload unrelated transport cargo](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-215)\
 [KI#216 - (Fixed inherited Better BTS AI/K-Mod bug) Work Boat demand could count the same accessible water area twice](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-216)\
@@ -391,7 +391,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#303 - (Fixed AdvCiv-SAS issue) Specialist Extra Yields omitted building-wide specialist commerce](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-303)\
 [KI#304 - (Fixed AdvCiv-SAS bug) Python found-value callback still narrowed int results to short](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-304)\
 [KI#305 - (Fixed AdvCiv-SAS bug) World Size Chart called WorldInfo grid cells playable tiles](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-305)\
-[KI#306 - (Fixed AdvCiv-SAS bug) Government-center maintenance ranking cache could go stale within a turn](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-306)\
+[KI#306 - (Reopened AdvCiv-SAS bug after partial fix) Top-production-city rankings can go stale within a turn](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-306)\
 [KI#307 - (Fixed AdvCiv-SAS bug) Main Interface cached translated labels across live language changes](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-307)\
 [KI#308 - (Fixed AdvCiv-SAS bug) City Screen Specialist Breakdown inferred inaccurate Great Person modifiers](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-308)\
 [KI#308.2 - (Fixed AdvCiv-SAS bug) City Screen Culture Breakdown inferred its modifier from a truncated base rate](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-308.2)\
@@ -438,7 +438,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#348 - (Fixed inherited BtS bug) Foreign friendly aircraft inherited the host city's enhanced air capacity](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-348)\
 [KI#349 - (Fixed inherited AdvCiv bug) Plot debug strings returned dangling pointers](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-349)\
 [KI#350 - (Fixed inherited AdvCiv information leak) Nuke reports revealed hidden-nationality unit owners](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-350)\
-[KI#351 - (Fixed inherited BtS bug) Runtime river-edge edits left irrigation, fresh-water health and trade networks stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-351)\
+[KI#351 - (Reopened after partial SAS fix of inherited BtS bug) Runtime fresh-water-source removal can leave irrigation stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-351)\
 [KI#352 - (Fixed inherited AdvCiv bug) Barbarian culture decay read past its city-radius array](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-352)\
 [KI#353 - (Fixed inherited AdvCiv bug) Diplomatic-vote counter-candidate selection compared a vote count with a team ID](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-353)\
 [KI#354 - (Fixed inherited AdvCiv iterator-refactor bug) War planning checked our cities instead of the proposed target's cities](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-354)\
@@ -957,7 +957,92 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#858 - (Provisional Pending inherited BtS future-happiness bound defect) Three recovery channels are capped at two](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-858)\
 [KI#859 - (Provisional Pending K-Mod obsolete-building valuation defect with incomplete AdvCiv repair) Retained effects are priced as lost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-859)\
 [KI#860 - (Provisional Pending inherited BtS stacked-anger valuation defect) Only one layer per source can recover](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-860)\
-[KI#861 - (Provisional Pending investigation) F538 remains unassigned during the CvCityAI deep re-audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-861)\
+[KI#861 - (Provisional Pending AdvCiv Worker-cache regression) Completion can double-count a Worker](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-861)\
+[KI#862 - (Provisional Pending AdvCiv Worker-cache regression) Reassignment forgets the old target city](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-862)\
+[KI#863 - (Provisional Pending AdvCiv culture-governor regression) No culture ETA is treated as imminent expansion](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-863)\
+[KI#864 - (Provisional Pending AdvCiv refactor regression) Culture defenders lose ceiling division](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-864)\
+[KI#865 - (Provisional Pending inherited K-Mod route-cache defect) City route target can survive topology changes](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-865)\
+[KI#866 - (Provisional Pending inherited Worker-demand cache defect) Plot mutations leave demand stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-866)\
+[KI#867 - (Provisional Pending AdvCiv-SAS culture-victory cache defect) Building completion can stale city rank](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-867)\
+[KI#868 - (Provisional Pending AdvCiv city-safety defect) Completing units are miscounted as land defenders](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-868)\
+[KI#869 - (Provisional Pending AdvCiv city-safety defect) Sole-city protection is mistaken for safety](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-869)\
+[KI#870 - (Provisional Pending inherited K-Mod building-value defect) Impossible national-wonder unlocks are rewarded](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-870)\
+[KI#871 - (Provisional Pending inherited K-Mod resource-count defect) City-plot land resources are omitted](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-871)\
+[KI#872 - (Provisional Pending AdvCiv-SAS war-mode regression) AI_bestUnit defense mode is unreachable](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-872)\
+[KI#873 - (Provisional Pending AdvCiv-SAS war-mode regression) Local land isolation is mistaken for peace](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-873)\
+[KI#874 - (Provisional Pending AdvCiv-SAS specialist-state defect) Temporary border Artist can remain forced](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-874)\
+[KI#875 - (Provisional Pending inherited production-selection defect) A combat ship can stand in for a land garrison](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-875)\
+[KI#876 - (Provisional Pending AdvCiv-SAS caller-scope regression) City war focus silently uses the capital area](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-876)\
+[KI#877 - (Provisional Pending AdvCiv-SAS building-prefilter defect) Maintenance classification uses the wrong sign](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-877)\
+[KI#878 - (Provisional Pending AdvCiv-SAS building-prefilter defect) Miscellaneous wartime tail is attached too broadly](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-878)\
+[KI#879 - (Provisional Pending inherited building-value defect) Overseas domestic trade is treated as foreign trade](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-879)\
+[KI#880 - (Provisional Pending AdvCiv sign regression) Immediate anger reverses building value](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-880)\
+[KI#881 - (Provisional Pending AdvCiv-SAS handicap-scope defect) Regular-building skew reads the AI handicap](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-881)\
+[KI#882 - (Provisional Pending inherited production-upgrade defect) Destination hammers are overwritten](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-882)\
+[KI#883 - (Provisional Pending AdvCiv/BULL decay-preview defect) Fractional thresholds are one turn late](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-883)\
+[KI#884 - (Provisional Pending AdvCiv building-preview regression) Trade-yield modifiers truncate before multiplication](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-884)\
+[KI#885 - (Provisional Pending AdvCiv Great-Person projection defect) Fractional type progress disagrees with runtime](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-885)\
+[KI#886 - (Provisional Pending incomplete AdvCiv invalidation repair) No-bonus production is verified before mutation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-886)\
+[KI#887 - (Provisional Pending incomplete AdvCiv invalidation repair) Corporation bonus gains skip production verification](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-887)\
+[KI#888 - (Provisional Pending inherited BtS arithmetic defect) Team culture percentage is truncated twice](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-888)\
+[KI#889 - (Provisional Pending AdvCiv enum-map regression) Building-class happy/health setters lose the sentinel](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-889)\
+[KI#890 - (Provisional Pending AdvCiv maintenance regression) Colony cap applies the distance factor twice](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-890)\
+[KI#891 - (Provisional Pending AdvCiv distance-bound regression) Religion formulas misuse maxTypicalDistance](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-891)\
+[KI#892 - (Provisional Pending AdvCiv Cppcheck regression) Real population can overflow before truncation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-892)\
+[KI#893 - (Provisional Pending AdvCiv Hotseat/PBEM entitlement defect) City investigation leaks between teams](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-893)\
+[KI#894 - (Provisional Pending AdvCiv trait-culture regression) Absolute setter can remove existing culture](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-894)\
+[KI#895 - (Provisional Pending AdvCiv use-after-free regression) Capital-loss announcement uses deleted city state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-895)\
+[KI#896 - (Provisional Pending AdvCiv use-after-free regression) City kill reads isActiveOwned after deletion](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-896)\
+[KI#897 - (Provisional Pending inherited BtS/K-Mod transfer omission) Hostile espionage counters are cleansed](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-897)\
+[KI#898 - (Provisional Pending inherited city-transfer omission) Event extra happiness/health is lost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-898)\
+[KI#899 - (Provisional Pending inherited BtS event-history defect) ClearEvents erases unrelated city event flags](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-899)\
+[KI#900 - (Provisional Pending inherited BUG/K-Mod commerce-preview defect) Candidate global specialist commerce is omitted](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-900)\
+[KI#901 - (Provisional Pending inherited BUG/K-Mod yield-preview defect) Candidate specialist yield changes are omitted](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-901)\
+[KI#902 - (Provisional Pending inherited city-state arithmetic defect) Hurry-anger rescaling uses the raw modifier](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-902)\
+[KI#903 - (Provisional Pending AdvCiv invalidation defect) Negative resource health can skip city-info refresh](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-903)\
+[KI#904 - (Provisional Pending AdvCiv maintenance-preview defect) The prospective city is not counted](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-904)\
+[KI#905 - (Provisional Pending AdvCiv city-trade valuation defect) Retained government center is omitted](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-905)\
+[KI#906 - (Provisional Pending inherited BtS food-accounting defect) Settler/Worker food difference charges angry population](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-906)\
+[KI#907 - (Provisional Pending inherited K-Mod/AdvC building-value omission) Global Great-General rate is ignored](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-907)\
+[KI#908 - (Provisional Pending inherited K-Mod building-value regression) State-religion commerce magnitude is discarded](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-908)\
+[KI#909 - (Provisional Pending inherited BtS team-scope defect) TeamShare effects are valued for one player](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-909)\
+[KI#910 - (Provisional Pending inherited K-Mod building-value defect activated by SAS) Negative military production is ignored](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-910)\
+[KI#911 - (Provisional Pending inherited BtS TeamShare defect) Golden Age is granted only to the building owner](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-911)\
+[KI#912 - (Provisional Pending AdvC city-count side-effect defect) Major-city additions suppress Barbarian founding](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-912)\
+[KI#913 - (Provisional Pending inherited BUG/K-Mod yield-preview defect) Global sea-plot yield is omitted](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-913)\
+[KI#914 - (Provisional Pending inherited BUG/K-Mod city-preview defect) Global happiness and health are omitted](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-914)\
+[KI#915 - (Provisional Pending AdvC storage-width defect amplified by SAS chronology) Early building years wrap](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-915)\
+[KI#916 - (Provisional Pending inherited unit-conversion defect) Gifting clears event immobility](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-916)\
+[KI#917 - (Provisional Pending inherited unit-conversion defect) Gifting clears the anti-double-move timestamp](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-917)\
+[KI#918 - (Provisional Pending inherited gift-legality defect) Loaded cargo can remain on a foreign transport](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-918)\
+[KI#919 - (Provisional Pending inherited unit-conversion defect) Gifting clears attacks already made](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-919)\
+[KI#920 - (Provisional Pending inherited unit-conversion defect) Gifting restores used non-air interception](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-920)\
+[KI#921 - (Provisional Pending AdvC Blitz-count regression) Sea-pillage interception erases spent attacks](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-921)\
+[KI#922 - (Provisional Pending inherited AdvC optimization assumption activated by SAS) All-terrain AI reachability is rejected](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-922)\
+[KI#923 - (Provisional Pending AdvC plot-context regression) Air damage uses the attacker's plot](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-923)\
+[KI#924 - (Provisional Pending AdvCiv-SAS content/engine contradiction) Privateer land-cargo capacity is unusable](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-924)\
+[KI#925 - (Provisional Pending AdvCiv-SAS combat-contract defect) Janissary combat limit exceeds lethal damage](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-925)\
+[KI#926 - (Provisional Pending AdvCiv-SAS activation of inherited withdrawal semantics) Gunship loses withdrawal on water](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-926)\
+[KI#927 - (Provisional Pending AdvCiv-SAS content/engine contradiction) Defensive recon units advertise unusable withdrawal](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-927)\
+[KI#928 - (Provisional Pending AdvCiv-SAS content/engine contradiction) Flat-movement recon units receive useless Mobility Cost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-928)\
+[KI#929 - (Provisional Pending inherited AdvC air-bomb assumption invalidated by SAS) Building defense amplifies bombardment](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-929)\
+[KI#930 - (Provisional Pending inherited BtS/K-Mod combat-state defect) Paratrooper interceptors receive no experience](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-930)\
+[KI#931 - (Provisional Pending AdvCiv-SAS Fast Save defect) Victory save records GAMESTATE_ON](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-931)\
+[KI#932 - (Provisional Pending AdvC terrain-reveal regression) Advanced Start skips requested plot-group refresh](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-932)\
+[KI#933 - (Provisional Pending inherited BtS invalidation defect) Oasis removal leaves fresh-water state stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-933)\
+[KI#934 - (Provisional Pending AdvCiv-SAS promotion-field mismatch) Air Bomber city bombard bonus uses the wrong mechanic](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-934)\
+[KI#935 - (Provisional Pending inherited AdvC True Starts cardinality defect amplified by SAS) Civilization uniqueness exhausts](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-935)\
+[KI#936 - (Provisional Pending AdvCiv-SAS True Starts data omission) Ireland and Benin cannot be selected](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-936)\
+[KI#937 - (Provisional Pending inherited AdvC True Starts sign defect) Americas longitude cutoff is reversed](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-937)\
+[KI#938 - (Provisional Pending inherited AdvC True Starts fallback defect) Candidate vectors retain duplicates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-938)\
+[KI#939 - (Provisional Pending inherited AdvC True Starts enum defect) Every snow plot can become northernmost taiga](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-939)\
+[KI#940 - (Provisional Pending inherited AdvC True Starts scope defect) Unrestricted civ and leader availability remain coupled](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-940)\
+[KI#941 - (Provisional Pending inherited AdvC True Starts initialization defect) Global elevation maximum is indeterminate](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-941)\
+[KI#942 - (Provisional Pending inherited AdvC True Starts selection defect) A chosen leader can be overwritten](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-942)\
+[KI#943 - (Provisional Pending inherited AdvC True Starts weighting defect) Civilizations are counted once per native leader](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-943)\
+[KI#944 - (Provisional Pending inherited AdvC True Starts wrap defect) Diagonal climate regions disappear across seams](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-944)\
+[KI#945 - (Provisional Pending inherited AdvC True Starts locale defect) English option text controls Old-World filtering](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-945)\
+[KI#946 - (Provisional Pending investigation) F624 remains unassigned in the open True Starts audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-946)\
 
 <a id="ki-1"></a>
 
@@ -9582,11 +9667,13 @@ Found through the systematic AdvCiv/K-Mod archaeology, fixed and documented with
 
 <a id="ki-213"></a>
 
-## KI#213 - (Pending Architectural) Split city/Worker best-build policies can hide valid custom land jobs from Worker demand
+## KI#213 - (Pending Architectural, broadened by current-tree audit) Split city/Worker best-build policies hide valid custom land jobs from AI planning
 
 The systematic AdvCiv-SAS archaeology found that Worker demand and actual Worker job selection can disagree because they consult different build policies. SAS deliberately disables ordinary land results in the legacy city-side `CvCityAI::AI_getBestBuild` cache and instead lets the extensively customized `CvUnitAI::AI_bestCityBuild` choose land improvements. `CvCityAI::AI_updateWorkersHaveAndNeeded`, however, still uses the legacy cache when deciding whether some plots represent valid Worker demand.
 
 A concrete surviving case is a worked, unimproved Flood Plains plot without a bonus. `AI_bestCityBuild` explicitly gives this plot a valid Cottage, or a Cottage/Farm choice under low-food pressure. Because Flood Plains are a Feature and the legacy best-build cache remains empty, `AI_updateWorkersHaveAndNeeded` classifies the plot as worked but unimprovable rather than as a current Worker job. The city can therefore understate Worker demand even though an actual Worker would recognize useful work there.
+
+The C031-WIP318 current-tree audit broadened the consequences beyond the demand count itself. The false zero can suppress Worker production through `CvCityAI::AI_chooseUnit`, reject Worker transport or unloading into the area, and classify existing Workers for completed-area evacuation even while the custom land evaluator still sees useful work. Other consumers of the split city-side policy include good-plot counts, target population, food-kept valuation, empire splitting, poor-worked-plot counts and City Site Evaluator protection, so repairing individual callers would leave the same architectural disagreement elsewhere.
 
 The pending repair should address the architectural split rather than hardcode Flood Plains or add another approximate feature test. Extract the city/plot build-policy evaluation from `CvUnitAI::AI_bestCityBuild` into shared city/player-side logic, let both the city best-build cache/demand users and Worker selection consume that policy, and keep unit-specific legality, pathfinding, reservations, grouping and mission execution in `CvUnitAI`. This is intentionally deferred to its own implementation, compile and autoplay-validation commit because the customized Worker system is large and historically fragile.
 
@@ -10680,7 +10767,7 @@ This is an AdvCiv-SAS World Size Chart unit/label regression introduced with the
 
 <a id="ki-306"></a>
 
-## KI#306 - (Fixed AdvCiv-SAS bug) Government-center maintenance ranking cache could go stale within a turn
+## KI#306 - (Reopened AdvCiv-SAS bug after partial fix) Top-production-city rankings can go stale within a turn
 
 AdvCiv-SAS practical 5281 (`3e072ae409`) cached each player's best and second-best city maintenance plus the number of high-maintenance cities under `(player, game turn, city count)`. The government-center building gate then reused this ranking throughout the turn. Civ4 processes a player's cities sequentially, and an earlier city can grow before a later city chooses production; population changes immediately recalculate maintenance without changing the turn or city count. The later city's government-center evaluation could consequently use an empire ranking captured before that growth and choose or reject the candidate from stale values.
 
@@ -10688,7 +10775,9 @@ The fix removes only this maintenance cache. The live empire scan already occurs
 
 The compiled game smoke test ran without an observed AI-production or general runtime issue.
 
-This is an AdvCiv-SAS AI building-value cache-invalidation regression. Found and investigated through the systematic archaeology with the help of ChatGPT-5.6-Sol; fixed and documented with the help of GPT-5.6-Sol and compile/runtime-tested with the help of wonderingabout, thanks.
+The C031-WIP318 current-tree audit found that this repair was correct but incomplete for its broader cache-invalidation family. The sibling top-production-city cache is still keyed only by game turn and city count, yet a building completed earlier in the same player's sequential city processing can immediately change other cities' base production through `SpecialistYieldChanges`. Current Angkor Wat and Cristo Redentor can each add production to assigned Priest specialists this way. A later city's Wonder gate can therefore consume stale best/second/third production rankings, and even a one-hammer discrepancy can cross its exact top-city or +5-hammer thresholds. KI#306 is reopened for this surviving AdvCiv-SAS cache; a production-state revision or live recomputation is preferable to another ad hoc invalidation condition.
+
+The original government-center maintenance regression was found and investigated through the systematic archaeology with the help of ChatGPT-5.6-Sol; fixed and documented with the help of GPT-5.6-Sol and compile/runtime-tested with the help of wonderingabout, thanks. The sibling AdvCiv-SAS top-production cache was reopened through ChatGPT-5.6-Sol's C031-WIP318 audit and reconciled into this KI with the help of GPT-5.6-Sol, thanks; its implementation remains pending.
 
 <a id="ki-307"></a>
 
@@ -11246,15 +11335,17 @@ This is an inherited AdvCiv `advc.650` information leak, not an AdvCiv-SAS chang
 
 <a id="ki-351"></a>
 
-## KI#351 - (Fixed inherited BtS bug) Runtime river-edge edits left irrigation, fresh-water health and trade networks stale
+## KI#351 - (Reopened after partial SAS fix of inherited BtS bug) Runtime fresh-water-source removal can leave irrigation stale
 
 BtS exposes `CvPlot::setNOfRiver` and `setWOfRiver` to Python and WorldBuilder for changing river edges after game initialization. The setters updated the stored edge, river crossings, yields, area river-edge count and graphics, but did not update three systems that consume the changed river state: irrigation propagation, city fresh-water health and river-based plot-group connectivity. A visible post-start river edit could therefore disagree with worked-plot yields, city health or resource/trade connections until some unrelated later rebuild happened.
 
-The fix runs only when the edge's presence actually changes after final game initialization, so initial map generation and direction-only corrections retain their existing inexpensive behavior. It refreshes irrigation from the changed plot and every adjacent plot, allowing the inherited irrigation pathfinder to propagate additions or removals through connected irrigation networks; updates fresh-water health for cities in the affected local radius; and rebuilds player plot groups and trade routes for potentially nonlocal river-network splits or merges. Existing river-crossing, yield, graphics and SASGameRecord updates remain unchanged.
+The fix runs only when the edge's presence actually changes after final game initialization, so initial map generation and direction-only corrections retain their existing inexpensive behavior. It refreshes irrigation from the changed plot and every adjacent plot, which correctly propagates river-source additions through connected irrigation networks; updates fresh-water health for cities in the affected local radius; and rebuilds player plot groups and trade routes for potentially nonlocal river-network splits or merges. Existing river-crossing, yield, graphics and SASGameRecord updates remain unchanged.
+
+The C031-WIP434 current-tree audit proved that the irrigation-removal half remains incomplete. The inherited BtS/K-Mod updater clears an irrigated component only when its triggering plot ceases to be a potential irrigation carrier. Removing the last river source does not make an already-irrigated Farm cease to carry irrigation, so every locally refreshed Farm can remain both `isIrrigated()` and `isPotentialIrrigation()` and enter neither state-changing branch. Its stale flag can preserve the irrigated yield and downstream chain after no fresh-water source remains. This reopens KI#351 as a supported runtime-mutation follow-up in the SAS repair, rather than consuming a new KI number; fresh-water-source removal needs an explicit component traversal that tests for a surviving source and clears the component when none remains. The city-health and plot-group portions of the original fix remain valid.
 
 A fresh game completed turn 201 through autoplay without an observed issue after compilation. No post-start river edge was deliberately added or removed beside a city and irrigation network, so the exact derived-state contrast remains source-verified.
 
-This is an inherited BtS supported-API defect retained by K-Mod and AdvCiv, not an AdvCiv-SAS change. Found through C010 of the current-tree C++ File Audit Album with the help of ChatGPT-5.6-Sol; independently reviewed, fixed and documented with the help of GPT-5.6-Sol and compile/runtime-tested with the help of wonderingabout, thanks.
+The original omission is an inherited BtS supported-API defect retained by K-Mod and AdvCiv, not an AdvCiv-SAS change. It was found through C010 of the current-tree C++ File Audit Album with the help of ChatGPT-5.6-Sol; independently reviewed, partially fixed and documented with the help of GPT-5.6-Sol and compile/runtime-tested with the help of wonderingabout, thanks. The surviving removal asymmetry was reopened through ChatGPT-5.6-Sol's C031-WIP434 audit and reconciled into this KI with the help of GPT-5.6-Sol, thanks; its implementation remains pending.
 
 <a id="ki-352"></a>
 
@@ -16552,8 +16643,686 @@ Found as F537 during ChatGPT-5.6-Sol's C031-WIP310 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-861"></a>
 
-## KI#861 - (Provisional Pending investigation) F538 remains unassigned during the CvCityAI deep re-audit
+## KI#861 - (Provisional Pending AdvCiv Worker-cache regression) Completion can double-count a Worker
 
-The protected Queue 004 `CvPlayer.cpp` re-audit closed at C031-WIP276, and Queue 005 `CvCityAI.cpp` has confirmed F521-F537 through C031-WIP310 while broadening several existing KI families. Do not implement a change under KI#861 until a later checkpoint establishes a separate current producer, violated contract, consequence, ancestry and repair boundary.
+The full city refresh already counts a Worker near completion, and the completion path then increments the cached available-Worker count again. The cache can therefore report one extra Worker until its next full refresh; condition the completion adjustment on real uncached completion state.
 
-Reserved through ChatGPT-5.6-Sol's C031-WIP310 `CvCityAI.cpp` deep re-audit; provisional ledger disposition reconciled with the help of GPT-5.6-Sol, thanks.
+Found as F538 during ChatGPT-5.6-Sol's C031-WIP311 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-862"></a>
+
+## KI#862 - (Provisional Pending AdvCiv Worker-cache regression) Reassignment forgets the old target city
+
+The incremental Worker reassessment adds the Worker to its new MissionAI target city's cache but does not reliably remove it from the old target city's cache. Update both sides of the reassignment or invalidate the city caches.
+
+Found as F539 during ChatGPT-5.6-Sol's C031-WIP312 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-863"></a>
+
+## KI#863 - (Provisional Pending AdvCiv culture-governor regression) No culture ETA is treated as imminent expansion
+
+`AI_countGoodTiles` treats `getCultureTurnsLeft() == -1` as less than five turns, so a city with no Culture and no expansion ETA can be treated as about to expand and the human production governor can suppress Build Culture indefinitely.
+
+Found as F540 during ChatGPT-5.6-Sol's C031-WIP313 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-864"></a>
+
+## KI#864 - (Provisional Pending AdvCiv refactor regression) Culture defenders lose ceiling division
+
+AdvC practical 2723 replaced a ceiling division in `AI_neededCultureDefenders` with truncating integer division. Border pressure can consequently require one defender too few; restore the intended ceiling arithmetic.
+
+Found as F541 during ChatGPT-5.6-Sol's C031-WIP315 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-865"></a>
+
+## KI#865 - (Provisional Pending inherited K-Mod route-cache defect) City route target can survive topology changes
+
+`m_routeToCity` is an end-of-turn snapshot, but routes, ownership and connectivity can change before its consumers run again. Invalidate or recompute the target when route topology changes.
+
+Found as F542 during ChatGPT-5.6-Sol's C031-WIP316 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-866"></a>
+
+## KI#866 - (Provisional Pending inherited Worker-demand cache defect) Plot mutations leave demand stale
+
+`m_iWorkersNeeded` and related `m_iWorkersHave` state can remain stale through the next unit phase after workable-plot changes or external Worker death/capture. Use one authoritative pre-consumer refresh or explicit invalidation.
+
+Found as F543 during ChatGPT-5.6-Sol's C031-WIP317 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-867"></a>
+
+## KI#867 - (Provisional Pending AdvCiv-SAS culture-victory cache defect) Building completion can stale city rank
+
+SAS refreshes transient Culture-victory rank/investment before city production, but a Culture building can change the ranking and immediately invoke production choice with the old role. Dirty and lazily refresh the player-wide snapshot before its hard consumers.
+
+Found as F544 during ChatGPT-5.6-Sol's C031-WIP318 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-868"></a>
+
+## KI#868 - (Provisional Pending AdvCiv city-safety defect) Completing units are miscounted as land defenders
+
+`AI_updateSafety` only considers a one-turn completing defender when an existing defender already exists, while its broad positive-combat test can also invent a naval unit as land defense. Count the actual completing unit with a compatible defensive role even in the zero-defender case.
+
+Found as F545 during ChatGPT-5.6-Sol's C031-WIP319 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-869"></a>
+
+## KI#869 - (Provisional Pending AdvCiv city-safety defect) Sole-city protection is mistaken for safety
+
+The one-city shortcut encodes the policy not to evacuate the last city as the generalized state that the city is safe. Keep evacuation policy separate from the tactical safety result.
+
+Found as F546 during ChatGPT-5.6-Sol's C031-WIP320 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-870"></a>
+
+## KI#870 - (Provisional Pending inherited K-Mod building-value defect) Impossible national-wonder unlocks are rewarded
+
+Prerequisite-building value can reward progress toward a National Wonder that the player cannot legally construct because the visible-only test ignores the national-wonder limit. Apply real constructibility constraints to the projected unlock.
+
+Found as F547 during ChatGPT-5.6-Sol's C031-WIP321 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-871"></a>
+
+## KI#871 - (Provisional Pending inherited K-Mod resource-count defect) City-plot land resources are omitted
+
+`AI_countOwnedBonuses` filters by the working city's area and therefore misses owned land resources in its radius whose plot belongs to a different `CvArea`. Count the owned plot rather than assuming city-area identity.
+
+Found as F548 during ChatGPT-5.6-Sol's C031-WIP322 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-872"></a>
+
+## KI#872 - (Provisional Pending AdvCiv-SAS war-mode regression) AI_bestUnit defense mode is unreachable
+
+SAS's `AI_bestUnit` offense-mode Boolean becomes true for every ordinary real war before the strong-enemy defense branch is considered. Dedicated city-defender roles can consequently receive zero weight even against a stronger enemy.
+
+Found as F549 during ChatGPT-5.6-Sol's C031-WIP323 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-873"></a>
+
+## KI#873 - (Provisional Pending AdvCiv-SAS war-mode regression) Local land isolation is mistaken for peace
+
+The custom war-mode layer treats a city's locally isolated land area as probable peace even during a known overseas war. This disables the authored offense/defense tuning precisely on island and naval maps; separate local topology from actual war state.
+
+Found as F550 during ChatGPT-5.6-Sol's C031-WIP324 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-874"></a>
+
+## KI#874 - (Provisional Pending AdvCiv-SAS specialist-state defect) Temporary border Artist can remain forced
+
+The SAS one-Artist-until-BFC helper forces an Artist for an emergency border expansion but never releases that forced state for AI cities after the objective is met. Track and clear only the helper-owned force.
+
+Found as F551 during ChatGPT-5.6-Sol's C031-WIP325 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-875"></a>
+
+## KI#875 - (Provisional Pending inherited production-selection defect) A combat ship can stand in for a land garrison
+
+`AI_chooseProduction` treats any positive-combat unit already in production as the city's missing defender. An undefended coastal city can therefore continue a ship instead of reconsidering a real land garrison.
+
+Found as F552 during ChatGPT-5.6-Sol's C031-WIP326 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-876"></a>
+
+## KI#876 - (Provisional Pending AdvCiv-SAS caller-scope regression) City war focus silently uses the capital area
+
+SAS changed city-local calls from `AI_isFocusWar(area())` to the no-argument overload, whose default is the capital's land area rather than an empire-wide query. Restore the current city's area or expose an explicitly broader policy.
+
+Found as F553 during ChatGPT-5.6-Sol's C031-WIP328 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-877"></a>
+
+## KI#877 - (Provisional Pending AdvCiv-SAS building-prefilter defect) Maintenance classification uses the wrong sign
+
+The SAS regular-building prefilter classifies maintenance buildings with the opposite sign, so every current maintenance-reducing building bypasses the authored gate. Test the actual maintenance-reduction direction.
+
+Found as F554 during ChatGPT-5.6-Sol's C031-WIP329 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-878"></a>
+
+## KI#878 - (Provisional Pending AdvCiv-SAS building-prefilter defect) Miscellaneous wartime tail is attached too broadly
+
+The final unknown/miscellaneous-building wartime rejection is attached to `!bCultureOnlyBuilding`, causing it to reject almost every previously classified regular building during war or danger. Restrict the tail to the genuinely unclassified category.
+
+Found as F555 during ChatGPT-5.6-Sol's C031-WIP330 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-879"></a>
+
+## KI#879 - (Provisional Pending inherited building-value defect) Overseas domestic trade is treated as foreign trade
+
+`AI_buildingValue` rewards `ForeignTradeRouteModifier` from merely overseas domestic routes even though the runtime modifier applies only to foreign trade. Test foreign-partner status independently of area separation.
+
+Found as F556 during ChatGPT-5.6-Sol's C031-WIP331 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-880"></a>
+
+## KI#880 - (Provisional Pending AdvCiv sign regression) Immediate anger reverses building value
+
+An AdvC sign change in `AI_buildingValue` reverses the immediate anger effect of building happiness, so relieving anger can reduce value and worsening it can add value. Restore the runtime-consistent sign.
+
+Found as F557 during ChatGPT-5.6-Sol's C031-WIP333 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-881"></a>
+
+## KI#881 - (Provisional Pending AdvCiv-SAS handicap-scope defect) Regular-building skew reads the AI handicap
+
+The SAS regular-building difficulty skew reads the AI player's handicap while the relevant AI research-cost setting comes from the game handicap. Use the authoritative game-handicap source.
+
+Found as F558 during ChatGPT-5.6-Sol's C031-WIP334 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+<a id="ki-882"></a>
+
+## KI#882 - (Provisional Pending inherited production-upgrade defect) Destination hammers are overwritten
+
+`upgradeProduction` migrates an obsolete unit order by assigning its hammers to the upgrade target, overwriting any independent hammer bank already stored for that target. Merge the two banks rather than replacing the destination.
+
+Found as F559 during ChatGPT-5.6-Sol's C031-WIP336 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-883"></a>
+
+## KI#883 - (Provisional Pending AdvCiv/BULL decay-preview defect) Fractional thresholds are one turn late
+
+The production-decay preview rounds a game-speed-scaled fractional threshold differently from the authoritative runtime timer, displaying decay one turn late on affected speeds. Share the runtime threshold/order.
+
+Found as F560 during ChatGPT-5.6-Sol's C031-WIP337 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-884"></a>
+
+## KI#884 - (Provisional Pending AdvCiv building-preview regression) Trade-yield modifiers truncate before multiplication
+
+The additional-building-yield preview divides a trade-yield modifier before multiplying by route yield, discarding fractional contributions that runtime retains. Multiply before division with safe width.
+
+Found as F561 during ChatGPT-5.6-Sol's C031-WIP338 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-885"></a>
+
+## KI#885 - (Provisional Pending AdvCiv Great-Person projection defect) Fractional type progress disagrees with runtime
+
+`GPProjection` preserves fractional future progress for each Great Person type while runtime truncates each type's gain every turn. The projected type percentages can therefore disagree with the unit actually born.
+
+Found as F562 during ChatGPT-5.6-Sol's C031-WIP339 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-886"></a>
+
+## KI#886 - (Provisional Pending incomplete AdvCiv invalidation repair) No-bonus production is verified before mutation
+
+`changeNoBonusCount` verifies production legality before applying the resource-state mutation it is meant to validate. An order can remain legal only under the old state; mutate first, then verify.
+
+Found as F563 during ChatGPT-5.6-Sol's C031-WIP340 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-887"></a>
+
+## KI#887 - (Provisional Pending incomplete AdvCiv invalidation repair) Corporation bonus gains skip production verification
+
+Corporation-produced resource gains can change train/construct legality without invoking the immediate production verification added by AdvC for other bonus changes. Route this producer through the same post-mutation invalidation contract.
+
+Found as F564 during ChatGPT-5.6-Sol's C031-WIP341 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-888"></a>
+
+## KI#888 - (Provisional Pending inherited BtS arithmetic defect) Team culture percentage is truncated twice
+
+Team culture percentage sums already-truncated per-player percentages instead of summing culture and dividing once. Multiple teammates can lose accumulated percentage points; aggregate raw culture first.
+
+Found as F565 during ChatGPT-5.6-Sol's C031-WIP342 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-889"></a>
+
+## KI#889 - (Provisional Pending AdvCiv enum-map regression) Building-class happy/health setters lose the sentinel
+
+AdvC's enum-map refactor dropped the `NO_BUILDING`/Barbarian event-state sentinel behavior from building-class happiness and health setters. Preserve the explicit non-building state instead of indexing it as a real class.
+
+Found as F566 during ChatGPT-5.6-Sol's C031-WIP343 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-890"></a>
+
+## KI#890 - (Provisional Pending AdvCiv maintenance regression) Colony cap applies the distance factor twice
+
+`calculateColonyMaintenanceTimes100` calls a helper that already applies `MAX_DISTANCE_CITY_MAINTENANCE` and then multiplies by that factor again. With the shipped value 25, the intended cap becomes 25 times too large.
+
+Found as F567 during ChatGPT-5.6-Sol's C031-WIP344 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-891"></a>
+
+## KI#891 - (Provisional Pending AdvCiv distance-bound regression) Religion formulas misuse maxTypicalDistance
+
+AdvC substitutes `maxTypicalDistance`, a density heuristic rather than a geometric upper bound, into religion formulas that assume all `plotDistance` values fit beneath the denominator. Use the real map-distance bound or explicitly clamp the normalized domain.
+
+Found as F568 during ChatGPT-5.6-Sol's C031-WIP348 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-892"></a>
+
+## KI#892 - (Provisional Pending AdvCiv Cppcheck regression) Real population can overflow before truncation
+
+A Cppcheck cleanup moved integer truncation until after multiplying real population by 1000, allowing intermediate `int` overflow that the earlier wide arithmetic avoided. Preserve a sufficiently wide intermediate.
+
+Found as F569 during ChatGPT-5.6-Sol's C031-WIP350 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-893"></a>
+
+## KI#893 - (Provisional Pending AdvCiv Hotseat/PBEM entitlement defect) City investigation leaks between teams
+
+The paid Investigate City entitlement is stored as one city-global transient team context, so a later active Hotseat/PBEM team can inherit another team's visibility before the target city's next turn. Store entitlement per investigating team.
+
+Found as F570 during ChatGPT-5.6-Sol's C031-WIP352 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-894"></a>
+
+## KI#894 - (Provisional Pending AdvCiv trait-culture regression) Absolute setter can remove existing culture
+
+AdvC's conquered-city Creative culture helper uses an absolute culture setter for a trait grant. When the city already has more culture than the target, applying the trait can reduce existing culture; add only the intended delta or clamp upward.
+
+Found as F571 during ChatGPT-5.6-Sol's C031-WIP353 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-895"></a>
+
+## KI#895 - (Provisional Pending AdvCiv use-after-free regression) Capital-loss announcement uses deleted city state
+
+After deleting the old capital, the moved announcement block still reads the destroyed city and also compares observer player IDs against a city ID. Snapshot owner/team/city context before deletion and use the correct identity domains.
+
+Found as F572 during ChatGPT-5.6-Sol's C031-WIP355 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-896"></a>
+
+## KI#896 - (Provisional Pending AdvCiv use-after-free regression) City kill reads isActiveOwned after deletion
+
+A later `CvCity::kill` path calls city-member `isActiveOwned` after `deleteCity` has destroyed the object. Capture the needed active-owner state before the deletion boundary.
+
+Found as F573 during ChatGPT-5.6-Sol's C031-WIP356 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-897"></a>
+
+## KI#897 - (Provisional Pending inherited BtS/K-Mod transfer omission) Hostile espionage counters are cleansed
+
+City trade or liberation reconstructs the city without copying active Poison Water and Foment Unhappiness counters. A trade/liberation round trip can therefore cleanse hostile espionage effects; preserve the remaining durations.
+
+Found as F574 during ChatGPT-5.6-Sol's C031-WIP357 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-898"></a>
+
+## KI#898 - (Provisional Pending inherited city-transfer omission) Event extra happiness/health is lost
+
+City ownership transfer drops permanent event-derived extra happiness and health while preserving other state from the same event. Copy the authoritative city-local event scalars during reconstruction.
+
+Found as F575 during ChatGPT-5.6-Sol's C031-WIP359 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-899"></a>
+
+## KI#899 - (Provisional Pending inherited BtS event-history defect) ClearEvents erases unrelated city event flags
+
+A successful `ClearEvents` selection is collapsed to one Boolean, after which `CvCity::applyEvent(..., bClear=true)` erases every city-local event-history flag. Clear only the selected EventType so unrelated recurring chains remain intact.
+
+Found as F576 during ChatGPT-5.6-Sol's C031-WIP363 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-900"></a>
+
+## KI#900 - (Provisional Pending inherited BUG/K-Mod commerce-preview defect) Candidate global specialist commerce is omitted
+
+The additional-building-commerce preview evaluates specialists and religious buildings using pre-build player-global state, omitting the candidate's `SpecialistExtraCommerce` and `StateReligionCommerce`. Model one coherent post-building state.
+
+Found as F577 during ChatGPT-5.6-Sol's C031-WIP364 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-901"></a>
+
+## KI#901 - (Provisional Pending inherited BUG/K-Mod yield-preview defect) Candidate specialist yield changes are omitted
+
+The additional-building-yield preview evaluates current and free specialists without overlaying the candidate's `SpecialistYieldChanges`, so buildings such as Angkor Wat can show no Production they will immediately add. Include the candidate-driven specialist delta without double counting free specialists.
+
+Found as F578 during ChatGPT-5.6-Sol's C031-WIP365 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-902"></a>
+
+## KI#902 - (Provisional Pending inherited city-state arithmetic defect) Hurry-anger rescaling uses the raw modifier
+
+Changing a city's hurry-anger modifier rescales the stored timer from the raw percentage instead of the rounded `flatHurryAngerLength`. On shipped speeds, adding or removing the Sacrificial Altar effect can create or delete whole anger stacks.
+
+Found as F579 during ChatGPT-5.6-Sol's C031-WIP369 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-903"></a>
+
+## KI#903 - (Provisional Pending AdvCiv invalidation defect) Negative resource health can skip city-info refresh
+
+`processBonus` subtracts an already-negative bad-health or bad-happiness component when testing a boundary crossing, so a resource trade can fail to dirty City Info. Compare the correctly signed pre/post state.
+
+Found as F580 during ChatGPT-5.6-Sol's C031-WIP371 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-904"></a>
+
+## KI#904 - (Provisional Pending AdvCiv maintenance-preview defect) The prospective city is not counted
+
+Prospective-owner city maintenance is evaluated from the recipient's existing city count and colony state without adding the candidate city itself. Include the acquisition in the projected counts.
+
+Found as F581 during ChatGPT-5.6-Sol's C031-WIP372 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-905"></a>
+
+## KI#905 - (Provisional Pending AdvCiv city-trade valuation defect) Retained government center is omitted
+
+Peaceful acquisition valuation searches only the prospective owner's existing cities for government centers, omitting a Forbidden Palace or equivalent that survives in the candidate city and eliminates its own distance maintenance.
+
+Found as F582 during ChatGPT-5.6-Sol's C031-WIP375 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-906"></a>
+
+## KI#906 - (Provisional Pending inherited BtS food-accounting defect) Settler/Worker food difference charges angry population
+
+The Settler/Worker production path correctly excludes angry population from food consumption, but `foodDifference` still charges them. Use the same food-consumption contract in the predictor and authoritative production path.
+
+Found as F583 during ChatGPT-5.6-Sol's C031-WIP376 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-907"></a>
+
+## KI#907 - (Provisional Pending inherited K-Mod/AdvC building-value omission) Global Great-General rate is ignored
+
+`AI_buildingValue` assigns no positive value to a building's global Great-General rate modifier despite the runtime empire-wide effect and SAS's large Military Academy value. Add a strategically scaled empire-wide term.
+
+Found as F584 during ChatGPT-5.6-Sol's C031-WIP380 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-908"></a>
+
+## KI#908 - (Provisional Pending inherited K-Mod building-value regression) State-religion commerce magnitude is discarded
+
+The building AI notices nonzero State Religion Commerce but values only its presence/type and discards the XML magnitude. Preserve the actual signed amount and affected-building breadth.
+
+Found as F585 during ChatGPT-5.6-Sol's C031-WIP381 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-909"></a>
+
+## KI#909 - (Provisional Pending inherited BtS team-scope defect) TeamShare effects are valued for one player
+
+Runtime distributes many TeamShare building effects to every team member, while `AI_buildingValue` prices player-global, area-global and one-shot effects only for the constructing player. Scale by the real recipient set.
+
+Found as F586 during ChatGPT-5.6-Sol's C031-WIP383 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-910"></a>
+
+## KI#910 - (Provisional Pending inherited K-Mod building-value defect activated by SAS) Negative military production is ignored
+
+The building AI's military-production term is positive-only. SAS supplies live negative military-production buildings, so their real penalty is omitted from construction ranking; value the signed modifier.
+
+Found as F587 during ChatGPT-5.6-Sol's C031-WIP384 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-911"></a>
+
+## KI#911 - (Provisional Pending inherited BtS TeamShare defect) Golden Age is granted only to the building owner
+
+TeamShare Taj Mahal/Versailles Golden Age processing rewards only the constructing owner rather than all members who receive the shared building. Apply the one-shot effect across the TeamShare recipient set.
+
+Found as F588 during ChatGPT-5.6-Sol's C031-WIP387 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-912"></a>
+
+## KI#912 - (Provisional Pending AdvC city-count side-effect defect) Major-city additions suppress Barbarian founding
+
+`CvArea::changeCitiesPerPlayer` reports every positive city addition to AdvC's Barbarian-city history regardless of which player gained the city. Ordinary founding and transfers can therefore suppress later Barbarian city creation.
+
+Found as F589 during ChatGPT-5.6-Sol's C031-WIP392 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-913"></a>
+
+## KI#913 - (Provisional Pending inherited BUG/K-Mod yield-preview defect) Global sea-plot yield is omitted
+
+The additional-building-yield preview omits candidate `GlobalSeaPlotYieldChanges`, so SAS Moai can hide Production it will immediately add to every worked water plot in the city. Overlay the player-global sea-plot delta.
+
+Found as F590 during ChatGPT-5.6-Sol's C031-WIP395 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-914"></a>
+
+## KI#914 - (Provisional Pending inherited BUG/K-Mod city-preview defect) Global happiness and health are omitted
+
+Additional happiness/health previews model area effects but omit candidate `GlobalHappiness` and `GlobalHealth`, causing buildings such as Red Cross to understate their immediate local result. Include the candidate's player-global contribution.
+
+Found as F591 during ChatGPT-5.6-Sol's C031-WIP396 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-915"></a>
+
+## KI#915 - (Provisional Pending AdvC storage-width defect amplified by SAS chronology) Early building years wrap
+
+AdvC stores original building calendar years in signed 16-bit `short`. SAS begins at -50,000, so early dates wrap and can suppress the 1000-year commerce doubling for the whole normal game; use a wide year representation and update the current save schema.
+
+Found as F592 during ChatGPT-5.6-Sol's C031-WIP398 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+<a id="ki-916"></a>
+
+## KI#916 - (Provisional Pending inherited unit-conversion defect) Gifting clears event immobility
+
+`CvUnit::convert`, used by gifting and upgrades, does not transfer the serialized immobility timer. A gifted event-immobilized unit is reconstructed with zero turns and can move immediately.
+
+Found as F593 during ChatGPT-5.6-Sol's C031-WIP405 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-917"></a>
+
+## KI#917 - (Provisional Pending inherited unit-conversion defect) Gifting clears the anti-double-move timestamp
+
+Gift conversion does not preserve `m_iLastMoveTurn`, the authoritative simultaneous-turn movement timestamp. A replacement can therefore evade the anti-double-move state; transfer it with other current-turn unit state.
+
+Found as F594 during ChatGPT-5.6-Sol's C031-WIP406 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-918"></a>
+
+## KI#918 - (Provisional Pending inherited gift-legality defect) Loaded cargo can remain on a foreign transport
+
+Directly gifting already-loaded cargo can recreate it for the recipient while preserving its link to a transport owned by another team. Validate transport ownership before gifting or detach/revalidate the cargo relation.
+
+Found as F595 during ChatGPT-5.6-Sol's C031-WIP407 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-919"></a>
+
+## KI#919 - (Provisional Pending inherited unit-conversion defect) Gifting clears attacks already made
+
+Gift conversion resets the per-turn made-attacks counter, allowing a Blitz-capable replacement to regain attacks already spent. Preserve the exact current-turn count.
+
+Found as F596 during ChatGPT-5.6-Sol's C031-WIP408 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-920"></a>
+
+## KI#920 - (Provisional Pending inherited unit-conversion defect) Gifting restores used non-air interception
+
+Gift conversion resets the serialized used-interception flag. A non-air interceptor can consequently regain its passive interception in the same turn; preserve the source flag.
+
+Found as F597 during ChatGPT-5.6-Sol's C031-WIP409 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-921"></a>
+
+## KI#921 - (Provisional Pending AdvC Blitz-count regression) Sea-pillage interception erases spent attacks
+
+AdvC's Boolean-to-count Blitz redesign left the sea-pillage interception path clearing made-attack state as though it were Boolean staging. Preserve the attack count already consumed before the intercepted pillage.
+
+Found as F598 during ChatGPT-5.6-Sol's C031-WIP413 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-922"></a>
+
+## KI#922 - (Provisional Pending inherited AdvC optimization assumption activated by SAS) All-terrain AI reachability is rejected
+
+An AdvC AI prefilter assumes land units cannot cross water and omits the more expensive legal-entry test. SAS all-terrain land units violate that assumption, so valid destinations can be rejected before pathfinding.
+
+Found as F599 during ChatGPT-5.6-Sol's C031-WIP416 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-923"></a>
+
+## KI#923 - (Provisional Pending AdvC plot-context regression) Air damage uses the attacker's plot
+
+An AdvC cleanup replaced the defender target plot with the attacking aircraft's current plot in air/range combat damage. City, terrain and defense context can therefore be read from the airbase instead of the struck plot.
+
+Found as F600 during ChatGPT-5.6-Sol's C031-WIP418 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-924"></a>
+
+## KI#924 - (Provisional Pending AdvCiv-SAS content/engine contradiction) Privateer land-cargo capacity is unusable
+
+SAS gives Privateer two land-cargo slots, but inherited hidden-nationality loading rules reject every current land unit that could use them. Either remove the advertised capacity or deliberately define compatible anonymous cargo semantics.
+
+Found as F601 during ChatGPT-5.6-Sol's C031-WIP419 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-925"></a>
+
+## KI#925 - (Provisional Pending AdvCiv-SAS combat-contract defect) Janissary combat limit exceeds lethal damage
+
+SAS sets Janissary `iCombatLimit` to 110. The executor treats values at or above 100 as lethal, while combat-odds and related consumers model 110 hit points, creating inconsistent predictions; normalize to the engine's legal domain.
+
+Found as F602 during ChatGPT-5.6-Sol's C031-WIP420 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-926"></a>
+
+## KI#926 - (Provisional Pending AdvCiv-SAS activation of inherited withdrawal semantics) Gunship loses withdrawal on water
+
+SAS makes Gunship an all-terrain land unit, but inherited withdrawal logic disables land-unit withdrawal on non-land plots. A legal water combat therefore silently loses the unit's advertised withdrawal chance.
+
+Found as F603 during ChatGPT-5.6-Sol's C031-WIP421 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-927"></a>
+
+## KI#927 - (Provisional Pending AdvCiv-SAS content/engine contradiction) Defensive recon units advertise unusable withdrawal
+
+Airship and Robotic Recon Drone have positive withdrawal while `bOnlyDefensive` prevents them from entering the attacker state in which withdrawal executes. Remove the dead effect or revise the intended combat role.
+
+Found as F604 during ChatGPT-5.6-Sol's C031-WIP422 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-928"></a>
+
+## KI#928 - (Provisional Pending AdvCiv-SAS content/engine contradiction) Flat-movement recon units receive useless Mobility Cost
+
+Airship and Robotic Recon Drone receive free Mobility Cost, but their Flat Movement Cost returns before terrain-movement discounts are consumed. The promotion is installed and advertised yet has no effect.
+
+Found as F605 during ChatGPT-5.6-Sol's C031-WIP423 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-929"></a>
+
+## KI#929 - (Provisional Pending inherited AdvC air-bomb assumption invalidated by SAS) Building defense amplifies bombardment
+
+AdvC air-bomb damage unconditionally applies an IgnoreBuildingDefense compensation ratio, but SAS removed that capability from every current unit. Ordinary air bombardment can therefore be amplified by defensive buildings and reaches a zero-denominator boundary.
+
+Found as F606 during ChatGPT-5.6-Sol's C031-WIP424 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-930"></a>
+
+## KI#930 - (Provisional Pending inherited BtS/K-Mod combat-state defect) Paratrooper interceptors receive no experience
+
+Both interceptor experience paths are gated on retaliation damage dealt by the paradropper. The shipped Paratrooper deals zero such damage, so an interceptor gains no experience even when it damages or kills the unit.
+
+Found as F607 during ChatGPT-5.6-Sol's C031-WIP425 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-931"></a>
+
+## KI#931 - (Provisional Pending AdvCiv-SAS Fast Save defect) Victory save records GAMESTATE_ON
+
+SAS Fast Save runs after winner/victory assignment but before `m_eGameState` transitions to the ended state. The resulting victory save serializes `GAMESTATE_ON`; move the save to a post-transition boundary without duplicating end side effects.
+
+Found as F608 during ChatGPT-5.6-Sol's C031-WIP429 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-932"></a>
+
+## KI#932 - (Provisional Pending AdvC terrain-reveal regression) Advanced Start skips requested plot-group refresh
+
+AdvC's terrain-only `setRevealed` branch returns before performing the plot-group update explicitly requested by its caller. Advanced Start visibility purchases can therefore leave trade/connectivity caches on pre-reveal topology.
+
+Found as F609 during ChatGPT-5.6-Sol's C031-WIP432 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-933"></a>
+
+## KI#933 - (Provisional Pending inherited BtS invalidation defect) Oasis removal leaves fresh-water state stale
+
+Global Warming removes an Oasis through `setFeatureType(NO_FEATURE)` without refreshing nearby city fresh-water health or irrigation state. Add an explicit fresh-water-source-change invalidation that also supports component teardown.
+
+Found as F610 during ChatGPT-5.6-Sol's C031-WIP433 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-934"></a>
+
+## KI#934 - (Provisional Pending AdvCiv-SAS promotion-field mismatch) Air Bomber city bombard bonus uses the wrong mechanic
+
+SAS exposes City Bombard Damage to Air Bomber combat units but the promotion changes the ordinary unit bombard-rate field, not the air-bomb mechanic those units execute. Wire the promotion to the actual Air Bomb consumer or restrict its domain.
+
+Found as F612 during ChatGPT-5.6-Sol's C031-WIP437 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-935"></a>
+
+## KI#935 - (Provisional Pending inherited AdvC True Starts cardinality defect amplified by SAS) Civilization uniqueness exhausts
+
+True Starts correctly counts valid civilization/leader pairs, then mistakenly reuses that pair count when deciding whether civilization duplicates must be allowed. With 35-48 SAS players, 34 distinct True-Starts civilizations can be exhausted while uniqueness remains forced.
+
+Found as F613 during ChatGPT-5.6-Sol's C031-WIP439 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-936"></a>
+
+## KI#936 - (Provisional Pending AdvCiv-SAS True Starts data omission) Ireland and Benin cannot be selected
+
+Ireland and Kingdom of Benin are playable SAS civilizations but have no `CIV4TruCivInfos.xml` records. Random civilization selection with True Starts can therefore never choose either, and fixed selections also enter unsafe missing-data paths.
+
+Found as F614 during ChatGPT-5.6-Sol's C031-WIP440 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-937"></a>
+
+## KI#937 - (Provisional Pending inherited AdvC True Starts sign defect) Americas longitude cutoff is reversed
+
+The Empty New World first pass uses +30 degrees where its Old-World filter requires -30 degrees, misclassifying civilizations around the Americas cutoff. Correct the signed longitude threshold.
+
+Found as F615 during ChatGPT-5.6-Sol's C031-WIP441 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-938"></a>
+
+## KI#938 - (Provisional Pending inherited AdvC True Starts fallback defect) Candidate vectors retain duplicates
+
+When the restricted Empty New World pass has too few candidates, the broader fallback appends to rather than clears its first-pass vectors. The supposed distinct-civilization pool then contains duplicates.
+
+Found as F616 during ChatGPT-5.6-Sol's C031-WIP442 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-939"></a>
+
+## KI#939 - (Provisional Pending inherited AdvC True Starts enum defect) Every snow plot can become northernmost taiga
+
+The polar precipitation branch tests the cool-forest `FeatureTypes` enum as a Boolean instead of checking the plot's feature. Any nonzero enum therefore classifies every polar-desert plot as northernmost taiga.
+
+Found as F617 during ChatGPT-5.6-Sol's C031-WIP443 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-940"></a>
+
+## KI#940 - (Provisional Pending inherited AdvC True Starts scope defect) Unrestricted civ and leader availability remain coupled
+
+True Starts disables leader-specific fitness under Unrestricted Leaders but still removes civilization/leader candidates as coupled pairs. Fixed leaders can erase valid civilizations and fixed civilizations can erase valid leaders.
+
+Found as F618 during ChatGPT-5.6-Sol's C031-WIP444 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-941"></a>
+
+## KI#941 - (Provisional Pending inherited AdvC True Starts initialization defect) Global elevation maximum is indeterminate
+
+`m_iMaxMaxElevationTarget` is read without constructor initialization or prior assignment. Elevation fitness can consequently depend on stale stack data; initialize it from the computed target domain.
+
+Found as F619 during ChatGPT-5.6-Sol's C031-WIP445 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-942"></a>
+
+## KI#942 - (Provisional Pending inherited AdvC True Starts selection defect) A chosen leader can be overwritten
+
+Under Unrestricted Leaders, True Starts can replace the manually chosen leader when only the civilization was random. Respect the independent `wasCivRandomlyChosen` and `wasLeaderRandomlyChosen` flags.
+
+Found as F620 during ChatGPT-5.6-Sol's C031-WIP446 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-943"></a>
+
+## KI#943 - (Provisional Pending inherited AdvC True Starts weighting defect) Civilizations are counted once per native leader
+
+The Oceanity baseline iterates valid civilization/leader pairs for a civilization-only average, weighting civilizations once per native leader. SAS's zero leader-count-bias setting therefore still changes fitness according to leader count.
+
+Found as F621 during ChatGPT-5.6-Sol's C031-WIP447 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-944"></a>
+
+## KI#944 - (Provisional Pending inherited AdvC True Starts wrap defect) Diagonal climate regions disappear across seams
+
+Climate-region direction classification uses raw coordinate deltas after wrap-aware region iteration. Across map seams, valid diagonal samples receive the wrong direction or are discarded; use wrapped deltas.
+
+Found as F622 during ChatGPT-5.6-Sol's C031-WIP448 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-945"></a>
+
+## KI#945 - (Provisional Pending inherited AdvC True Starts locale defect) English option text controls Old-World filtering
+
+Empty New World detection compares localized map-option display descriptions with English literals. Supported non-English games can lose the Old-World civilization filter; query language-independent script option IDs and values.
+
+Found as F623 during ChatGPT-5.6-Sol's C031-WIP449 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-946"></a>
+
+## KI#946 - (Provisional Pending investigation) F624 remains unassigned in the open True Starts audit
+
+Queue 022 `TrueStarts.cpp` remains open at C031-WIP449 after confirming F613-F623. Keep F624/KI#946 reserved until a later checkpoint proves another distinct current-live root or closes the file.
+
+Reserved as F624 during ChatGPT-5.6-Sol's C031-WIP449 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
