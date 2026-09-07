@@ -1068,9 +1068,9 @@ void CvUnit::updateAirCombat(bool bQuick)
 	be changed if the combat resolution rules are changed. */
 void CvUnit::resolveCombat(CvUnit* pDefender, CvPlot* pPlot, bool bVisible)
 {
-	// <!-- custom: Level-3 SASGameRecord captures attacker identity and exact pre-combat odds only at real combat resolution, never in AI candidate-odds loops. Cache the gate because nonlethal combat reuses it after resolution. (ChatGPT-5.6-Sol) -->
-	bool const bLogExactCombat = (gGameRecordLogLevel >= 3);
-	if (bLogExactCombat) noteSASGameRecordCombatStarted(this, pDefender, pPlot);
+	// <!-- custom: SASGameRecord level 2+ captures the transient pre-combat context needed for battle-quality aggregates; level 3 additionally writes exact battle rows. Cache the gate because nonlethal combat reuses it after resolution. (ChatGPT-5.6-Sol) -->
+	bool const bLogCombat = (gGameRecordLogLevel >= 2);
+	if (bLogCombat) noteSASGameRecordCombatStarted(this, pDefender, pPlot);
 	// <advc.048c> Preserve info for interface message (based on K-Mod code)
 	m_iAttackOdds = -1;
 #ifndef LOG_COMBAT_OUTCOMES
@@ -1279,8 +1279,8 @@ void CvUnit::resolveCombat(CvUnit* pDefender, CvPlot* pPlot, bool bVisible)
 			gDLL->getEntityIFace()->AddMission(&kBattle);
 		}
 	}
-	// <!-- custom: combatResult only fires on lethal combat. Keep withdrawals and combat-limit outcomes in the exact battle chronology too, using the same pre-combat attacker/odds context. (ChatGPT-5.6-Sol) -->
-	if (bLogExactCombat && !isDead() && !pDefender->isDead())
+	// <!-- custom: combatResult only fires on lethal combat. Level 2 aggregates withdrawals/combat-limit outcomes; level 3 additionally retains their exact chronology. (ChatGPT-5.6-Sol) -->
+	if (bLogCombat && !isDead() && !pDefender->isDead())
 	{
 		bool const bCombatLimitReached = (combatLimit() < GC.getMAX_HIT_POINTS() && pDefender->getDamage() >= combatLimit());
 		logSASGameRecordNonlethalCombat(this, pDefender, pPlot, bCombatLimitReached);
