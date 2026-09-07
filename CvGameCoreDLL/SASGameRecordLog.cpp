@@ -12,11 +12,14 @@
 #include "CvArea.h" // <!-- custom: Needed for area-wide city happiness/health detail rows. (ChatGPT-5.5) -->
 #include "CvTeam.h" // <!-- custom: Needed directly for finalized initial-team state and technology grouping in this smaller AdvCiv 1.14 port slice; GET_TEAM is defined by CvTeam.h. (ChatGPT-5.6-Sol) -->
 #include "CvUnit.h" // <!-- custom: Needed for the mature SASGameRecord distinction between actual combat-capable units and Civ4's separate bMilitarySupport counter in periodic player snapshots. (ChatGPT-5.6-Sol) -->
+#include "CvSelectionGroup.h" // <!-- custom: Needed to inspect worker/settler mission queues in game-record rows. (ChatGPT-5.5) -->
 #include "CvInfo_Organization.h" // <!-- custom: Needed for religion/corporation type names in game-record action rows. (GPT-5.5) -->
 #include "CvInfo_Civics.h" // <!-- custom: Needed for policy/civic names in game-record advisor rows. (ChatGPT-5.5) -->
 #include "CvInfo_Civilization.h" // <!-- custom: Needed to attribute player-wide extra happiness/health to traits instead of leaving effects from loaded-mod rules under an opaque `extra` label. (GPT-5.6-Sol) -->
 #include "CvInfo_Tech.h" // <!-- custom: Needed for stable technology type names and XML trade-capability source mapping. (ChatGPT-5.6-Sol) -->
 #include "CvInfo_Terrain.h" // <!-- custom: Needed for terrain/feature/bonus type names in game-record context rows. (ChatGPT-5.5) -->
+#include "CvInfo_Build.h" // <!-- custom: Needed for worker build-type names and build target classification in game-record rows. (ChatGPT-5.5) -->
+#include "CvInfo_Command.h" // <!-- custom: Needed for mission-type names in worker/settler game-record rows. (ChatGPT-5.5) -->
 #include "CvInfo_Building.h" // <!-- custom: Needed to classify city production and wonders in game-record city aggregate rows. (ChatGPT-5.5) -->
 #include "CvInfo_City.h" // <!-- custom: Needed for specialist and process type names in game-record city rows. (ChatGPT-5.5) -->
 #include "CvInfo_Unit.h" // <!-- custom: Needed to classify unit composition and city production in game-record rows. (ChatGPT-5.5) -->
@@ -134,6 +137,18 @@ struct SASGameRecordPlayerPrevious
 	int iUnitEnemyUnitsInTerritory;
 	int iUnitTotalExperience;
 	int iUnitPromotionReady;
+	int iWorkerWorkers;
+	int iWorkerBuilding;
+	int iWorkerIdle;
+	int iWorkerMoving;
+	int iWorkerWaiting;
+	int iWorkerThreatened;
+	int iSettlerSettlers;
+	int iSettlerFoundMission;
+	int iSettlerMoving;
+	int iSettlerIdle;
+	int iSettlerWaiting;
+	int iSettlerThreatened;
 	int iCityCount;
 	int iCityConnectedToCapital;
 	int iCityFoodSurplus;
@@ -350,6 +365,16 @@ static const char* getSASGameRecordProcessType(ProcessTypes eProcess)
 static const char* getSASGameRecordCommerceType(CommerceTypes eCommerce)
 {
 	return (eCommerce == NO_COMMERCE ? "-" : GC.getInfo(eCommerce).getType());
+}
+
+static const char* getSASGameRecordBuildType(BuildTypes eBuild)
+{
+	return (eBuild == NO_BUILD ? "-" : GC.getInfo(eBuild).getType());
+}
+
+static const char* getSASGameRecordMissionType(MissionTypes eMission)
+{
+	return (eMission == NO_MISSION ? "-" : GC.getInfo(eMission).getType());
 }
 
 static void appendSASGameRecordTypeCount(CvString& szList, const char* szType, int iCount)
@@ -897,6 +922,29 @@ static bool isSASGameRecordWorkerUnit(CvUnit const& kUnit)
 static bool isSASGameRecordSettlerUnit(CvUnit const& kUnit)
 {
 	return kUnit.AI_getUnitAIType() == UNITAI_SETTLE || kUnit.isFound();
+}
+
+static MissionTypes getSASGameRecordUnitMissionType(CvUnit const& kUnit)
+{
+	CvSelectionGroup const* pGroup = kUnit.getGroup();
+	return pGroup == NULL ? NO_MISSION : pGroup->getMissionType(0);
+}
+
+static int getSASGameRecordBuildTurnsLeft(CvUnit const& kUnit, BuildTypes eBuild)
+{
+	return eBuild == NO_BUILD ? -1 : kUnit.getPlot().getBuildTurnsLeft(eBuild, kUnit.getOwner(), 0, 0);
+}
+
+static bool isSASGameRecordUnitGuarded(CvUnit const& kUnit)
+{
+	CvPlot const* pPlot = kUnit.plot();
+	return pPlot != NULL && pPlot->getNumDefenders(kUnit.getOwner()) > 0;
+}
+
+static bool isSASGameRecordUnitThreatened(CvUnit const& kUnit)
+{
+	CvPlot const* pPlot = kUnit.plot();
+	return pPlot != NULL && pPlot->isVisibleEnemyUnit(kUnit.getOwner());
 }
 
 static CvString getSASGameRecordCivicList(CvPlayer const& kPlayer)
@@ -1780,6 +1828,164 @@ static void logSASGameRecordUnitPosture(PlayerTypes ePlayer, int iGameTurn)
 }
 
 
+static void logSASGameRecordWorkers(PlayerTypes ePlayer, int iGameTurn)
+{
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	TeamTypes eTeam = kPlayer.getTeam();
+	SASGameRecordPlayerPrevious& kPrevious = g_akSASGameRecordPlayerPrevious[ePlayer];
+	bool const bLogWorkerDetails = (gGameRecordLogLevel >= 3);
+	int iWorkers = 0;
+	int iSeaWorkers = 0;
+	int iIdle = 0;
+	int iBuilding = 0;
+	int iBuildingImprovement = 0;
+	int iBuildingRoute = 0;
+	int iMoving = 0;
+	int iWaiting = 0;
+	int iOwnTerritory = 0;
+	int iEnemyTerritory = 0;
+	int iNeutralTerritory = 0;
+	int iGuarded = 0;
+	int iUnguarded = 0;
+	int iThreatened = 0;
+	std::vector<int> aiBuilds(GC.getNumBuildInfos(), 0);
+	int iLoop = 0;
+	for (CvUnit const* pLoopUnit = kPlayer.firstUnit(&iLoop); pLoopUnit != NULL; pLoopUnit = kPlayer.nextUnit(&iLoop))
+	{
+		if (!isSASGameRecordWorkerUnit(*pLoopUnit))
+			continue;
+		iWorkers++;
+		if (pLoopUnit->AI_getUnitAIType() == UNITAI_WORKER_SEA || pLoopUnit->getDomainType() == DOMAIN_SEA)
+			iSeaWorkers++;
+		CvPlot const* pPlot = pLoopUnit->plot();
+		MissionTypes eMission = getSASGameRecordUnitMissionType(*pLoopUnit);
+		BuildTypes eBuild = pLoopUnit->getBuildType();
+		if (eBuild != NO_BUILD)
+		{
+			iBuilding++;
+			aiBuilds[eBuild]++;
+			if (GC.getInfo(eBuild).getImprovement() != NO_IMPROVEMENT)
+				iBuildingImprovement++;
+			if (GC.getInfo(eBuild).getRoute() != NO_ROUTE)
+				iBuildingRoute++;
+		}
+		else if (eMission == MISSION_MOVE_TO || eMission == MISSION_ROUTE_TO || eMission == MISSION_MOVE_TO_UNIT)
+			iMoving++;
+		else if (pLoopUnit->canMove())
+			iIdle++;
+		else iWaiting++;
+		if (pPlot != NULL)
+		{
+			if (pPlot->getOwner() == ePlayer)
+				iOwnTerritory++;
+			else if (pPlot->getTeam() != NO_TEAM && GET_TEAM(eTeam).isAtWar(pPlot->getTeam()))
+				iEnemyTerritory++;
+			else iNeutralTerritory++;
+		}
+		// <!-- custom: These two checks feed both the level-2 aggregate and level-3 detail row. Compute them once per worker instead of repeating the plot queries for detail logging. (ChatGPT-5.6-Sol) -->
+		bool const bGuarded = isSASGameRecordUnitGuarded(*pLoopUnit);
+		bool const bThreatened = isSASGameRecordUnitThreatened(*pLoopUnit);
+		if (bGuarded)
+			iGuarded++;
+		else iUnguarded++;
+		if (bThreatened)
+			iThreatened++;
+		if (bLogWorkerDetails && pPlot != NULL)
+		{
+			logSASGameRecord("GAME_RECORD_WORKER turn=%d player=%d unitId=%d unit=%s unitAI=%s x=%d y=%d mission=%s build=%s buildTurnsLeft=%d plotOwner=%d plotTerrain=%s plotFeature=%s plotBonus=%s plotImprovement=%s plotRoute=%s guarded=%d threatened=%d",
+					iGameTurn, ePlayer, pLoopUnit->getID(), getSASGameRecordUnitType(pLoopUnit->getUnitType()), getSASGameRecordUnitAIType(pLoopUnit->AI_getUnitAIType()), pLoopUnit->getX(), pLoopUnit->getY(),
+					getSASGameRecordMissionType(eMission), getSASGameRecordBuildType(eBuild), getSASGameRecordBuildTurnsLeft(*pLoopUnit, eBuild), pPlot->getOwner(),
+					getSASGameRecordTerrainType(pPlot->getTerrainType()), getSASGameRecordFeatureType(pPlot->getFeatureType()), getSASGameRecordBonusType(pPlot->getBonusType(pLoopUnit->getTeam())),
+					getSASGameRecordImprovementType(pPlot->getImprovementType()), getSASGameRecordRouteType(pPlot->getRouteType()), bGuarded, bThreatened);
+		}
+	}
+	CvString szBuilds;
+	for (int iI = 0; iI < GC.getNumBuildInfos(); iI++)
+		appendSASGameRecordTypeCount(szBuilds, getSASGameRecordBuildType((BuildTypes)iI), aiBuilds[iI]);
+	logSASGameRecord("GAME_RECORD_WORKERS turn=%d player=%d workers=%d seaWorkers=%d idle=%d building=%d buildingImprovement=%d buildingRoute=%d moving=%d waiting=%d ownTerritory=%d enemyTerritory=%d neutralTerritory=%d guarded=%d unguarded=%d threatened=%d builds=%s",
+			iGameTurn, ePlayer, iWorkers, iSeaWorkers, iIdle, iBuilding, iBuildingImprovement, iBuildingRoute, iMoving, iWaiting, iOwnTerritory, iEnemyTerritory, iNeutralTerritory, iGuarded, iUnguarded, iThreatened, getSASDiagnosticOrDash(szBuilds).GetCString());
+	logSASGameRecord("GAME_RECORD_WORKERS_DELTAS turn=%d player=%d deltaValid=%d workersDelta=%+d buildingDelta=%+d idleDelta=%+d movingDelta=%+d waitingDelta=%+d threatenedDelta=%+d",
+			iGameTurn, ePlayer, kPrevious.bValid, getSASGameRecordDelta(kPrevious.bValid, iWorkers, kPrevious.iWorkerWorkers), getSASGameRecordDelta(kPrevious.bValid, iBuilding, kPrevious.iWorkerBuilding),
+			getSASGameRecordDelta(kPrevious.bValid, iIdle, kPrevious.iWorkerIdle), getSASGameRecordDelta(kPrevious.bValid, iMoving, kPrevious.iWorkerMoving), getSASGameRecordDelta(kPrevious.bValid, iWaiting, kPrevious.iWorkerWaiting), getSASGameRecordDelta(kPrevious.bValid, iThreatened, kPrevious.iWorkerThreatened));
+	kPrevious.iWorkerWorkers = iWorkers;
+	kPrevious.iWorkerBuilding = iBuilding;
+	kPrevious.iWorkerIdle = iIdle;
+	kPrevious.iWorkerMoving = iMoving;
+	kPrevious.iWorkerWaiting = iWaiting;
+	kPrevious.iWorkerThreatened = iThreatened;
+}
+
+static void logSASGameRecordSettlers(PlayerTypes ePlayer, int iGameTurn)
+{
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	TeamTypes eTeam = kPlayer.getTeam();
+	SASGameRecordPlayerPrevious& kPrevious = g_akSASGameRecordPlayerPrevious[ePlayer];
+	bool const bLogSettlerDetails = (gGameRecordLogLevel >= 3);
+	int iSettlers = 0;
+	int iFoundMission = 0;
+	int iMoving = 0;
+	int iIdle = 0;
+	int iWaiting = 0;
+	int iOwnTerritory = 0;
+	int iEnemyTerritory = 0;
+	int iNeutralTerritory = 0;
+	int iGuarded = 0;
+	int iUnguarded = 0;
+	int iThreatened = 0;
+	int iLoop = 0;
+	for (CvUnit const* pLoopUnit = kPlayer.firstUnit(&iLoop); pLoopUnit != NULL; pLoopUnit = kPlayer.nextUnit(&iLoop))
+	{
+		if (!isSASGameRecordSettlerUnit(*pLoopUnit))
+			continue;
+		iSettlers++;
+		CvPlot const* pPlot = pLoopUnit->plot();
+		MissionTypes eMission = getSASGameRecordUnitMissionType(*pLoopUnit);
+		if (eMission == MISSION_FOUND)
+			iFoundMission++;
+		else if (eMission == MISSION_MOVE_TO || eMission == MISSION_ROUTE_TO || eMission == MISSION_MOVE_TO_UNIT)
+			iMoving++;
+		else if (pLoopUnit->canMove())
+			iIdle++;
+		else iWaiting++;
+		if (pPlot != NULL)
+		{
+			if (pPlot->getOwner() == ePlayer)
+				iOwnTerritory++;
+			else if (pPlot->getTeam() != NO_TEAM && GET_TEAM(eTeam).isAtWar(pPlot->getTeam()))
+				iEnemyTerritory++;
+			else iNeutralTerritory++;
+		}
+		bool const bGuarded = isSASGameRecordUnitGuarded(*pLoopUnit);
+		bool const bThreatened = isSASGameRecordUnitThreatened(*pLoopUnit);
+		if (bGuarded)
+			iGuarded++;
+		else iUnguarded++;
+		if (bThreatened)
+			iThreatened++;
+		if (bLogSettlerDetails && pPlot != NULL)
+		{
+			CvCity const* pNearestCity = GC.getMap().findCity(pLoopUnit->getX(), pLoopUnit->getY(), ePlayer, NO_TEAM, false);
+			const int iNearestDistance = pNearestCity == NULL ? -1 : plotDistance(pLoopUnit->getX(), pLoopUnit->getY(), pNearestCity->getX(), pNearestCity->getY());
+			logSASGameRecord("GAME_RECORD_SETTLER turn=%d player=%d unitId=%d unit=%s unitAI=%s x=%d y=%d mission=%s plotOwner=%d plotTerrain=%s plotFeature=%s plotBonus=%s plotImprovement=%s plotRoute=%s guarded=%d threatened=%d nearestCityId=%d nearestCity=%S nearestCityDistance=%d",
+					iGameTurn, ePlayer, pLoopUnit->getID(), getSASGameRecordUnitType(pLoopUnit->getUnitType()), getSASGameRecordUnitAIType(pLoopUnit->AI_getUnitAIType()), pLoopUnit->getX(), pLoopUnit->getY(),
+					getSASGameRecordMissionType(eMission), pPlot->getOwner(), getSASGameRecordTerrainType(pPlot->getTerrainType()), getSASGameRecordFeatureType(pPlot->getFeatureType()),
+					getSASGameRecordBonusType(pPlot->getBonusType(pLoopUnit->getTeam())), getSASGameRecordImprovementType(pPlot->getImprovementType()), getSASGameRecordRouteType(pPlot->getRouteType()),
+					bGuarded, bThreatened, pNearestCity == NULL ? -1 : pNearestCity->getID(), getSASGameRecordQuotedCityName(pNearestCity).GetCString(), iNearestDistance);
+		}
+	}
+	logSASGameRecord("GAME_RECORD_SETTLERS turn=%d player=%d settlers=%d foundMission=%d moving=%d idle=%d waiting=%d ownTerritory=%d enemyTerritory=%d neutralTerritory=%d guarded=%d unguarded=%d threatened=%d",
+			iGameTurn, ePlayer, iSettlers, iFoundMission, iMoving, iIdle, iWaiting, iOwnTerritory, iEnemyTerritory, iNeutralTerritory, iGuarded, iUnguarded, iThreatened);
+	logSASGameRecord("GAME_RECORD_SETTLERS_DELTAS turn=%d player=%d deltaValid=%d settlersDelta=%+d foundMissionDelta=%+d movingDelta=%+d idleDelta=%+d waitingDelta=%+d threatenedDelta=%+d",
+			iGameTurn, ePlayer, kPrevious.bValid, getSASGameRecordDelta(kPrevious.bValid, iSettlers, kPrevious.iSettlerSettlers), getSASGameRecordDelta(kPrevious.bValid, iFoundMission, kPrevious.iSettlerFoundMission),
+			getSASGameRecordDelta(kPrevious.bValid, iMoving, kPrevious.iSettlerMoving), getSASGameRecordDelta(kPrevious.bValid, iIdle, kPrevious.iSettlerIdle), getSASGameRecordDelta(kPrevious.bValid, iWaiting, kPrevious.iSettlerWaiting), getSASGameRecordDelta(kPrevious.bValid, iThreatened, kPrevious.iSettlerThreatened));
+	kPrevious.iSettlerSettlers = iSettlers;
+	kPrevious.iSettlerFoundMission = iFoundMission;
+	kPrevious.iSettlerMoving = iMoving;
+	kPrevious.iSettlerIdle = iIdle;
+	kPrevious.iSettlerWaiting = iWaiting;
+	kPrevious.iSettlerThreatened = iThreatened;
+}
+
 static CvString getSASGameRecordCitySpecialists(CvCity const& kCity, bool bFree)
 {
 	CvString szList;
@@ -2359,6 +2565,9 @@ static void logSASGameRecordPlayerSnapshot(PlayerTypes ePlayer, int iGameTurn)
 		if (bLogPlayerVerboseDetails) logSASGameRecordDiplomaticMemories(ePlayer, iGameTurn);
 		logSASGameRecordDiploStatus(ePlayer, iGameTurn);
 		logSASGameRecordUnitPosture(ePlayer, iGameTurn);
+		logSASGameRecordWorkers(ePlayer, iGameTurn);
+		// <!-- custom: Mature AdvCiv-SAS logs the broader expansion/territory-development snapshot between Workers and Settlers; keep that larger map-scan slice separate so this commit isolates mobile civilian-unit state and mission diagnostics. (ChatGPT-5.6-Sol) -->
+		logSASGameRecordSettlers(ePlayer, iGameTurn);
 		logSASGameRecordCities(ePlayer, iGameTurn);
 		logSASGameRecordWorkedPlots(ePlayer, iGameTurn);
 	}
