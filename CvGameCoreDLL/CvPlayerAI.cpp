@@ -28005,7 +28005,9 @@ void CvPlayerAI::AI_updateStrategyHash()
 				// </advc.020>
 				iMissionary += AI_getFlavorValue(FLAVOR_RELIGION) * 6; // up to 60
 
-				CivicTypes eCivic = GC.getInfo(getPersonalityType()).getFavoriteCivic();
+				// <!-- custom: AdvCiv tied favorite ideology to the displayed leader under Random Personalities, but this Missionary-strategy input still read the hidden personality.
+				// Use the centralized favorite-civic policy while retaining personality-driven flavors above. See KI#779. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+				CivicTypes const eCivic = getFavoriteCivic();
 				if (eCivic != NO_CIVIC &&
 					GC.getInfo(eCivic).isNoNonStateReligionSpread())
 				{

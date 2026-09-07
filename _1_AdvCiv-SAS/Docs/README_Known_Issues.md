@@ -875,7 +875,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#776 - (Pending Architectural inherited BtS research-path defect) Shared prerequisites can make the automatic queue choose a costlier route](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-776)\
 [KI#777 - (Provisional Pending AdvCiv espionage-announcement leak) Third parties receive an unrevealed capital's coordinates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-777)\
 [KI#778 - (Fixed inherited AdvCiv cache-invalidation issue) Permanent Alliances did not recount military-happiness garrisons](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-778)\
-[KI#779 - (Pending inherited AdvCiv Random Personalities issue) Missionary strategy reads the hidden personality's favorite civic](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-779)\
+[KI#779 - (Fixed inherited AdvCiv Random Personalities issue) Missionary strategy read the hidden personality's favorite civic](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-779)\
 [KI#780 - (Pending inherited BtS/K-Mod event-information leak) Global PickPlayer trigger news reveals an unmet civilization](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-780)\
 [KI#781 - (Fixed inherited BtS Permanent-Alliance cache defect) Former allied-border units retained unit-supply costs](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-781)\
 [KI#782 - (Provisional Pending inherited BtS civic-lifecycle defect broadened by SAS) Losing the final building CivicOption leaves an unavailable civic active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-782)\
@@ -16053,11 +16053,15 @@ Compiled successfully and directly exercised in `SASGameRecord_20260907T172657Z_
 
 <a id="ki-779"></a>
 
-## KI#779 - (Pending inherited AdvCiv Random Personalities issue) Missionary strategy reads the hidden personality's favorite civic
+## KI#779 - (Fixed inherited AdvCiv Random Personalities issue) Missionary strategy read the hidden personality's favorite civic
 
 AdvCiv `advc.130n` deliberately moved favorite-ideology semantics to `CvPlayer::getFavoriteCivic`, which reads the displayed leader while Random Personalities continues to supply personality-specific numeric AI preferences. One live lookup was missed: `CvPlayerAI::AI_updateStrategyHash` still reads the hidden personality's favorite civic when adding Missionary-strategy weight for civics that prohibit non-state religion spread. With displayed Asoka and hidden Isabella, for example, hidden Theocracy can add 20 and cross the Missionary threshold although displayed Asoka's favorite Pacifism should not.
 
 This is an AdvCiv partial-conversion issue absent from the original BtS/K-Mod distinction; Base AdvCiv 1.14 and AdvCiv-SAS retain the missed call site. The neighboring flavor terms correctly remain personality-driven, so the repair should replace only this favorite-civic lookup with `getFavoriteCivic()`. Found as F456/provisional KI#779 during ChatGPT-5.6-Sol's C031-WIP169 `CvPlayer.cpp`/`CvPlayerAI.cpp` deep re-audit; disposition independently reviewed and reconciled with the help of GPT-5.6-Sol, thanks.
+
+Prepared by routing only the Missionary-strategy favorite-civic input through AdvCiv's centralized displayed-leader policy. The neighboring gold, culture and religion flavors remain personality-driven as intended, preserving Random Personalities' concealed AI behavior while removing the unintended favorite-ideology leak. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Compiled successfully and validated by a Huge Pangaea Debug-opt autoplay with Random Personalities enabled. `SASGameRecord_20260907T175311Z_new1.log` identifies the tested dirty source/DLL, records the option explicitly and completes normally at turn 460 with a Domination victory.
 
 <a id="ki-780"></a>
 
