@@ -3169,6 +3169,13 @@ void CvGame::updateScore(bool bForce)
 		setTeamRank(eBestTeam, eRank);
 		setTeamScore(eBestTeam, iBestScore);
 	}
+	// <!-- custom: Population and team-composition changes alter passive espionage costs, but their low-level setters can run through transient city-transfer or team-merger states.
+	// Latch newly visible demographics here after the stable score refresh instead. See KI#784. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	for (PlayerIter<MAJOR_CIV> itObserver; itObserver.hasNext(); ++itObserver)
+	{
+		for (TeamIter<MAJOR_CIV,NOT_SAME_TEAM_AS> itTarget(itObserver->getTeam()); itTarget.hasNext(); ++itTarget)
+			itObserver->updateEverSeenDemographics(itTarget->getID());
+	}
 	// advc.130c, advc.001: Difficult to narrow down which players need an update
 	CvPlayerAI::AI_updateAttitudes();
 }

@@ -2,12 +2,12 @@ AdvCiv-SAS C++ File Audit Album
 Generated from local light-source snapshot only; no web/GitHub lookup used.
 
 CURRENT PROGRESS SUMMARY
-Files complete: 43 / 169
-Files open: 0 / 169
-Last completed file: queue 072 CvGameCoreDLL/CvStatistics.cpp (482 queued lines) - CLOSED AT C031-WIP489
-Next file: priority queue 074 CvGameCoreDLL/WarEvaluator.cpp (475 queued lines)
-Latest confirmed audit findings: F643-F649 / KI#965-KI#971 across the Queue 060, Queue 062, Queue 064 and Queue 072 closures. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
-Next new root ID: F650 unused / provisional KI#972 next
+Files complete: 47 / 169
+Files open: 1 / 169
+Last completed file: queue 096 CvGameCoreDLL/CvMemoryManager.cpp (286 queued lines) - CLOSED AT C031-WIP495
+Current open file: priority queue 108 CvGameCoreDLL/CvAgents.cpp (258 queued lines) - OPEN AT C031-WIP496
+Latest confirmed audit findings: F650-F652 / KI#972-KI#974 across the Queue 074, Queue 082 and Queue 108 audits. Queue 089 and Queue 096 closed cleanly. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
+Next new root ID: F653 unused / provisional KI#975 next
 
 The durable checkpoints and current cursor below are authoritative for finding status; the initial C010 snapshot and later WIP appends preserve their own historical source identities.
 
@@ -18,7 +18,7 @@ METHOD
 - Do not promote tuning disagreements, theoretical unsupported configurations, dead paths, or already-fixed history into new findings.
 - One root cause gets one finding even when several callers expose different symptoms.
 - False positives are recorded when useful so they are not rediscovered later.
-- Process every still-PENDING queue entry explicitly marked `priority next wip` before resuming ordinary queue order; among equally marked entries, follow queue order. Queue 074 `WarEvaluator.cpp` is next after the Queue 072 closure. This preserves the user's requested stronger-WIP priorities without making ChatGPT choose between competing continuation notes.
+- Process every still-PENDING queue entry explicitly marked `priority next wip` before resuming ordinary queue order; among equally marked entries, follow queue order. Continue open Queue 108 `CvAgents.cpp` from C031-WIP496 before selecting another file. This preserves the user's requested stronger-WIP priorities without making ChatGPT choose between competing continuation notes.
 
 QUEUE (current .cpp files, longest -> shortest)
 001  32205 CvGameCoreDLL/CvPlayerAI.cpp [COMPLETE ORIGINAL PASS / DEEP-METHOD RE-AUDIT CLOSED - C031-WIP65 / F321-F374]
@@ -94,7 +94,7 @@ QUEUE (current .cpp files, longest -> shortest)
 071    491 CvGameCoreDLL/CyInfoInterface2.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 072    482 CvGameCoreDLL/CvStatistics.cpp [COMPLETE - SEE C031-WIP489 DURABLE CHECKPOINT]
 073    476 CvGameCoreDLL/CyPlayerInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-074    475 CvGameCoreDLL/WarEvaluator.cpp [PENDING]<-(priority current next wip)
+074    475 CvGameCoreDLL/WarEvaluator.cpp [COMPLETE - C031-WIP491 / F650]
 075    472 CvGameCoreDLL/SelfMod.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 076    461 CvGameCoreDLL/CyCityInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 077    451 CvGameCoreDLL/StartPointsAsHandicap.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -102,21 +102,21 @@ QUEUE (current .cpp files, longest -> shortest)
 079    432 CvGameCoreDLL/ScaledNumTest.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 080    428 CvGameCoreDLL/CyReplayInfo.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 081    425 CvGameCoreDLL/CvInfo_Tech.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-082    407 CvGameCoreDLL/CvFractal.cpp [PENDING]<-(priority next wip after the first reloop)
+082    407 CvGameCoreDLL/CvFractal.cpp [COMPLETE - C031-WIP493 / F651]
 083    403 CvGameCoreDLL/FProfiler.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 084    389 CvGameCoreDLL/CyUnitInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 085    375 CvGameCoreDLL/FFreeListTrashArray.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 086    374 CvGameCoreDLL/CvXMLLoadUtility.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 087    348 CvGameCoreDLL/CyMap.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 088    342 CvGameCoreDLL/CvInfo_Organization.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-089    338 CvGameCoreDLL/CvGameAI.cpp [PENDING]<-(priority next wip after the first reloop)
+089    338 CvGameCoreDLL/CvGameAI.cpp [COMPLETE - C031-WIP494]
 090    330 CvGameCoreDLL/CyGameInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 091    328 CvGameCoreDLL/CySelectionGroup.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 092    327 CvGameCoreDLL/BBAILog.cpp [COMPLETE - SEE C029 DURABLE CHECKPOINT]
 093    323 CvGameCoreDLL/CvPopupReturn.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 094    304 CvGameCoreDLL/CvPlotGroup.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 095    291 CvGameCoreDLL/CyGameTextMgr.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-096    286 CvGameCoreDLL/CvMemoryManager.cpp [PENDING]<-(priority next wip after the first reloop)
+096    286 CvGameCoreDLL/CvMemoryManager.cpp [COMPLETE - C031-WIP495]
 097    282 CvGameCoreDLL/CvTalkingHeadMessage.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 098    281 CvGameCoreDLL/RFChapterScore.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 099    279 CvGameCoreDLL/CvDLLLogger.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -128,7 +128,7 @@ QUEUE (current .cpp files, longest -> shortest)
 105    265 CvGameCoreDLL/CvInfo_City.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 106    264 CvGameCoreDLL/CvDiploParameters.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 107    262 CvGameCoreDLL/FAStarFunc.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-108    258 CvGameCoreDLL/CvAgents.cpp [PENDING]<-(priority next wip after the first reloop)
+108    258 CvGameCoreDLL/CvAgents.cpp [OPEN - C031-WIP496 / F652]<-(priority current next wip)
 109    246 CvGameCoreDLL/CvPopupInfo.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 110    240 CvGameCoreDLL/AgentIteratorTest.cpp [PENDING]<-(priority next wip after the first reloop)
 111    240 CvGameCoreDLL/CvArtFileMgr.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -166323,6 +166323,1913 @@ team/player orientation, vassal/DP/war-plan assumptions, arithmetic/clamps/senti
 simulation reuse -> dedup especially against F639/F642 and prior WarUtility roots ->
 promote F650 only for a distinct current-live root -> freeze the next physical WIP at
 the next settled boundary whether F650 is consumed or unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP490 -- QUEUE 074 WarEvaluator.cpp -- F650 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP489.
+- Queue 072 `CvStatistics.cpp` remains CLOSED with F647-F649 / KI#969-KI#971.
+- Queue 074 `CvGameCoreDLL/WarEvaluator.cpp` is OPEN.
+- F650 / provisional KI#972 is CONFIRMED here.
+- F651 / provisional KI#973 is UNUSED.
+- No gameplay source was modified.
+
+EARLY QUEUE-074 NEGATIVE / PARKED CONTROLS
+------------------------------------------
+1. 48-civ cache-ID width is NOT broken in current SAS.
+   `WarEvalParamID` switches from `int` to `__int64` when the player/team maxima reach
+   the large-DLL range. Practical 2948 is explicitly the 48-civ UI-cache width repair.
+   The old "fits into 32 bit" comment in getID is stale documentation, not current
+   overflow.
+
+2. Explicit preparation-time postcondition is genuinely inconsistent but remains below
+   the independent gameplay threshold for now.
+   Top-level `evaluate(eWarPlan, iPreparationTime)` finishes by replacing
+   `m_kParams.getPreparationTime()` with `defaultPreparationTime(eWarPlan)` even when
+   the caller passed an explicit value such as 0. `UWAIAgent::doScheme` has a live
+   `evaluate(WARPLAN_PREPARING_LIMITED, bShortWork ? 0 : -1)` call and immediately reads
+   the overwritten preparation time. However that stored local value is currently used
+   for diagnostics/comparison logging rather than installed plan timing; actual plan
+   review recomputes preparation from plan age. Preserve as API/postcondition debt unless
+   a stronger consumer is found.
+
+3. `WarEvalParameters::getID()` is not actually a perfect mixed-base encoding:
+   after the naval bit it multiplies by 2, then adds `preparationTime+1` before
+   multiplying by 50. Therefore, with all other fields equal, e.g.:
+       nonnaval prep=2
+   collides with:
+       naval prep=0.
+   Total/non-total can collide at larger prep offsets too.
+   This is a real mathematical defect, but the current cache-using caller shapes examined
+   so far mostly force preparation 0/direct-war states. Do not assign a second root
+   without proving two supported colliding cache states are actually queried.
+
+-------------------------------------------------------------------------------
+F650 / provisional KI#972 -- the `bUseCache=true` WarEvaluator path writes live
+cache entries without marking the cache dirty, so scheduled `clearCache` invalidation
+can return early and leave stale war-utility results active
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited AdvC UI/AI cache-lifetime regression, current-live in ordinary
+war-trade evaluation. Supplied Base AdvC 1.14 retains the same logic.
+
+CACHE STATE MACHINE
+-------------------
+WarEvaluator has two orthogonal ways to use its primitive 16-entry cache:
+
+A. static wrapper mode:
+       WarEvaluator::enableCache()
+           m_bCheckCache = true;
+           m_bCacheCleared = false;
+
+B. per-instance mode:
+       WarEvaluator(params, true)
+           m_bUseCache = true;
+
+The cache check accepts either mode (plus the EXE diplomacy read context):
+
+    if (!m_bPeaceScenario &&
+        (m_bCheckCache || m_bUseCache || gDLL->isDiplomacy()))
+    {
+        look for matching cached result;
+    }
+
+The cache WRITE accepts the two explicit modes:
+
+    if (m_bCheckCache || m_bUseCache)
+    {
+        aiLastCallParams[iLastIndex] = id;
+        aiLastCallResult[iLastIndex] = utility;
+        iLastIndex = ...;
+    }
+
+But only `enableCache()` changes the dirty/cleared bookkeeping:
+
+    void enableCache()
+    {
+        m_bCheckCache = true;
+        m_bCacheCleared = false;
+    }
+
+The per-instance `bUseCache=true` constructor and the write block do NOT set
+`m_bCacheCleared=false`.
+
+INVALIDATION CONTRACT
+---------------------
+`UWAI::invalidateUICache()` is simply:
+
+    WarEvaluator::clearCache();
+
+and `CvGame::update` deliberately calls it every four turn slices:
+
+    if (getTurnSlice() % 4 == 0)
+        AI().uwai().invalidateUICache();
+
+The source comment says this is to prevent UI state -- specifically the willing-to-talk
+indicator -- from becoming outdated during a turn.
+
+`clearCache`, however, begins:
+
+    if (m_bCacheCleared)
+        return;
+
+    m_bCacheCleared = true;
+    for (...)
+        aiLastCallResult[i] = MIN_INT;
+
+Therefore a cache entry written exclusively through `bUseCache=true` while the flag is
+still true is invisible to the invalidator.
+
+MINIMAL DETERMINISTIC STATE-MACHINE PROOF
+-----------------------------------------
+Start from normal initialized state:
+
+    m_bCacheCleared = true
+    all results      = MIN_INT
+
+1. Construct:
+       WarEvaluator eval(params, true);
+
+2. Evaluate an uncached war utility U.
+   The final non-peace branch writes:
+       aiLastCallParams[k] = params.getID();
+       aiLastCallResult[k] = U;
+   but leaves:
+       m_bCacheCleared == true.
+
+3. Game state changes in any war-utility-relevant way:
+       city ownership,
+       military power,
+       attitude/memory,
+       war plan,
+       economic state,
+       diplomacy,
+       etc.
+
+4. Scheduled invalidation executes:
+       invalidateUICache()
+           -> clearCache()
+
+5. `clearCache` sees:
+       m_bCacheCleared == true
+   and RETURNS without clearing the live U entry.
+
+6. Another `WarEvaluator(params, true)` with the same parameter ID checks the cache
+   before reevaluating the changed world and returns U.
+
+No hash collision, overflow, RNG or custom state is needed. The entry is stale solely
+because the dirty flag fails to track a real write.
+
+ORDINARY HUMAN WAR-TRADE-ALERT ACTIVATION
+-----------------------------------------
+`UWAI::Team::declareWarTrade` is the only explicit constructor caller with
+`bUseCache=true`:
+
+    WarEvalParameters params(... sponsor ...);
+    WarEvaluator eval(params, true);
+    int iU = min(-1, eval.evaluate(WARPLAN_LIMITED));
+
+The AdvCiv4lerts WarTrade alert invokes this path directly:
+
+    WarTradeAlert::check()
+        -> kHireling.AI_declareWarTrade(target, ownerTeam)
+        -> CvTeamAI::AI_declareWarTrade
+        -> uwai().declareWarTrade(...)
+        -> WarEvaluator(params, true)
+
+Crucially, `WarTradeAlert::check` does NOT surround the call with
+`WarEvaluator::enableCache()`.
+
+Python schedules this alert on every:
+
+    BeginActivePlayerTurn
+
+through:
+    activePlayer.checkAlert(...)
+
+So a simple current game with:
+    H = human owner/sponsor
+    A = AI hireling
+    B = possible war target
+
+can produce one A-vs-B/sponsor-H cache entry at the start of H's turn while
+`m_bCacheCleared` is still true. If the human never invokes a separate trade/willing-
+to-talk widget path that calls `enableCache`, the every-four-slice invalidation is a
+no-op. After AI turns change the world, the next active-player-turn alert can hit the
+old A/B/H utility instead of recomputing it.
+
+This can make "will now trade war / no longer trade war" alerts lag arbitrarily until:
+- the 16-entry ring happens to evict the key;
+- some unrelated wrapper calls `enableCache`, causing a later invalidation to work;
+- or a whole-game/new-player cache reset occurs.
+
+GAMEPLAY AI CALLERS USE THE SAME STALE PATH
+-------------------------------------------
+This is not isolated to informational alerts.
+
+`CvTeamAI::AI_declareWarTrade` routes all UWAI-enabled nonhuman teams through the same
+`UWAI::Team::declareWarTrade` function and therefore the same `bUseCache=true`
+WarEvaluator.
+
+Current synchronized/gameplay callers include, among others:
+- force-war vote/resolution evaluation in `CvPlayerAI`;
+- vassal-deal acceptance checks, where accepting the vassal may require declaring war
+  on the incoming vassal's enemies;
+- ordinary trade/denial code paths.
+
+A stale cached war utility can therefore preserve an old `NO_DENIAL`/denial outcome
+across real state changes, not merely an old alert message.
+
+The cache parameter ID intentionally encodes scenario parameters, not mutable game
+state. Periodic `clearCache` is the mechanism intended to make that safe. F650 is the
+failure of that mechanism for one supported write mode.
+
+LINEAGE -- EXACT BIRTH IN PRACTICAL 1443
+----------------------------------------
+Practical 1422 ("Cache of the WarEvaluator class improved") introduced/expanded:
+- per-instance constructor `useCache`;
+- global/static cache usage;
+- EXE diplomacy cache reads.
+
+At that point there was no `cacheCleared` early-return optimization.
+
+Practical 1443 then introduced:
+    cacheCleared = true;
+    enableCache() -> cacheCleared = false;
+    clearCache() -> if(cacheCleared) return;
+
+The change converted the old public `checkCache=true/false` UI wrappers into
+`enableCache()/disableCache()` and correctly marks wrapper-mode caching dirty.
+
+But the already-existing per-instance `useCache=true` mode remained a writer and was
+not taught to mark the new flag dirty.
+
+Thus practical 1443 creates the exact state:
+    live cache entry + cacheCleared==true.
+
+Later refactors rename members but preserve the asymmetry. Current Base AdvC 1.14 has
+identical:
+- `enableCache` dirty transition;
+- early-returning `clearCache`;
+- `m_bUseCache` read/write conditions;
+- no dirty transition on per-instance write.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for:
+- `m_bCacheCleared` / `cacheCleared`;
+- WarEvaluator clear/invalidate cache;
+- bUseCache war evaluator;
+- stale war-utility cache;
+- `invalidateUICache`
+
+find no prior confirmed owner.
+
+Nearby queue findings are distinct:
+- F639/F642 are ArmamentForecast scenario-state leaks;
+- F644/F645 are MilitaryAnalyst nuclear simulation defects;
+- prior cached-UWAI findings concern other cache fields/lifetimes, not WarEvaluator's
+  dirty-bit state machine.
+
+REPAIR BOUNDARY
+---------------
+Make dirty state track ACTUAL cache contents, not only one activation API.
+
+Narrow robust fix:
+    whenever a result is written into `aiLastCallResult`, set:
+        m_bCacheCleared = false;
+
+Conceptually:
+
+    if (m_bCheckCache || m_bUseCache)
+    {
+        ... write entry ...
+        m_bCacheCleared = false;
+    }
+
+This directly establishes the invariant:
+    any valid result entry => m_bCacheCleared == false.
+
+Alternative simpler fix:
+    remove the early-return optimization from `clearCache` and always clear 16 ints.
+The cache is only 16 entries; correctness may be worth eliminating the secondary state
+entirely.
+
+Do not rely on every caller of `bUseCache=true` remembering to call `enableCache`:
+the constructor mode exists specifically as an independent API and the current
+declare-war-trade caller intentionally uses it that way.
+
+VALIDATION TARGETS
+------------------
+1. Initial state -> bUseCache=true write:
+       cache dirty flag becomes false.
+2. `clearCache` immediately afterward:
+       all result slots become MIN_INT.
+3. Same parameter query after changed world:
+       evaluator recomputes, does not return old U.
+4. WarTradeAlert across two active-player turns with a state change between:
+       second check reflects changed war-trade utility.
+5. Synchronized `AI_declareWarTrade` after invalidation:
+       no stale denial/acceptance from prior state.
+6. Wrapper mode `enableCache/disableCache` remains behaviorally unchanged.
+7. Repeated `clearCache` when truly empty may still short-circuit if the optimization is
+   retained.
+8. New-player/revived-player `clearCache` calls must clear entries written by either
+   cache mode.
+9. Cache ring replacement semantics remain unchanged.
+10. Separate getID collision/preparation-time questions remain independent; F650 fixes
+    invalidation only.
+
+POST-F650 LEDGER / EXACT RESUME
+-------------------------------
+Queue 074 `CvGameCoreDLL/WarEvaluator.cpp` -- OPEN.
+F650 / provisional KI#972 -- CONFIRMED.
+F651 / provisional KI#973 -- UNUSED.
+
+Exact continuation:
+C031-WIP490 physical -> Queue074 OPEN -> exclude F650 plus all prior WarEvaluator/UWAI
+owners -> continue malformed mixed-base `WarEvalParameters::getID` collision activation
+proof -> cache modes with `gDLL->isDiplomacy`, warAllies/extraTargets excluded-key state,
+cache hit/write symmetry and invalidation callers -> finish recursive parameter restore,
+explicit preparation postcondition, total/limited/naval comparison and diagnostic rerun
+contracts -> exhaust all 39-ish WarEvaluator history strata -> whole-album dedup ->
+promote F651 only for a distinct current-live root -> freeze the next physical WIP at
+the next settled boundary whether F651 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP491 -- QUEUE 074 WarEvaluator.cpp -- CLOSED / F651 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP490.
+- Queue 074 `CvGameCoreDLL/WarEvaluator.cpp` is CLOSED.
+- Queue-074 confirmed root:
+    F650 / provisional KI#972
+- F651 / provisional KI#973 remains intentionally UNUSED.
+- Files complete: 44 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 082 `CvGameCoreDLL/CvFractal.cpp` (407 queued lines).
+- No gameplay source was modified.
+
+FINAL POST-F650 SATURATION PASS
+-------------------------------
+1. `WarEvalParameters::getID` is mathematically non-injective
+   ----------------------------------------------------------
+   This remains a real implementation flaw but not a second current-live finding on the
+   caller set proved in Queue 074.
+
+   The mixed-base sequence uses:
+       ... total; *2;
+       naval; *2;
+       preparationTime+1; *50;
+
+   so the preparation digit is allowed to exceed the immediately preceding base.
+   Examples with all other fields equal:
+       nonnaval prep 2 == naval prep 0
+       limited prep 4 == total prep 0 (same naval state).
+
+   Current cache-producing/reading caller shapes examined do not produce a supported
+   colliding pair under the same remaining parameters:
+   - sponsored declare-war-trade sets `immediateDoW`, forcing prep 0;
+   - at-war willing-to-talk evaluation uses prep 0;
+   - normal default limited/total land/naval combinations are distinct;
+   - explicit prep 3/5 callers use different sponsor/target/considering-peace contexts
+     and do not match the live cached keys.
+
+   Keep as cache-key robustness debt and a strong unit-test target. Do not consume F651
+   without a concrete colliding live pair.
+
+2. Long game-speed preparation bound
+   ----------------------------------
+   `getID` asserts `preparationTime+1 < 50`, while custom Slow/Very Slow train percents
+   can make default preparation exceed that nominal bound.
+
+   The same activation problem applies: cached contexts currently force/consume short
+   preparation states. Noncached WarEvaluator calls never call getID at all. Therefore
+   the assert/key-domain mismatch remains mod-speed/cache robustness rather than F651.
+
+3. `warAllies` / `extraTargets` excluded from cache key
+   ----------------------------------------------------
+   `getID` explicitly asserts both sets are empty and documents that those scenarios
+   should have caching disabled.
+
+   The supported extra-target and war-ally evaluators use ordinary WarEvaluator
+   instances (`m_bUseCache=false`) in synchronized AI/vote computation; no surrounding
+   global cache-enable scope was found for those current calls.
+
+   `gDLL->isDiplomacy()` can trigger cache reads even without explicit cache enable,
+   which is a sharp API seam, but the current joint-war valuation path that constructs a
+   WarAlly set is used by synchronized AI trade planning rather than the human
+   diplomacy-screen value path. No concrete stale-key read was established.
+
+4. Cache read/write asymmetry
+   --------------------------
+   `gDLL->isDiplomacy()` enables cache READ but not WRITE. This is intentional:
+   trade-screen computations can reuse results written by explicit denial/UI cache paths
+   without pushing additional entries.
+
+   F650 is the independent dirty-state bug for the actual per-instance writer.
+
+5. Recursive war/peace parameter restoration
+   ------------------------------------------
+   The recursive peace evaluation mutates:
+       naval=false
+       total=false
+       preparationTime
+   but the parent war branch restores all three before:
+       - writing its cache key/result;
+       - returning to the outer land/naval comparison.
+
+   Sponsor, capitulation, ignore-distraction, considering-peace, allies and extra targets
+   are not changed by the recursive call. No additional restoration leak survives.
+
+6. Top-level land/naval comparison
+   -------------------------------
+   - naval is skipped when the agent has no assault/settler-sea transport;
+   - both runs receive the same requested preparation input;
+   - the +3 anti-naval preference is deliberate policy;
+   - when logging is enabled, the extra third run is executed only for the selected
+     orientation and does not alter the previously computed utility except by
+     recomputation of deterministic evaluator state;
+   - report muting is nesting-safe through `UWAIReport`'s counter semantics.
+
+7. Explicit preparation-time output postcondition
+   ----------------------------------------------
+   As recorded in WIP490, top-level evaluate overwrites the exposed parameter with
+   `defaultPreparationTime(eWarPlan)` even after an explicit preparation input.
+   `doScheme` reads this after its short-work `prep=0` call, but the value is currently
+   used for logging/comparison diagnostics; actual war-plan state/timing is not installed
+   from that local variable. No gameplay F651 is assigned.
+
+8. Cache invalidation
+   ------------------
+   F650 owns the only demonstrated current state-machine contradiction:
+       per-instance `bUseCache=true` write
+       + dirty flag left true-as-cleared
+       + scheduled clear early-return
+       -> stale result survives.
+
+   Wrapper-mode `enableCache/disableCache` correctly marks cache dirty and scheduled
+   clearing then works.
+
+HISTORY CLOSURE
+---------------
+All indexed WarEvaluator / WarEvalParameters semantic strata were reviewed.
+
+High-value changes include:
+- practical 1253: initial UWAI evaluator;
+- practical 1259: explicit cache clearing support;
+- practical 1422: expanded cache and per-instance `useCache`;
+- practical 1443: dirty/cleared optimization; exact birth of F650;
+- practical 1446: willing-to-talk UI cache wrapper cleanup;
+- practical 1478: `long` -> `int` cache IDs with documented ally/extra-target exclusion;
+- practical 2608/2617: cache size 16 and follow-up syntax repair;
+- practical 2920/2923: comprehensive UWAI rewrite;
+- practical 2948: 48-civ `WarEvalParamID` width repair;
+- practical 2963: style-only in evaluator;
+- SAS 6036/6054: logging and already-owned war/peace utility fixes, not cache semantics.
+
+Current SAS core evaluator/cache behavior remains Base AdvC 1.14-compatible aside from
+SAS diagnostic logging and previously reconciled SAS fixes. No later Base-1.14 repair is
+missing.
+
+QUEUE-074 ROOT LEDGER
+---------------------
+F650 / KI#972
+    per-instance `bUseCache=true` writes live WarEvaluator cache entries without marking
+    the cache dirty; periodic `clearCache` can therefore return early and preserve stale
+    war-trade utility.
+
+F651 / KI#973
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 074 is closed. The malformed cache-key positional encoding and explicit-prep
+postcondition remain documented robustness/API debt, but neither has a distinct
+supported current gameplay activation after the full caller sweep.
+
+EXACT CONTINUATION
+------------------
+C031-WIP491 physical -> Queue074 CLOSED -> F650 confirmed ->
+F651/KI#973 UNUSED -> open priority Queue082
+`CvGameCoreDLL/CvFractal.cpp` (407 queued lines) -> establish SAS/Base AdvC 1.14,
+K-Mod/Civ4CE provenance and map-script caller/history map -> audit fractal initialization,
+dimensions/wrapping, exponent/grain/flags, RNG seeding, ridge/hint arrays, height
+percentile lookup, coordinate conversions, polar/invert flags, memory ownership and
+Python map-script interfaces -> dedup against existing map-generation findings
+F249/F634/F636 and related map roots -> promote F651 only for a distinct current-live
+root -> freeze the next physical WIP at the next settled boundary whether F651 is
+consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP492 -- QUEUE 082 CvFractal.cpp -- F651 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP491.
+- Queue 074 `WarEvaluator.cpp` remains CLOSED with F650/KI#972.
+- Queue 082 `CvGameCoreDLL/CvFractal.cpp` is OPEN.
+- F651 / provisional KI#973 is CONFIRMED here.
+- F652 / provisional KI#974 is UNUSED.
+- No gameplay source was modified.
+
+QUEUE-082 PROVENANCE BASELINE
+-----------------------------
+Current SAS `CvFractal.cpp` is 407 physical lines.
+
+Its normalized executable token stream is identical to supplied Base AdvC 1.14.
+K-Mod 1.46 and Civ4CE retain the same inherited height-inversion boundary loop; AdvC's
+later changes concern types, polar behavior, dimension selection and refactoring rather
+than this post-transform boundary contract.
+
+Only about twenty historical commits touch the file. The most relevant is practical
+3716 ("Fractal maps: choose smarter internal dimensions"), which can enlarge DEFAULT
+internal dimensions on tall/large maps. That code deliberately applies only when the
+script uses default exponents. Scripts that explicitly request custom exponents retain
+those requested dimensions.
+
+-------------------------------------------------------------------------------
+F651 / provisional KI#973 -- `FRAC_INVERT_HEIGHTS` transforms only the interior
+fractal cells but `getHeight` can interpolate against the uninverted +1 boundary row/
+column; SAS's enlarged Team Battleground now samples those stale cells in normal maps
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited Civ4/K-Mod/AdvC fractal transform bug with a current SAS activation.
+It changes actual generated land/ocean plot types on the shipped Team Battleground map
+from SAS32 upward.
+
+ROOT
+----
+`CvFractal` allocates:
+
+    m_aaiFrac[m_iFracX + 1][m_iFracY + 1]
+
+because `getHeight` performs bilinear interpolation and may need `iLowX+1` /
+`iLowY+1`.
+
+For NON-wrapped dimensions, the fractal generation loops explicitly generate the +1
+boundary coordinates:
+
+    iX < (m_iFracX >> iPass) + 1
+    iY < (m_iFracY >> iPass) + 1
+
+For WRAPPED dimensions, each pass explicitly fills the +1 boundary from the opposite
+edge:
+
+    m_aaiFrac[m_iFracX][iY] = m_aaiFrac[0][iY]
+    m_aaiFrac[iX][m_iFracY] = m_aaiFrac[iX][0]
+
+So index `m_iFracX` / `m_iFracY` is legitimate interpolation data, not unused padding.
+
+After the whole fractal is generated, however, inversion does only:
+
+    if (m_eFlags & FRAC_INVERT_HEIGHTS)
+    {
+        for (int iX = 0; iX < m_iFracX; iX++)
+        {
+            for (int iY = 0; iY < m_iFracY; iY++)
+                m_aaiFrac[iX][iY] = 255 - m_aaiFrac[iX][iY];
+        }
+    }
+
+The entire +1 row and +1 column remain in the PRE-inversion height domain.
+
+`getHeight`, by contrast, clamps the low coordinate to `m_iFracX-1` /
+`m_iFracY-1` specifically so it can still read:
+
+    m_aaiFrac[iLowX + 1][...]
+    m_aaiFrac[...][iLowY + 1]
+
+When map dimensions are larger than the internal fractal dimensions, ordinary final
+map coordinates acquire a nonzero interpolation weight on those +1 boundary cells.
+The returned height therefore mixes:
+    inverted interior data
+with:
+    uninverted boundary data.
+
+WRAPPED AND NON-WRAPPED FORMS
+-----------------------------
+The root affects both kinds of boundaries once they are sampled.
+
+Non-wrapped:
+    the +1 boundary is a genuine generated edge value and simply never gets inverted.
+
+Wrapped:
+    the +1 boundary was copied from row/column zero BEFORE inversion. Row/column zero is
+    then inverted, while its duplicate remains the original value, so periodic seam
+    equality is broken:
+        boundary == old(edge0)
+        edge0    == 255 - old(edge0)
+
+For a wrapped map the duplicate should be refreshed from the post-transform edge before
+interpolation can consume it.
+
+WHY STOCK TEAM BATTLEGROUND DID NOT EXPOSE IT
+---------------------------------------------
+The shipped BtS Team_Battleground.py already contains:
+
+    elif userInputPlots == 1: # Top vs Bottom
+        fractal_world = FractalWorld(fracXExp=6, fracYExp=6)
+        fractal_world.initFractal(
+            continent_grain=4,
+            rift_grain=-1,
+            has_center_rift=False,
+            invert_heights=True)
+        generatePlotTypes(water_percent=8)
+
+So its continent fractal has:
+
+    m_iFracX = 2^6 = 64
+    m_iFracY = 2^6 = 64.
+
+But the stock square Top-v-Bottom Huge grid is only:
+
+    13 x 13 terrain cells
+
+and a Python grid-size override is multiplied by 4 in `CvMap::reset`, yielding:
+
+    52 x 52 map plots.
+
+With output dimensions below 64, `getHeight` never needs interpolation cell 64.
+The inherited defect therefore remained dormant in this stock fixture.
+
+SAS ACTIVATION
+--------------
+SAS practical 5423 added/fixed Team_Battleground for AdvCiv-SAS and deliberately
+calibrated the square modes beyond Huge using the Huge 13x13 / 16-player anchor.
+
+Current world-size calibration gives:
+
+    Huge / 16 players:
+        13x13 cells -> 52x52 plots
+
+    SAS24:
+        16x16 cells -> 64x64 plots
+
+    SAS32:
+        18x18 cells -> 72x72 plots
+
+    SAS40:
+        21x21 cells -> 84x84 plots
+
+    SAS48:
+        23x23 cells -> 92x92 plots
+
+The current XML default player counts are 16/24/32/40/48 respectively, and
+`sas_calibrate_grid_from_anchor` computes these values from the 13x13 Huge anchor.
+
+At SAS24 the last plot maps exactly to internal coordinate 63 with zero fractional
+weight, so boundary cell 64 still is not sampled.
+
+At SAS32 and above it is.
+
+EXACT INTERPOLATION WEIGHT
+--------------------------
+Current `FLOAT_PRECISION` is 1024.
+
+For Team Battleground SAS32:
+    output width = 72
+    internal width = 64
+
+so:
+
+    m_iXInc = floor(64 * 1024 / 72)
+            = 910
+
+At final map column x=71:
+
+    iLowX = floor(910 * 71 / 1024)
+          = 63
+
+    iErrX = 910*71 - 63*1024
+          = 98
+
+Therefore `getHeight(71,y)` assigns boundary column 64:
+
+    98 / 1024
+    ~= 9.57%
+
+of the horizontal interpolation weight.
+
+The fraction grows with SAS world size:
+
+    SAS32:  9.57%
+    SAS40: 22.27%
+    SAS48: 27.34%
+
+On SAS48 a stale boundary value can therefore shift a one-dimensional edge
+interpolation by up to roughly:
+
+    0.2734 * 255
+    ~= 69.7 height points
+
+before the second bilinear dimension is considered.
+
+EXACT CURRENT-DATA LAND/OCEAN REPRODUCTION
+------------------------------------------
+A literal integer translation of current `CvFractal::fracInitInternal`,
+`CvRandom::get`, `getHeightFromPercent` and `getHeight` was used as an arithmetic
+oracle for the cleanest supported case:
+
+    map script: Team_Battleground
+    layout: Top vs Bottom
+    world size: SAS32
+    wrap: Flat
+    sea level: Medium (SeaLevelChange=0)
+    continent fractal: explicit 6x6 exponent, grain 4, no rift
+    invert heights: true
+    requested water percent: 8
+    fractal-entry CvRandom state: 0
+
+The RNG transition is the current 32-bit LCG:
+
+    state = 1103515245*state + 12345 (mod 2^32)
+
+whose odd multiplier makes it bijective modulo 2^32. Therefore a chosen fractal-entry
+state is reachable from a game/map seed after any fixed preceding sequence of RNG calls;
+state 0 is a valid deterministic reproduction state rather than an impossible stream.
+
+The interior-only current inversion produces:
+
+    getHeightFromPercent(8) = 51
+
+Because `getHeightFromPercent` deliberately scans only:
+    x < m_iFracX
+    y < m_iFracY
+
+the threshold itself is unchanged by repairing only the +1 boundary.
+
+On the 72x72 output, current code versus a coherent full-boundary inversion gives these
+actual bottom-row continent heights:
+
+    plot (33,71):
+        current = 68  -> LAND (>51)
+        corrected = 45 -> OCEAN (<=51)
+
+    plot (35,71):
+        current = 57  -> LAND
+        corrected = 34 -> OCEAN
+
+    plot (40,71):
+        current = 54  -> LAND
+        corrected = 32 -> OCEAN
+
+    plot (41,71):
+        current = 60  -> LAND
+        corrected = 42 -> OCEAN
+
+    plot (64,71):
+        current = 58  -> LAND
+        corrected = 37 -> OCEAN
+
+Thus this is not merely a hidden fractal-field discontinuity. In one exact current
+supported fixture, FIVE map plots change `PLOT_OCEAN`/land classification because the
+edge interpolation mixes pre- and post-inversion domains.
+
+The ordinary `FractalWorld.generatePlotTypes` consumer is direct:
+
+    iWaterThreshold =
+        self.continentsFrac.getHeightFromPercent(water_percent)
+
+    val = self.continentsFrac.getHeight(x,y)
+
+    if val <= iWaterThreshold:
+        PLOT_OCEAN
+    else:
+        land/hills/peaks
+
+No later normalization reconstructs the intended continent height field.
+
+WRAP OPTIONS CAN STRENGTHEN THE SAME ROOT
+-----------------------------------------
+Team Battleground also exposes:
+    Flat
+    Cylinder
+    Toroid
+
+through `getWrapX/getWrapY`.
+
+Top-v-Bottom with Cylinder/Toroid still uses the same explicit 64x64 inverted fractal.
+For a wrapped dimension, boundary cell 64 is a pre-inversion copy of edge cell 0, so
+SAS32+ interpolation additionally creates a literal periodic seam mismatch.
+
+This is same-root breadth; the flat SAS32 fixture already proves F651.
+
+PRACTICAL 3716 DOES NOT REPAIR THIS SCRIPT
+------------------------------------------
+AdvC practical 3716 ("Fractal maps: choose smarter internal dimensions") can enlarge
+default internal dimensions for large/tall maps.
+
+But its code tracks whether the script supplied default exponents. Team Battleground
+explicitly constructs:
+
+    FractalWorld(fracXExp=6, fracYExp=6)
+
+and current SAS intentionally preserves explicit map-script fractal exponents.
+
+So the automatic large-map dimension adjustment does not fire here. This is not a
+missed invocation of an existing repair; it is a post-transform boundary bug exposed
+by a legitimate explicit-resolution script on larger SAS output grids.
+
+ANCESTRY
+--------
+Civ4CE BtS, K-Mod 1.46, Base AdvC 1.14 and current SAS all retain the same inversion:
+
+    for x < m_iFracX
+        for y < m_iFracY
+            invert
+
+while allocating/using +1 boundary cells.
+
+Therefore the C++ root is inherited from Firaxis/BtS.
+
+The current normal activation is SAS-specific in the Team Battleground fixture because
+SAS extends the map beyond the original 64x64 internal fractal resolution:
+- stock script had explicit 6x6 inversion;
+- stock supported square sizes remained <=52 plots;
+- SAS practical 5423 introduced calibrated larger square grids;
+- SAS32+ crosses the 64-plot interpolation boundary.
+
+Other current invert-height scripts can share the same root whenever their output
+dimension exceeds their chosen internal fractal dimension.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for:
+- `CvFractal`;
+- `FRAC_INVERT_HEIGHTS`;
+- inverted-height boundary / seam;
+- Team Battleground fractal edges;
+- +1 fractal interpolation boundary
+
+find no prior confirmed owner.
+
+Nearby map findings are distinct:
+- F249/KI#572: map-generator stale area pointer after batched plot mutation;
+- F634/KI#956: cached `m_bLake` not refreshed during normalization;
+- F636/KI#958: WorldBuilder city-bearing scenarios keep pre-Ice water-area topology.
+
+F651 occurs before CvPlot/CvArea topology exists and changes the raw generated plot type
+array.
+
+REPAIR BOUNDARY
+---------------
+The invariant should be:
+
+    every fractal cell that `getHeight` can interpolate from must represent the SAME
+    post-transform height domain.
+
+Do not blindly reason only about the percentile interior.
+
+For nonwrapped, nonpolar dimensions:
+    transform the generated +1 boundary row/column too.
+
+For wrapped dimensions:
+    after inversion, refresh duplicate boundary row/column from the already-inverted
+    row/column zero (or equivalently transform the duplicates consistently).
+
+A robust implementation can separate:
+1. transform all genuine fractal samples;
+2. re-establish boundary conditions AFTER the transform:
+       wrap -> copy transformed opposite edge;
+       polar -> reapply explicitly intended polar boundary semantics.
+
+This avoids accidentally changing the special FRAC_POLAR policy merely by extending a
+loop bound. No current F651 fixture requires polar+invert.
+
+Also keep `getHeightFromPercent` scanning only the unique/interior data as today;
+wrapped duplicate boundaries should not be double-counted in percentile statistics.
+
+VALIDATION TARGETS
+------------------
+1. Team Battleground Top-v-Bottom Huge 52x52:
+   preserve ordinary output (boundary not sampled).
+2. SAS24 64x64:
+   preserve output; final plot has zero +1 interpolation weight.
+3. SAS32 72x72 flat:
+   every interpolated boundary sample is in inverted height domain.
+4. Exact RNG-state-0 fixture:
+   threshold remains 51 and the five listed bottom-row plots match the coherent
+   corrected heights/classifications.
+5. SAS40/SAS48:
+   no mixed pre/post-inversion edge values.
+6. Cylinder:
+   transformed `fracX` duplicate equals transformed column 0 after inversion.
+7. Toroid:
+   both transformed +1 duplicates equal their wrapped source edges, including corner.
+8. Nonwrapped:
+   genuine generated +1 edge values are transformed whenever interpolation can use them.
+9. `getHeightFromPercent` distribution remains based on unique cells and does not count
+   wrap duplicates.
+10. FRAC_POLAR:
+    explicitly preserve/document intended polar boundary value after transform rather
+    than accidentally inverting or duplicating it.
+11. Non-inverted fractals:
+    bit-for-bit unchanged.
+12. Scripts whose output dimensions remain below internal resolution:
+    bit-for-bit unchanged.
+
+POST-F651 LEDGER / EXACT RESUME
+-------------------------------
+Queue 082 `CvGameCoreDLL/CvFractal.cpp` -- OPEN.
+F651 / provisional KI#973 -- CONFIRMED.
+F652 / provisional KI#974 -- UNUSED.
+
+Exact continuation:
+C031-WIP492 physical -> Queue082 OPEN -> exclude F651 plus all prior map owners ->
+finish the reinitialization ownership leak by proving/closing current caller lifetime ->
+audit `getHeightFromPercent` integer termination/percent bounds, exponent/grain shift
+bounds, hinted-fractal dimensions and lengths, center-rift assumptions, `tectonicAction`
+index/wrap contracts, `yieldX`, large-map internal-dimension selection, polar behavior,
+allocation/deallocation pairing and Python/EXE API invalid-input surfaces -> exhaust the
+~20 CvFractal history strata -> compare Base AdvC/K-Mod/Civ4CE -> promote F652 only for
+a distinct current-live root -> close Queue082 or freeze another WIP at the next settled
+boundary regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP493 -- QUEUE 082 CvFractal.cpp -- CLOSED / F652 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP492.
+- Queue 082 `CvGameCoreDLL/CvFractal.cpp` is CLOSED.
+- Queue-082 confirmed root:
+    F651 / provisional KI#973
+- F652 / provisional KI#974 remains intentionally UNUSED.
+- Files complete: 45 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 089 `CvGameCoreDLL/CvGameAI.cpp` (338 queued lines).
+- No gameplay source was modified.
+
+FINAL POST-F651 SATURATION PASS
+-------------------------------
+1. `tectonicAction` / rift wrapping
+   --------------------------------
+   The C++ function and `yieldX` both carry the inherited comment:
+       "Assumes FRAC_WRAP_X is on."
+
+   Shipped scripts do violate that literal precondition. The strongest case is
+   `Tilted_Axis.py`:
+       getWrapX() -> false
+       getWrapY() -> true
+   while its Massive/Normal/Small Continents modes use positive rift grains and pass
+   a rift fractal to `fracInitRifts`.
+
+   The implementation then:
+   - wraps negative/overflowing rift-strip X coordinates through `yieldX`;
+   - carves its edge rift across the left/right map edges as though they were adjacent;
+   - finally copies fractal column 0 into duplicate column `m_iFracX`.
+
+   This is unusual on a non-wrapped X map, but it is not promoted as F652:
+   - stock Firaxis/BtS itself ships Tilted Axis with this exact call shape;
+   - the rift documentation describes a forced "edge" ocean in addition to optional
+     center rifts, so modular edge carving may be deliberate implementation policy even
+     on a flat horizontal dimension;
+   - no authoritative alternative algorithm/output exists locally from which to prove
+     a particular generated plot wrong.
+
+   Preserve as documented design/precondition debt, not a finding.
+
+2. `reset()` without `uninit()`
+   ----------------------------
+   `fracInitInternal` begins with:
+       reset();
+   and `reset` simply nulls `m_aaiFrac`; it does not delete a prior allocation.
+   Reinitializing one already-initialized CvFractal object would therefore leak its
+   complete old `(fracX+1)*(fracY+1)` allocation.
+
+   A mechanical shipped-caller sweep found no normal second initialization of the same
+   object:
+   - generic `FractalWorld.continentsFrac` chooses exactly one of fracInit/fracInitRifts;
+   - hinted worlds use their own one-time init path;
+   - regional fractals are newly constructed locals per region call;
+   - Terrain/Feature generators construct new member fractals and initialize each once;
+   - duplicate textual init call sites in Tilted Axis/Fantasy are mutually exclusive
+     rift/no-rift branches.
+
+   Thus the ownership bug is real for Python/mod API reuse but no current shipped map
+   activates it. Do not spend F652 on a leak with no current lifetime fixture.
+
+3. `getHeightFromPercent`
+   ----------------------
+   - input is clamped to 0..100;
+   - current internal dimensions keep `100*iSum` well within signed int;
+   - binary search terminates at the lower bound for every clamped percent;
+   - strict `< threshold` counting versus map consumers' `<= threshold` produces the
+     inherited discrete-height approximation, not an unbounded or invalid result;
+   - excluding duplicate +1 wrap boundaries from percentile statistics is intentional.
+   F651 remains the separate transform-domain mismatch when getHeight interpolates an
+   uninverted +1 boundary.
+
+4. Interpolation arithmetic
+   ------------------------
+   With FLOAT_PRECISION=1024:
+   - each bilinear weight product is <= 1024^2;
+   - four weighted height terms sum below signed 32-bit range;
+   - current map coordinates guarantee raw low indices remain within the final
+     interpolation cell; the safety clamps do not produce negative interpolation
+     weights in supported dimensions;
+   - dimensions from every shipped world/map script are positive, so X/Y increments do
+     not divide by zero.
+
+5. Exponent / grain / shift contracts
+   -----------------------------------
+   Current shipped exponents stay within the range where:
+   - `1 << exponent` is defined and small;
+   - random displacement shifts `1 << (8-iSmooth+iPass)` remain nonnegative;
+   - generated arrays are practical in size.
+
+   `iSmooth = range(minExp-grain, 0, minExp)` intentionally clamps extreme grain values.
+   Invalid externally supplied huge/negative exponents remain Python/mod API hardening,
+   not current gameplay.
+
+6. Hinted fractals
+   ---------------
+   `fracInitHinted` strips FRAC_POLAR deliberately and computes hint width/height from
+   the actual fractal flags. Shipped hinted generators provide arrays matching those
+   dimensions. The release-build FAssert-only length check is sharp for custom callers
+   but no supplied current mismatch was found.
+
+7. Rift-fractal dimension coupling
+   -------------------------------
+   `tectonicAction` indexes `pRifts` using the main fractal's quarter-X and full Y
+   coordinates, so mismatched internal dimensions could be unsafe. All shipped
+   `fracInitRifts` producers construct the rift and continent fractals with the same
+   output dimensions and the same X/Y exponents before passing the pointer. No current
+   mismatch survives.
+
+8. Polar behavior
+   --------------
+   AdvC's Fractal-map-specific `polarHeight()` override is intentional and localized.
+   Wrapped dimensions take precedence over FRAC_POLAR in boundary setup. Current
+   scripts use those combinations consistently. F651's recommended repair must
+   explicitly re-establish polar/wrap boundary semantics after inversion rather than
+   blindly inverting every +1 cell.
+
+HISTORY CLOSURE
+---------------
+All 19 indexed CvFractal.cpp history entries were classified.
+
+High-value strata:
+- K-Mod initial import: inherited Firaxis fractal implementation and the inversion
+  boundary root later confirmed as F651;
+- practical 1395: cppcheck/refactor plus initialization of X/Y increments;
+- practical 1456: Fractal-map polar-height refinement;
+- practical 2549/2554: enum refactors only;
+- practical 2842: broad refactor;
+- practical 2982: Civ4Col-style `while` wrapping in `yieldX`, defensive for large
+  excursions;
+- practical 3716: FLOAT_PRECISION 1000->1024 and smarter default internal dimensions;
+- SAS 5961: signature formatting only.
+
+Current SAS and supplied Base AdvC 1.14 are executable-semantically identical in this
+file. K-Mod/Civ4CE retain F651's inherited inversion bounds and the same rift assumptions.
+No later Base-1.14 repair is missing.
+
+QUEUE-082 ROOT LEDGER
+---------------------
+F651 / KI#973
+    FRAC_INVERT_HEIGHTS transforms only unique/interior cells while getHeight can
+    interpolate +1 boundary samples; SAS32+ Team Battleground Top-v-Bottom now samples
+    those stale pre-inversion cells and can flip actual land/ocean plot types.
+
+F652 / KI#974
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 082 is closed. Remaining sharp surfaces are unsupported reinitialization/API
+lifetime, inherited rift-design assumptions without a correctness oracle, or invalid
+external parameter hardening. None clears the independent current-live threshold for
+F652.
+
+EXACT CONTINUATION
+------------------
+C031-WIP493 physical -> Queue082 CLOSED -> F651 confirmed ->
+F652/KI#974 UNUSED -> open next selected priority Queue089
+`CvGameCoreDLL/CvGameAI.cpp` (338 lines) -> establish SAS/Base AdvC 1.14/K-Mod/Civ4CE
+provenance and history/caller map -> audit UWAI option initialization/load semantics,
+scenario AI initialization, combat-value/turn-scaling arithmetic, current-era factor,
+vote-source-era derivation, max-culture scaling, exclusive-radius weights,
+serialization/reset lifetime and dynamic XML/state assumptions -> whole-album dedup
+before numbering -> promote F652 only for a distinct current-live root -> freeze the
+next physical WIP at the next settled boundary whether F652 is consumed or remains
+unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP494 -- QUEUE 089 CvGameAI.cpp -- CLOSED / F652 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP493.
+- Queue 089 `CvGameCoreDLL/CvGameAI.cpp` is CLOSED.
+- No new Queue-089 root was promoted.
+- F652 / provisional KI#974 remains intentionally UNUSED.
+- Files complete: 46 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 096 `CvGameCoreDLL/CvMemoryManager.cpp` (286 queued lines).
+- No gameplay source was modified.
+
+PROVENANCE
+----------
+Current SAS `CvGameAI.cpp` is executable-semantically the same as supplied Base AdvC
+1.14 except for two deliberate SAS changes:
+1. practical 5052 caches three GlobalDefine values in local static const variables in
+   `AI_sortOutUWAIOptions`;
+2. practical 4946 removes historical save-version padding under SAS's current-version-
+   only KI#46 policy.
+
+K-Mod/Civ4CE provide the smaller inherited CvGameAI baseline; the era/vote-source,
+scenario and exclusive-radius helpers are AdvC additions.
+
+SATURATION PASS
+---------------
+1. Derived-cache reset/load lifetime
+   ---------------------------------
+   `CvGame::read` begins from the normal `CvGame::reset` lifecycle, and nonconstructor
+   game reset calls `AI().AI_reset()`.
+
+   `AI_reset(false)` recomputes:
+       AI_updateExclusiveRadiusWeight()
+       AI_updateVoteSourceEras()
+       AI_updateMaxCultureLevelPercent()
+
+   so these nonserialized XML-derived fields do not retain stale values across ordinary
+   load/new-game reset. No F652 here.
+
+2. `AI_getCurrEraFactor`
+   ---------------------
+   The helper is explicitly based on `CvGame::getCurrentEra` and uses the same
+   `PlayerIter<CIV_ALIVE>` population (alive non-Barbarian civilizations, including
+   minor civs). It averages the player-level continuous era factor instead of rounding
+   each civ to an integer era.
+
+   Current callers use it as a game-progress heuristic for city sites, military
+   production, war utility, branch availability and timing. No caller requires a
+   major-civ-only or highest-era contract, and the history/intended comment matches the
+   implemented population.
+
+   The iterator is nonempty in every live game; the -1 fallback is assertion-only
+   robustness.
+
+3. Vote-source era cache
+   ---------------------
+   `AI_updateVoteSourceEras` derives each building's latest prerequisite-tech era using
+   `CvBuildingInfo::isTechRequired`, which includes the main prerequisite, additional
+   prerequisites and special-building tech requirements.
+
+   Current SAS has exactly one vote-source building for each source:
+       Apostolic Palace -> Philosophy -> Classical
+       United Nations   -> Mass Media  -> Modern
+
+   Therefore the per-building `set(eVS, eMaxEra)` cannot currently overwrite a competing
+   building attached to the same vote source. The generic multi-building-source case is
+   mod-robustness debt only.
+
+   Live consumers (`AI_votesToGoForVictory`, diplomacy-victory strategy) use the latest
+   source era exactly as intended.
+
+4. Maximum-culture-level speed scaling
+   -----------------------------------
+   `AI_updateMaxCultureLevelPercent` identifies the Normal speed by unique
+   `iResearchPercent==100` and scales against the actual final-culture-level thresholds.
+
+   Current SAS values:
+       Nitro      research 33, Legendary 15,000
+       Turbo      50,              20,000
+       Quick      67,              30,000
+       Normal    100,              45,000
+       Epic      150,              67,500
+       Marathon  200,              90,000
+       Slow      300,             135,000
+       Very Slow 400,             180,000
+
+   Normal is unique and the thresholds are positive. Consumers use the resulting percent
+   only for culture-victory/high-culture timing thresholds. No current ambiguity or zero
+   denominator exists.
+
+5. Exclusive-radius weights
+   -------------------------
+   The three stored positions correspond to:
+       index 0 -> unknown distance (-1)
+       index 1 -> distance 0/1 mapping as documented
+       index 2 -> distance 2
+
+   All current callers pass either the default -1 or nonnegative plot/city distances.
+   Inputs >= array size intentionally return zero. No live caller supplies less than -1.
+
+   Current CITY_RADIUS_DECAY and game-speed GoldenAgePercent keep the pow base positive;
+   reset recomputes the values after speed/XML state is available.
+
+6. `AI_turnsPercent`
+   -----------------
+   Only two live callers scale bounded building-construction turn horizons by the
+   current positive game-speed ConstructPercent. The MAX_INT sentinel is explicitly
+   preserved before multiplication. No current overflow/zero-percent path survives.
+
+7. `AI_combatValue`
+   ----------------
+   The normalization denominator `getBestLandUnitCombat()` is guaranteed at least 1,
+   including the no-best-unit fallback. Current unit combat/first-strike data keep the
+   integer arithmetic well within range. Air units use air combat as intended.
+
+8. Scenario initialization
+   -----------------------
+   `AI_initScenario`:
+   - recalculates city base yields and working plots;
+   - forces a capital only for a major civ with >1 cities and no capital;
+   - runs UWAI `turnPre` only when UWAI or background-UWAI is enabled.
+
+   Stock supplied scenario controls:
+   - Earth1000AD has preplaced cities and its one-city civ has an explicit Palace;
+   - Europe / Earth_IceAge supplied fixtures do not produce a current one-city/no-capital
+     contradiction.
+
+   The `>1` condition leaves a possible custom one-city/no-capital scenario edge, but no
+   supported supplied activation was found.
+
+9. SAS practical-5052 static GlobalDefines
+   ---------------------------------------
+   Current SAS changed:
+       GC.getDefineINT("USE_KMOD_AI_NONAGGRESSIVE")
+       GC.getDefineINT("DISABLE_UWAI")
+       GC.getDefineINT("UWAI_IN_BACKGROUND")
+   into local `static const` reads.
+
+   `CyGlobalContext.setDefineINT` does make GlobalDefines mutable in principle, so a
+   script/mod that changes these exact settings after the first
+   `AI_sortOutUWAIOptions()` call would no longer be observed.
+
+   Current Python searches show no runtime setter for any of these three defines; only
+   unrelated camera/minimap settings are mutated. Normal initial/new/load game calls
+   occur after XML defines have loaded. Therefore this remains SAS dynamic-define/API
+   robustness debt rather than a demonstrated F652.
+
+10. Serialization
+    -------------
+    Current `read/write` pairing is coherent:
+       CvGame base state
+       current uiFlag
+       UWAI state
+
+    SAS intentionally removed old uiFlag padding branches under KI#46. No current-writer
+    / current-reader mismatch exists.
+
+HISTORY CLOSURE
+---------------
+All indexed CvGameAI history strata were classified.
+
+High-value semantic changes:
+- K-Mod base: inherited combat/turn helpers;
+- practical 1253: initial AdvC/UWAI integration;
+- practical 1331: scenario AI initialization;
+- practical 1443: small AdvC AI/state tweaks;
+- practical 1499: broad cleanup/bugfix batch, no surviving Queue-089 root;
+- practical 1842: WPAI -> UWAI rename;
+- practical 2719: custom-era support; introduces continuous game-era factor and
+  vote-source-era cache;
+- practical 2920: comprehensive UWAI/scaled-number revision;
+- practical 3223: fixes Legacy/Aggressive AI option handling in scenarios;
+- practical 3509: victory-strategy weight redistribution (cross-file focus);
+- practical 3617: force multi-city scenario major civs to obtain a capital;
+- practical 4203: remove unused CvGameAI member;
+- SAS 4946: old-save uiFlag removal;
+- SAS 5052: static-const define micro-optimization.
+
+No later Base AdvC 1.14 semantic repair is missing from current SAS.
+
+QUEUE-089 ROOT LEDGER
+---------------------
+F652 / KI#974
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 089 is closed. Remaining sharp surfaces are custom-scenario/mod-API robustness,
+dynamic define mutability that current SAS does not exercise, or intentionally
+approximate AI heuristics. None clears the independent current-live threshold for F652.
+
+EXACT CONTINUATION
+------------------
+C031-WIP494 physical -> Queue089 CLOSED -> F652/KI#974 UNUSED ->
+open next selected priority Queue096 `CvGameCoreDLL/CvMemoryManager.cpp` (286 lines) ->
+establish whether the custom allocator is compiled/active in the current DLL and map
+all operator-new/delete callers -> compare SAS/Base AdvC/K-Mod/Civ4CE lineage ->
+audit block headers, alignment, realloc, coalescing/free-list ownership, zero-size and
+array/scalar delete paths, initialization/shutdown lifetime, integer overflow and
+threading assumptions -> whole-album dedup before numbering -> promote F652 only for a
+distinct current-live root -> freeze the next physical WIP at the next settled boundary
+whether F652 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP495 -- QUEUE 096 CvMemoryManager.cpp -- CLOSED / F652 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP494.
+- Queue 096 `CvGameCoreDLL/CvMemoryManager.cpp` is CLOSED.
+- No new root was promoted.
+- F652 / provisional KI#974 remains UNUSED.
+- Files complete: 47 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 108 `CvGameCoreDLL/CvAgents.cpp` (212 queued lines).
+- No gameplay source was modified.
+
+ACTIVATION BASELINE
+-------------------
+This file is not a general custom heap implementation. It mainly installs global
+new/delete shims that forward allocation to the Civ4 DLL interface.
+
+The shims are compiled only in DEBUG builds:
+
+    CvGameCoreDLL.h:
+        #ifdef _DEBUG
+            #define USE_MEMMANAGER
+
+    CvMemoryManager.cpp:
+        #ifdef USE_MEMMANAGER
+            operator new/delete...
+        #endif
+
+Release builds therefore compile the allocator overrides out.
+
+`MEMORY_TRACKING` is an additional optional debug layer but its define is commented out
+even in the debug header; none of its fixed-size leak-tracking arrays run in current
+normal debug builds.
+
+CURRENT DEBUG PATH
+------------------
+When `gDLL` is installed:
+    scalar new      -> gDLL->newMem
+    scalar delete   -> gDLL->delMem
+    array new       -> gDLL->newMemArray
+    array delete    -> gDLL->delMemArray
+
+Before `gDLL` installation:
+    new/new[]       -> CRT malloc
+    delete/delete[] -> CRT free
+
+The file also fills newly allocated debug memory with 0xDA to expose uninitialized use.
+
+HISTORY / REPAIRS
+-----------------
+The queue has only five cpp history touches.
+
+- practical 1791 moved the existing memory/profiling implementation out of
+  CvGameCoreDLL.cpp into this file without changing its core semantics;
+- practical 1926/2127 are memory/debug-print infrastructure cleanup;
+- practical 2130 explicitly fixed the likely inherited BtS copy/paste bug in the
+  file/line array overloads:
+      new[]  -> `newMemArray`, not `newMem`
+      delete[] -> `delMemArray`, not `delMem`
+- practical 2503 changes diagnostic assert spelling only.
+
+No later Base AdvC 1.14 repair is missing.
+
+CROSS-ALLOCATOR LIFETIME CHECK
+------------------------------
+The allocator choice is based on the CURRENT `gDLL` pointer rather than metadata stored
+with the allocation. In principle this creates a dangerous transition:
+    allocation before gDLL -> CRT malloc
+    deallocation after gDLL -> engine delMem
+or the reverse during shutdown.
+
+A current global/static-object sweep did not produce a supported failure:
+- most STL global containers are initially empty and allocate only later, after global
+  initialization and the DLL interface setup;
+- SAS static maps/vectors used for gameplay/logging grow during game execution, not DLL
+  static initialization;
+- the notable static nonempty CvString XML assertion prefix is small and not mutated
+  through a demonstrated cross-interface deallocation lifecycle;
+- ordinary DLL global cleanup follows Civ4's explicit CvGlobals shutdown/interface
+  lifecycle.
+
+This remains a genuine allocator-design hazard for future global/static allocations but
+not a demonstrated current debug-build defect.
+
+MECHANICAL CONTROLS
+-------------------
+- practical 2130's scalar/array allocator pairing fix is present.
+- the file/line allocation overloads are effectively dormant because K-Mod disabled the
+  old macro-replacement layer in `CvGameCoreDLLDefNew.h`; their diagnostic FErrorMsg
+  remains a developer assertion if manually restored.
+- `reallocMem`/`memSize` wrappers belong to that same disabled macro API.
+- zero-size / allocation-failure standards behavior is less robust than modern C++
+  operator-new requirements, but current engine allocation callers do not supply a
+  demonstrated failure fixture.
+- optional MEMORY_TRACKING bookkeeping is inactive and therefore not F652 material.
+- release gameplay is entirely unaffected by the file's operator overrides.
+
+QUEUE-096 ROOT LEDGER
+---------------------
+F652 / KI#974
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 096 is closed. Remaining issues are debug-only allocator architecture hazards,
+manually enabled diagnostics, or dormant API standards-hardening rather than a
+demonstrated current-live bug.
+
+EXACT CONTINUATION
+------------------
+C031-WIP495 physical -> Queue096 CLOSED -> F652/KI#974 UNUSED ->
+open priority Queue108 `CvGameCoreDLL/CvAgents.cpp` (212 lines) ->
+establish SAS/Base AdvC 1.14 provenance and AgentIterator/caller map -> audit cache
+construction/order, alive/ever-alive/major/member/vassal sequence membership, player and
+team death/revival/new-player updates, recycled slot insertion, master/vassal
+reclassification, vector ordering/duplicate prevention and pointer lifetime -> dedup
+especially against F477/F479/F647 and all iterator findings -> promote F652 only for a
+distinct current-live root -> freeze the next physical WIP at the next settled boundary
+whether F652 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP496 -- QUEUE 108 CvAgents.cpp -- F652 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP495.
+- Queue 096 `CvMemoryManager.cpp` remains CLOSED.
+- Queue 108 `CvGameCoreDLL/CvAgents.cpp` is OPEN.
+- F652 / provisional KI#974 is CONFIRMED here.
+- F653 / provisional KI#975 is UNUSED.
+- No gameplay source was modified.
+
+QUEUE-108 PROVENANCE BASELINE
+-----------------------------
+`CvAgents` is an AdvC AgentIterator cache layer; stock BtS/Civ4CE and K-Mod do not have
+this persistent cached-sequence architecture and therefore provide direct-scan oracles
+rather than the same helper.
+
+Current SAS and supplied Base AdvC 1.14 retain the same `playerSetAliveInGame` /
+`playerRevived` implementation.
+
+Existing album ownership was checked before numbering:
+- F470/KI#793: human-involved Permanent Alliance omits the full CvAgents rebuild;
+- F474/KI#797: recycled colony duplicates historical CIV_EVER_ALIVE entries;
+- F469/KI#792: alive-member-count dependent vassal maintenance invalidation;
+- F477/F479/F647: other recycled player/team/sidecar identity roots.
+
+None owns the generic revival insertion contract below.
+
+-------------------------------------------------------------------------------
+F652 / provisional KI#974 -- practical 2010 generalized a colony-specific
+CvAgents cache insertion helper to arbitrary player revival without removing its
+singleton/new-major-team assumptions; shared-team revival corrupts both team and
+member caches
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED AdvC regression in the explicit player-revival lifecycle. The cleanest
+supported reproducer is WorldBuilder revival, which current SAS itself recently treats
+as a real reproducible lifecycle (KI#475.3).
+
+The root is broader than one bad PlayerTypes->TeamTypes expression: practical 2010
+reused the old "new colony" cache insertion sequence for an already-ever-alive player
+whose team/status may already exist in the caches.
+
+CURRENT HELPER
+--------------
+`CvAgents::playerSetAliveInGame` currently does:
+
+    CvPlayerAI* pPlayer = &GET_PLAYER(ePlayer);
+    CvTeamAI* pTeam = &GET_TEAM(ePlayer);
+
+    if (!bRevive)
+        insert team into CIV_EVER_ALIVE;
+
+    insert pTeam into CIV_ALIVE;
+    insert pTeam into MAJOR_ALIVE;
+
+    if (!bRevive)
+        insert player into CIV_EVER_ALIVE;
+
+    insert pPlayer into CIV_ALIVE;
+    insert pPlayer into MAJOR_ALIVE;
+
+    members = MEMBER[pTeam->getID()];
+    assert pPlayer is in members;
+    insert pPlayer into MEMBER_ALIVE[pTeam->getID()];
+
+`playerRevived(ePlayer)` simply calls:
+
+    playerSetAliveInGame(ePlayer, true);
+
+Three assumptions embedded in the old colony path are invalid for generic revival:
+
+1. TEAM ID ASSUMPTION
+   ------------------
+   `GET_TEAM(ePlayer)` indexes TeamTypes using the raw PlayerTypes numeric value.
+   The player's actual team is:
+
+       GET_PLAYER(ePlayer).getTeam()
+       / TEAMID(ePlayer)
+
+   Shared-team games do not require PlayerID == TeamID.
+
+2. TEAM-LIFETIME ASSUMPTION
+   ------------------------
+   The helper always inserts the team into CIV_ALIVE/MAJOR_ALIVE.
+   When one member of a multi-player team dies while another survives, the team was
+   never removed from those caches. Reviving the dead member must NOT insert the team
+   again.
+
+3. STATUS/RELATION ASSUMPTION
+   --------------------------
+   The helper unconditionally inserts into MAJOR_ALIVE and does not restore
+   `VASSAL_ALIVE` membership. A generic revived player can be minor, or can rejoin a
+   still-alive vassal team whose vassal relation persisted through the individual
+   member's death.
+
+All three are natural for a newly created derivative colony in the original helper:
+normally a new major player receives its own newly alive singleton team whose numeric
+slot matches the player slot. They are not generic revival invariants.
+
+EXACT BIRTH -- PRACTICAL 2010
+-----------------------------
+Before practical 2010, the function was specifically:
+
+    CvAgents::colonyCreated(PlayerTypes eNewPlayer)
+
+and began:
+
+    CvPlayerAI* pPlayer = &GET_PLAYER(eNewPlayer);
+    CvTeamAI* pTeam = &GET_TEAM(eNewPlayer);
+
+followed by insertion of the NEW team/player into ever-alive, alive, major and member
+caches.
+
+Practical 2010 / commit
+`56af3a8dfa7f97c1fa229e1b9499a91428db0ed1`,
+"Fix issues with AI Auto Play ending upon player defeat", refactored that exact body
+into:
+
+    playerSetAliveInGame(PlayerTypes ePlayer, bool bRevive)
+
+and added:
+
+    playerRevived(ePlayer)
+        -> playerSetAliveInGame(ePlayer, true)
+
+The commit merely suppresses the EVER_ALIVE insertions for `bRevive`. It leaves:
+- raw `GET_TEAM(ePlayer)`;
+- unconditional team alive/major insertion;
+- unconditional player major insertion;
+- no vassal-cache restoration.
+
+That is the exact regression point: colony-new-identity assumptions were carried into a
+generic revival API.
+
+Practical 2547 later makes the debug-only `members` local conditional on
+FASSERT_ENABLE but does not change the runtime insertion semantics.
+
+SUPPORTED REVIVAL PRODUCER
+---------------------------
+`CvPlayer::verifyAlive` explicitly revives a dead player that again owns a city or unit:
+
+    if (!isAlive())
+    {
+        if (getNumCities() > 0 || getNumUnits() > 0)
+            setAlive(true);
+        return;
+    }
+
+`CvPlayer::setAlive(true)` detects `bEverAlive` and, for a non-colony parentless player,
+calls:
+
+    GC.getAgents().playerRevived(getID());
+
+Current SAS contains a very recent source comment documenting a reproducible WorldBuilder
+revival workflow:
+
+    "Dead-at-load players have no deserialized UWAI owner/cache.
+     Initializing the revived player before updating that cache fixed the reproducible
+     crash when exiting WorldBuilder after giving that player a unit.
+     See KI#475.3."
+
+So "give a dead player a unit in WorldBuilder -> verifyAlive -> setAlive(true)" is not
+an invented API-only path; current project history has already treated it as a concrete
+reproduction lifecycle.
+
+CLEAN SHARED-TEAM FIXTURE
+-------------------------
+Let:
+    P0 = Player 0
+    P1 = Player 1
+    T0 = Team 0
+
+and set both players on shared Team T0:
+
+    P0.getTeam() == T0
+    P1.getTeam() == T0
+
+while Team slot T1 is unused/dead.
+
+1. Both P0 and P1 begin alive.
+
+2. P1 is eliminated while P0 survives.
+   `CvAgents::playerDefeated(P1)` correctly:
+   - removes P1 from player CIV_ALIVE / MAJOR_ALIVE;
+   - removes P1 from MEMBER_ALIVE[T0];
+   - does NOT remove T0 from team CIV_ALIVE / MAJOR_ALIVE because T0 still has P0.
+
+3. In WorldBuilder, give P1 a unit or city and leave WB.
+   `verifyAlive()` calls `setAlive(true)`.
+   `setAlive` increments T0's alive count and calls `playerRevived(P1)`.
+
+4. Current `playerSetAliveInGame(P1,true)` computes:
+
+       pTeam = &GET_TEAM((TeamTypes)P1.getID())
+             = &GET_TEAM(T1)
+
+   rather than T0.
+
+5. It inserts dead/unrelated T1 into:
+       team CIV_ALIVE
+       team MAJOR_ALIVE
+
+6. It correctly inserts P1 into the global player CIV_ALIVE/MAJOR_ALIVE caches, then
+   looks for P1 in:
+
+       MEMBER[T1]
+
+   even though the permanent MEMBER cache correctly records P1 under T0.
+
+ASSERT-BUILD CONSEQUENCE
+------------------------
+The source immediately asserts:
+
+    std::find(MEMBER[T1], P1) != end
+
+which is false in the fixture.
+
+Thus an assert/debug build has an immediate deterministic failure at the cache-revival
+boundary.
+
+RELEASE-BUILD CONSEQUENCE
+-------------------------
+Without asserts, the function inserts P1 into:
+
+    MEMBER_ALIVE[T1]
+
+and never restores:
+
+    MEMBER_ALIVE[T0].
+
+The cache layer is then internally contradictory:
+
+    authoritative P1.getTeam() == T0
+
+    MemberIter(T0)       -> omits revived P1
+    MemberIter(T1)       -> contains P1 despite P1.getTeam()!=T1
+    TeamIter<CIV_ALIVE>  -> contains dead/unrelated T1
+    TeamIter<MAJOR_CIV>  -> contains T1 as a major alive team
+
+These exact-cache iterators deliberately skip rechecking predicates when the selected
+cache is supposed to be exact. `AgentIterator.cpp`'s optimized `isAlive`/`isMinorCiv`
+helpers explicitly trust CIV_ALIVE/MAJOR_ALIVE membership in those cases. The wrong
+entries are therefore not filtered back out.
+
+IMMEDIATE TEAM-STATE CONSEQUENCE
+--------------------------------
+If the revived P1 is given a CITY in land area A, the true team aggregate:
+
+    CvTeam(T0)::countNumCitiesByArea(A)
+
+uses:
+
+    for (MemberIter it(T0); ...)
+        count += area.getCitiesPerPlayer(it->getID());
+
+Because MEMBER_ALIVE[T0] still omits P1, T0 reports a city count that excludes P1's
+revived city even though:
+    P1.getTeam()==T0
+and the city belongs to P1.
+
+The same wrong member cache feeds many authoritative team aggregates:
+- unit count by area;
+- population by area;
+- power by area;
+- unit/building classes currently being produced;
+- religion/corporation counts;
+- total culture;
+- current team era;
+- typical unit values;
+- research/team modifier paths;
+- diplomacy/war loops that enumerate actual team members.
+
+The global team-cache corruption can separately change logic based on the number of
+alive teams. For example:
+
+    CvPlayerAI::AI_calculateDiplomacyVictoryStage()
+        if (TeamIter<CIV_ALIVE>::count() <= 2)
+            return 0;
+
+In a true two-team game, insertion of unused T1 makes the cache count three and can
+bypass that early two-team guard.
+
+EVEN A ONE-LINE TEAM LOOKUP FIX IS INCOMPLETE
+----------------------------------------------
+Suppose only:
+
+    GET_TEAM(ePlayer)
+
+were changed to the correct T0.
+
+In the shared-team fixture, T0 never died and is ALREADY present in team CIV_ALIVE /
+MAJOR_ALIVE.
+
+The helper would still execute:
+
+    insertIntoVector(teamSeqCache(CIV_ALIVE), T0);
+    insertIntoVector(teamSeqCache(MAJOR_ALIVE), T0);
+
+`insertIntoVector` asserts on an existing ID in debug builds but, in release, it still
+inserts the pointer after the existing one. That would create literal duplicate alive
+team entries.
+
+So F652 must not be "fix the cast." The generic revival lifecycle needs status-aware,
+idempotent cache restoration.
+
+VASSAL SAME-ROOT BREADTH
+------------------------
+`playerDefeated` explicitly removes an individually defeated member from:
+
+    VASSAL_ALIVE[master]
+
+when their team is a vassal.
+
+If another teammate keeps that vassal team alive, the vassal agreement remains.
+
+On member revival, `playerSetAliveInGame(...,true)` does not restore the revived player
+to the master's VASSAL_ALIVE player cache at all. Even after fixing the team ID and
+duplicate-team insertion, `PlayerIter<ALIVE,VASSAL_OF>` can therefore continue omitting
+the revived vassal member.
+
+This is the same generic-revival helper incompleteness, not a separate F653.
+
+MINOR-CIV SAME-ROOT BREADTH
+---------------------------
+The helper unconditionally inserts both player and team into MAJOR_ALIVE.
+
+`setAlive(true)` / `playerRevived` does not have a major-civ-only precondition.
+A revived minor civilization can therefore be misclassified as major as well.
+
+Again, this is the same preserved "new colony is major" assumption from the helper's
+original purpose.
+
+ANCESTRY / UPSTREAM COMPARISON
+------------------------------
+Supplied Base AdvC 1.14 retains the same practical-2010 implementation unchanged.
+
+K-Mod/Civ4CE do not have persistent `CvAgents` cached sequences; their loops query
+current player/team slots directly and therefore cannot acquire this stale/wrong
+membership state from `playerRevived`.
+
+This is an AdvC AgentIterator integration regression.
+
+WHOLE-ALBUM DEDUP
+-----------------
+F470/KI#793:
+    Permanent Alliance changes authoritative team assignment without rebuilding
+    CvAgents caches. No revival is involved.
+
+F474/KI#797:
+    recycled colony re-inserts already-present EVER_ALIVE historical pointers.
+    F652 uses bRevive=true, so those EVER_ALIVE insertions are skipped entirely.
+
+F469/KI#792:
+    vassal-city maintenance cache invalidation when alive member count changes.
+    Its WIP191 revival control assumed `playerRevived` correctly reinserts the member.
+    Queue 108 now shows that assumption only holds in the singleton/ID-aligned case.
+    F652 owns the underlying revival cache membership corruption; F469 remains its
+    independent downstream cached-maintenance invalidation.
+
+F477/F479/F647:
+    recycled identity / sidecar state; no slot recycling is required for F652.
+
+No earlier album root owns:
+- raw PlayerID->TeamID lookup in playerRevived;
+- duplicate alive-team reinsertion on shared-team revival;
+- missing vassal membership restoration on revival.
+
+REPAIR BOUNDARY
+---------------
+Treat revival as restoring CURRENT authoritative state, not as creating a new colony.
+
+A robust narrow design:
+
+1. Resolve the actual team:
+       TeamTypes eTeam = pPlayer->getTeam();
+
+2. Always restore player caches according to CURRENT status:
+       CIV_ALIVE if non-Barbarian alive civ
+       MAJOR_ALIVE only if !minor
+       MEMBER_ALIVE[eTeam]
+       VASSAL_ALIVE[master] when appropriate
+
+   Every insertion must be uniqueness-preserving/idempotent.
+
+3. Restore team alive/major/vassal caches only when the TEAM actually transitioned from
+   dead to alive.
+   `CvPlayer::setAlive(true)` increments the team's alive count before calling
+   playerRevived, so:
+       getAliveCount()==1
+   is a natural indication that this revived member changed the team 0->1 alive.
+   If alive count >1, the team was already alive and must not be inserted again.
+
+4. Preserve EVER_ALIVE sequences on revival; they already contain the historical
+   player/team.
+
+A simpler and safer low-frequency option is:
+    `playerRevived` -> `updateAllCachedSequences()`
+because revival is rare and the full rebuild derives every sequence from current
+authoritative player/team/vassal state. That also avoids future omission of a newly
+added cache category.
+
+Do not simply suppress duplicate assertions: release insertion must itself be unique.
+
+VALIDATION TARGETS
+------------------
+1. Singleton player/team revival where PlayerID==TeamID:
+   restore exactly one player/team alive entry.
+2. Shared team P0/P1 on T0; P1 dies, P0 survives; revive P1:
+   - no assert;
+   - T0 appears exactly once in CIV_ALIVE/MAJOR_ALIVE;
+   - no unrelated Team(P1-ID) entry is inserted;
+   - P1 appears exactly once in MEMBER_ALIVE[T0].
+3. Give revived P1 a city in area A:
+   T0.countNumCitiesByArea(A) includes it.
+4. Team current era / population / power / production aggregates include P1.
+5. Shared vassal team: revive one member while teammate survives:
+   revived member returns to VASSAL_ALIVE[master].
+6. Minor-civ revival:
+   CIV_ALIVE yes; MAJOR_ALIVE no.
+7. Fully dead team revived by first member:
+   team alive caches are inserted once.
+8. Revive another member of that now-alive team:
+   team caches remain unique.
+9. `TeamIter<CIV_ALIVE>::count()` remains equal to authoritative live-team count.
+10. Save/load after revival reconstructs identical sequences through
+    `updateAllCachedSequences`.
+11. Permanent Alliance F470 and recycled-colony F474 regression tests remain separate.
+
+POST-F652 LEDGER / EXACT RESUME
+-------------------------------
+Queue 108 `CvGameCoreDLL/CvAgents.cpp` -- OPEN.
+F652 / provisional KI#974 -- CONFIRMED.
+F653 / provisional KI#975 -- UNUSED.
+
+Exact continuation:
+C031-WIP496 physical -> Queue108 OPEN -> exclude F652 plus F470/F474/F469 and all
+prior AgentIterator/recycled-state owners -> finish updateAllCachedSequences invariants,
+playerDefeated status symmetry, colonyCreated behavior, updateVassal direct/master
+semantics, allianceFormed rebuild, sorted/duplicate insert helpers, cache-id routing and
+all CvAgents history strata -> check the additional colony-parent revival skip
+(`setAlive` calls playerRevived only when parent==NO_PLAYER) as possible F652 breadth
+or independent F653 only after lifecycle proof -> whole-album dedup -> either promote a
+distinct current-live F653 or close Queue108 cleanly -> freeze the next physical WIP
+regardless.
 
 No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
 ===============================================================================

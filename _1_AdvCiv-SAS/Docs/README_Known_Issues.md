@@ -880,9 +880,9 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#781 - (Fixed inherited BtS Permanent-Alliance cache defect) Former allied-border units retained unit-supply costs](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-781)\
 [KI#782 - (Fixed inherited BtS civic-lifecycle defect broadened by SAS) Losing the final building CivicOption left an unavailable civic active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-782)\
 [KI#783 - (Fixed AdvCiv city-trade ordering defect) Outer-ring culture conversion consulted a deleted city](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-783)\
-[KI#784 - (Provisional Pending AdvCiv espionage-latch defect) Full demographics can become visible without being remembered](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-784)\
-[KI#785 - (Provisional Pending AdvCiv espionage wrong-owner regression) Force Civic uses the spy owner's cooldown modifier](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-785)\
-[KI#786 - (Provisional Pending inherited K-Mod espionage wrong-owner defect) Post-sabotage production checks the spy owner](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-786)\
+[KI#784 - (Fixed AdvCiv espionage-latch defect) Full demographics could become visible without being remembered](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-784)\
+[KI#785 - (Fixed AdvCiv espionage wrong-owner regression) Force Civic used the spy owner's cooldown modifier](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-785)\
+[KI#786 - (Fixed inherited K-Mod espionage wrong-owner defect) Post-sabotage production checked the spy owner](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-786)\
 [KI#787 - (Provisional Pending AdvCiv spaceship-message regression) One observer's revealed capital coordinates leak to later observers](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-787)\
 [KI#788 - (Provisional Pending inherited BtS Permanent-Alliance cache defect) Team absorption leaves vassal-city maintenance stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-788)\
 [KI#789 - (Provisional Pending inherited BtS vassal-maintenance cache defect) Vassal city-count changes do not refresh the master](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-789)\
@@ -1068,7 +1068,10 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#969 - (Provisional Pending inherited BtS/K-Mod/AdvC lifetime defect) Recycled player slots inherit extinct statistics](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-969)\
 [KI#970 - (Provisional Pending inherited BtS statistics defect) Eliminated human teammates are recorded as winners](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-970)\
 [KI#971 - (Provisional Pending AdvCiv Rise & Fall event regression) All-fog suppresses authoritative city-built reporting](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-971)\
-[KI#972 - (Provisional Pending investigation) F650 remains unassigned before the WarEvaluator audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-972)\
+[KI#972 - (Provisional Pending AdvCiv WarEvaluator cache-lifecycle regression) Per-instance writes can survive scheduled invalidation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-972)\
+[KI#973 - (Provisional Pending inherited BtS fractal-inversion defect activated by SAS large maps) Interpolation uses uninverted boundary cells](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-973)\
+[KI#974 - (Provisional Pending AdvCiv AgentIterator revival regression) Shared-team revival corrupts cached sequences](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-974)\
+[KI#975 - (Provisional Pending investigation) F653 remains unassigned during the CvAgents audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-975)\
 
 <a id="ki-1"></a>
 
@@ -16109,27 +16112,35 @@ Fixed by calculating each full-radius culture conversion while the ceded city st
 
 <a id="ki-784"></a>
 
-## KI#784 - (Provisional Pending AdvCiv espionage-latch defect) Full demographics can become visible without being remembered
+## KI#784 - (Fixed AdvCiv espionage-latch defect) Full demographics could become visible without being remembered
 
 AdvCiv's persistent `m_abEverSeenDemographics` flag is updated only when espionage points change. Demographics visibility can also cross its threshold when Counterespionage expires or target population changes, allowing the full score history to become visible without ever latching that it was seen. The Info Screen can later hide that already-disclosed history again. This persistent-state contract was introduced by AdvCiv practical 2468 and remains incomplete in Base AdvCiv 1.14 and SAS.
 
 Found as F461/provisional KI#784 during ChatGPT-5.6-Sol's C031-WIP178 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
+Fixed by refreshing the persistent latch from every ordinary mutable input to the passive-demographics threshold. Existing current directional-point handling remains; lifetime espionage changes recheck their population-weighted ratio in both directions, Counterespionage changes recheck the affected observer-to-target direction, and stable score refreshes cover population and team-composition changes without observing transient city-transfer or team-merger state. This keeps the update deterministic in gameplay state instead of mutating persistent data from a const UI query. Fixed with the help of GPT-5.6-Sol, thanks.
+
 <a id="ki-785"></a>
 
-## KI#785 - (Provisional Pending AdvCiv espionage wrong-owner regression) Force Civic uses the spy owner's cooldown modifier
+## KI#785 - (Fixed AdvCiv espionage wrong-owner regression) Force Civic used the spy owner's cooldown modifier
 
 After a successful Force Civic mission, AdvCiv sets the target's revolution timer from an unqualified `getMinTurnsBetweenRevolutions()` call on the spying player. Different anarchy modifiers can therefore shorten or lengthen the victim's cooldown contrary to the victim's own rules. BtS/Civ4CE, K-Mod and the neighboring Force Religion branch explicitly use the target player; the helper refactor introduced the wrong receiver retained by Base AdvCiv 1.14 and SAS.
 
 Found as F462/provisional KI#785 during ChatGPT-5.6-Sol's C031-WIP182 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
+Fixed by invoking `getMinTurnsBetweenRevolutions` on the target player whose revolution timer is being set. The victim's own anarchy modifier now controls the forced-civic cooldown, matching BtS/K-Mod and AdvCiv's neighboring Force Religion branch. Fixed with the help of GPT-5.6-Sol, thanks.
+
 <a id="ki-786"></a>
 
-## KI#786 - (Provisional Pending inherited K-Mod espionage wrong-owner defect) Post-sabotage production checks the spy owner
+## KI#786 - (Fixed inherited K-Mod espionage wrong-owner defect) Post-sabotage production checked the spy owner
 
 K-Mod added production-reconsideration hooks after building and production sabotage, but their unqualified `isHuman()` tests the spy owner rather than the sabotaged city's owner. A human spy can therefore suppress an AI target city's explicit production re-evaluation, while an AI spy triggers it against the same target. Base AdvCiv 1.14 and SAS retain the inherited K-Mod wrong-subject logic.
 
 Found as F463/provisional KI#786 during ChatGPT-5.6-Sol's C031-WIP183 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+Fixed in both building- and production-sabotage branches by testing the sabotaged city's owner rather than the spy owner. AI target cities now always receive K-Mod's intended production reconsideration, while production-automated human target cities retain the same handling in both branches. Fixed with the help of GPT-5.6-Sol, thanks.
+
+Validated together with a clean Debug-opt compile and a successful mixed-team Huge Pangaea autoplay through team 5's domination victory on turn 422, recorded in `SASGameRecord_20260907T190021Z_new2.log`. The run exercised the changed state machinery end to end; the rare mission-specific ownership branches were additionally source-verified against their target-player contracts rather than forced through artificial mission fixtures. Validated by wonderingabout, thanks.
 
 <a id="ki-787"></a>
 
@@ -17645,8 +17656,32 @@ Found during ChatGPT-5.6-Sol's C031-WIP488 `CvStatistics.cpp` audit and confirme
 
 <a id="ki-972"></a>
 
-## KI#972 - (Provisional Pending investigation) F650 remains unassigned before the WarEvaluator audit
+## KI#972 - (Provisional Pending AdvCiv WarEvaluator cache-lifecycle regression) Per-instance writes can survive scheduled invalidation
 
-Queue 072 `CvStatistics.cpp` closed at C031-WIP489 after confirming F647-F649. Keep F650/KI#972 reserved for the next independent root while priority Queue 074 `WarEvaluator.cpp` begins.
+AdvC practical 1443 added a dirty/cleared optimization to the small WarEvaluator cache, but only `enableCache` marks it dirty. The independent `bUseCache=true` path used by ordinary declare-war-trade checks writes live entries without clearing `m_bCacheCleared`; scheduled `clearCache` can therefore return early and preserve stale war utility after the world changes. Base AdvCiv 1.14 and SAS retain this AdvCiv regression. Pending making every cache write establish the dirty-state invariant, without changing separate cache-key robustness questions.
 
-Reserved during ChatGPT-5.6-Sol's C031-WIP489 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+Found as F650/provisional KI#972 during ChatGPT-5.6-Sol's C031-WIP490 `WarEvaluator.cpp` audit and confirmed through the C031-WIP491 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-973"></a>
+
+## KI#973 - (Provisional Pending inherited BtS fractal-inversion defect activated by SAS large maps) Interpolation uses uninverted boundary cells
+
+BtS's `FRAC_INVERT_HEIGHTS` handling inverts only the interior fractal cells, while height interpolation also consumes the extra right and bottom boundary cells. The mismatched domains can change interpolated land/ocean classification along affected edges. K-Mod and Base AdvCiv 1.14 retain the inherited bounds; SAS activates the defect in supported SAS32+ Team Battleground Top-v-Bottom generation. Pending applying inversion to the full interpolation domain while preserving the other fractal options.
+
+Found as F651/provisional KI#973 during ChatGPT-5.6-Sol's C031-WIP492 `CvFractal.cpp` audit and confirmed through the C031-WIP493 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-974"></a>
+
+## KI#974 - (Provisional Pending AdvCiv AgentIterator revival regression) Shared-team revival corrupts cached sequences
+
+AdvC practical 2010 generalized colony-specific AgentIterator insertion into `CvAgents::playerRevived`, but the helper treats a player ID as a team ID, reinserts an already-live shared team, omits restored vassal membership, and classifies a revived minor civilization as a major player. This can corrupt several cached player/team sequences when a non-parent civilization is revived. Pending a lifecycle-level repair; because revival is rare, rebuilding all cached sequences is the simpler robust direction instead of duplicating fragile incremental membership rules.
+
+Found as F652/provisional KI#974 during ChatGPT-5.6-Sol's open C031-WIP496 `CvAgents.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-975"></a>
+
+## KI#975 - (Provisional Pending investigation) F653 remains unassigned during the CvAgents audit
+
+Queue 108 `CvAgents.cpp` remains open at C031-WIP496 after confirming F652/KI#974. Keep F653/KI#975 reserved for the next independent root while that audit continues.
+
+Reserved during ChatGPT-5.6-Sol's C031-WIP496 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.

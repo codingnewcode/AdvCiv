@@ -12940,9 +12940,10 @@ bool CvPlayer::doEspionageMission(EspionageMissionTypes eMission, PlayerTypes eT
 				pCity->getNumRealBuilding(eTargetBuilding) - 1);
 		bSomethingHappened = true;
 		bShowExplosion = true;
-		// K-Mod
-		if (!isHuman() || pCity->isProductionAutomated())
-			pCity->setChooseProductionDirty(true); // K-Mod end
+		// <!-- custom: K-Mod tested the spy owner's human status, so a human attacker suppressed the AI victim's intended production reconsideration.
+		// Test the sabotaged city owner instead. See KI#786. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		if (!GET_PLAYER(pCity->getOwner()).isHuman() || pCity->isProductionAutomated())
+			pCity->setChooseProductionDirty(true);
 	}
 
 	if (kMission.getDestroyProjectCostFactor() > 0 && pCity != NULL)
@@ -12962,9 +12963,10 @@ bool CvPlayer::doEspionageMission(EspionageMissionTypes eMission, PlayerTypes eT
 		pCity->setProduction(0);
 		bSomethingHappened = true;
 		bShowExplosion = true;
-		// K-Mod
-		if (!isHuman()) // not for automated cities
-			pCity->setChooseProductionDirty(true); // K-Mod end
+		// <!-- custom: Destroy Production inherited the same K-Mod wrong-owner test as building sabotage.
+		// Reconsider the victim's production for AI or automated target cities regardless of who owns the spy. See KI#786. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		if (!GET_PLAYER(pCity->getOwner()).isHuman() || pCity->isProductionAutomated())
+			pCity->setChooseProductionDirty(true);
 	}
 
 	if (kMission.getDestroyUnitCostFactor() > 0 && eTargetPlayer != NO_PLAYER)
@@ -13093,8 +13095,10 @@ bool CvPlayer::doEspionageMission(EspionageMissionTypes eMission, PlayerTypes eT
 				GC.getInfo(eCivic).getDescription()).GetCString();
 		GET_PLAYER(eTargetPlayer).setCivics(
 				GC.getInfo(eCivic).getCivicOptionType(), eCivic);
-		// advc: Revolution turns calculation moved into auxiliary function
-		GET_PLAYER(eTargetPlayer).setRevolutionTimer(getMinTurnsBetweenRevolutions());
+		// <!-- custom: AdvCiv moved the revolution-turn calculation into a player helper but invoked it on the spy owner.
+		// Use the target's modifier for the target's forced-civic cooldown. See KI#785. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		CvPlayer& kTargetPlayer = GET_PLAYER(eTargetPlayer);
+		kTargetPlayer.setRevolutionTimer(kTargetPlayer.getMinTurnsBetweenRevolutions());
 		bSomethingHappened = true;
 	}
 

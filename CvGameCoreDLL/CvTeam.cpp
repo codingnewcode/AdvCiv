@@ -24,6 +24,34 @@
 // advc.003u: Statics moved from CvTeamAI
 CvTeamAI** CvTeam::m_aTeams = NULL;
 
+namespace
+{
+	// <!-- custom: AdvCiv's persistent demographics-history latch depended on passive espionage costs but was refreshed only by current espionage-point changes.
+	// Keep the directional update reusable for every authoritative cost input. See KI#784. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	void updateEverSeenDemographicsFor(TeamTypes eObserver, TeamTypes eTarget)
+	{
+		CvTeam const& kObserver = GET_TEAM(eObserver);
+		CvTeam const& kTarget = GET_TEAM(eTarget);
+		if (!kObserver.isAlive() || !kTarget.isAlive() || kObserver.isBarbarian() || kTarget.isBarbarian())
+			return;
+		for (MemberIter itObserver(eObserver); itObserver.hasNext(); ++itObserver)
+			itObserver->updateEverSeenDemographics(eTarget);
+	}
+
+	// <!-- custom: Lifetime espionage totals affect the population-weighted passive-mission cost in both directions, so a change can newly reveal either team's demographics. See KI#784. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	void updateEverSeenDemographicsForEspionageRatioChange(TeamTypes eChangedTeam)
+	{
+		CvTeam const& kChangedTeam = GET_TEAM(eChangedTeam);
+		if (!kChangedTeam.isAlive() || kChangedTeam.isBarbarian())
+			return;
+		for (TeamIter<MAJOR_CIV,NOT_SAME_TEAM_AS> itOther(eChangedTeam); itOther.hasNext(); ++itOther)
+		{
+			updateEverSeenDemographicsFor(eChangedTeam, itOther->getID());
+			updateEverSeenDemographicsFor(itOther->getID(), eChangedTeam);
+		}
+	}
+}
+
 void CvTeam::initStatics()
 {
 	m_aTeams = new CvTeamAI*[MAX_TEAMS];
@@ -5304,7 +5332,12 @@ int CvTeam::getEspionagePointsEver() const
 void CvTeam::setEspionagePointsEver(int iValue)
 {
 	if (iValue != getEspionagePointsEver())
+	{
 		m_iEspionagePointsEver = iValue;
+		// <!-- custom: Lifetime espionage totals alter K-Mod's passive-cost ratio in both directions independently of current directional points.
+		// Refresh AdvCiv's persistent visibility latch. See KI#784. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		updateEverSeenDemographicsForEspionageRatioChange(getID());
+	}
 }
 
 void CvTeam::changeEspionagePointsEver(int iChange)
@@ -5341,6 +5374,9 @@ void CvTeam::setCounterespionageModAgainstTeam(TeamTypes eIndex, int iValue)
 	if (iValue != getCounterespionageModAgainstTeam(eIndex))
 	{
 		m_aiCounterespionageModAgainstTeam.set(eIndex, iValue);
+		// <!-- custom: This team's Counterespionage modifier changes the opposing team's passive cost against us.
+		// Expiry can newly reveal our demographics without any espionage-point change. See KI#784. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		updateEverSeenDemographicsFor(eIndex, getID());
 		gDLL->UI().setDirty(Espionage_Advisor_DIRTY_BIT, true);
 	}
 }
