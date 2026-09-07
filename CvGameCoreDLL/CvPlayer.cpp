@@ -10730,6 +10730,13 @@ void CvPlayer::changeHasCivicOptionCount(CivicOptionTypes eCivicOption, int iCha
 {
 	m_aiHasCivicOptionCount.add(eCivicOption, iChange);
 	FAssert(getHasCivicOptionCount(eCivicOption) >= 0);
+	// <!-- custom: Building-granted CivicOptions can make an otherwise unavailable civic legal.
+	// When the final source disappears, remove its processed effects immediately rather than after the next turn's economy and city processing. See KI#782. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (iChange < 0 && getHasCivicOptionCount(eCivicOption) == 0 &&
+		!canDoCivics(getCivics(eCivicOption)))
+	{
+		verifyCivics();
+	}
 }
 
 

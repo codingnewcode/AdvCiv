@@ -878,7 +878,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#779 - (Fixed inherited AdvCiv Random Personalities issue) Missionary strategy read the hidden personality's favorite civic](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-779)\
 [KI#780 - (Pending inherited BtS/K-Mod event-information leak) Global PickPlayer trigger news reveals an unmet civilization](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-780)\
 [KI#781 - (Fixed inherited BtS Permanent-Alliance cache defect) Former allied-border units retained unit-supply costs](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-781)\
-[KI#782 - (Provisional Pending inherited BtS civic-lifecycle defect broadened by SAS) Losing the final building CivicOption leaves an unavailable civic active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-782)\
+[KI#782 - (Fixed inherited BtS civic-lifecycle defect broadened by SAS) Losing the final building CivicOption left an unavailable civic active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-782)\
 [KI#783 - (Provisional Pending AdvCiv city-trade ordering defect) Outer-ring culture conversion consults a deleted city](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-783)\
 [KI#784 - (Provisional Pending AdvCiv espionage-latch defect) Full demographics can become visible without being remembered](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-784)\
 [KI#785 - (Provisional Pending AdvCiv espionage wrong-owner regression) Force Civic uses the spy owner's cooldown modifier](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-785)\
@@ -16085,11 +16085,17 @@ Compiled successfully and directly exercised by the same turn-328 Permanent Alli
 
 <a id="ki-782"></a>
 
-## KI#782 - (Provisional Pending inherited BtS civic-lifecycle defect broadened by SAS) Losing the final building CivicOption leaves an unavailable civic active
+## KI#782 - (Fixed inherited BtS civic-lifecycle defect broadened by SAS) Losing the final building CivicOption left an unavailable civic active
+
+Screenshots/files for this issue: [google drive folder link](https://drive.google.com/drive/folders/1sbvcbw0rSgB4Gr8r3J0N-Y3NetvE-oeT?usp=sharing)
 
 Building-granted CivicOptions legitimately allow adoption before the civic's own technology, but losing the final source does not revalidate the selected civic until `verifyCivics` late in the following turn. Its processed economic and city effects therefore remain active through that turn's gold, research, espionage and city processing. BtS, K-Mod and Base AdvCiv retain the lifecycle gap; SAS broadens ordinary exposure through the Colossus, Mausoleum and Shwedagon Paya assignments.
 
 Found as F459/provisional KI#782 during ChatGPT-5.6-Sol's C031-WIP176 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+Fixed at the authoritative CivicOption-count transition: after removing a source, crossing to zero now revalidates the selected civic only when that civic has actually become unavailable. This immediately removes its processed economic and city effects while avoiding needless civic work when another building source or the civic's prerequisite technology still preserves legality. Fixed with the help of GPT-5.6-Sol, thanks.
+
+Compiled successfully and directly validated at turn 0 in screenshots 0493-0498: Shwedagon Paya granted the Legal CivicOption, Bureaucracy was adopted without Civil Service, and right-click removal of the wonder in World Builder immediately returned the selected Legal civic to Barbarism before ending the turn. The city building list also confirmed that only the Palace remained after removal.
 
 <a id="ki-783"></a>
 
