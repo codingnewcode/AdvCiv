@@ -172,6 +172,8 @@ void RiseFall::setPlayerHandicap(PlayerTypes civId, bool bHuman, bool bIncrease)
 			-eGameHandicap, GC.getNumHandicapInfos() - eGameHandicap - 1));
 	GC.getInitCore().setHandicap(civId, (HandicapTypes)(bHuman ?
 			eGameHandicap + iAdjust : GC.getGame().getAIHandicap() + iAdjust));
+	// <!-- custom: The cached founding-unit surcharge depends on handicap as well as human control, so refresh it after this direct Rise & Fall handicap change. See KI#771. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	GET_PLAYER(civId).updateFoundingUnitExtraCosts();
 	/*	(Caller will have to call CvGame::updateAIHandicap if several AI player
 		handicaps are changed, i.e. if the avg. handicap may have changed.) */
 	CvPlayerAI& kCiv = GET_PLAYER(civId);

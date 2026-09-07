@@ -2,12 +2,12 @@ AdvCiv-SAS C++ File Audit Album
 Generated from local light-source snapshot only; no web/GitHub lookup used.
 
 CURRENT PROGRESS SUMMARY
-Files complete: 38 / 169
+Files complete: 43 / 169
 Files open: 0 / 169
-Last completed file: queue 058 CvGameCoreDLL/ArmamentForecast.cpp (693 queued lines) - CLOSED AT C031-WIP476
-Next file: priority queue 060 CvGameCoreDLL/CvArea.cpp (686 queued lines)
-Latest confirmed audit findings: F637-F642 / KI#959-KI#964 in the Queue 057 and Queue 058 closures. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
-Next new root ID: F643 unused / provisional KI#965 next
+Last completed file: queue 072 CvGameCoreDLL/CvStatistics.cpp (482 queued lines) - CLOSED AT C031-WIP489
+Next file: priority queue 074 CvGameCoreDLL/WarEvaluator.cpp (475 queued lines)
+Latest confirmed audit findings: F643-F649 / KI#965-KI#971 across the Queue 060, Queue 062, Queue 064 and Queue 072 closures. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
+Next new root ID: F650 unused / provisional KI#972 next
 
 The durable checkpoints and current cursor below are authoritative for finding status; the initial C010 snapshot and later WIP appends preserve their own historical source identities.
 
@@ -18,7 +18,7 @@ METHOD
 - Do not promote tuning disagreements, theoretical unsupported configurations, dead paths, or already-fixed history into new findings.
 - One root cause gets one finding even when several callers expose different symptoms.
 - False positives are recorded when useful so they are not rediscovered later.
-- Process every still-PENDING queue entry explicitly marked `priority next wip` before resuming ordinary queue order; among equally marked entries, follow queue order. Queue 060 `CvArea.cpp` is next after the Queue 058 closure. This preserves the user's requested stronger-WIP priorities without making ChatGPT choose between competing continuation notes.
+- Process every still-PENDING queue entry explicitly marked `priority next wip` before resuming ordinary queue order; among equally marked entries, follow queue order. Queue 074 `WarEvaluator.cpp` is next after the Queue 072 closure. This preserves the user's requested stronger-WIP priorities without making ChatGPT choose between competing continuation notes.
 
 QUEUE (current .cpp files, longest -> shortest)
 001  32205 CvGameCoreDLL/CvPlayerAI.cpp [COMPLETE ORIGINAL PASS / DEEP-METHOD RE-AUDIT CLOSED - C031-WIP65 / F321-F374]
@@ -80,21 +80,21 @@ QUEUE (current .cpp files, longest -> shortest)
 057    713 CvGameCoreDLL/CombatOdds.cpp [COMPLETE - SEE C031-WIP471 DURABLE CHECKPOINT]
 058    693 CvGameCoreDLL/ArmamentForecast.cpp [COMPLETE - SEE C031-WIP476 DURABLE CHECKPOINT]
 059    687 CvGameCoreDLL/CyGlobalContext.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-060    686 CvGameCoreDLL/CvArea.cpp [PENDING]<-(priority current next wip)
+060    686 CvGameCoreDLL/CvArea.cpp [COMPLETE - SEE C031-WIP479 DURABLE CHECKPOINT]
 061    679 CvGameCoreDLL/CvEventReporter.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-062    673 CvGameCoreDLL/MilitaryAnalyst.cpp [PENDING]<-(priority next wip after the first reloop)
+062    673 CvGameCoreDLL/MilitaryAnalyst.cpp [COMPLETE - SEE C031-WIP482 DURABLE CHECKPOINT]
 063    643 CvGameCoreDLL/CyInfoInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-064    623 CvGameCoreDLL/MilitaryBranch.cpp [PENDING]<-(priority next wip after the first reloop)
+064    623 CvGameCoreDLL/MilitaryBranch.cpp [COMPLETE - SEE C031-WIP484 DURABLE CHECKPOINT]
 065    603 CvGameCoreDLL/CvStructs.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 066    580 CvGameCoreDLL/CvInfo_Command.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 067    576 CvGameCoreDLL/CvInfo_Civics.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-068    551 CvGameCoreDLL/KmodPathFinderLegacy.cpp [PENDING]<-(priority next wip after the first reloop)
+068    551 CvGameCoreDLL/KmodPathFinderLegacy.cpp [COMPLETE - SEE C031-WIP485 DURABLE CHECKPOINT]
 069    543 CvGameCoreDLL/AdvCiv4lerts.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 070    494 CvGameCoreDLL/CvInfo_Base.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 071    491 CvGameCoreDLL/CyInfoInterface2.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-072    482 CvGameCoreDLL/CvStatistics.cpp [PENDING]<-(priority next wip after the first reloop)
+072    482 CvGameCoreDLL/CvStatistics.cpp [COMPLETE - SEE C031-WIP489 DURABLE CHECKPOINT]
 073    476 CvGameCoreDLL/CyPlayerInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-074    475 CvGameCoreDLL/WarEvaluator.cpp [PENDING]<-(priority next wip after the first reloop)
+074    475 CvGameCoreDLL/WarEvaluator.cpp [PENDING]<-(priority current next wip)
 075    472 CvGameCoreDLL/SelfMod.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 076    461 CvGameCoreDLL/CyCityInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 077    451 CvGameCoreDLL/StartPointsAsHandicap.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -163371,6 +163371,2958 @@ water/land topology interactions, enum/index/division/null contracts -> whole-al
 dedup before numbering -> promote F643 only for a distinct current-live root -> freeze
 the next physical WIP at the next settled boundary whether F643 is consumed or remains
 unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP477 -- QUEUE 060 CvArea.cpp -- F643 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: reconciled C031-WIP476 from
+  `AdvCiv-SAS_light_source_20260907T164725.zip`.
+- Queue 058 remains CLOSED with F639-F642 / KI#961-KI#964.
+- Queue 060 `CvGameCoreDLL/CvArea.cpp` is OPEN.
+- F643 / provisional KI#965 is CONFIRMED here.
+- F644 / provisional KI#966 is UNUSED.
+- No gameplay source was modified.
+
+QUEUE-060 BASELINE / EARLY DEDUP
+--------------------------------
+The refreshed light-source ZIP reconciles with C031-WIP476.
+
+Current SAS `CvArea.cpp` is executable-semantically the same as supplied Base AdvC 1.14
+apart from removal of old save-version migration branches under SAS's intentional
+current-version-only KI#46 policy. No newer Base-1.14 CvArea repair is missing.
+
+Early sharp-looking CvArea surfaces were deduplicated before F643:
+- unconditional `reportBarbarianCityCreated()` in `changeCitiesPerPlayer` is exactly
+  already-confirmed F589/KI#912;
+- `changeNumTiles` trying to detect a lake-state transition through two reads of cached
+  `isLake()` is same-root territory of F634/KI#956, not a new CvArea root;
+- the malformed negative `CvPlot::processArea` water-city/building branches remain the
+  previously recorded dormant/robustness controls absent a supported live mutation path.
+
+-------------------------------------------------------------------------------
+F643 / provisional KI#965 -- practical 3898 changed Barbarian fog-unit selection
+from parent land-area context to spawn-plot context, so shelf water calls suppress
+resource units and transport cargo is evaluated as though the land unit lived at sea
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited AdvC regression, current-live in the normal Barbarian shelf/fog
+spawn system. Supplied Base AdvC 1.14 retains it. The root is a caller/context contract
+regression introduced when `randomBarbarianUnit` was changed from `CvArea` to `CvPlot`.
+
+ORIGINAL CONTRACT
+-----------------
+AdvC practical 1253 introduced both `CvArea::hasAnyAreaPlayerBonus` and the refactored
+Barbarian unit selector:
+
+    UnitTypes CvGame::randomBarbUnit(UnitAITypes ai, CvArea const& a)
+
+The resource rule explicitly used the supplied LAND area:
+
+    a.hasAnyAreaPlayerBonus(orReq)
+
+with the source comment:
+
+    "Also require the resource to be connected by someone on this continent;
+     in particular, don't spawn Horse Archers on a horseless continent."
+
+The same practical's cargo-spawn path selected its land passenger with:
+
+    randomBarbUnit(loadAI, area)
+
+even though the passenger was physically created on the transport's water coordinates.
+That distinction was intentional: `area` described the continent whose shelf was being
+processed, while the water plot was only the temporary cargo location.
+
+The outer modern routine still preserves that architecture. It skips water CvAreas and
+iterates:
+
+    for each LAND area a:
+        getShelves(a, shelves)
+        process each attached shelf
+        then process land fog spawning in a
+
+Its own comment remains explicit:
+
+    "For each land area, first spawn sea Barbarians for each shelf attached
+     to that land area. Skip water areas entirely."
+
+CONTRACT CHANGE / BIRTH OF ROOT
+-------------------------------
+Practical 3898 / commit `40bd5f76d9dc1dca3984bbd75f96c0835a4fb3bd`
+changed the selector signature:
+
+    randomBarbarianUnit(UnitAITypes, CvArea const&)
+        ->
+    randomBarbarianUnit(UnitAITypes, CvPlot const&)
+
+and changed BOTH shelf call sites:
+
+    cargo:
+        randomBarbarianUnit(eLoadAI, kArea)
+            ->
+        randomBarbarianUnit(eLoadAI, pTransport->getPlot())
+
+    ordinary shelf sea fog spawn:
+        randomBarbarianUnit(eUnitAI, kArea)
+            ->
+        randomBarbarianUnit(eUnitAI, *pPlot)
+
+The resource checks were simultaneously changed from:
+
+    kArea.hasAnyAreaPlayerBonus(eBonus)
+
+to:
+
+    kPlot.getArea().hasAnyAreaPlayerBonus(eBonus)
+
+The plot parameter was introduced to support new local terrain suitability logic,
+notably "Mounted units only in open terrain." But a shelf plot and a transport plot are
+WATER plots, whereas the old area argument was the parent LAND continent.
+
+WATER-AREA CvArea CONTRACT
+--------------------------
+`CvArea::getCitiesPerPlayer` deliberately hides adjacent coastal-city bookkeeping for
+generic water-area callers:
+
+    int CvArea::getCitiesPerPlayer(
+        PlayerTypes eIndex, bool bCheckAdjacentCoast) const
+    {
+        if (!bCheckAdjacentCoast && isWater())
+            return 0;
+        return m_aiCitiesPerPlayer.get(eIndex);
+    }
+
+The default argument is false.
+
+`CvArea::hasAnyAreaPlayerBonus` calls that method without the adjacent-coast override:
+
+    for (PlayerIter<ALIVE> itPlayer; ...)
+    {
+        if (getCitiesPerPlayer(itPlayer->getID()) > 0 &&
+            itPlayer->hasBonus(eBonus))
+        {
+            return true;
+        }
+    }
+
+Therefore:
+
+    any WATER CvArea
+        -> getCitiesPerPlayer(player) == 0 for every player
+        -> hasAnyAreaPlayerBonus(any bonus) == false
+
+This is intentional for the generic CvArea city-count interface, but it means the
+post-3898 plot-local resource test can never succeed at either shelf water call.
+
+CURRENT SEA-FOG CONSEQUENCE
+---------------------------
+For shelf fog spawning the chosen `pPlot` is a water shelf plot and the requested AI is
+`UNITAI_ATTACK_SEA`.
+
+Current supported XML includes resource-requiring naval candidates. A clean example is:
+
+    UNIT_FRIGATE
+        DOMAIN_SEA
+        iCombat = 8
+        PrereqTech = TECH_CHEMISTRY
+        additional TECH_ASTRONOMY
+        BonusType = BONUS_IRON
+        UNITAI_ATTACK_SEA = allowed
+
+`CvPlayer::canTrain(UnitTypes)` checks civilization mapping, techs, obsolescence and
+global/unit-class restrictions but does NOT enforce a city-local resource network;
+that is exactly why `randomBarbarianUnit` performs its explicit area-resource test.
+
+Once Barbarians have the relevant techs and a player on the shelf's parent continent
+has connected Iron, the pre-3898 selector could admit Frigate through
+`kArea.hasAnyAreaPlayerBonus(BONUS_IRON)`.
+
+Current code instead asks the shelf WATER CvArea and therefore rejects it
+categorically.
+
+The same applies to every resource-requiring sea fog candidate. Current SAS XML has
+multiple such naval units, including Frigate, Ship of the Line, Ironclad and later
+Oil/Uranium-gated ships. Their exact era/obsolescence gates differ, but whenever such a
+unit otherwise qualifies, the water-area resource predicate forces its eligibility
+probability from positive to zero.
+
+CURRENT TRANSPORT-CARGO CONSEQUENCE
+-----------------------------------
+The cargo path is an even cleaner domain mismatch:
+
+    CvUnit* pTransport = pShelf->randomBarbarianTransport();
+    ...
+    UnitTypes eLoadUnit =
+        randomBarbarianUnit(UNITAI_ATTACK, pTransport->getPlot());
+
+The selected unit is DOMAIN_LAND and is immediately created at the ship's coordinates
+and loaded into the transport. The water tile is therefore not the passenger's intended
+habitat; it is only its temporary cargo location.
+
+Current ordinary resource-gated land candidates include:
+
+    UNIT_AXEMAN
+        DOMAIN_LAND
+        DefaultUnitAI = UNITAI_ATTACK
+        UNITAI_ATTACK allowed
+        PrereqTech = TECH_BRONZE_WORKING
+        OR bonuses = BONUS_COPPER / BONUS_IRON
+
+On a continent with connected Copper/Iron and appropriate Barbarian tech, the old
+land-area selector could choose the Axeman. The current cargo selector asks the
+transport's WATER CvArea and rejects every OR resource through
+`hasAnyAreaPlayerBonus == false`.
+
+Thus resource-requiring land units are categorically excluded from Barbarian transport
+cargo even when the parent continent satisfies the exact resource policy that the
+helper was designed to enforce.
+
+MOUNTED-CARGO MANIFESTATION
+---------------------------
+Practical 3898 also introduced plot-local mounted suitability:
+
+    if (bMounted)
+    {
+        if (kPlot.isWater() ||
+            kPlot.defenseModifier(NO_TEAM, true) > 0)
+        {
+            continue;
+        }
+        ...
+    }
+
+Current SAS preserves the rule with its split
+`UNITCOMBAT_MOUNTED_MELEE` / `UNITCOMBAT_MOUNTED_RANGED` classes.
+
+For ordinary LAND fog spawning this makes sense: the unit really will stand on the
+candidate land plot.
+
+For transport cargo, `kPlot` is the transport's water tile. Therefore EVERY mounted
+land passenger is rejected before creation solely because cargo is being selected while
+the transport is at sea.
+
+Current mounted candidates include Chariots, Horse Archers and the SAS Camel/mounted
+chains. They also carry resource requirements, so the water-area resource bug already
+rejects them; the mounted-water check is an independent manifestation of the SAME
+context loss rather than a separate F644.
+
+WHY THIS IS ONE ROOT
+--------------------
+Both symptoms begin in the same practical-3898 interface change:
+
+    selector context = parent land area
+        ->
+    selector context = physical spawn plot
+
+That new context is correct for ordinary land fog spawning, where local terrain matters,
+but it is insufficient for shelf/cargo selection:
+- resource ecology belongs to the parent land continent;
+- cargo land-terrain suitability cannot be inferred from the transport's water tile;
+- sea-unit resource eligibility likewise needs the parent continent/resource context
+  rather than a water CvArea whose generic city API intentionally reports zero.
+
+Do not create separate fixes for Frigate resources, Axeman cargo and mounted cargo.
+They are caller-specific consequences of one lost-context interface.
+
+BASE ADVC / HISTORY
+-------------------
+Supplied Base AdvC 1.14 has the same current signature, water-plot cargo caller,
+water-plot shelf caller, `kPlot.getArea().hasAnyAreaPlayerBonus` resource checks and
+mounted-water rejection. This is inherited by SAS rather than created by SAS.
+
+The pre-3898 history is a particularly strong internal oracle:
+- practical 1253 introduced the continent-resource rule with explicit "horseless
+  continent" wording;
+- cargo from its introduction selected through that same parent land `area`;
+- practical 3898 alone replaced both shelf uses with physical water plots while adding
+  plot-local terrain logic.
+
+K-Mod/Civ4CE do not contain this full AdvC shelf/cargo architecture, so the decisive
+lineage oracle is AdvC's own before/after contract.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for:
+- `randomBarbarianUnit` / `randomBarbUnit`;
+- Barbarian cargo and mounted cargo;
+- `hasAnyAreaPlayerBonus`;
+- "horseless continent";
+- shelf/sea fog resource gating;
+- practical 3898 around this selector
+
+find no existing owner.
+
+The album's earlier `randomBarbarianUnit` note is explicitly different: it records a
+future/mod-mod-only concern about optional OR resources with `NO_TECH`, for which
+current XML had no reachable configuration. F643 uses ordinary current resource-gated
+units and a normal supported shelf/cargo caller.
+
+F589/KI#912 is unrelated Barbarian-city-history bookkeeping inside
+`changeCitiesPerPlayer`.
+
+REPAIR BOUNDARY
+---------------
+The selector now needs TWO kinds of context rather than pretending one CvPlot can
+represent both:
+
+1. parent land-area / continental resource context;
+2. optional actual spawn-terrain context.
+
+A narrow safe interface would pass both, e.g. conceptually:
+
+    randomBarbarianUnit(
+        eUnitAI,
+        CvArea const& kParentLandArea,
+        CvPlot const* pSpawnPlot)
+
+Then:
+- use `kParentLandArea.hasAnyAreaPlayerBonus` for resource gating;
+- apply mounted/open-terrain/disease checks only when the selected LAND unit will
+  actually occupy `pSpawnPlot` as a free unit;
+- for transport cargo, do not reject a land passenger because the transport plot is
+  water. If cargo terrain preference is desired, derive it from a prospective landing
+  context instead of the current ship tile;
+- for shelf sea units, use the water plot for water-domain/local placement checks but
+  retain the attached land area for continental resource ecology.
+
+Since `createBarbarianUnits` already receives `CvArea& kArea` and `Shelf* pShelf`, all
+necessary parent-area information is available at both current call sites.
+
+Do NOT "fix" this by changing generic `CvArea::getCitiesPerPlayer` to expose water-area
+adjacent coast by default; its false-default is deliberate and has many unrelated
+callers.
+
+VALIDATION TARGETS
+------------------
+1. Land fog Axeman on a Copper/Iron continent: behavior unchanged.
+2. Barbarian transport on shelf attached to that continent:
+   Axeman cargo eligibility becomes positive again when tech/era gates allow it.
+3. Same transport on a continent with no Copper/Iron:
+   Axeman remains excluded.
+4. Horse Archer/Chariot-style cargo:
+   no longer rejected merely because the transport tile is water; parent-continent
+   resource rule still applies.
+5. Ordinary mounted LAND fog spawn:
+   retain current open-terrain and disease restrictions on the actual land spawn plot.
+6. Frigate shelf fog spawn beside a parent continent with connected Iron and valid tech:
+   eligibility becomes positive.
+7. Equivalent shelf beside parent continent without Iron:
+   Frigate remains excluded.
+8. Resource-free sea units continue to spawn under existing era/AI weighting.
+9. Do not change generic water `getCitiesPerPlayer()` default semantics.
+10. Confirm Base-1.14 current behavior reproduces the same zero-eligibility result and
+    that restoring explicit parent-land context removes it.
+
+POST-F643 LEDGER / EXACT RESUME
+-------------------------------
+Queue 060 `CvGameCoreDLL/CvArea.cpp` -- OPEN.
+F643 / provisional KI#965 -- CONFIRMED.
+F644 / provisional KI#966 -- UNUSED.
+
+Exact continuation:
+C031-WIP477 physical -> Queue060 OPEN -> exclude F643 plus F589/F634/F636/F269/F025
+and all prior area/topology owners -> continue full CvArea body/history audit ->
+target-city cache/recycled-player-slot state, AreaAI updates, water/coastal city-count
+callers, representative-area/lake state, enum-map widths, serialization pairing,
+counter mutators, reveal/power/yield/building/trade/free-specialist state,
+division/null/index contracts -> cross-check survivors against Base AdvC 1.14 and
+whole-album ownership -> promote F644 only for a distinct current-live root -> freeze
+the next physical WIP at the next settled boundary whether F644 is consumed or unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP478 -- QUEUE 060 CvArea.cpp -- RECYCLED TARGET-CITY LEAD CLOSED BELOW F644
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP477.
+- Queue 060 `CvGameCoreDLL/CvArea.cpp` remains OPEN.
+- F643 / provisional KI#965 remains CONFIRMED.
+- F644 / provisional KI#966 remains UNUSED.
+- No gameplay source was modified.
+
+PARKED WIP203 LEAD REVISITED -- `CvArea::m_aTargetCities[player]`
+-----------------------------------------------------------------
+The old parked robustness lead was re-opened because the direct timing proof is stronger
+than WIP203 had established.
+
+Persistent shape:
+- every CvArea owns `m_aTargetCities[MAX_PLAYERS]`;
+- the array is serialized;
+- `CvPlayer::resetPlotAndCityData` does not scrub it;
+- `CvPlayerAI::AI_init/reset` resets the new player's city-target TIMER but does not
+  iterate CvAreas to reset the target pointers;
+- `CvPlayer::initInGame` therefore can recycle PlayerTypes slot X while surviving
+  foreign target-city IDInfo remains stored in `m_aTargetCities[X]`.
+
+The target refresh is not unconditional in the ordinary player-units pre-turn path:
+
+    if (AI_getCityTargetTimer() == 0 && SyncRandOneChanceIn(8))
+        AI_updateAreaTargets();
+
+And team turn ordering creates a superficially dangerous consumer path:
+
+    CvTeamAI::AI_doTurnPre()
+        -> AI_updateAreaStrategies(false)   // explicitly does NOT refresh targets
+        -> AI_doWar()
+        -> UWAI::Team::doWar/review
+        -> alignAreaAI(...)
+        -> capitalArea.AI_getTargetCity(memberPlayer)
+
+So WIP203 was correct that stale target storage can survive player initialization and
+that an ordinary team-war consumer exists before the probabilistic player-unit refresh.
+
+WHY IT STILL DOES NOT CLEAR THE FINDING THRESHOLD
+--------------------------------------------------
+The missing activation is the supported colony/vassal war lifecycle.
+
+`CvPlayer::splitEmpire` creates the recycled player through `CvGame::addPlayer`, then:
+1. assigns its parent;
+2. gives it inherited technologies;
+3. makes the new team a voluntary vassal of the parent through `assignVassal`;
+4. transfers the colony cities;
+5. initializes/processes UWAI for the new player.
+
+`CvTeam::setVassal` then aligns the new vassal's war/peace state with its master.
+If the master is at war with a third party, the new vassal queues/declares the same war.
+
+The declaration/war-plan path calls `CvTeamAI::AI_setWarPlan`. Current AdvC/SAS
+`AI_setWarPlan` deliberately dirties every member's city-target timer and then calls:
+
+    AI_updateAreaStrategies();
+
+with the default `bTargets=true`.
+
+`AI_updateAreaStrategies(true)` executes:
+    - recompute AreaAI;
+    - `AI_updateAreaTargets()`;
+
+and the latter synchronously calls each zero-timer member's `CvPlayerAI::AI_updateAreaTargets`.
+By this stage the colony cities have been transferred, so the refresh computes the new
+civilization's own target state and overwrites/clears the recycled slot's stale
+`m_aTargetCities[X]` values before the later team-turn `AI_doWar()->alignAreaAI` path.
+
+Conversely, when the new colony has no active/preparing war plan, UWAI has no plan whose
+land/naval classification would call `alignAreaAI` in a way that can turn the stale city
+into a demonstrated strategic branch consequence.
+
+This closes the precise gap that kept the lead parked in WIP203:
+- stale storage exists;
+- a pre-random-refresh consumer exists in isolation;
+- but the supported event that gives the fresh colony the necessary war-plan state also
+  forces a synchronous target refresh first.
+
+DEDUP / SCOPE
+-------------
+Do not promote this as F644 on present evidence.
+
+It remains useful robustness debt adjacent to:
+- F477/KI#800: durable bare PlayerTypes identity aliases across recycled slots;
+- F479/KI#802: independently orphaned TeamTypes-indexed blockade counters.
+
+`m_aTargetCities` is derived target state rather than historical identity or blockade
+counter state. A future custom spawn path that creates/reuses a player and installs a
+war plan without the current `AI_setWarPlan -> AI_updateAreaStrategies(true)` sequence
+could activate the stale target. Current supported colony creation does not prove that
+path.
+
+A preventive cleanup remains reasonable engineering:
+    when recycling a PlayerTypes slot, clear that player's `m_aTargetCities` entry in
+    every live CvArea;
+but the album threshold requires a demonstrated current-live consequence, not merely
+stale persistent data.
+
+OTHER QUEUE-060 CONTROLS RECONFIRMED
+------------------------------------
+- `CvPlot::processArea` coastal-city decrement's comma-operator typo is the exact
+  already-audited dormant Queue-009 root:
+      pWaterArea->getCitiesPerPlayer(getOwner()) > 0, true
+  and is not F644 under current supported topology mutation.
+- `changeNumTiles` lake-transition logic is F634/KI#956 breadth because cached `isLake`
+  cannot observe the transition until explicit lake refresh.
+- generic non-Barbarian calls incrementing `m_iBarbarianCitiesEver` are F589/KI#912.
+
+EXACT CONTINUATION
+------------------
+C031-WIP478 physical -> Queue060 OPEN -> F643 confirmed -> F644/KI#966 UNUSED ->
+recycled m_aTargetCities lead CLOSED below threshold for supported colony lifecycle ->
+continue remaining CvArea mutators and callers:
+clean power / border obstacle / trade routes / yield modifiers / train-AI and AI-unit
+counters / bonus counts / AreaAI state -> serialization pairing/current-version policy ->
+exhaust all 62-ish CvArea history strata, especially semantic changes around 1274/1275
+Ice-area partition, 1253 area bookkeeping, 1420 water-city API, 1740 EnumMap conversion,
+1900 area identity refactor, 1953 IDInfo validation, and later area partition cleanup ->
+cross-file ownership/topology checks -> whole-album dedup -> promote F644 only for a
+distinct current-live root -> freeze the next physical WIP at the next settled boundary
+whether F644 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP479 -- QUEUE 060 CvArea.cpp -- CLOSED / F644 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP478.
+- Queue 060 `CvGameCoreDLL/CvArea.cpp` is CLOSED.
+- Queue-060 confirmed root:
+    F643 / provisional KI#965
+- F644 / provisional KI#966 remains intentionally UNUSED.
+- Files complete: 39 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 062 `CvGameCoreDLL/MilitaryAnalyst.cpp` (673 queued lines).
+- No gameplay source was modified.
+
+FINAL CVAREA SATURATION PASS
+----------------------------
+The remaining bodies and all indexed CvArea history strata were checked after the
+recycled-target lead was closed below threshold.
+
+1. Core scalar counters
+   `m_iNumTiles`, owned tiles, river edges, units, cities, population and starting plots
+   remain paired with their current mutation sources. Negative temporary area-rebuild
+   states are either explicitly tolerated under WorldBuilder/recalculation or belong to
+   the already-audited dormant `CvPlot::processArea(-1)` shape.
+
+2. Water-area city semantics
+   `getCitiesPerPlayer(player, false)` returning zero on water is deliberate and widely
+   relied upon to distinguish land city ownership from adjacent-coast bookkeeping.
+   Callers that need adjacent coast explicitly pass `true`.
+   F643 is the distinct regression where practical 3898 changed the Barbarian selector
+   to a WATER spawn-plot context but continued asking this generic land-oriented API.
+
+3. Historical Barbarian city count
+   generic positive `changeCitiesPerPlayer` increments remain exact F589/KI#912
+   ownership; no second root was split here.
+
+4. Lake / representative-area state
+   cached lake transition and normalization problems are owned by F634/KI#956;
+   scenario pre-feature area topology is owned by F636/KI#958;
+   dynamic Ice invalidation remains F025/KI#346.
+   `canBeEntered`'s representative-area fast rejection is consistent once those caches
+   are current.
+
+5. Player/team-indexed derived state
+   - `m_aiBestFoundValue` has the previously proven mandatory new-player refresh.
+   - `m_aTargetCities` was re-investigated in WIP478 and remains stale storage but not a
+     demonstrated supported colony-lifecycle defect because the war-plan event that
+     makes UWAI alignment relevant synchronously refreshes area targets first.
+   - AreaAI itself is recomputed in team AI turn setup.
+   No additional F477/F479-style recycled-slot defect survived.
+
+6. Building-derived area effects
+   good/bad health, happiness, free specialists, trade routes, clean power, border
+   obstacles and yield modifiers pair with current city/building process paths.
+   Clean-power state changes update team commerce/power-health; first border-obstacle
+   activation verifies unit placement. No unmatched live decrement/add path was found.
+
+7. Unit-AI counters
+   trainable UnitAI and actual UnitAI counters preserve nonnegative invariants in current
+   city/unit process paths; `NO_UNITAI` aggregation intentionally sums concrete UnitAI
+   buckets rather than indexing the map with a negative enum.
+
+8. Bonus counts
+   current `m_aiBonuses` bookkeeping and `getNumTotalBonuses` EnumMap total agree with
+   plot processing. No distinct resource-count root beyond F643's wrong AREA CONTEXT was
+   established.
+
+9. Serialization
+   current SAS read/write order is internally paired.
+   The only executable difference from supplied Base AdvC 1.14 is SAS's intentional
+   KI#46/current-version-only removal of historical `uiFlag < ...` compatibility
+   branches. Current writer still emits uiFlag=4 and the current reader consumes that
+   current layout directly. No same-version mismatch exists.
+
+10. Base/K-Mod/Civ4CE comparison
+   current non-serialization CvArea executable behavior tracks supplied Base AdvC 1.14.
+   K-Mod provides the pre-AdvC ancestry for ordinary area counters/AI fields;
+   Civ4CE provides the Firaxis/BtS baseline. No later Base-1.14 repair was found missing
+   from SAS.
+
+HISTORY CLOSURE
+---------------
+The CvArea path-history index contains 62-ish touches. High-value semantic strata:
+- practical 1253: initial AdvC area bookkeeping, Barbarian area state, trade routes;
+- practicals 1274/1275: cached lake / representative-area partition;
+- practical 1420: water-area city API correction (`false` -> `0`);
+- practical 1637: canBeEntered performance/partition fast path;
+- practical 1740: EnumMap conversion;
+- practical 1794/1795: EnumMap total / obsolete improvement-state removal;
+- practical 1900: area identity/ref getter cleanup;
+- practical 1953: serialized target-city owner validation;
+- practical 2033: reproducibility write markers;
+- practical 2186: inlining/refactor only;
+- practical 2361/3131/3579/3760: representation/refactor cleanup;
+- practical 3183: enum-map rewrite;
+- later SAS touches are save-policy/comments/formatting rather than new CvArea gameplay.
+
+No unported semantic repair survives as F644.
+
+QUEUE-060 ROOT LEDGER
+---------------------
+F643 / KI#965
+    practical 3898 changed Barbarian selector context from parent land area to physical
+    spawn plot. Shelf and transport calls therefore use water-area resource state and
+    cargo terrain, suppressing current resource-gated sea/cargo units and all mounted
+    cargo on the ship's water tile.
+
+F644 / KI#966
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 060 is closed for this pass. Remaining sharp edges are:
+- already-owned findings;
+- stale-but-self-healed or lifecycle-blocked robustness state;
+- intentional water-area abstraction;
+- old-save compatibility intentionally removed by KI#46;
+- dormant unsupported negative area mutation.
+
+None clears the independent current-live threshold for F644.
+
+EXACT CONTINUATION
+------------------
+C031-WIP479 physical -> Queue060 CLOSED -> F643 confirmed ->
+F644/KI#966 UNUSED -> open priority Queue062
+`CvGameCoreDLL/MilitaryAnalyst.cpp` (673 lines) -> establish SAS/Base AdvC/K-Mod/Civ4CE
+provenance and caller/history map -> audit constructor scenario sets, war/peace
+component membership, city conquest/loss aggregation, gained/lost power, score and
+utility-export state, map/team/player identity, branch/state lifetime, arithmetic and
+null/index contracts -> dedup especially against F269/F641/F642 and prior UWAI roots ->
+promote F644 only for a distinct current-live root -> freeze the next physical WIP at
+the next settled boundary whether F644 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP480 -- QUEUE 062 MilitaryAnalyst.cpp -- F644 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP479.
+- Queue 060 `CvArea.cpp` remains CLOSED with F643/KI#965.
+- Queue 062 `CvGameCoreDLL/MilitaryAnalyst.cpp` is OPEN.
+- F644 / provisional KI#966 is CONFIRMED here.
+- F645 / provisional KI#967 is UNUSED.
+- No gameplay source was modified.
+
+QUEUE-062 PROVENANCE BASELINE
+-----------------------------
+Current SAS `MilitaryAnalyst.cpp` has 670 physical lines (queue snapshot counted 673).
+Compared with supplied Base AdvC 1.14, executable differences are limited to already
+reconciled SAS fixes / refactors, notably:
+- KI#442: `m_capitulationsAcceptedPerTeam` is indexed by `TEAMID(ePlayer)` rather than
+  raw PlayerTypes;
+- KI#433: member predicted game score no longer repeatedly adds team-shared accepted-
+  vassal score; the consumer aggregates that once at team scope;
+- formatting/name cleanup.
+
+The nuclear simulation examined for F644 is otherwise inherited from Base AdvC 1.14.
+K-Mod/Civ4CE do not contain this full MilitaryAnalyst/UWAI layer; AdvC's own history is
+the primary lineage oracle.
+
+-------------------------------------------------------------------------------
+F644 / provisional KI#966 -- MilitaryAnalyst chooses the assumed Tactical-Nuke
+mix from the DEFENDER team's human/AI status, although tactical evasion belongs
+to the incoming ATTACKER's nuke arsenal
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited AdvC/UWAI side-identity bug, current-live whenever simulated nuclear
+war meets nonzero interception and the two sides differ in human/AI status. It changes
+predicted nukes hitting cities and therefore nuclear-war utility.
+
+CURRENT HELPER
+--------------
+The file-local helper takes only one TeamTypes parameter:
+
+    scaled nukeChanceToHit(TeamTypes eTeam)
+
+It computes two conceptually different pieces of state from that SAME team:
+
+1. target-side interception:
+       max(GET_TEAM(eTeam).getNukeInterception(),
+           master.getNukeInterception())
+
+2. assumed incoming weapon mix:
+       rTactRatio =
+           GET_TEAM(eTeam).isHuman() ? 0.5 : 1/3
+
+It then treats Tactical Nukes as having hardcoded 50% evasion and calculates:
+
+    hit probability =
+        1 - interceptionProb *
+            ((1 - tacticalRatio) +
+             tacticalRatio * (1 - evasionProb))
+
+Interception belongs to the DEFENDER. The tactical-vs-ICBM mix belongs to the ATTACKER.
+One team argument cannot correctly supply both whenever those teams differ.
+
+CALL-SITE PROOF
+---------------
+`simulateNuclearWar` confirms that `eTeam` is always the side being HIT:
+
+    // enemy nukes fired on us:
+    rHittingUs =
+        rFiredOnUs * nukeChanceToHit(kAgent.getID());
+
+    // our nukes fired on enemy:
+    rHittingEnemy =
+        rFiredByUs * nukeChanceToHit(kEnemy.getTeam());
+
+Thus:
+- when ENEMY fires at US, US's human/AI status determines the assumed percentage of
+  Tactical Nukes in ENEMY's incoming arsenal;
+- when WE fire at ENEMY, ENEMY's human/AI status determines the assumed percentage of
+  Tactical Nukes in OUR arsenal.
+
+This reverses the ownership of exactly the state that affects evasion.
+
+HISTORY / INTENT ORACLE
+-----------------------
+Practical 1253, the initial MilitaryAnalyst/UWAI implementation, introduced:
+
+    double MilitaryAnalyst::interceptionMultiplier(TeamTypes tId)
+
+with calls already passing the defender:
+    hitUs  = firedOnUs * interceptionMultiplier(agent.getID());
+    hitCiv = firedByUs * interceptionMultiplier(civ.getTeam());
+
+The original helper comment said:
+
+    "Assume 1/3 of their nukes are Tactical, which can't be intercepted"
+
+That sentence identifies the tactical ratio as a property of the INCOMING nukes, while
+`tId` is demonstrably the defending side. The side mismatch therefore dates to the
+initial implementation.
+
+Practical 1280 revised tactical evasion to 50% and introduced different assumed weapon
+mixes:
+
+    tactRatio = (GET_TEAM(tId).isHuman() ? 0.5 : 0.33)
+
+The intended behavioral distinction is reasonable by itself -- humans may build/use a
+different Tactical-Nuke share than AI -- but it was keyed to the already-wrong defender
+parameter.
+
+The later scaled-number refactors (2920/2923/2954/2957 and merge snapshots) preserve
+the same call orientation. Current Base AdvC 1.14 retains it unchanged.
+
+CLEAN NUMERIC FIXTURE
+---------------------
+Take:
+    attacker = AI team
+    defender = human team
+    defender interception = 50%
+    defender master interception <= 50%
+    hardcoded Tactical evasion = 50%
+
+Current code sees the HUMAN DEFENDER and assumes the ATTACKER's incoming arsenal is
+50% Tactical:
+
+    intercepted exposure =
+        (1 - 0.5) + 0.5 * (1 - 0.5)
+        = 0.5 + 0.25
+        = 0.75
+
+    current hit chance =
+        1 - 0.50 * 0.75
+        = 0.625
+        = 62.5%
+
+Under the helper's own policy, an AI ATTACKER should use the AI tactical ratio 1/3:
+
+    exposure =
+        2/3 + (1/3)*0.5
+        = 5/6
+
+    correct-policy hit chance =
+        1 - 0.50 * 5/6
+        = 7/12
+        ~= 0.583333
+        = 58.33%
+
+Error:
+    +4.1667 percentage points in hit probability.
+
+Reverse the identities:
+    human attacker -> AI defender
+
+Current code uses defender AI ratio 1/3 and predicts ~58.33%, while the intended human-
+attacker mix gives 62.5%. The same physical interception level and nuke counts therefore
+change in the WRONG direction according to who is being attacked.
+
+At 100% interception the difference doubles to:
+    25% hit chance for 50%-Tactical incoming arsenal
+    vs
+    16.67% for 1/3-Tactical incoming arsenal,
+an 8.33-point absolute error.
+
+CURRENT-LIVE ACTIVATION
+-----------------------
+The nuclear simulation runs after every conventional MilitaryAnalyst simulation unless
+the agent is eliminated / cityless. It uses current UWAICache NUCLEAR unit counts for
+both sides.
+
+No exotic custom data is needed:
+- current SAS/BtS has ICBMs and Tactical Nukes;
+- SDI/building/team effects provide nonzero nuke interception;
+- ordinary single-player war evaluation naturally has an AI team and a human team.
+
+The helper intentionally models a MIX of Tactical and non-Tactical nukes rather than
+reading exact unit composition, so the finding is not that the ratio is approximate.
+The defect is that the chosen approximation is keyed to the wrong side.
+
+LIVE CONSEQUENCE
+----------------
+The contaminated hit chance scales:
+
+    rHittingUs
+    rHittingEnemy
+
+Those values are then stored as:
+- PlayerResult nukes suffered;
+- `m_nukedCities[attacker][victim]`.
+
+WarUtilityAspect consumers translate predicted nuclear hits into city/asset losses,
+fallout effects and nuclear utility. Therefore defender human/AI status can change the
+forecasted effectiveness of an unchanged ATTACKER arsenal even when interception and
+all military facts are held constant.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for:
+- `nukeChanceToHit`;
+- `interceptionMultiplier`;
+- Tactical-Nuke ratio / Tactical percentage;
+- defender-vs-attacker nuke mix;
+- MilitaryAnalyst nuclear interception
+
+find no prior owner for this side-identity root.
+
+Existing nuke findings elsewhere concern target legality, counting/building nukes,
+interception display/executor behavior, AI nuke targeting or other consumers. F644 is
+specifically the UWAI MilitaryAnalyst forecast choosing the INCOMING weapon mix from
+the VICTIM identity.
+
+REPAIR BOUNDARY
+---------------
+The helper needs both sides, or the tactical ratio needs to be passed separately.
+
+Conceptually:
+
+    nukeChanceToHit(
+        TeamTypes eAttacker,
+        TeamTypes eDefender)
+
+Then:
+- defender/master determines `rInterceptionProb`;
+- attacker determines the assumed Tactical-Nuke share;
+- evasion remains the chosen policy/constant unless separately modernized.
+
+Calls become conceptually:
+
+    rHittingUs =
+        rFiredOnUs *
+        nukeChanceToHit(kEnemy.getTeam(), kAgent.getID());
+
+    rHittingEnemy =
+        rFiredByUs *
+        nukeChanceToHit(kAgent.getID(), kEnemy.getTeam());
+
+A stronger future model could derive Tactical-vs-ICBM share from actual cached nuclear
+unit classes instead of human/AI heuristic. That is optional tuning; merely assigning
+the existing heuristic to the firing side repairs F644.
+
+VALIDATION TARGETS
+------------------
+1. AI attacker -> human defender, 50% interception:
+   use AI 1/3 Tactical ratio; expected current-policy hit ~=58.33%.
+2. Human attacker -> AI defender, same 50% interception:
+   use human 1/2 Tactical ratio; expected hit =62.5%.
+3. Swap only defender human/AI while keeping attacker identity and interception equal:
+   hit chance must remain unchanged.
+4. Swap only attacker human/AI:
+   current heuristic intentionally changes assumed Tactical share and therefore hit
+   chance.
+5. 0% interception:
+   hit chance remains 100% regardless tactical ratio.
+6. 100% interception:
+   verify 1/3-Tactical -> 16.67% and 1/2-Tactical ->25% with 50% evasion.
+7. Master/vassal interception maximum remains defender-side logic.
+8. Both `rHittingUs` and `rHittingEnemy` call with correct attacker/defender orientation.
+9. Nuclear WarUtility changes only through corrected hit forecasts; nuke-count and
+   portion-fired heuristics remain otherwise unchanged.
+
+POST-F644 LEDGER / EXACT RESUME
+-------------------------------
+Queue 062 `CvGameCoreDLL/MilitaryAnalyst.cpp` -- OPEN.
+F644 / provisional KI#966 -- CONFIRMED.
+F645 / provisional KI#967 -- UNUSED.
+
+Exact continuation:
+C031-WIP480 physical -> Queue062 OPEN -> exclude F644 plus KI#433/KI#442 and all prior
+UWAI/nuclear owners -> audit constructor war-set construction, defensive-pact expansion,
+peace removal, uninvolved/future parties, phase timing and comparability -> finish
+simulateNuclearWar target weighting/denominators/total-war classification ->
+prepareResults city-cache lookup, population/score aggregation, war table,
+capitulation/team membership and elimination semantics -> lost/gained power and utility
+export contracts -> exhaust MilitaryAnalyst path history and whole-album dedup ->
+promote F645 only for a distinct current-live root -> freeze the next physical WIP at
+the next settled boundary whether F645 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP481 -- QUEUE 062 MilitaryAnalyst.cpp -- F645 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP480.
+- Queue 062 `CvGameCoreDLL/MilitaryAnalyst.cpp` remains OPEN.
+- F644 / provisional KI#966 remains CONFIRMED.
+- F645 / provisional KI#967 is CONFIRMED here.
+- F646 / provisional KI#968 is UNUSED.
+- No gameplay source was modified.
+
+-------------------------------------------------------------------------------
+F645 / provisional KI#967 -- post-conventional nuclear simulation still uses
+real pre-simulation enemy existence/cities/nukes, so a civ eliminated by the
+InvasionGraph can continue firing and receiving nukes
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited UWAI simulation-state leak. Current-live whenever the conventional
+MilitaryAnalyst predicts complete conquest/elimination of an enemy that has nuclear
+weapons. Base AdvC 1.14 retains it.
+
+SIMULATION ORDER IS EXPLICIT
+----------------------------
+The MilitaryAnalyst constructor executes:
+
+    phase 1 conventional simulation (optional)
+    phase 2 conventional simulation
+    prepareResults();       // conventional-war result materialization
+    simulateNuclearWar();   // only afterward
+
+`prepareResults` has already populated each node's city losses/conquests and enables
+`isEliminated(PlayerTypes)`:
+
+    lost = node city losses
+    eliminated =
+        lost.size() == GET_PLAYER(ePlayer).getNumCities()
+
+Thus, when nuclear simulation begins, the graph already knows which players the
+conventional forecast has removed.
+
+ASYMMETRIC ELIMINATION CHECK
+----------------------------
+`simulateNuclearWar` starts with:
+
+    if (isEliminated(eWe) || kWe.getNumCities() <= 0)
+        return;
+
+So the analyst civ correctly stops all nuclear modeling if IT was conventionally
+eliminated.
+
+But inside the enemy loop there is no matching:
+
+    if (isEliminated(kEnemy.getID()))
+        continue;
+
+Instead, every enemy that remains in the precomputed war table can still supply:
+
+    int iEnemyNukes =
+        kEnemy.uwai().getCache().getPowerValues()[NUCLEAR]->numUnits();
+
+and participates in all later nuclear arithmetic using the real current CvPlayer.
+
+WHY THE ELIMINATED ENEMY REMAINS IN THE LOOP
+--------------------------------------------
+`prepareResults` builds `m_warTable` from:
+- wars continued;
+- wars declared by;
+- wars declared on.
+
+Those sets describe the scenario diplomacy/war relation, not whether a participant has
+subsequently lost all cities in the graph. Conquest does not mutate real CvTeam war
+state and `m_warTable` is not cleared on elimination.
+
+Therefore a conventionally eliminated enemy can still satisfy:
+
+    isWar(eWe, kEnemy.getID())
+
+and enter nuclear simulation normally.
+
+DIRECT CONSEQUENCE 1 -- DEAD ENEMY STILL FIRES REAL CACHED NUKES
+-----------------------------------------------------------------
+For that eliminated enemy current code computes:
+
+    iEnemyNukes = REAL UWAICache nuclear unit count
+
+then:
+
+    rFiredOnUs =
+        portionFired * ... *
+        iEnemyNukes / sqrt(rEnemyTargets)
+
+and can add:
+
+    playerResult(eWe).addNukesSuffered(...)
+    m_nukedCities[kEnemy][eWe] += ...
+
+So a civilization that the immediately preceding simulation says has zero surviving
+cities can still launch its unchanged pre-simulation nuclear arsenal and inflict
+additional future nuclear losses on the winner.
+
+This does not require assuming that every unit should disappear exactly with the last
+city in live Civ4. The MilitaryAnalyst's own `isEliminated` semantic treats loss of all
+cities as elimination for score/utility purposes; it already returns 0 predicted score
+for that player. Continuing to grant that same modeled-eliminated player an ordinary
+future strategic nuclear phase is internally inconsistent.
+
+DIRECT CONSEQUENCE 2 -- WE FIRE AT NONEXISTENT ENEMY CITIES
+------------------------------------------------------------
+The reciprocal side also remains active:
+
+    rFiredByUs.decreaseTo(
+        1.5 * kEnemy.getNumCities());
+
+`kEnemy.getNumCities()` is the REAL current pre-simulation city count, not the graph's
+remaining-city count.
+
+For an enemy with:
+    real cities before simulation = N
+    simulated city losses          = N
+
+MilitaryAnalyst says:
+    isEliminated(enemy) = true
+    predicted member score = 0
+
+yet nuclear simulation still permits up to:
+    1.5 * N
+
+expected nuke launches/hits toward that eliminated civ and records nukes suffered by it.
+
+DIRECT CONSEQUENCE 3 -- DEAD ENEMIES DILUTE OUR TARGET SHARE
+-------------------------------------------------------------
+Before iterating enemies, `rOurTargets` counts every player for which:
+
+    isWar(eWe, player)
+
+with no elimination filter.
+
+Our finite `iOurNukes` are later divided by `rOurTargets`.
+
+Therefore an enemy already eliminated by the conventional forecast can continue to
+consume target weight and REDUCE the modeled number of our nukes fired at surviving
+enemies.
+
+This means F645 is not only "extra bookkeeping on a dead player"; it can change nuclear
+losses assigned to still-live rivals and therefore alter the analyst's own utility.
+
+PARTIAL-LOSS BREADTH
+--------------------
+The same stale-state seam exists before complete elimination.
+
+If an enemy begins with 10 real cities and conventional simulation predicts loss of 6,
+the post-conventional state has 4 surviving cities. Nuclear cap still uses:
+
+    1.5 * 10
+
+instead of a graph-consistent remaining-city count based on 4.
+
+Similarly, our own cap uses `kWe.getNumCities()` after only checking whether ALL our
+cities were lost. If we lost some but not all, the model still caps enemy nuclear fire
+against our full real pre-simulation city count.
+
+The complete-elimination fixture is the strongest proof; partial-loss caps are same-root
+breadth.
+
+CLEAN CURRENT-LIVE FIXTURE
+--------------------------
+Let:
+    A = analyst civ
+    B = enemy civ
+    A and B are at war in the MilitaryAnalyst scenario
+    B currently owns 1 city and at least 1 cached nuclear unit
+
+Conventional InvasionGraph predicts A conquers B's only city during phase 1/2.
+
+After `prepareResults`:
+    isEliminated(B) == true
+    predictedMemberGameScore(B) == 0
+
+Current nuclear phase nevertheless:
+    - `isWar(A,B)` remains true through m_warTable;
+    - reads B's real cached nuclear unit count;
+    - computes B nuclear fire on A;
+    - permits A nuclear fire at up to 1.5 * B's REAL one-city count.
+
+If another surviving enemy C is also at war with A, B additionally remains in
+`rOurTargets`, reducing A's nuke share allocated toward C.
+
+No exotic API or invalid state is needed: the entire contradiction is produced by one
+ordinary MilitaryAnalyst run.
+
+LINEAGE
+-------
+Practical 1253 introduced the architecture in essentially the same order:
+- simulate conventional invasion;
+- prepare results;
+- simulate nuclear war;
+- early-return only if "we" are gone/cityless;
+- iterate enemies using real CvPlayer nuclear counts and city counts.
+
+Later nuclear refinements adjust total-war portion, interception/evasion, vassal
+multipliers and scaled arithmetic but do not make enemy existence/city caps
+simulation-aware.
+
+Current Base AdvC 1.14 retains this asymmetry unchanged.
+
+WHOLE-ALBUM DEDUP
+-----------------
+No prior album finding owns post-conventional MilitaryAnalyst nuclear fire by a
+graph-eliminated enemy.
+
+Related findings are distinct:
+- F641/KI#963: ArmamentForecast concurrent production reads real pre-loss city topology
+  after graph-local conquests. That defect occurs DURING conventional buildup and has a
+  different consumer/interface/repair.
+- F269/KI#592: InvasionGraph battle-area city counts after graph-local loss.
+- F642/KI#964: unrelated-war ArmamentForecast receives agent-target scenario parameters.
+- F644/KI#966: Tactical-Nuke mix is keyed to defender rather than attacker.
+
+F645 survives all of those fixes. Even with perfectly simulated conventional city
+topology and correct nuke hit chance, `simulateNuclearWar` still needs to skip dead
+players and use remaining simulated city state.
+
+REPAIR BOUNDARY
+---------------
+Before nuclear arithmetic, derive graph-consistent surviving-player/city state from the
+already-prepared conventional results.
+
+At minimum:
+1. skip any enemy for which `isEliminated(enemy)` is true;
+2. exclude eliminated enemies from `rOurTargets` and `rEnemyTargets`;
+3. cap nuclear fire using REMAINING simulated city counts:
+       current real city count - graph city losses
+   for both attacker/defender sides.
+
+Prefer a small helper such as:
+    simulatedRemainingCities(PlayerTypes)
+
+rather than repeating:
+    real city count - lostCities(player).size()
+
+and use that helper consistently in:
+- initial "we are gone" check;
+- enemy skip;
+- `rFiredOnUs` city cap;
+- `rFiredByUs` enemy city cap;
+- target-weight inclusion where elimination matters.
+
+Do not mutate real CvPlayer/CvCity state. This is an analysis-local forecast.
+
+A stronger future model may also remove nuclear units lost in conventional battle/city
+capture. F645 does not require modeling exact nuke-unit casualties; the hard minimum is
+that a player the model itself declares eliminated cannot continue an ordinary future
+nuclear exchange.
+
+VALIDATION TARGETS
+------------------
+1. Enemy B loses all cities conventionally:
+   B contributes no subsequent nuclear launches, target weight or suffered-city cap.
+2. B loses some but not all cities:
+   nuclear cap uses simulated remaining city count.
+3. Analyst A loses some cities:
+   enemy fire cap uses A's simulated remaining count.
+4. Analyst A loses all cities:
+   preserve current early return.
+5. Two enemies B/C; B eliminated, C survives:
+   B no longer dilutes `rOurTargets`; A's finite nuke allocation toward C increases
+   accordingly.
+6. Eliminated B with zero nukes should still be excluded from target weights/caps.
+7. Surviving B with nukes follows existing total-war/vassal/interception policy.
+8. F644 attacker/defender orientation fix composes independently.
+9. Predicted eliminated player's member score remains zero and is now consistent with
+   nuclear behavior.
+
+POST-F645 LEDGER / EXACT RESUME
+-------------------------------
+Queue 062 `CvGameCoreDLL/MilitaryAnalyst.cpp` -- OPEN.
+F644 / provisional KI#966 -- CONFIRMED.
+F645 / provisional KI#967 -- CONFIRMED.
+F646 / provisional KI#968 -- UNUSED.
+
+Exact continuation:
+C031-WIP481 physical -> Queue062 OPEN -> exclude F644/F645 plus F269/F641/F642,
+KI#433/KI#442 and all prior UWAI owners -> finish nuclear target-denominator and
+total-war/vassal controls -> audit constructor side/DP/future-war set algebra,
+peace-removal symmetry and phase comparability -> prepareResults cache/null contracts,
+population score, capitulation unions and war table -> result/query helpers and
+elimination/team semantics -> exhaust MilitaryAnalyst history -> whole-album dedup ->
+either promote independent F646 or close Queue062 cleanly -> freeze the next physical
+WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP482 -- QUEUE 062 MilitaryAnalyst.cpp -- CLOSED / F646 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP481.
+- Queue 062 `CvGameCoreDLL/MilitaryAnalyst.cpp` is CLOSED.
+- Queue-062 confirmed roots:
+    F644 / provisional KI#966
+    F645 / provisional KI#967
+- F646 / provisional KI#968 remains intentionally UNUSED.
+- Files complete: 40 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 064 `CvGameCoreDLL/MilitaryBranch.cpp` (623 queued lines).
+- No gameplay source was modified.
+
+FINAL POST-F645 SATURATION PASS
+-------------------------------
+The remainder of MilitaryAnalyst was re-read mechanically and against every indexed
+history stratum before closure.
+
+1. `prepareResults` city-cache dereference
+   ---------------------------------------
+   The apparently unsafe:
+
+       kOurCache.lookupCity(*it)->city()
+
+   for conquest/loss sets is backed by an InvasionGraph invariant.
+
+   Every city that can become a real simulation city-attack target passes through
+   `Node::targetCity` / `isValidTarget`, which requires:
+
+       m_kAgentCache.lookupCity(kCacheCity.getID()) != NULL
+
+   `m_kAgentCache` is precisely the analyst/agent UWAICache later referenced by
+   MilitaryAnalyst::prepareResults.
+
+   Successful `SimulationStep` city attacks add only that already-sanitized
+   `UWAICache::City` to:
+       defender m_cityLosses
+       attacker m_conquests
+
+   No independent write path inserts arbitrary city IDs into those result sets.
+
+   This explains why older revisions (e.g. around practical 2605) carried defensive
+   NULL checks while the current code can dereference directly. Under the current
+   graph-target contract, the lookup is not a demonstrated F646.
+
+2. War-table symmetry
+   ------------------
+   `m_warTable[A][B]` is true when A's result records B as:
+       war continued,
+       war declared by A,
+       or war declared on A.
+
+   Every modeled declaration is stored reciprocally:
+       attacker gets DoWBy(target)
+       target gets DoWOn(attacker)
+
+   and existing wars are recorded for every player/enemy pair.
+
+   Thus player-level table orientation is symmetric for the modeled relation; the
+   TeamTypes overload's use of team leader IDs is adequate because war relation is
+   team-wide and every team-member pair receives the same relation.
+
+3. Defensive-pact / future-party construction
+   -------------------------------------------
+   A potential target's defacto defensive-pact allies are not merely added to report
+   bookkeeping. During the first known-player pass they are also inserted into
+   `ourFutureOpponents`, which is later:
+       - included in `uninvolved`,
+       - added to the InvasionGraph,
+       - and introduced through `addFutureWarParties`.
+
+   The later `theirDPAllies` pass supplies the corresponding DoW result sets.
+   No current divergence between graph participation and result bookkeeping was found.
+
+4. Peace-removal / no-war-vs-extra handling
+   ----------------------------------------
+   Practical 1335's special `isNoWarVsExtra` handling is present:
+       - remove only the extra-target difference in the peace scenario;
+       - keep future-war-party insertion for comparability;
+       - force target refresh after peace-side removals.
+
+   Practical 2770's capitulation-specific removal remains explicitly incomplete in
+   source comments ("misses the wars that we need to declare on the enemies of theyId").
+   This is a known model limitation rather than a newly demonstrated implementation
+   contradiction from Queue 062; no independent current fixture beyond that declared
+   incompleteness was promoted.
+
+5. Nuclear denominator arithmetic
+   ------------------------------
+   `rEnemyTargets` cannot be zero for an enemy that enters the loop: the enemy is in a
+   modeled war with `eWe`, and the major-player target pass therefore includes at least
+   the analyst player (subject to ordinary vassal weighting).
+
+   The vassal multipliers and target weights are heuristic policy. Their remaining
+   simulated-elimination/city-count inconsistency is already F645 breadth.
+
+   F644 owns attacker-vs-defender identity for tactical-nuke mix.
+
+6. Later nuclear bugfix lineage
+   ----------------------------
+   Important upstream fixes are all present:
+   - practical 2928 changes the per-enemy zero-nuke branch from `return` to `continue`,
+     so one nuclear-empty opponent no longer aborts analysis of all later opponents;
+   - upstream 1.12 / SAS merge carries the corrected enemy-vassal multiplier:
+         if (kEnemy.isAVassal())
+     rather than mistakenly testing kAgent twice;
+   - the corrected enemy-target relation is:
+         isWar(kEnemyOfEnemy.getID(), kEnemy.getID())
+     rather than self-war.
+   No later Base-1.14 nuclear correction is absent from current SAS.
+
+7. Score projection / capitulation
+   -------------------------------
+   Current SAS already contains the recent dedicated repairs:
+   - KI#442 maps each member node's accepted-capitulation set into
+     `m_capitulationsAcceptedPerTeam[TEAMID(ePlayer)]`;
+   - KI#433 keeps `predictedMemberGameScore` member-local and leaves the team-shared
+     accepted-vassal score addition to the team-level KingMaking consumer.
+
+   `isEliminated` and `hasCapitulated` are graph-local queries and line up with current
+   consumers. The post-elimination nuclear contradiction remains F645 rather than a
+   score-helper defect.
+
+8. Result/query helper contracts
+   -----------------------------
+   Lazy `PlayerResult` allocation is consistently guarded by the public accessors.
+   lost/gained power and military-production queries return zero for players without a
+   graph node.
+   City logging uses graph-result IDs that come from the same sanitized current-city
+   cache path.
+   No independent null/index/lifetime defect survived.
+
+HISTORY CLOSURE
+---------------
+All MilitaryAnalyst history entries in the supplied path index were classified.
+
+High-value semantic strata:
+- practical 1253: initial UWAI MilitaryAnalyst/InvasionGraph architecture; birth of the
+  side-mixed nuclear helper later confirmed as F644 and the stale post-conventional
+  nuclear-state architecture later confirmed as F645;
+- practical 1280: tactical-nuke evasion / human-vs-AI ratio refinement, preserving
+  F644's wrong-side identity;
+- practical 1335: no-war-vs-extra peace-scenario handling;
+- practical 1386: vassal target-weight corrections;
+- practical 1395: naming/refactor only in this file;
+- practical 2770: capitulation peace-removal special case, explicitly noting its
+  remaining model incompleteness;
+- practical 2920: comprehensive scaled-number UWAI rewrite;
+- practical 2928: `return` -> `continue` nuclear multi-opponent correctness fix;
+- practical 3514: improved score projection;
+- upstream 1.12 fixes merged around SAS 4370/4403/5851:
+    enemy-vassal multiplier and enemy-target relation in nuclear analysis;
+- SAS practical 6272: KI#433 team-vassal score de-duplication;
+- SAS practical 6274: KI#442 TeamTypes indexing repair.
+
+Merge/format/include/iterator changes and the remaining small strata do not introduce a
+distinct current-live root.
+
+QUEUE-062 ROOT LEDGER
+---------------------
+F644 / KI#966
+    Tactical-Nuke ratio is chosen from the defending team's human/AI status although
+    the weapon mix belongs to the firing side; at 50% interception this can shift the
+    modeled hit probability from ~58.33% to 62.5% purely through victim identity.
+
+F645 / KI#967
+    nuclear simulation runs after conventional results but ignores enemy graph
+    elimination/remaining-city state: a conventionally eliminated enemy can still fire
+    real cached nukes, receive nukes against real pre-simulation city count, and dilute
+    target allocation toward surviving enemies.
+
+F646 / KI#968
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 062 is closed for this pass. Remaining concerns are:
+- same-root breadth of F645 in partial city losses / target denominators;
+- explicitly documented model approximations;
+- already-repaired historical bugs;
+- already-owned KI#433/KI#442;
+- graph contracts that close apparent null/index hazards.
+
+None clears the independent current-live threshold for F646.
+
+EXACT CONTINUATION
+------------------
+C031-WIP482 physical -> Queue062 CLOSED -> F644-F645 confirmed ->
+F646/KI#968 UNUSED -> open next selected priority Queue064
+`CvGameCoreDLL/MilitaryBranch.cpp` (623 queued lines) -> establish SAS/Base AdvC 1.14,
+K-Mod and Civ4CE provenance plus full caller/history map -> audit branch classification,
+representative unit selection, unit counts/power/cost, HomeGuard/Army/Nuclear overlap,
+trainability and observer-context state, branch update/cache lifetime, enum/index/null/
+division/overflow contracts -> dedup especially against F214/F602/F641 and existing
+MilitaryBranch/UWAICache roots -> promote F646 only for a distinct current-live root ->
+freeze the next physical WIP at the next settled boundary whether F646 is consumed or
+remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP483 -- QUEUE 064 MilitaryBranch.cpp -- F646 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP482.
+- Queue 062 `MilitaryAnalyst.cpp` remains CLOSED with F644-F645.
+- Queue 064 `CvGameCoreDLL/MilitaryBranch.cpp` is OPEN.
+- F646 / provisional KI#968 is CONFIRMED here.
+- F647 / provisional KI#969 is UNUSED.
+- No gameplay source was modified.
+
+QUEUE-064 PROVENANCE BASELINE
+-----------------------------
+Current SAS `MilitaryBranch.cpp` has 633 physical lines (queue snapshot counted 623).
+
+Its executable divergences from supplied Base AdvC 1.14 are the recent, already-owned
+SAS repairs:
+- KI#537: invalidate typical-unit/power state before rescanning, including Nuclear and
+  Fleet bombard capability;
+- KI#560: include ordinary aircraft in actual branch census;
+- KI#561 is consumed in the related InvasionGraph/HomeGuard split rather than a distinct
+  new Queue-064 candidate.
+
+The `canKnowTypicalUnit` logic proved below is unchanged from Base AdvC 1.14.
+K-Mod/Civ4CE do not contain this full AdvC UWAI MilitaryBranch abstraction; AdvC's own
+pre/post practical-1275 history is the decisive oracle.
+
+-------------------------------------------------------------------------------
+F646 / provisional KI#968 -- `canKnowTypicalUnit` reverses its prerequisite-tech
+test, making tech-gated typical units automatically known while applying
+observer uncertainty only to no-tech units such as Warrior
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited AdvC regression, current-live in UWAI observer estimates for rival
+military branches. This candidate was deliberately parked from Queue 031/UWAICache and
+is now promoted in its owning Queue 064.
+
+CURRENT CODE / INTERNAL CONTRADICTION
+-------------------------------------
+`MilitaryBranch::canKnowTypicalUnit(TeamTypes eObserver)` is the gate for whether a
+foreign observer receives exact typical-unit power/cost or deliberately underestimated
+values.
+
+After the self/no-observer/no-unit fast path, current code says:
+
+    CvUnitInfo const& kTypicalUnit = GC.getInfo(getTypicalUnit());
+
+    if (kTypicalUnit.getPrereqAndTech() != NO_TECH) // Warrior
+        return true;
+
+    if (GET_PLAYER(m_eOwner).getUnitClassCount(
+            kTypicalUnit.getUnitClassType()) > 0)
+        return true; // The unit's in the wild
+
+    for (MemberIter itObs(eObserver); itObs.hasNext(); ++itObs)
+    {
+        if (itObs->canSeeTech(m_eOwner))
+            return true; // Tech visible on Foreign Advisor
+    }
+
+    return false;
+
+The condition and comment have opposite polarity:
+- a Warrior-style no-tech unit has `getPrereqAndTech() == NO_TECH`;
+- a tech-gated advanced unit has `getPrereqAndTech() != NO_TECH`.
+
+As written, EVERY ordinary tech-gated typical unit returns true immediately. The checks
+for whether the owner has actually fielded the unit or whether the observer can see the
+owner's technologies are reached only for no-tech units.
+
+That makes the intended information-hiding machinery almost exactly backwards.
+
+CURRENT XML CONTROL
+-------------------
+Current SAS XML supplies a simple direct polarity check:
+
+    UNIT_WARRIOR
+        PrereqTech = NONE
+        iCost      = 18
+        iCombat    = 3
+        iPower     = 3
+
+    UNIT_ARCHER
+        PrereqTech = TECH_HUNTING
+        iCost      = 25
+        iCombat    = 2
+        iPower     = 4
+
+Thus the source comment `// Warrior` belongs to the `== NO_TECH` case, not the current
+`!= NO_TECH` case.
+
+The exact advanced unit chosen as a branch's typical unit varies with civilization,
+era, trainability and branch utility. F646 does not depend on Archer specifically:
+once any selected typical unit has an ordinary prerequisite technology, current
+`canKnowTypicalUnit` bypasses all observer-knowledge tests.
+
+LIVE OBSERVER POLICY
+--------------------
+The two public consumers make the intended hidden-vs-known distinction explicit:
+
+    getTypicalPower(eObserver):
+        known   -> m_rTypicalPower
+        unknown -> 0.80 * m_rTypicalPower
+
+    getTypicalCost(eObserver):
+        known   -> actual estimated cost
+        unknown -> 0.85 * actual estimated cost
+
+`CvTeam::canSeeTech` is not trivially true for every known rival. Outside self/vassal
+visibility, it requires both teams alive/major and:
+    met AND (observer can tech-trade OR rival can tech-trade).
+
+Therefore ordinary early-game rivals can be known/met while their technology is not yet
+visible. If the rival has researched a military technology and can train its unit but
+has not yet fielded that unit class, all three intended "unknown" conditions exist:
+- observer != owner;
+- owner has zero units of the hidden typical class;
+- observer members cannot yet see the owner's tech.
+
+Current code still returns true solely because the unit HAS a prerequisite technology.
+
+HISTORY -- EXACT BIRTH IN PRACTICAL 1275
+----------------------------------------
+The pre-practical-1275 implementation contained the anti-cheating rule directly inside
+`updateTypicalUnit`.
+
+For a candidate land unit it said, in substance:
+
+    // Don't want the AI to magically know which units a civ can train
+    // in the very early game, when techs aren't public knowledge,
+    // and want humans to actually train an Archer to deter an AI rush.
+
+    if (NO_TECH != unit.getPrereqAndTech() && // exclude Warrior
+        (techs aren't publicly visible) &&
+        owner has no unit of this class)
+    {
+        continue;
+    }
+
+This old condition is semantically coherent:
+    prerequisite != NO_TECH
+        -> this is NOT the always-known Warrior/no-tech case
+        -> hide the unfielded unit while technology is private.
+
+Practical 1275 deliberately removed that knowledge restriction from typical-unit
+SELECTION and introduced observer-specific `getTypicalUnitPower(pov)`,
+`getTypicalUnitCost(pov)` and `canKnowTypicalUnit(pov)` so the same cached branch could
+be viewed differently by different observers.
+
+But the newly introduced helper used:
+
+    if (NO_TECH != getTypicalUnit()->getPrereqAndTech())
+        return true; // Warrior
+
+The old `NO_TECH !=` expression was carried over while its action changed from
+"exclude this hidden tech unit" to "declare this unit known." The `// Warrior` comment
+was retained, exposing the polarity inversion in the very commit that introduced the
+new helper.
+
+Later refactors:
+- normalized comparison syntax;
+- changed observer from PlayerTypes to TeamTypes;
+- iterated all observer team members;
+- expanded comments about power-curve inference;
+
+but preserved the same `!= NO_TECH` return-true test. Base AdvC 1.14 still has it.
+
+CURRENT-LIVE FIXTURE
+--------------------
+Take two met major civs:
+    O = observer/analyst
+    R = rival/branch owner
+
+State:
+- R has researched a technology enabling the branch's current best typical military
+  unit U;
+- R's capital/cities can train U, so `updateTypicalUnit` may legitimately select it;
+- U has `PrereqAndTech != NO_TECH`;
+- R has not yet built any unit of U's class;
+- O cannot yet see R's technologies (`canSeeTech(R) == false`);
+- O and R are on different teams.
+
+This is precisely the information state the practical-1275 policy was designed for.
+
+Expected under that policy:
+    canKnowTypicalUnit(O) = false
+
+so O sees:
+    typical power = 80% of exact
+    typical cost  = 85% of exact.
+
+Current:
+    U has a prerequisite tech
+    -> first post-fast-path condition returns true
+    -> exact power and exact cost are exposed immediately.
+
+No RNG, custom map state, invalid enum or save migration is needed.
+
+LIVE CALLERS / CONSEQUENCE
+--------------------------
+The observer-aware values are used throughout UWAI, not merely in debug text.
+
+InvasionGraph calls, among others:
+    getTypicalCost(TEAMID(m_eAgent))
+    getTypicalPower(TEAMID(m_eAgent))
+
+when translating rival production, army size, battle losses and garrison/left-behind
+power into the analyst's forecast.
+
+ArmamentForecast converts projected military production into branch power using:
+
+    typicalPower(observer) / typicalCost(observer)
+
+For a hidden typical unit, the intended ratio is:
+
+    (0.80 * P) / (0.85 * C)
+        = 0.941176... * (P/C)
+
+Current F646 returns:
+    P / C
+
+so, relative to the intended hidden estimate, forecast power per production is:
+
+    1 / 0.941176...
+        = 1.0625
+
+or 6.25% higher.
+
+Other callers use typical power alone, so they can differ by the full intended 20%
+uncertainty adjustment.
+
+`WarUtilityAspect` also uses observer-aware typical power/cost to convert simulated
+branch losses back into production-equivalent unit losses. Thus F646 can feed both
+InvasionGraph tactical projections and final war-utility economics.
+
+The design choice to underestimate both power and cost is heuristic; F646 is not a
+critique of those percentages. The defect is that their knowledge gate is inverted and
+therefore bypassed for the units it was introduced to hide.
+
+WHOLE-ALBUM DEDUP / PARKED OWNERSHIP
+------------------------------------
+This exact candidate appears in earlier durable album checkpoints as a PARKED Queue-064
+lead discovered while auditing Queue 031 UWAICache:
+
+    "canKnowTypicalUnit prerequisite check appears inverted:
+         if (kTypicalUnit.getPrereqAndTech() != NO_TECH) // Warrior
+             return true;
+     ...
+     Do not consume a queue-031 root for that implementation-level queue-064 candidate."
+
+It was intentionally NOT assigned an F/KI number there.
+
+Whole-album search finds no confirmed finding that owns the prerequisite-polarity root.
+It is therefore promoted now, in its owning file, as F646 rather than duplicated.
+
+Nearby Queue-064 findings are distinct:
+- KI#537: stale typical-unit candidate survives loss of all trainability;
+- KI#560: ordinary aircraft omitted from actual branch unit census;
+- KI#561: HomeGuard partition counted nuclear overlap incorrectly.
+
+F646 reproduces after all of those are fixed.
+
+REPAIR BOUNDARY
+---------------
+The narrow repair is the polarity indicated by both the comment and pre-1275 contract:
+
+    if (kTypicalUnit.getPrereqAndTech() == NO_TECH) // Warrior / no-tech unit
+        return true;
+
+Then preserve the subsequent evidence checks:
+- if owner already has a unit of that class -> known;
+- if any observer-team member can see owner's tech -> known;
+- otherwise -> unknown and apply the 80%/85% estimates.
+
+A future refinement could account for units with unusual alternative tech structures,
+free/civilization-specific availability or observed unit-class history more precisely.
+That is optional. The current regression is the direct inversion of the primary-tech
+test.
+
+VALIDATION TARGETS
+------------------
+1. Observer == owner team -> exact values unchanged.
+2. NO_TEAM observer -> exact values unchanged.
+3. NO_UNIT typical -> existing safe behavior unchanged.
+4. No-tech Warrior-style typical unit -> known immediately.
+5. Tech-gated U, no fielded class, tech invisible -> canKnow=false.
+6. Same U after first unit of its class is built -> canKnow=true.
+7. Same U once observer can see owner's tech -> canKnow=true.
+8. Multi-member observer team: visibility by any member should make U known.
+9. Hidden branch:
+       getTypicalPower = 0.80 * exact
+       getTypicalCost  = 0.85 * exact.
+10. ArmamentForecast hidden power/cost conversion should use the intended
+    0.80/0.85 ratio rather than exact P/C.
+11. Re-run early-game human-deterrence fixture from practical-1275 intent:
+    an unfielded newly unlocked defender should not be magically known merely because
+    the rival can train it.
+
+POST-F646 LEDGER / EXACT RESUME
+-------------------------------
+Queue 064 `CvGameCoreDLL/MilitaryBranch.cpp` -- OPEN.
+F646 / provisional KI#968 -- CONFIRMED.
+F647 / provisional KI#969 -- UNUSED.
+
+Exact continuation:
+C031-WIP483 physical -> Queue064 OPEN -> exclude F646 plus KI#537/KI#560/KI#561 and
+all prior MilitaryBranch/UWAICache owners -> continue every branch subclass:
+typical-unit selection, sea expect-to-train, capital trainability, national/instance
+limits, production-cost projection, unitPower exponentiation, actual reportUnit census,
+HomeGuard partition, Army/Fleet/Logistics/Cavalry/Nuclear filters, bombard/soften flags,
+serialization and factory/string enum contracts -> exhaust all MilitaryBranch path
+history -> cross-check survivors against Base AdvC 1.14 and whole-album ownership ->
+promote F647 only for a distinct current-live root -> freeze the next physical WIP at
+the next settled boundary whether F647 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP484 -- QUEUE 064 MilitaryBranch.cpp -- CLOSED / F647 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP483.
+- Queue 064 `CvGameCoreDLL/MilitaryBranch.cpp` is CLOSED.
+- Queue-064 confirmed root:
+    F646 / provisional KI#968
+- F647 / provisional KI#969 remains intentionally UNUSED.
+- Files complete: 41 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 068 `CvGameCoreDLL/KmodPathFinderLegacy.cpp` (551 queued lines).
+- No gameplay source was modified.
+
+POST-F646 SATURATION PASS
+-------------------------
+The remainder of Queue 064 was checked against live callers, current XML and the full
+53-diff MilitaryBranch history set.
+
+1. Observer-qualified `getTypicalUnit(eObserver)` ignores its parameter
+   -------------------------------------------------------------------
+   This is a real API/history smell but does not clear the current-live threshold.
+
+   Practical 2920 added the observer argument, and the blockade consumer later says:
+       "Let's cheat a little less (use eObserver arg)"
+   before calling:
+       kEnemyFleet.getTypicalUnit(eOurTeam)
+
+   The inline getter still returns `m_eTypicalUnit` unconditionally.
+
+   However the only live observer-qualified type caller is blockade evaluation around
+   bombard-capable naval warfare. Current SAS unlocks tech visibility through Writing,
+   and any current bombard-capable warship technology chain is far beyond Writing.
+   `CvTeam::canSeeTech` therefore makes the enemy's technologies visible between met
+   major teams in that supported state. No current hidden-warship type fixture survives.
+
+   Keep this as interface/mod-robustness debt. F646 independently repairs the observer
+   gate for power/cost, where hidden early land-unit states ARE current-live.
+
+2. Fleet `canBombard` derives from only the typical ship
+   -----------------------------------------------------
+   The header says canBombard means whether ANY trainable unit in the branch can
+   bombard, whereas Fleet::updateTypicalUnit sets it from only the chosen typical ship.
+
+   A generic mod can therefore have:
+       best typical fleet ship cannot bombard
+       another trainable fleet ship can bombard
+       -> canBombard false.
+
+   Current SAS progression does not supply a clean supported fixture. The tempting
+   late Carrier-vs-old-bombarder shape collapses because the Carrier technology path
+   already makes a substantially stronger bombarding contemporary warship trainable
+   on the same strategic-resource alternatives; that ship wins the Fleet utility/cost
+   comparison instead. No current-data branch inversion is demonstrated.
+
+3. `canEmploy` combat-only gate after KI#560
+   -----------------------------------------
+   KI#560 expanded actual Army census to ordinary aircraft (`getAirCombat()>0`), while
+   `canEmploy` still requires `getCombat()>0`.
+
+   This does not undo KI#560 because the only live `canEmploy` caller asks whether the
+   *typical Army unit* is also Cavalry. Base `updateTypicalUnit` deliberately excludes
+   DOMAIN_AIR from typical-unit selection, so that argument is a conventional land
+   combat unit.
+
+4. Production-cost approximation
+   ------------------------------
+   `estimateProductionCost` omits the full `CvPlayer::getProductionNeeded` modifier
+   stack when choosing a typical unit, but current omitted terms do not yield a distinct
+   supported branch-choice contradiction:
+   - game-speed and start-era train percentages are common across candidate units;
+   - player `UnitExtraCost` is currently used for founding units, which are excluded by
+     the combat-strength gate;
+   - world-unit handicap differences are excluded by the small national-limit gate;
+   - current Python unit-cost override supplies no ordinary combat-unit differential.
+
+   Per-instance unit costs, the non-common term that historically mattered, are already
+   modeled by practical 2281.
+
+5. Trainability
+   ------------
+   - sea typical units use `CvTeamAI::AI_isExpectingToTrain`, which scans all cities,
+     checks actual city trainability/coast and requires enough production;
+   - land typical units intentionally use the capital as a faster representative;
+   - current ordinary military land units do not have a supported local-only building
+     prerequisite that produces a capital-false/other-city-true contradiction;
+   - NuclearArsenal likewise uses capital trainability; current ICBM/Tactical-Nuke
+     enabling conditions are empire/team-resource/global-project conditions rather than
+     a unique noncapital-city capability.
+
+   These remain documented approximation surfaces, not F647.
+
+6. Branch power / count contracts
+   ------------------------------
+   - Army actual census now includes air and nukes as intended;
+   - HomeGuard receives conventional nonnaval power/count after KI#561's nuclear
+     subtraction and splits it with a ratio clamped by the current unit-count inputs;
+   - Army re-adds the separately counted nuclear headcount and capped nuclear power;
+   - Fleet/Logistics/Cavalry/Nuclear overlap is intentional branch semantics;
+   - Nuclear Army power and NuclearArsenal power use the same unmodified base-power
+     transform when counted, so nuclear subtraction is coherent;
+   - unit create/destroy callbacks pair through UWAICache, with the exceptional revival
+     inventory already repaired by KI#548.
+
+7. Arithmetic / enum / string / persistence
+   -----------------------------------------
+   - `estimateProductionCost` guards nonpositive output before division;
+   - typical cost returns -1 for NO_UNIT and callers guard availability;
+   - HomeGuard divides only when nonnaval unit count >0;
+   - POWER_CORRECTION is positive current XML (160%) and receives nonnegative branch
+     power;
+   - debug-string array deliberately contains NUM_BRANCHES+1 entries, and `str(enum)`
+     maps invalid or NUM_BRANCHES to the final "(unknown branch)" slot;
+   - branch factory covers every real branch enum and returns NULL only for invalid IDs;
+   - serialization's embedded save-version encoding correctly preserves NO_UNIT and
+     current scaled values; owner identity is supplied by UWAICache when branch objects
+     are constructed before `read`.
+
+HISTORY CLOSURE
+---------------
+All 53 supplied diffs touching MilitaryBranch.cpp were classified.
+
+High-value semantic strata include:
+- practical 1253: initial branch architecture;
+- practical 1275: observer-specific typical-unit knowledge refactor and exact birth of
+  F646's prerequisite-polarity inversion;
+- practical 1299/1304/1398: defensive-unit and limited/instance candidate filtering;
+- practical 2113/2118: HomeGuard count/power split;
+- practical 2281: per-instance unit-cost correction;
+- practical 2719: custom-era factor support;
+- practical 2920 plus 2921/2923/2954: comprehensive UWAI scaled rewrite and follow-up
+  corrections;
+- practical 2944: delay collateral-availability forecast until units exist/in production;
+- practical 3571: nuke classification refactor;
+- SAS practical 6295: KI#536-537 cache invalidation repairs;
+- SAS practical 6306: KI#560-561 military census/HomeGuard nuclear partition repairs.
+
+No unported Base AdvC 1.14 repair or independent current-live F647 remained.
+
+QUEUE-064 ROOT LEDGER
+---------------------
+F646 / KI#968
+    `canKnowTypicalUnit` reverses the primary-tech test, so tech-gated typical units are
+    immediately "known" while the uncertainty checks are reached only for no-tech units.
+    Practical 1275's own pre-refactor policy/comment is the direct oracle.
+
+F647 / KI#969
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 064 is closed for this pass. The remaining sharp edges are either observer API
+debt without current activation, mod-robustness gaps, explicit approximation policy or
+already-owned military-cache fixes.
+
+EXACT CONTINUATION
+------------------
+C031-WIP484 physical -> Queue064 CLOSED -> F646 confirmed ->
+F647/KI#969 UNUSED -> open next selected priority Queue068
+`CvGameCoreDLL/KmodPathFinderLegacy.cpp` (551 queued lines) -> establish current SAS
+versus Base AdvC 1.14/K-Mod/Civ4CE provenance and call graph -> audit legacy A* node
+initialization/reuse, parent/child pointers, open/closed-list ordering, path costs,
+movement flags, validity callbacks, destination/source transitions, reset lifetime,
+coordinate/index bounds and comparator arithmetic -> reconcile against current
+KmodPathFinder replacement/legacy callers and full history -> whole-album dedup before
+numbering -> promote F647 only for a distinct current-live root -> freeze the next
+physical WIP at the next settled boundary whether F647 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP485 -- QUEUE 068 KmodPathFinderLegacy.cpp -- CLOSED / F647 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP484.
+- Queue 068 `CvGameCoreDLL/KmodPathFinderLegacy.cpp` is CLOSED.
+- F647 / provisional KI#969 remains intentionally UNUSED.
+- Files complete: 42 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 072 `CvGameCoreDLL/CvStatistics.cpp` (482 queued lines).
+- No gameplay source was modified.
+
+WHY THIS QUEUE CLOSES WITHOUT A LIVE FINDING
+--------------------------------------------
+The file is a preserved verification oracle, not a live gameplay pathfinder.
+
+`KmodPathFinderLegacy.h` hard-defines:
+
+    #ifdef FASSERT_ENABLE
+        #define VERIFY_PATHF 0
+    #else
+        #define VERIFY_PATHF 0
+    #endif
+
+and both the header class declaration and the entire `.cpp` implementation are wrapped
+in:
+
+    #if VERIFY_PATHF
+
+Therefore current assert, debug and release builds all compile this implementation out.
+
+`GroupPathFinder.cpp` likewise wraps all legacy cross-check calls in `#if VERIFY_PATHF`;
+with the current header value they do not execute.
+
+HISTORY ORACLE
+--------------
+The supplied history makes this intentional:
+- practical 2587 preserved the old AdvC 0.98 K-Mod pathfinder as a legacy verifier;
+- practical 2588 restructured the live pathfinder while retaining this oracle;
+- practical 2805 fixed a bug in the legacy verifier's `bIsStart` argument
+  (`knownCost != 0` -> `knownCost == 0`);
+- practical 2861 introduced the `VERIFY_PATHF` test define;
+- practical 3212 changed `#ifdef VERIFY_PATHF` to `#if VERIFY_PATHF`, specifically
+  "Deactivate legacy pathfinding test properly";
+- practical 4196 later mirrored the live danger-avoidance split into the verifier so it
+  would remain a useful oracle if manually re-enabled.
+
+The current source therefore contains known comments about generic A* limitations and
+path-history cost propagation, but none are active in shipped/current gameplay.
+
+MECHANICAL CONTROLS
+-------------------
+If manually enabled for developer testing:
+- node-map allocation matches current map dimensions and is reset on source/group/flag
+  changes;
+- start/destination coordinates are asserted before node access;
+- open-list iteration and parent/child rewiring are bounded by `NUM_DIRECTION_TYPES`;
+- practical 2805's start-cost flag correction is present;
+- practical 4196's two-stage danger/step-through validity logic matches the current
+  July-2024 GroupStepMetric behavior;
+- `iMaxPath` is normalized to MAX_INT in settings;
+- heuristic weights are recalculated when destination changes;
+- the legacy verifier intentionally documents that cost propagation can be imperfect
+  in path-history-dependent cases. That is test-harness limitation, not live gameplay.
+
+No current build path activates the verifier, so none of those surfaces clears the
+album's current-live threshold for F647.
+
+QUEUE-068 ROOT LEDGER
+---------------------
+F647 / KI#969
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 068 is closed. This file can still be useful as a developer oracle if
+`VERIFY_PATHF` is intentionally re-enabled during assert testing, but it is dead code in
+the current shipped configuration.
+
+EXACT CONTINUATION
+------------------
+C031-WIP485 physical -> Queue068 CLOSED -> F647/KI#969 UNUSED ->
+open priority Queue072 `CvGameCoreDLL/CvStatistics.cpp` (482 lines) ->
+establish SAS/Base AdvC/K-Mod/Civ4CE provenance and caller/history map ->
+audit event hooks, per-player/per-unit/per-building counters, timeline/year/turn
+aggregation, serialization/reset/init lifetime, enum/index ownership, Python/UI
+consumers and integer/overflow/null contracts -> whole-album dedup before numbering ->
+promote F647 only for a distinct current-live root -> freeze the next physical WIP at
+the next settled boundary whether F647 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP486 -- QUEUE 072 CvStatistics.cpp -- F647 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP485.
+- Queue 068 remains CLOSED with no new root.
+- Queue 072 `CvGameCoreDLL/CvStatistics.cpp` is OPEN.
+- F647 / provisional KI#969 is CONFIRMED here.
+- F648 / provisional KI#970 is UNUSED.
+- No gameplay source was modified.
+
+QUEUE-072 PROVENANCE BASELINE
+-----------------------------
+Current SAS `CvStatistics.cpp` is 482 physical lines and its normalized executable token
+stream is byte-for-byte identical to supplied Base AdvC 1.14.
+
+K-Mod 1.46 and Civ4CE carry the same underlying CvStatistics lifetime model; their
+minor normalized differences from current AdvC are type/include/style evolution rather
+than a player-reincarnation reset.
+
+The path history is very small compared with adjacent queues:
+- K-Mod inherited/introduced the statistics record and later made `getNumCitiesBuilt`
+  a gameplay consumer through its city-name logic;
+- AdvC touches are overwhelmingly include cleanup, enum casts and iterator/style
+  refactors;
+- no later Base AdvC repair resets a single player record on `CvGame::addPlayer`.
+
+-------------------------------------------------------------------------------
+F647 / provisional KI#969 -- a recycled dead PlayerTypes slot inherits the
+extinct civilization's entire CvPlayerRecord because mid-game `addPlayer` resets
+CvPlayer but never resets CvStatistics
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited BtS/K-Mod/AdvC lifetime bug. Current-live on the explicitly
+supported human-colony fallback that reuses a defeated PlayerTypes slot after all
+never-alive slots are exhausted.
+
+This is distinct from F477/KI#800:
+- F477 owns historical PlayerTypes VALUES stored in other map/city objects, which alias
+  the new identity after slot reuse;
+- F647 owns per-slot STATISTICS STATE that remains attached to the numeric slot because
+  its sidecar record is never reinitialized.
+
+PLAYER-REUSE PRODUCER
+---------------------
+`CvPlayer::getSplitEmpirePlayer` first tries a never-alive slot.
+
+If no such slot exists, current SAS deliberately retains the old fallback for a HUMAN
+splitter:
+
+    /* Reusing a defeated player might not work correctly. advc:
+       Allow human players to try it ... */
+    if (!isHuman())
+        return NO_PLAYER;
+
+    for (PlayerIter<EVER_ALIVE> itPlayer; ...)
+    {
+        if (!itPlayer->isAlive())
+        {
+            eNewPlayer = itPlayer->getID();
+            break;
+        }
+    }
+
+`splitEmpire` then calls:
+
+    CvGame::addPlayer(eNewPlayer, eBestLeader, eBestCiv);
+
+and `CvGame::addPlayer` ultimately calls:
+
+    GET_PLAYER(eNewPlayer).initInGame(eNewPlayer);
+
+`initInGame` begins with:
+
+    reset(eID);
+
+and performs extensive player/team/map/city cleanup. It does NOT touch
+`CvEventReporter`'s `CvStatistics` object.
+
+STATISTICS LIFETIME
+-------------------
+`CvStatistics` owns:
+
+    std::vector<CvPlayerRecord*> m_PlayerRecords;
+
+indexed directly by PlayerTypes.
+
+`getPlayerRecord(i)` lazily constructs a record only when the vector entry is missing.
+If the extinct player X already had a record, reusing numeric slot X for new colony Z
+therefore returns the SAME object.
+
+`CvPlayerRecord::reset()` would correctly zero:
+- victory;
+- time;
+- leader;
+- every unit built/killed/lost counter;
+- every building-built counter;
+- every founded-religion flag;
+- cities built;
+- cities razed;
+- golden ages.
+
+But no per-player reset is called by `CvGame::addPlayer` or `CvPlayer::initInGame`.
+
+The only exposed statistics reset currently does:
+
+    CvEventReporter::resetStatistics()
+        -> m_kStatistics.reset()
+        -> destroy ALL player records
+
+and is used for whole-game reset/load setup, not for adding one mid-game identity.
+
+`CvEventReporter::newPlayer(ePlayer)` does not repair this even if the EXE invokes it:
+
+    m_kStatistics.setLeader(ePlayer, GET_PLAYER(ePlayer).getLeaderType());
+
+It overwrites only `m_eLeader`. Every accumulated counter remains from X.
+
+EXTERNAL STATISTICS CONSEQUENCE
+-------------------------------
+The statistics interface exports the inherited record directly:
+
+    victorytype
+    timeplayed
+    leader
+    citiesbuilt
+    citiesrazed
+    goldenages
+    unit_N_built
+    unit_N_killed
+    unit_N_lost
+    building_N_built
+    religion_N_founded
+
+Therefore a newly created colony Z in recycled slot X can be reported as having:
+- founded X's cities;
+- built/lost/killed X's units;
+- built X's buildings;
+- razed X's cities;
+- founded X's religions;
+- entered X's Golden Ages.
+
+New events for Z simply increment the already-nonzero arrays, permanently merging two
+unrelated civilizations into one statistical history. Serialization preserves the
+merged record because `CvStatistics::write/read` stores one record per ever-alive
+numeric slot and has no identity-generation tag.
+
+CURRENT GAMEPLAY CONSEQUENCE -- K-MOD CITY-NAME OFFSET
+-------------------------------------------------------
+This is not only server/report metadata.
+
+K-Mod added direct read-only access from `CvPlayer`:
+
+    CvPlayer::getPlayerRecord()
+
+and current `CvPlayer::getCivilizationCityName` uses:
+
+    iRandOffset = std::max(
+        0,
+        getPlayerRecord()->getNumCitiesBuilt() - getNumCityNames());
+
+for the player's own civilization after the explicit city-name list has been checked.
+
+Current SAS civilization XML has finite city-name lists (for playable examples:
+Korea/Mali 30, Ireland 36, England 38, America 60, etc.).
+
+Clean supported fixture:
+1. Old civilization X occupies PlayerTypes slot P and over its lifetime founds N cities.
+2. X is eliminated.
+3. All never-alive player slots are exhausted.
+4. Human player H creates a colony; the supported fallback reuses dead slot P for
+   unrelated derivative civilization Z.
+5. `CvPlayer::initInGame(P)` resets Z's `CvPlayer`, but `CvStatistics[P]` still says:
+       citiesBuilt = N
+6. Z's transferred cities are acquisitions, not newly founded Z cities, so the stale
+   value is not a legitimate Z history.
+7. Once Z exhausts/needs the fallback civilization-name lookup, its starting offset is
+   calculated from X's N rather than Z's own founded-city count.
+
+For example, with a 30-name derivative civ and old X having founded 40 cities:
+
+    current inherited offset = 40 - 30 = 10
+
+where a fresh Z record would begin with:
+
+    0 - 30 -> clamped to 0.
+
+Thus the new civilization's fallback city-name rotation is shifted by ten places solely
+because an extinct unrelated civilization once occupied the same numeric slot.
+
+This is a modest gameplay-visible manifestation, but it proves that the record is
+authoritative DLL state rather than dead telemetry.
+
+POTENTIAL STRONGER FAIRPLAY BREADTH
+-----------------------------------
+`WarUtilityAspect::FairPlay` also reads:
+
+    kThey.getPlayerRecord()->getNumCitiesBuilt()
+
+to infer whether a HUMAN rival has lost cities and should receive anti-dogpile
+protection.
+
+Current assets include the ChangePlayer system and `CvGame::changeHumanPlayer`, so a
+human can in developer/auto-play supported workflows take control of another living
+civ, including a colony. If such a recycled colony becomes human, stale X city counts
+can exaggerate Z's apparent city losses and increase FairPlay cost.
+
+This is real downstream breadth but is NOT required to confirm F647; the ordinary
+human colony creation + cumulative statistics + city-name consumer already establishes
+the root without requiring a human-switch workflow.
+
+ANCESTRY
+--------
+The lifetime architecture is inherited from stock BtS/Civ4CE:
+- statistics are indexed by PlayerTypes;
+- the record persists for ever-alive players;
+- `newPlayer` sets only leader;
+- dead-slot colony reuse exists when no never-alive slot is available.
+
+K-Mod preserves it and additionally makes `getNumCitiesBuilt` a gameplay input for city
+naming.
+
+AdvC's BBAI-derived `initInGame/resetPlotAndCityData` improves recycled-player cleanup
+elsewhere but never adds a statistics reset. Current Base AdvC 1.14 is executable-
+identical to SAS in `CvStatistics.cpp`.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for:
+- CvStatistics / CvPlayerRecord recycling;
+- recycled `citiesBuilt`;
+- statistics sidecar reset on addPlayer;
+- colony statistics inheritance
+
+find no prior confirmed owner.
+
+F477/KI#800 shares the upstream trigger (reuse of a dead PlayerTypes slot) but owns a
+different state class and repair surface:
+    external serialized fields whose STORED VALUE equals old PlayerTypes.
+
+Clearing/remapping every F477 historical reference would leave F647 untouched because
+`m_PlayerRecords[P]` is keyed by P and the entire record object itself is stale.
+
+F479/KI#802 similarly demonstrates why separately stored TeamTypes-indexed sidecar state
+can deserve its own root despite the same reincarnation trigger.
+
+REPAIR BOUNDARY
+---------------
+Add an explicit single-player statistics reset for identity creation.
+
+Conceptually:
+    CvStatistics::resetPlayerRecord(PlayerTypes ePlayer)
+
+should:
+1. destroy/reinitialize only that slot's `CvPlayerRecord`;
+2. restore `m_iID = ePlayer`;
+3. set the new leader after the new identity is known.
+
+Call it from the true mid-game NEW-IDENTITY path (`CvGame::addPlayer` /
+`CvPlayer::initInGame`), not from generic save-load `newPlayer` callbacks whose comment
+says they are also invoked when launching a loaded game.
+
+Do not call whole-game `resetStatistics`, which would erase every existing player's
+history.
+
+Preferred architectural F477 repair -- refusing EVER_ALIVE slot reuse entirely -- would
+also prevent F647 activation. But if the supported human fallback remains, the
+per-player record still requires explicit lifecycle handling.
+
+VALIDATION TARGETS
+------------------
+1. Normal never-alive colony slot:
+   fresh record remains all-zero except new identity fields.
+2. Recycled defeated slot X -> new Z:
+   immediately after addPlayer:
+       citiesBuilt=0, citiesRazed=0, goldenAges=0;
+       all unit/building counters=0;
+       all religion-founded flags=false.
+3. Old X counters must remain absent from Z's exported statistics.
+4. Z events increment from zero.
+5. Save/load after reincarnation preserves only Z's new record.
+6. Ordinary save/load of a non-recycled existing player must NOT reset its record.
+7. City-name fallback after explicit-list exhaustion must use Z's own founded-city count.
+8. Whole-game reset still clears every record as today.
+9. If preferred F477 fix disables dead-slot reuse, verify the per-player reset remains
+   harmless for never-alive dynamic colony creation.
+
+POST-F647 LEDGER / EXACT RESUME
+-------------------------------
+Queue 072 `CvGameCoreDLL/CvStatistics.cpp` -- OPEN.
+F647 / provisional KI#969 -- CONFIRMED.
+F648 / provisional KI#970 -- UNUSED.
+
+Exact continuation:
+C031-WIP486 physical -> Queue072 OPEN -> exclude F647 plus F477/F479 and all prior
+recycled-identity owners -> resolve old `setVictory` eliminated-human warning through
+actual statistics/victory semantics and dedup -> audit event counter ownership, kill
+attacker sentinel contracts, city/acquisition/founding semantics, array enum bounds,
+read/write XML-count coupling, lazy record initialization and EXE reporting callbacks ->
+exhaust the small CvStatistics history set and Base/K-Mod/Civ4CE comparison -> promote
+F648 only for a distinct current-live root -> close Queue072 or freeze another WIP at
+the next settled boundary regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP487 -- QUEUE 072 CvStatistics.cpp -- F648 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP486.
+- Queue 072 `CvGameCoreDLL/CvStatistics.cpp` remains OPEN.
+- F647 / provisional KI#969 remains CONFIRMED.
+- F648 / provisional KI#970 is CONFIRMED here.
+- F649 / provisional KI#971 is UNUSED.
+- No gameplay source was modified.
+
+-------------------------------------------------------------------------------
+F648 / provisional KI#970 -- `CvStatistics::setVictory` records an eliminated
+human teammate as a winner because its "still alive" branch never checks `isAlive`
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited Firaxis/BtS statistics-reporting bug. Current-live in an ordinary
+team game where a human teammate is eliminated before the surviving teammate/team later
+wins. Base AdvC 1.14, K-Mod and Civ4CE retain the same source warning/condition.
+
+SOURCE CONTRADICTION
+--------------------
+`CvStatistics::setVictory` iterates every ever-alive civilization player:
+
+    if (GET_PLAYER((PlayerTypes)i).isEverAlive())
+    {
+        // DAN: They could be eliminated and still watching the game and get a win!
+        // How to prevent this?
+        if (GET_PLAYER((PlayerTypes)i).isHuman() &&
+            GET_PLAYER((PlayerTypes)i).getTeam() == eWinner)
+        {
+            // If this guy is still alive and on the winning team, record the victory
+            getPlayerRecord(i)->setVictory(eVictory);
+        }
+        else
+            getPlayerRecord(i)->setVictory(NO_VICTORY);
+    }
+
+The code immediately states both the bug and the intended missing predicate:
+- the DAN comment warns that an eliminated human can receive a win;
+- the branch comment describes “still alive”;
+- the branch itself never calls `isAlive()`.
+
+LIFECYCLE PROOF
+---------------
+Ordinary `CvPlayer::setAlive(false)` does NOT clear human control.
+
+On elimination it:
+- sets `m_bAlive = false`;
+- decrements team alive count;
+- kills units/cities/deals;
+- deactivates turn;
+- leaves the network slot open specifically when `isHuman()` is true:
+
+      if (!isHuman())
+          gDLL->closeSlot(getID());
+
+It does not change `m_bHuman` and does not reassign `getTeam()`.
+
+The one exceptional path that calls `setIsHuman(false)` is explicitly:
+    defeat of the active player DURING AI Auto Play while human control is disabled.
+
+That special case does not close the ordinary team-game fixture.
+
+Thus after normal elimination:
+    isEverAlive() == true
+    isAlive()     == false
+    isHuman()     == true
+    getTeam()     == original team
+
+all persist simultaneously.
+
+CURRENT-LIVE FIXTURE
+--------------------
+Let humans H1 and H2 be members of team T.
+
+1. H1 and H2 begin alive on T.
+2. H1 is eliminated during ordinary play.
+   H1 remains:
+       isEverAlive=true
+       isAlive=false
+       isHuman=true
+       getTeam=T
+3. H2 survives.
+4. Team T later achieves victory V.
+5. `CvEventReporter::victory(T,V)` calls:
+       m_kStatistics.setVictory(T,V)
+6. H1 passes the current branch:
+       isEverAlive
+       && isHuman
+       && getTeam()==T
+   despite `isAlive=false`.
+7. H1's `CvPlayerRecord::m_eVictory` becomes V rather than NO_VICTORY.
+
+This requires no recycled slot, custom Python or debug mode.
+
+DIRECT EXPORTED CONSEQUENCE
+---------------------------
+`CvEventReporter::victory` performs:
+
+    m_kPythonEventMgr.reportVictory(...)
+    m_kStatistics.setVictory(...)
+    ... set time played for every ever-alive player ...
+    gDLL->reportStatistics();
+
+The comment on the last call says:
+    "automatically report MP stats on victory"
+
+`getPlayerStatistics` exports:
+
+    "victorytype" = pRecord->getVictory()
+
+along with the rest of that player's record.
+
+Therefore the defeated H1 is externally reported as having won victory V even though
+the source's own intended condition says the player should be “still alive.”
+
+SCOPE
+-----
+F648 does NOT claim that `CvGame`'s actual winning team is wrong, nor that a team should
+stop being allowed to win after losing one member. Team victory resolution remains
+unchanged.
+
+The defect is specifically the per-HUMAN statistics outcome assigned to a player whom
+the game has already eliminated.
+
+If designers deliberately wanted team historical membership to count as a personal
+statistics win, the two comments would need to be changed and the “eliminated human”
+warning resolved as intentional. The surviving source text provides the opposite
+oracle.
+
+ANCESTRY
+--------
+The exact DAN warning and missing `isAlive` test exist in Civ4CE's stock-BtS
+`CvStatistics.cpp`.
+
+K-Mod retains the same function. AdvC's subsequent CvStatistics touches are includes,
+casts and cleanup; supplied Base AdvC 1.14 and current SAS remain executable-identical
+here.
+
+This is therefore inherited rather than SAS-created.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for:
+- eliminated human statistics victory;
+- `CvStatistics::setVictory`;
+- false victory/win record after elimination;
+- the “still alive and on the winning team” comment
+
+find no prior confirmed owner.
+
+F647 is independent:
+    recycled PlayerTypes slots inherit prior CvPlayerRecord counters.
+
+F648 reproduces with ordinary initial human players, no slot reuse and a fresh record.
+
+REPAIR BOUNDARY
+---------------
+The narrow repair is exactly the missing condition expressed by the existing comment:
+
+    if (GET_PLAYER(ePlayer).isAlive() &&
+        GET_PLAYER(ePlayer).isHuman() &&
+        GET_PLAYER(ePlayer).getTeam() == eWinner)
+    {
+        setVictory(eVictory);
+    }
+    else
+        setVictory(NO_VICTORY);
+
+Preserve `isEverAlive()` as the outer gate if statistics still need a final loss record
+for defeated participants.
+
+Do not change team-level victory resolution or revive/eliminate any player.
+
+VALIDATION TARGETS
+------------------
+1. Two-human winning team, both alive at victory:
+   both receive V.
+2. H1 eliminated, H2 survives and team wins:
+   H1 -> NO_VICTORY, H2 -> V.
+3. Eliminated human on losing team:
+   remains NO_VICTORY.
+4. Alive AI on winning team:
+   preserve current policy (NO_VICTORY if statistics intentionally reports human wins
+   only).
+5. Eliminated AI:
+   NO_VICTORY.
+6. Human temporarily disabled by AI Auto Play:
+   preserve existing control semantics; do not infer alive state from human flag.
+7. `gDLL->reportStatistics()` must export H1 `victorytype=NO_VICTORY`.
+8. Actual `CvGame::getWinner()` / winning team remains unchanged.
+
+POST-F648 LEDGER / EXACT RESUME
+-------------------------------
+Queue 072 `CvGameCoreDLL/CvStatistics.cpp` -- OPEN.
+F647 / provisional KI#969 -- CONFIRMED.
+F648 / provisional KI#970 -- CONFIRMED.
+F649 / provisional KI#971 -- UNUSED.
+
+Exact continuation:
+C031-WIP487 physical -> Queue072 OPEN -> exclude F647/F648 and all prior statistics/
+recycled identity owners -> finish event-counter producer contracts:
+`unitKilled` attacker sentinel, city built vs acquisition, raze owner, religion founder,
+golden-age reporting -> array enum bounds and current XML counts -> statistics read/
+write/reset/newPlayer/load/report lifecycle -> classify every small path-history diff ->
+compare Base AdvC/K-Mod/Civ4CE -> either promote a genuinely independent F649 or close
+Queue072 cleanly -> freeze the next physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP488 -- QUEUE 072 CvStatistics.cpp -- F649 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP487.
+- Queue 072 `CvGameCoreDLL/CvStatistics.cpp` remains OPEN.
+- F647-F648 / provisional KI#969-KI#970 remain CONFIRMED.
+- F649 / provisional KI#971 is CONFIRMED here.
+- F650 / provisional KI#972 is UNUSED.
+- No gameplay source was modified.
+
+-------------------------------------------------------------------------------
+F649 / provisional KI#971 -- Rise & Fall's all-fog popup suppression gates the
+entire `cityBuilt` EventReporter call, so interlude-founded cities disappear from
+CvStatistics/Python and can later corrupt FairPlay protection for a human chapter
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED AdvC-specific regression introduced by advc.706 / practical 1268 and retained
+by Base AdvC 1.14/current SAS. Current-live in the supported Rise & Fall interlude.
+
+ROOT
+----
+Stock/K-Mod `CvPlayer::found` ends by reporting every successfully founded city:
+
+    CvEventReporter::getInstance().cityBuilt(pCity);
+
+Practical 1268 / advc.706 changed that to:
+
+    if (CvPlot::activeVisibility)
+        CvEventReporter::getInstance().cityBuilt(pCity);
+
+with the comment:
+
+    // advc.706: Suppress name-city popup
+
+Later practical 1386 renamed/replaced the visibility mechanism with the current global
+all-fog flag:
+
+    if (!CvPlot::isAllFog()) // advc.706: Suppress name-city popup
+        CvEventReporter::getInstance().cityBuilt(pCity);
+
+The intended reason is UI-only: do not expose/pop up city founding while the human is
+between Rise & Fall chapters.
+
+But `CvEventReporter::cityBuilt` is not a popup helper. It performs:
+
+    m_kPythonEventMgr.reportCityBuilt(pCity);
+    m_kStatistics.cityBuilt(pCity);
+
+and `CvStatistics::cityBuilt` increments:
+
+    CvPlayerRecord::m_iNumCitiesBuilt.
+
+Thus one UI/fog guard suppresses:
+- every Python cityBuilt event;
+- the authoritative per-player founded-city statistics counter;
+- every other current/future EventReporter side effect added to this event.
+
+SUPPORTED ALL-FOG ACTIVATION
+----------------------------
+Rise & Fall intentionally runs AI turns while the global flag is true.
+
+At the end of a chapter:
+
+    RiseFall::atTurnEnd
+        interludeCountdown = interludeLength;
+        setPlayerControl(currentChapterCiv, false);
+
+`setPlayerControl(..., false)` performs:
+
+    CvPlot::setAllFog(true);
+    setUIHidden(true);
+
+and turns the old human civilization back over to AI.
+
+`atGameTurnStart` then spends the configured interlude turns decrementing the countdown.
+Normal civilizations continue taking AI turns during this interval. The flag is global,
+not scoped to the former human civ, so it affects `CvPlayer::found` for EVERY player.
+
+Only when a later chapter takes control again does:
+
+    setPlayerControl(newCiv, true)
+        -> CvPlot::setAllFog(false)
+
+restore ordinary event reporting.
+
+Therefore any AI civilization that founds a city during the interlude reaches:
+
+    initCity(...)
+    real city ownership/population/map state created
+    BUT
+    CvEventReporter::cityBuilt skipped.
+
+This is an ordinary supported Rise & Fall timeline, not a transient map-loading edge.
+
+DIRECT STATISTICS CONTRADICTION
+-------------------------------
+Take civ C with:
+    2 correctly recorded cities founded outside interludes.
+
+During a Rise & Fall all-fog interlude C founds three additional cities.
+
+Real state/history:
+    C has founded 5 cities.
+
+Current `CvPlayerRecord`:
+    getNumCitiesBuilt() == 2
+
+because all three interlude events were gated off.
+
+Later C can be selected as the human civilization for a new chapter; the old missing
+events are never replayed or reconstructed. Save/load preserves the undercount exactly.
+
+LIVE AI CONSEQUENCE THROUGH FAIRPLAY
+------------------------------------
+`WarUtilityAspect::FairPlay` uses the statistics counter as gameplay state:
+
+    int const iCitiesTheyFounded =
+        kThey.getPlayerRecord()->getNumCitiesBuilt();
+
+    int const iCitiesTheyHave = kThey.getNumCities();
+
+    if (iCitiesTheyFounded > 0 &&
+        iCitiesTheyHave < iCitiesTheyFounded)
+    {
+        rFromCityLoss =
+            100 * (1 - iCitiesTheyHave / iCitiesTheyFounded)^0.85;
+    }
+    else if (iCitiesTheyHave == iCitiesTheyFounded)
+    {
+        // only recent-DoW protection
+    }
+
+This block is explicitly meant to stop AI dogpiling a HUMAN who has already lost cities
+early in the game.
+
+Continue the clean fixture:
+- C enters a later human chapter with five real cities but only two recorded founded;
+- during human play C loses three cities and now has two.
+
+Current F649 state:
+    iCitiesTheyFounded = 2
+    iCitiesTheyHave    = 2
+    -> no lost-city penalty at all;
+       code falls into the separate equal-count recent-DoW branch.
+
+Correct event history:
+    iCitiesTheyFounded = 5
+    iCitiesTheyHave    = 2
+
+so:
+
+    rFromCityLoss =
+        100 * (1 - 2/5)^0.85
+        = 100 * 0.6^0.85
+        ~= 64.8
+
+before the later attitude divisor.
+
+Thus a UI-popup suppression during a previous AI-only interlude can remove roughly
+65 raw FairPlay utility points from a later AI decision against the human.
+
+Even less extreme undercounts distort the denominator continuously; the 5->2 example is
+chosen only because it makes the branch flip especially clear.
+
+OTHER CURRENT CONSEQUENCES
+--------------------------
+1. External/report statistics undercount every all-fog-founded city.
+2. K-Mod city-name fallback uses `getNumCitiesBuilt`, so interlude omissions can affect
+   the fallback rotation after explicit names are exhausted.
+3. Every Python listener to the generic cityBuilt event misses those real city
+   foundations. Some UI listeners may intentionally want silence during the interlude,
+   but event suppression is broader than UI silence and prevents non-UI bookkeeping.
+
+LINEAGE
+-------
+Civ4CE / stock BtS and K-Mod call `cityBuilt` unconditionally after a successful found.
+
+Practical 1268 introduced the advc.706 visibility guard with the explicit
+"Suppress name-city popup" rationale.
+
+Practical 1386 changed the implementation from `CvPlot::activeVisibility` to
+`!CvPlot::isAllFog()` while preserving the same whole-event guard and comment.
+
+Later refactors/formatting retain it. Supplied Base AdvC 1.14 has exactly:
+
+    if (!CvPlot::isAllFog()) // advc.706: Suppress name-city popup
+        CvEventReporter::getInstance().cityBuilt(pCity);
+
+Current SAS inherits it unchanged.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for:
+- `CvPlot::isAllFog` + cityBuilt;
+- Rise & Fall interlude founded-city statistics;
+- advc.706 name-city popup suppression;
+- missing cityBuilt Python/statistics events
+
+find no existing owner.
+
+F647 is independent:
+    recycled player slot inherits an old record.
+
+F648 is independent:
+    eliminated human gets a false statistics victory.
+
+F649 reproduces with a fresh ordinary non-recycled CvPlayerRecord and no victory.
+
+REPAIR BOUNDARY
+---------------
+Do not suppress the authoritative city-built EVENT in order to suppress a popup.
+
+Preferred split:
+1. always call:
+       CvEventReporter::getInstance().cityBuilt(pCity);
+2. suppress only the UI/Python behavior that actually needs concealment during
+   Rise & Fall all-fog state.
+
+Possible approaches:
+- make the specific name-city popup listener check `CvPlot::isAllFog()` /
+  `RiseFall::isBlockPopups`;
+- or add an explicit "silent UI" context to the Python event path while still executing
+  C++ statistics bookkeeping.
+
+At minimum, if preserving Python-event suppression is considered intentional, move
+`m_kStatistics.cityBuilt(pCity)` outside the visibility gate so authoritative C++
+statistics are unconditional. But the cleaner event architecture is to report the real
+event and let presentation listeners decide whether to display anything.
+
+VALIDATION TARGETS
+------------------
+1. Ordinary non-R&F city founding:
+   Python event + statistics remain unchanged.
+2. Enter R&F interlude (`isAllFog=true`), let AI C found one city:
+   real city exists AND `getNumCitiesBuilt` increments.
+3. No name-city / forbidden UI popup appears during interlude.
+4. Multiple civs founding while global all-fog is active all receive correct counters.
+5. Save/load after interlude preserves the corrected counts.
+6. Later human takeover of C sees complete founded-city history.
+7. FairPlay 5-founded -> 2-current fixture computes ~64.8 raw city-loss cost rather
+   than entering the equality branch at 2/2.
+8. If Python cityBuilt remains enabled under all-fog, verify individual UI listeners
+   respect the R&F popup suppression policy without discarding non-UI listeners.
+
+POST-F649 LEDGER / EXACT RESUME
+-------------------------------
+Queue 072 `CvGameCoreDLL/CvStatistics.cpp` -- OPEN.
+F647 / provisional KI#969 -- CONFIRMED.
+F648 / provisional KI#970 -- CONFIRMED.
+F649 / provisional KI#971 -- CONFIRMED.
+F650 / provisional KI#972 -- UNUSED.
+
+Exact continuation:
+C031-WIP488 physical -> Queue072 OPEN -> exclude F647-F649 and all prior owners ->
+finish remaining event producer/counter contracts, especially cityBuilt suppression
+interactions, unit/great-person double-count controls, raze/religion/golden-age
+ownership -> array bounds and serialization/read/load contracts -> classify the entire
+small CvStatistics history set -> Base/K-Mod/Civ4CE semantic comparison -> either
+promote a genuinely independent F650 or close Queue072 cleanly -> freeze the next
+physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP489 -- QUEUE 072 CvStatistics.cpp -- CLOSED / F650 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP488.
+- Queue 072 `CvGameCoreDLL/CvStatistics.cpp` is CLOSED.
+- Queue-072 confirmed roots:
+    F647 / provisional KI#969
+    F648 / provisional KI#970
+    F649 / provisional KI#971
+- F650 / provisional KI#972 remains intentionally UNUSED.
+- Files complete: 43 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 074 `CvGameCoreDLL/WarEvaluator.cpp` (460 queued lines).
+- No gameplay source was modified.
+
+FINAL QUEUE-072 SATURATION PASS
+-------------------------------
+1. Unit-kill ownership
+   -------------------
+   `CvStatistics::unitKilled` indexes the attacker directly, which would be unsafe for
+   NO_PLAYER. The live producer contract closes that edge:
+       CvUnit::kill(..., ePlayer)
+   calls the EventReporter kill event only inside:
+       if (ePlayer != NO_PLAYER)
+   so current statistics never receives the sentinel through the ordinary kill path.
+
+2. Unit-built counting
+   -------------------
+   - ordinary trained units are reported once after successful completion;
+   - K-Mod intentionally reports conscription as unit-built;
+   - Great People are spawned outside ordinary city production and
+     `greatPersonBorn` intentionally adds them to the unit-built statistic;
+   - current Great-Person units are not ordinary production candidates, so no supported
+     double-count fixture survives.
+   An air unit that is physically created then immediately scrapped for impossible air
+   placement can miss the ordinary unitBuilt event because the production switch breaks
+   before that call; this is a narrow telemetry-definition edge and current SAS has
+   already added separate SASGameRecord completion logging. It is not promoted as F650.
+
+3. City-built semantics
+   --------------------
+   F649 owns the one demonstrated current corruption: Rise & Fall all-fog suppresses the
+   whole event for real founded cities.
+
+   WorldBuilder scenario preplaced cities use Python `player.initCity` and therefore do
+   not increment "cities built." That is defensible record semantics (the player did not
+   build them during the session). The only stock BtS public map with preplaced cities in
+   the supplied Civ4CE set is Earth1000AD (69 cities, GameTurn 160), whose later-era
+   context is outside FairPlay's early city-loss branch. No independent F650 is assigned.
+
+4. City razing / religion / Golden Age
+   ------------------------------------
+   - cityRazed is called with the razing player, matching the exported statistic;
+   - religion founding receives a concrete founding player from the city/religion
+     assignment path;
+   - Golden Age increments only on false->true Golden-Age transition, not when duration
+     is merely extended;
+   - enum values reaching the fixed arrays are current validated game-info enums.
+
+5. Building-built
+   --------------
+   Ordinary construction and Great-Person forced construction both represent a building
+   actually created by that player and report exactly once on their respective paths.
+   Free/inherited/setup buildings that are merely applied do not masquerade as built
+   production statistics.
+
+6. Arrays / serialization
+   ----------------------
+   `CvPlayerRecord::reset` allocates all arrays to current GC info counts and read/write
+   traverse those same counts in identical order.
+
+   As in stock Civ4, statistics streams do not persist historical XML array lengths;
+   loading a save against a materially different unit/building/religion info set is a
+   broad mod-save-compatibility domain, not a current same-build defect.
+
+   `CvEventReporter::readStatistics` resets the entire statistics object before reading,
+   so lazy records from a previous in-memory state do not contaminate a normal save
+   load. F647 is specifically the missing SINGLE-slot reset on mid-game identity reuse.
+
+7. Lazy player records / reporting
+   --------------------------------
+   `getPlayerRecord` bounds-asserts the internal PlayerTypes index and initializes ID
+   consistently. All current C++ callers supply real PlayerTypes.
+   `getPlayerStatistics` exports exactly the stored values; F647/F648/F649 own the three
+   demonstrated ways those stored values become wrong.
+
+HISTORY / COMPARISON CLOSURE
+----------------------------
+Current SAS and supplied Base AdvC 1.14 have identical normalized executable
+`CvStatistics.cpp` bodies.
+
+The small AdvC history consists almost entirely of:
+- include cleanup (1388, 1469/1470, 1679);
+- type/cast cleanup and enum indexing (2918/2936/2998 mirrors);
+- project/build-system changes.
+
+The underlying record/update/report semantics come from stock BtS/Civ4CE and K-Mod.
+No later Base-1.14 repair is missing.
+
+The major Queue-072 defects therefore come from CROSS-FILE lifecycle/caller contracts:
+- F647: dynamic player reincarnation never resets this sidecar record;
+- F648: stock victory recorder omits its own "still alive" predicate;
+- F649: AdvC Rise & Fall UI concealment suppresses the authoritative city event.
+
+QUEUE-072 ROOT LEDGER
+---------------------
+F647 / KI#969
+    recycled dead PlayerTypes slot inherits extinct civilization's entire CvPlayerRecord.
+
+F648 / KI#970
+    eliminated human teammate is exported as a statistics winner because setVictory
+    checks everAlive/human/team but not alive.
+
+F649 / KI#971
+    Rise & Fall all-fog suppresses the whole cityBuilt event, undercounting interlude
+    founding and later corrupting statistics/FairPlay for a human-selected civ.
+
+F650 / KI#972
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 072 is closed. Remaining edges are telemetry-definition choices, broad cross-mod
+save compatibility or unsupported/low-consequence API hardening; none clears the
+independent current-live threshold for F650.
+
+EXACT CONTINUATION
+------------------
+C031-WIP489 physical -> Queue072 CLOSED -> F647-F649 confirmed ->
+F650/KI#972 UNUSED -> open priority Queue074
+`CvGameCoreDLL/WarEvaluator.cpp` (460 lines) -> establish current SAS/Base AdvC 1.14,
+K-Mod/Civ4CE provenance and path-history/caller map -> audit recursive war/peace
+parameter mutation and restoration, preparation-time handling, total/limited-war
+classification, extra-target/no-war-vs-extra modes, cached utility/report lifecycle,
+team/player orientation, vassal/DP/war-plan assumptions, arithmetic/clamps/sentinels and
+simulation reuse -> dedup especially against F639/F642 and prior WarUtility roots ->
+promote F650 only for a distinct current-live root -> freeze the next physical WIP at
+the next settled boundary whether F650 is consumed or unused.
 
 No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
 ===============================================================================

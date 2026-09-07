@@ -116,6 +116,8 @@ public:
 	void changeLeader(LeaderHeadTypes eNewLeader, bool bChangeName = false); // advc.tsl
 	void changeCiv(CivilizationTypes eNewCiv, bool bChangeDescr = false, bool bForceColorUpdate = false); // advc.tsl
 	void setIsHuman(bool bNewValue, /* advc.127c: */ bool bAIUpdate = false);
+	// <!-- custom: Rebuild founding-unit surcharges after controller or handicap changes because their cached new-city production value depends on both. See KI#771. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	void updateFoundingUnitExtraCosts();
 	// CHANGE_PLAYER: END
 	// AI_AUTO_PLAY_MOD, 07/09/08, jdog5000: START
 	void setHumanDisabled(bool bNewVal);

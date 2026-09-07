@@ -699,10 +699,16 @@ void CvPlayer::processTraits(int iChange)
 
 	// advc.003q: setCivics code removed; a change in traits should not reset civics.
 
+	updateFoundingUnitExtraCosts();
+}
+
+// <!-- custom: Centralize the duplicated founding-unit surcharge rebuild so every controller/handicap-dependent transition can refresh the same cache. See KI#771. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+void CvPlayer::updateFoundingUnitExtraCosts()
+{
 	CvCivilization const& kCiv = getCivilization(); // advc.003w
 	for (int i = 0; i < kCiv.getNumUnits(); i++)
 	{
-		UnitTypes eUnit = kCiv.unitAt(i);
+		UnitTypes const eUnit = kCiv.unitAt(i);
 		if (GC.getInfo(eUnit).isFound())
 			setUnitExtraCost(kCiv.unitClass(eUnit), getNewCityProductionValue());
 	}
@@ -772,12 +778,7 @@ void CvPlayer::resetCivTypeEffects(/* advc.003q: */ bool bInit)
 			}
 		}
 	}
-	for (int i = 0; i < kCiv.getNumUnits(); i++)
-	{
-		UnitTypes eUnit = kCiv.unitAt(i);
-		if (GC.getInfo(eUnit).isFound())
-			setUnitExtraCost(kCiv.unitClass(eUnit), getNewCityProductionValue());
-	}
+	updateFoundingUnitExtraCosts();
 }
 
 // for switching the leaderhead of this player
@@ -848,6 +849,8 @@ void CvPlayer::setIsHuman(bool bNewValue, /* advc.127c: */ bool bUpdateAI)
 	else uninitAlerts(); // </advc.210>
 	if (bUpdateAI)
 		AI().AI_setHuman(bNewValue);
+	// <!-- custom: `isHuman()` affects the cached new-city production value; refresh after installing the final controller state. See KI#771. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	updateFoundingUnitExtraCosts();
 }
 // CHANGE_PLAYER: END
 // CHANGE_PLAYER, 05/09/09, jdog5000: START

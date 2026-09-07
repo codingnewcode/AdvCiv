@@ -867,7 +867,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#768 - (Rejected audit false positive) Capital updates already invalidate yield ranks](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-768)\
 [KI#769 - (Fixed inherited AdvCiv projection regression) Civilian unit changes also altered projected military upkeep](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-769)\
 [KI#770 - (Provisional Pending inherited BtS colony-lifecycle defect) A dead player on a live team can be revived as a malformed colony](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-770)\
-[KI#771 - (Provisional Pending AdvCiv Rise & Fall cache regression) Controller changes retain the former Settler production cost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-771)\
+[KI#771 - (Fixed inherited AdvCiv Rise & Fall cache regression) Controller changes retained the former Settler production cost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-771)\
 [KI#772 - (Provisional Pending inherited AdvCiv message-state defect) Hidden observers downgrade later visible Great Person announcements](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-772)\
 [KI#773 - (Provisional Pending inherited AdvCiv Globe arithmetic regression) Military strength is divided by combat strength](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-773)\
 [KI#774 - (Fixed inherited BBAI/K-Mod area-filter omission) Missionaries being trained on other land areas suppressed local production](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-774)\
@@ -1061,7 +1061,14 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#962 - (Provisional Pending SAS forecast regression) The global upgrade discount is omitted from ArmamentForecast's inverse](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-962)\
 [KI#963 - (Provisional Pending inherited AdvCiv forecast-state defect) Post-conquest forecasts retain pre-loss city topology](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-963)\
 [KI#964 - (Provisional Pending inherited AdvCiv comparison-scope defect) One evaluated war changes unrelated wars' armament](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-964)\
-[KI#965 - (Provisional Pending investigation) F643 remains unassigned before the CvArea audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-965)\
+[KI#965 - (Provisional Pending inherited AdvCiv Barbarian-context regression) Shelf spawns test water instead of their parent continent](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-965)\
+[KI#966 - (Provisional Pending inherited AdvCiv/UWAI side-identity defect) Tactical-Nuke mix follows the defender](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-966)\
+[KI#967 - (Provisional Pending inherited AdvCiv/UWAI simulation-state defect) Conventionally eliminated enemies still exchange nukes](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-967)\
+[KI#968 - (Provisional Pending inherited AdvCiv knowledge-polarity regression) Tech-gated typical units are automatically known](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-968)\
+[KI#969 - (Provisional Pending inherited BtS/K-Mod/AdvC lifetime defect) Recycled player slots inherit extinct statistics](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-969)\
+[KI#970 - (Provisional Pending inherited BtS statistics defect) Eliminated human teammates are recorded as winners](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-970)\
+[KI#971 - (Provisional Pending AdvCiv Rise & Fall event regression) All-fog suppresses authoritative city-built reporting](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-971)\
+[KI#972 - (Provisional Pending investigation) F650 remains unassigned before the WarEvaluator audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-972)\
 
 <a id="ki-1"></a>
 
@@ -15964,11 +15971,17 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP155 `CvPlaye
 
 <a id="ki-771"></a>
 
-## KI#771 - (Provisional Pending AdvCiv Rise & Fall cache regression) Controller changes retain the former Settler production cost
+## KI#771 - (Fixed inherited AdvCiv Rise & Fall cache regression) Controller changes retained the former Settler production cost
 
-Album F448 finds Rise & Fall switching a civilization between human and AI control without rebuilding the cached founding-unit surcharge. That surcharge depends on human/AI handicap modifiers and supplies the current zero-XML-cost Settler's effective production cost, so chapter transitions can retain the previous controller's price. Pending independent implementation review.
+Screenshots/files for this issue: [google drive folder link](https://drive.google.com/drive/folders/1TGxAOP23B-usyzusxBhm1P0cBi5OQESe?usp=sharing).
 
-Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP156 `CvPlayer.cpp` deep re-audit; disposition reconciled with the help of GPT-5.6-Sol, thanks.
+Album F448 found Rise & Fall switching a civilization between human and AI control without rebuilding the cached founding-unit surcharge. That surcharge depends on human/AI handicap modifiers and supplies the current zero-XML-cost Settler's effective production cost, so chapter transitions retained the previous controller's price. On current Ancient/Normal/Monarch data, a fresh value is 92 production for AI control and 100 for human control.
+
+Prepared by centralizing the founding-unit surcharge rebuild previously duplicated in trait and civilization reset paths. `CvPlayer::setIsHuman` now refreshes it after installing the final controller state, and Rise & Fall's direct handicap setter refreshes the same cache because handicap is an independent input. The paired chapter transition can perform two small rebuilds, but the final one necessarily sees both final inputs and avoids leaving either standalone mutation stale.
+
+Found during ChatGPT-5.6-Sol's C031-WIP156 `CvPlayer.cpp` deep re-audit and prepared with the help of GPT-5.6-Sol, thanks.
+
+Compiled successfully and validated through a complete Large Continents Debug-opt autoplay ending in a turn-383 Space Race victory. A separate Rise & Fall test then reached the turn-73 chapter handoff and showed the newly human-controlled Indian civilization's Settler at the expected refreshed cost of 100 production; see screenshots `Civ4ScreenShot0482.JPG` and `Civ4ScreenShot0483.JPG`, with the session identified by `SASGameRecord_20260907T165939Z_new2.log`.
 
 <a id="ki-772"></a>
 
@@ -17556,8 +17569,64 @@ Found during ChatGPT-5.6-Sol's C031-WIP475 `ArmamentForecast.cpp` audit and conf
 
 <a id="ki-965"></a>
 
-## KI#965 - (Provisional Pending investigation) F643 remains unassigned before the CvArea audit
+## KI#965 - (Provisional Pending inherited AdvCiv Barbarian-context regression) Shelf spawns test water instead of their parent continent
 
-Queue 058 `ArmamentForecast.cpp` closed at C031-WIP476 after confirming F639-F642. Keep F643/KI#965 reserved for the next independent root while priority Queue 060 `CvArea.cpp` begins.
+Album F643 finds AdvC practical 3898 changing Barbarian selection from a parent land-area context to the physical spawn plot. Shelf and transport calls consequently inspect a water area's resource state and the transport's water terrain, suppressing current resource-gated naval/cargo units and all mounted cargo. Pending passing both the physical plot needed for terrain suitability and the parent land area needed for continental resources/cargo suitability.
 
-Reserved during ChatGPT-5.6-Sol's C031-WIP476 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+Found during ChatGPT-5.6-Sol's C031-WIP477 `CvArea.cpp` audit and confirmed through the C031-WIP479 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-966"></a>
+
+## KI#966 - (Provisional Pending inherited AdvCiv/UWAI side-identity defect) Tactical-Nuke mix follows the defender
+
+Album F644 finds `MilitaryAnalyst` deriving both target-side interception and incoming Tactical-Nuke share from the defending team. The weapon mix belongs to the firing side; when attacker and defender differ in human/AI status at 50% interception, victim identity alone can shift modeled hit probability from about 58.33% to 62.5%. Pending passing attacker and defender teams separately.
+
+Found during ChatGPT-5.6-Sol's C031-WIP480 `MilitaryAnalyst.cpp` audit and reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-967"></a>
+
+## KI#967 - (Provisional Pending inherited AdvCiv/UWAI simulation-state defect) Conventionally eliminated enemies still exchange nukes
+
+Album F645 finds nuclear simulation running after conventional results but continuing to use real pre-simulation enemy existence, cities and cached nukes. An enemy eliminated by the InvasionGraph can therefore still fire its nuclear arsenal, receive nukes against its former city count and dilute allocation away from surviving enemies. Pending filtering nuclear participants and target denominators through the already-materialized graph result.
+
+Found during ChatGPT-5.6-Sol's C031-WIP481 `MilitaryAnalyst.cpp` audit and confirmed through the C031-WIP482 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-968"></a>
+
+## KI#968 - (Provisional Pending inherited AdvCiv knowledge-polarity regression) Tech-gated typical units are automatically known
+
+Album F646 finds `MilitaryBranch::canKnowTypicalUnit` returning true whenever the typical unit has a prerequisite technology, while the fielded-unit and observer-visible-tech checks are reached only for no-tech units such as Warriors. Practical 1275's own pre-refactor policy has the opposite polarity. Pending correcting the prerequisite test so foreign advanced unit estimates respect available observer knowledge.
+
+Found during ChatGPT-5.6-Sol's C031-WIP483 `MilitaryBranch.cpp` audit and confirmed through the C031-WIP484 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-969"></a>
+
+## KI#969 - (Provisional Pending inherited BtS/K-Mod/AdvC lifetime defect) Recycled player slots inherit extinct statistics
+
+Album F647 finds the supported human-colony fallback reusing a defeated `PlayerTypes` slot through `CvGame::addPlayer`, which resets `CvPlayer` but not `CvStatistics`' per-slot `CvPlayerRecord`. The new colonial identity therefore inherits the extinct civilization's victory, time, leader and all unit/city/building counters. Pending resetting the corresponding statistics record as part of dynamic player reincarnation.
+
+Found during ChatGPT-5.6-Sol's C031-WIP486 `CvStatistics.cpp` audit and reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-970"></a>
+
+## KI#970 - (Provisional Pending inherited BtS statistics defect) Eliminated human teammates are recorded as winners
+
+Album F648 confirms Firaxis' own warning in `CvStatistics::setVictory`: the branch describes a human who is "still alive" on the winning team but never checks `isAlive()`. An eliminated human teammate who remains an observer can consequently receive a recorded victory when the surviving teammate wins. Pending adding the stated alive predicate.
+
+Found during ChatGPT-5.6-Sol's C031-WIP487 `CvStatistics.cpp` audit and reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-971"></a>
+
+## KI#971 - (Provisional Pending AdvCiv Rise & Fall event regression) All-fog suppresses authoritative city-built reporting
+
+Album F649 finds AdvC's Rise & Fall popup-suppression guard wrapping the entire `CvEventReporter::cityBuilt` call. Civilizations that found during an all-fog interlude therefore lose both Python notification and the authoritative statistics increment; the latter can later corrupt FairPlay city-loss protection for a human-selected civilization. Pending keeping authoritative event/statistics reporting unconditional while suppressing only the intended UI listener.
+
+Found during ChatGPT-5.6-Sol's C031-WIP488 `CvStatistics.cpp` audit and confirmed through the C031-WIP489 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-972"></a>
+
+## KI#972 - (Provisional Pending investigation) F650 remains unassigned before the WarEvaluator audit
+
+Queue 072 `CvStatistics.cpp` closed at C031-WIP489 after confirming F647-F649. Keep F650/KI#972 reserved for the next independent root while priority Queue 074 `WarEvaluator.cpp` begins.
+
+Reserved during ChatGPT-5.6-Sol's C031-WIP489 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
