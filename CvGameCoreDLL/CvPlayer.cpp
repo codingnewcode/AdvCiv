@@ -6396,7 +6396,9 @@ int CvPlayer::getUnitCostMultiplier() const
 }
 
 
-int CvPlayer::calculateUnitCost(int& iFreeUnits, int& iFreeMilitaryUnits, int& iPaidUnits, int& iPaidMilitaryUnits, int& iUnitCost, int& iMilitaryCost, int& iExtraCost, int iExtraPop, int iExtraUnits) const // advc.004b
+// <!-- custom: Add `iExtraMilitaryUnits` to the detailed overload because AdvCiv's `iExtraUnits` prospective total-unit delta also changed military support, including for Settlers and Workers.
+// Keep the populations distinct as they are at runtime. See KI#769. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+int CvPlayer::calculateUnitCost(int& iFreeUnits, int& iFreeMilitaryUnits, int& iPaidUnits, int& iPaidMilitaryUnits, int& iUnitCost, int& iMilitaryCost, int& iExtraCost, int iExtraPop, int iExtraUnits, int iExtraMilitaryUnits) const // advc.004b
 {
 	// <!-- custom: performance optimization: cache repetitive calls -->
 	CvGame const& kGame = GC.getGame();
@@ -6418,10 +6420,8 @@ int CvPlayer::calculateUnitCost(int& iFreeUnits, int& iFreeMilitaryUnits, int& i
 		}
 	}*/ // BtS - Hidden AI bonus removed by BBAI.
 
-	iPaidUnits = std::max(0, getNumUnits() - iFreeUnits +
-			iExtraUnits); // advc.004b
-	iPaidMilitaryUnits = std::max(0, getNumMilitaryUnits() - iFreeMilitaryUnits +
-			iExtraUnits); // advc.004b
+	iPaidUnits = std::max(0, getNumUnits() - iFreeUnits + iExtraUnits); // advc.004b
+	iPaidMilitaryUnits = std::max(0, getNumMilitaryUnits() - iFreeMilitaryUnits + iExtraMilitaryUnits); // advc.004b
 	//iSupport = 0;
 	/*iBaseUnitCost = iPaidUnits * getGoldPerUnit();
 	iMilitaryCost = iPaidMilitaryUnits * getGoldPerMilitaryUnit();
@@ -6457,18 +6457,16 @@ int CvPlayer::calculateUnitCost(int& iFreeUnits, int& iFreeMilitaryUnits, int& i
 }
 
 
-int CvPlayer::calculateUnitCost(int iExtraPop, int iExtraUnits) const // advc.004b
+// <!-- custom: Add and forward `iExtraMilitaryUnits` through the convenience overload so callers can project total-unit and military-support changes independently. See KI#769. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+int CvPlayer::calculateUnitCost(int iExtraPop, int iExtraUnits, int iExtraMilitaryUnits) const // advc.004b
 {
 	if(isAnarchy())
 		return 0;
 
 	/*  advc (note): Several distinct variables need to be passed b/c
 		calculateUnitCost uses them for intermediate results */
-	int iFreeUnits, iFreeMilitaryUnits, iPaidUnits, iPaidMilitaryUnits,
-			iMilitaryCost, iBaseUnitCost, iExtraCost;
-	return calculateUnitCost(iFreeUnits, iFreeMilitaryUnits, iPaidUnits, iPaidMilitaryUnits,
-			iBaseUnitCost, iMilitaryCost, iExtraCost,
-			iExtraPop, iExtraUnits); // advc.004b
+	int iFreeUnits, iFreeMilitaryUnits, iPaidUnits, iPaidMilitaryUnits, iMilitaryCost, iBaseUnitCost, iExtraCost;
+	return calculateUnitCost(iFreeUnits, iFreeMilitaryUnits, iPaidUnits, iPaidMilitaryUnits, iBaseUnitCost, iMilitaryCost, iExtraCost, iExtraPop, iExtraUnits, iExtraMilitaryUnits); // advc.004b
 }
 
 int CvPlayer::calculateUnitSupply(/* advc.004b: */ int iExtraOutsideUnits) const

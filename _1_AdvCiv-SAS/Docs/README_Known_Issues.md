@@ -865,7 +865,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#766 - (Provisional Pending inherited BtS queue-help defect) Production hover discards the actual queue index](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-766)\
 [KI#767 - (Fixed inherited AdvCiv commerce-rounding defect) Every correction reselected the same remainder](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-767)\
 [KI#768 - (Rejected audit false positive) Capital updates already invalidate yield ranks](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-768)\
-[KI#769 - (Provisional Pending AdvCiv projection regression) Civilian unit changes also alter projected military upkeep](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-769)\
+[KI#769 - (Fixed inherited AdvCiv projection regression) Civilian unit changes also altered projected military upkeep](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-769)\
 [KI#770 - (Provisional Pending inherited BtS colony-lifecycle defect) A dead player on a live team can be revived as a malformed colony](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-770)\
 [KI#771 - (Provisional Pending AdvCiv Rise & Fall cache regression) Controller changes retain the former Settler production cost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-771)\
 [KI#772 - (Provisional Pending inherited AdvCiv message-state defect) Hidden observers downgrade later visible Great Person announcements](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-772)\
@@ -1055,7 +1055,13 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#956 - (Provisional Pending inherited AdvC lake-cache regression) Normalization-created lakes retain stale non-lake state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-956)\
 [KI#957 - (Provisional Pending AdvC human group-cycle regression) Fully-ready groups receive the partial-readiness penalty](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-957)\
 [KI#958 - (Provisional Pending inherited AdvC scenario-topology defect) City-bearing scenarios retain pre-Ice water areas](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-958)\
-[KI#959 - (Provisional Pending investigation) F637 remains unassigned before the CombatOdds audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-959)\
+[KI#959 - (Provisional Pending inherited AdvCiv forwarding defect) Combat-result odds ignore the request to reveal Barbarian free wins](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-959)\
+[KI#960 - (Provisional Pending inherited ACO/K-Mod probability defect) Bilateral chance first strikes are misweighted](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-960)\
+[KI#961 - (Provisional Pending inherited AdvCiv forecast-order defect) Fictional peace state leaks across TeamTypes iteration](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-961)\
+[KI#962 - (Provisional Pending SAS forecast regression) The global upgrade discount is omitted from ArmamentForecast's inverse](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-962)\
+[KI#963 - (Provisional Pending inherited AdvCiv forecast-state defect) Post-conquest forecasts retain pre-loss city topology](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-963)\
+[KI#964 - (Provisional Pending inherited AdvCiv comparison-scope defect) One evaluated war changes unrelated wars' armament](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-964)\
+[KI#965 - (Provisional Pending investigation) F643 remains unassigned before the CvArea audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-965)\
 
 <a id="ki-1"></a>
 
@@ -15938,11 +15944,15 @@ F445/KI#768 was retracted during ChatGPT-5.6-Sol's C031-WIP159 cross-file review
 
 <a id="ki-769"></a>
 
-## KI#769 - (Provisional Pending AdvCiv projection regression) Civilian unit changes also alter projected military upkeep
+## KI#769 - (Fixed inherited AdvCiv projection regression) Civilian unit changes also altered projected military upkeep
 
-Album F446 finds AdvCiv's prospective `iExtraUnits` parameter changing both total-unit and military-unit populations. Founding with a non-military Settler or previewing deletion of a civilian can therefore incorrectly reduce projected military upkeep, directly visible under Pacifism. Pending separating prospective total-unit and military-support-unit deltas throughout the callers.
+Album F446 found AdvCiv's prospective `iExtraUnits` parameter changing both total-unit and military-unit populations. Founding with a non-military Settler or previewing deletion of a civilian therefore incorrectly reduced projected military upkeep, directly visible under Pacifism.
 
-Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP154 `CvPlayer.cpp` deep re-audit; disposition reconciled with the help of GPT-5.6-Sol, thanks.
+Prepared by separating prospective total-unit and military-support-unit deltas throughout `CvPlayer::calculateUnitCost`. Founding now projects the Settler as one fewer total unit but no fewer military-support units, while Delete-command help counts the selected units and cargo by their actual `bMilitarySupport` values. The helper's optional "one more unit" estimate still cannot know the types of hypothetical future deletions, so it explicitly retains AdvCiv's best-case assumption that those further units all provide military support.
+
+Found during ChatGPT-5.6-Sol's C031-WIP154 `CvPlayer.cpp` deep re-audit and prepared with the help of GPT-5.6-Sol, thanks.
+
+Compiled successfully and validated through a complete Huge Archipelago (Snaky Continents) Debug-opt autoplay with 16 independent teams. The turn-406 Space Race victory left 13 teams alive; `SASGameRecord_20260907T142638Z_new1.log` identifies the tested dirty DLL and records a clean `AUTOPLAY_ENDED` victory completion.
 
 <a id="ki-770"></a>
 
@@ -17498,8 +17508,56 @@ Found during ChatGPT-5.6-Sol's C031-WIP467 `CvMap.cpp` audit; reconciled into Kn
 
 <a id="ki-959"></a>
 
-## KI#959 - (Provisional Pending investigation) F637 remains unassigned before the CombatOdds audit
+## KI#959 - (Provisional Pending inherited AdvCiv forwarding defect) Combat-result odds ignore the request to reveal Barbarian free wins
 
-Queue 036 `CvMap.cpp` closed at C031-WIP468 after confirming F631-F636. Keep F637/KI#959 reserved for the next independent root while priority Queue 057 `CombatOdds.cpp` begins.
+Album F637 finds `calculateCombatOdds(..., bHideFreeWins)` dropping its Boolean when it calls `setupCombatants`. `CvUnit::resolveCombat` explicitly passes `false` so combat-result messages reflect the executor's Barbarian free-win adjustment, but the omitted forwarding forces the nested helper's default `true`; an equal-strength fixture can consequently report 500 permille for combat actually resolved at about 999 permille. Pending forwarding the caller's value.
 
-Reserved as F637 during ChatGPT-5.6-Sol's C031-WIP468 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+Found during ChatGPT-5.6-Sol's C031-WIP469 `CombatOdds.cpp` audit and confirmed through the C031-WIP471 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-960"></a>
+
+## KI#960 - (Provisional Pending inherited ACO/K-Mod probability defect) Bilateral chance first strikes are misweighted
+
+Album F638 finds Advanced Combat Odds' `getCombatOddsSpecific` treating the combined net-first-strike range as uniformly distributed. The executor instead rolls each side's chance first strikes independently, so bilateral ranges have unequal net-result multiplicities when either side has more than one chance first strike. A current-reachable equal-odds fixture with 1 guaranteed + 3 chance first strikes against 0 guaranteed + 1 chance yields 82.421875% by exact independent-pair enumeration but 80.625% in the inherited helper. Pending averaging the fixed-result probability over the Cartesian product of both rolls.
+
+Found during ChatGPT-5.6-Sol's C031-WIP470 `CombatOdds.cpp` audit and confirmed through the C031-WIP471 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-961"></a>
+
+## KI#961 - (Provisional Pending inherited AdvCiv forecast-order defect) Fictional peace state leaks across TeamTypes iteration
+
+Album F639 finds `ArmamentForecast` accumulating `bPeaceAssumed` while iterating known teams, then combining that prefix state with the current team's reachability. Fictional scenario and AreaAI selection can therefore change solely with `TeamTypes` order. Pending making the peace decision local to the team currently being evaluated.
+
+Found during ChatGPT-5.6-Sol's C031-WIP472 `ArmamentForecast.cpp` audit and reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-962"></a>
+
+## KI#962 - (Provisional Pending SAS forecast regression) The global upgrade discount is omitted from ArmamentForecast's inverse
+
+Album F640 finds SAS's global 75% unit-upgrade price multiplier reaching the real price producer but not `ArmamentForecast`'s inverse affordability calculation. Fully affordable ordinary upgrades are consequently under-credited by about 25%. Pending applying the same global multiplier when reconstructing the forecasted upgrade value.
+
+Found during ChatGPT-5.6-Sol's C031-WIP473 `ArmamentForecast.cpp` audit and reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-963"></a>
+
+## KI#963 - (Provisional Pending inherited AdvCiv forecast-state defect) Post-conquest forecasts retain pre-loss city topology
+
+Album F641 finds concurrent post-conquest forecasting scaling aggregate production for graph-local city losses while still consulting real pre-simulation city, capital and route topology. Losing the sole coastal city can therefore leave positive Fleet/Logistics forecasting, with the same interface defect also retaining stale capital AreaAI and route capability. Pending exposing one coherent graph-local remaining-city view for these discrete capability questions.
+
+Found during ChatGPT-5.6-Sol's C031-WIP474 `ArmamentForecast.cpp` audit, with same-root breadth completed at C031-WIP476; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-964"></a>
+
+## KI#964 - (Provisional Pending inherited AdvCiv comparison-scope defect) One evaluated war changes unrelated wars' armament
+
+Album F642 finds the analyst's agent-target `isConsideringPeace` and `isTotal` parameters affecting every node in `ArmamentForecast`. An unchanged unrelated C-D war can consequently receive +0.05 instead of -0.05 armament merely because A compares total war with peace against B. Pending restricting those scenario parameters to the evaluated agent-target relationship.
+
+Found during ChatGPT-5.6-Sol's C031-WIP475 `ArmamentForecast.cpp` audit and confirmed through the C031-WIP476 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-965"></a>
+
+## KI#965 - (Provisional Pending investigation) F643 remains unassigned before the CvArea audit
+
+Queue 058 `ArmamentForecast.cpp` closed at C031-WIP476 after confirming F639-F642. Keep F643/KI#965 reserved for the next independent root while priority Queue 060 `CvArea.cpp` begins.
+
+Reserved during ChatGPT-5.6-Sol's C031-WIP476 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.

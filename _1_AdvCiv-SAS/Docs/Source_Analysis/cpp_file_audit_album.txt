@@ -2,12 +2,12 @@ AdvCiv-SAS C++ File Audit Album
 Generated from local light-source snapshot only; no web/GitHub lookup used.
 
 CURRENT PROGRESS SUMMARY
-Files complete: 36 / 169
+Files complete: 38 / 169
 Files open: 0 / 169
-Last completed file: queue 036 CvGameCoreDLL/CvMap.cpp (1,596 queued lines) - CLOSED AT C031-WIP468
-Next file: priority queue 057 CvGameCoreDLL/CombatOdds.cpp (713 queued lines)
-Latest confirmed audit findings: F631-F636 / KI#953-KI#958 in the Queue 024 and Queue 036 closures. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
-Next new root ID: F637 unused / provisional KI#959 next
+Last completed file: queue 058 CvGameCoreDLL/ArmamentForecast.cpp (693 queued lines) - CLOSED AT C031-WIP476
+Next file: priority queue 060 CvGameCoreDLL/CvArea.cpp (686 queued lines)
+Latest confirmed audit findings: F637-F642 / KI#959-KI#964 in the Queue 057 and Queue 058 closures. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
+Next new root ID: F643 unused / provisional KI#965 next
 
 The durable checkpoints and current cursor below are authoritative for finding status; the initial C010 snapshot and later WIP appends preserve their own historical source identities.
 
@@ -18,7 +18,7 @@ METHOD
 - Do not promote tuning disagreements, theoretical unsupported configurations, dead paths, or already-fixed history into new findings.
 - One root cause gets one finding even when several callers expose different symptoms.
 - False positives are recorded when useful so they are not rediscovered later.
-- Process every still-PENDING queue entry explicitly marked `priority next wip` before resuming ordinary queue order; among equally marked entries, follow queue order. Queue 057 `CombatOdds.cpp` is next after the Queue 036 closure. This preserves the user's requested stronger-WIP priorities without making ChatGPT choose between competing continuation notes.
+- Process every still-PENDING queue entry explicitly marked `priority next wip` before resuming ordinary queue order; among equally marked entries, follow queue order. Queue 060 `CvArea.cpp` is next after the Queue 058 closure. This preserves the user's requested stronger-WIP priorities without making ChatGPT choose between competing continuation notes.
 
 QUEUE (current .cpp files, longest -> shortest)
 001  32205 CvGameCoreDLL/CvPlayerAI.cpp [COMPLETE ORIGINAL PASS / DEEP-METHOD RE-AUDIT CLOSED - C031-WIP65 / F321-F374]
@@ -77,10 +77,10 @@ QUEUE (current .cpp files, longest -> shortest)
 054    844 CvGameCoreDLL/GroupPathFinder.cpp [COMPLETE - SEE C028 DURABLE CHECKPOINT]
 055    837 CvGameCoreDLL/CyInfoInterface3.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 056    768 CvGameCoreDLL/CvInfo_Asset.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-057    713 CvGameCoreDLL/CombatOdds.cpp [PENDING]<-(priority current next wip)
-058    693 CvGameCoreDLL/ArmamentForecast.cpp [PENDING]<-(priority next wip after the first reloop)
+057    713 CvGameCoreDLL/CombatOdds.cpp [COMPLETE - SEE C031-WIP471 DURABLE CHECKPOINT]
+058    693 CvGameCoreDLL/ArmamentForecast.cpp [COMPLETE - SEE C031-WIP476 DURABLE CHECKPOINT]
 059    687 CvGameCoreDLL/CyGlobalContext.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-060    686 CvGameCoreDLL/CvArea.cpp [PENDING]<-(priority next wip after the first reloop)
+060    686 CvGameCoreDLL/CvArea.cpp [PENDING]<-(priority current next wip)
 061    679 CvGameCoreDLL/CvEventReporter.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 062    673 CvGameCoreDLL/MilitaryAnalyst.cpp [PENDING]<-(priority next wip after the first reloop)
 063    643 CvGameCoreDLL/CyInfoInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -161368,4 +161368,2009 @@ new physical WIP at the next settled tranche regardless.
 No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
 ===============================================================================
 END C031-WIP468
+===============================================================================
+
+
+===============================================================================
+C031-WIP469 -- QUEUE 057 CombatOdds.cpp / F637 CONFIRMED SAFETY CHECKPOINT
+Date: 2026-09-07
+STATUS: Queue 057 OPEN; F637/KI#959 CONFIRMED; F638/KI#960 UNUSED
+===============================================================================
+
+PHYSICAL CONTINUATION
+---------------------
+- Parent physical stone: C031-WIP468.
+- Working source base: reconciled `AdvCiv-SAS_light_source_20260907T150520.zip`.
+- Supplied local comparison trees: Base AdvC 1.14, K-Mod 1.46, Civ4CE.
+- Queue 057 `CvGameCoreDLL/CombatOdds.cpp` is OPEN.
+- F637 / provisional KI#959 is CONFIRMED here.
+- F638 / provisional KI#960 is UNUSED.
+- No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified.
+
+-------------------------------------------------------------------------------
+F637 / provisional KI#959 -- `calculateCombatOdds(..., bHideFreeWins)` ignores
+its Boolean argument, so AdvC's combat-result odds can hide Barbarian free wins
+even when the caller explicitly requests the real executor odds
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED current inherited AdvC defect; live and player-visible with the normal
+`SHOW_ODDS_IN_COMBAT_MESSAGES` path. Base AdvC 1.14 retains it unchanged.
+
+CURRENT ROOT
+------------
+`CombatOdds.h` exposes:
+
+    int calculateCombatOdds(
+        CvUnit const& kAttacker,
+        CvUnit const& kDefender,
+        bool bHideFreeWins = true);
+
+`CombatOdds.cpp` receives the parameter but currently initializes through:
+
+    int iOdds = setupCombatants(kAttacker, kDefender, att, def);
+
+The nested helper itself has the intended forwarding-capable signature:
+
+    int setupCombatants(..., bool bHideFreeWins = true)
+
+and forwards that value correctly to `setupCombatantsImpl`. The public wrapper simply
+omits the argument, so C++ default-argument substitution forces `true` at that call
+site regardless of the caller's requested value.
+
+LIVE ACTIVATION
+---------------
+`CvUnit::resolveCombat()` deliberately requests the opposite behavior:
+
+    m_iAttackOdds = calculateCombatOdds(*this, *pDefender,
+            false); // Do reveal free wins vs. Barbarians
+
+That value is cached in `m_iAttackOdds`, adjusted for withdrawal chance, and later used
+by the combat-result message when `SHOW_ODDS_IN_COMBAT_MESSAGES` is enabled. This is
+therefore not a dormant public-API parameter.
+
+EXECUTOR ORACLE
+---------------
+Actual combat obtains its per-round roll through `CvUnit::getDefenderCombatValues()`.
+When a non-Barbarian player with free wins remaining attacks a Barbarian, that function
+caps the Barbarian's per-round hit chance at 10% (and therefore gives the attacker at
+least 90%). `setupCombatantsImpl` contains the matching free-win adjustment, but only
+inside `if (!bHideFreeWins)`.
+
+The intended public call with `false` should therefore match the executor. Because the
+argument is dropped one layer above, it instead calculates from the unmodified unit
+strengths.
+
+DETERMINISTIC STOCK FIXTURE
+---------------------------
+Use otherwise equal-strength, full-health, no-first-strike units, with a normal player
+still below `getFreeWinsVsBarbs()` attacking a Barbarian.
+
+Supplied stock BtS data has:
+- `COMBAT_DAMAGE = 20`;
+- `MAX_HIT_POINTS = 100`;
+- `COMBAT_DIE_SIDES = 1000`;
+and the current SAS tree contains no override of those inherited defines.
+
+Equal strength therefore means five successful hits are required on each side.
+
+Without the free-win rule:
+- attacker per-round hit chance = 0.5;
+- probability of scoring five hits before the defender scores five = exactly 0.5;
+- current LFB calculation returns 500 permille.
+
+With the executor's free-win rule:
+- attacker per-round hit chance = 0.9;
+- exact probability of scoring five hits before five defender hits is
+  sum(C(4+k,k) * 0.9^5 * 0.1^k, k=0..4) = 0.99910908;
+- current LFB interval/rounding implementation returns 999 permille.
+
+Thus the live `calculateCombatOdds(..., false)` path can retain/display 500 permille
+for a battle that the actual executor resolves at about 999.1 permille (999 in the
+current integer predictor). The discrepancy is large and deterministic.
+
+BIRTH / LINEAGE PROOF
+---------------------
+AdvC practical 4003 / commit-diff mirror `AdvCivPreSAS_4003_8128c2bc0a.diff`, titled
+"Further amend attacker odds messages," introduced all relevant pieces together:
+1. `setupCombatants` gained `bHideFreeWins` and correctly forwarded it to the lower
+   implementation;
+2. `calculateCombatOdds` gained the same new Boolean parameter;
+3. `CvUnit::resolveCombat` began calling `calculateCombatOdds(..., false)` with the
+   explicit comment "Do reveal free wins vs. Barbarians";
+4. but the body of `calculateCombatOdds` was not changed to pass that new parameter to
+   `setupCombatants`.
+
+The defect therefore exists from the feature's introduction rather than from later SAS
+drift. Supplied Base AdvC 1.14 still has the same omitted argument. Current SAS
+`CombatOdds.cpp` is executable-semantically identical to Base AdvC 1.14 after
+comment/whitespace normalization, so SAS inherited the defect.
+
+INTERNAL CROSS-CHECK
+--------------------
+`combat_odds::initCombatants(...)` does pass its `bHideFreeWins` argument through to
+`setupCombatantsImpl<true>`. ACO's `getCombatOddsSpecific` reaches that path and supplies
+its `ACO__IgnoreBarbFreeWins` option. The free-win implementation itself is therefore
+not missing; the fault is localized to the public `calculateCombatOdds` forwarding
+layer.
+
+WHOLE-ALBUM DEDUP
+-----------------
+A whole-album search finds no prior finding mentioning `bHideFreeWins`, free-win
+visibility, `IgnoreBarbFreeWins`, `SHOW_ODDS_IN_COMBAT_MESSAGES`, or `m_iAttackOdds` as
+this root.
+
+The closest existing CombatOdds-related owner is F602/KI#925, but F602 concerns SAS's
+Janissary `iCombatLimit=110` exceeding max hit points and creating executor/predictor
+combat-limit disagreement. F637 is independent: ordinary lethal combat, normal hit
+limits, and a dropped free-win-visibility argument.
+
+REPAIR BOUNDARY
+---------------
+The narrow repair is simply to forward the public parameter at the first setup call:
+
+    int iOdds = setupCombatants(
+            kAttacker, kDefender, att, def, bHideFreeWins);
+
+For diagnostic `MONTE_CARLO_ODDS_TEST` consistency, the later repeated setup call in that
+conditional block should use the same explicit `bHideFreeWins` value as well if the test
+is ever enabled. No combat-resolution rule needs redesigning.
+
+VALIDATION TARGETS
+------------------
+1. Equal-strength normal attacker vs. Barbarian with free wins remaining:
+   `calculateCombatOdds(..., false)` should return about 999 permille, not 500.
+2. The same call with `true` should continue to hide the free-win adjustment and return
+   the underlying 500 permille in the equal-strength fixture.
+3. Exhausted free wins should make true/false identical.
+4. Reverse Barbarian-attacker / protected normal-defender case should honor the mirrored
+   10/90 cap already present in `setupCombatantsImpl`.
+5. ACO behavior should remain unchanged because its `initCombatants` path was already
+   forwarding correctly.
+6. Ordinary non-Barbarian combats should remain unchanged.
+7. Combat-result messages with `SHOW_ODDS_IN_COMBAT_MESSAGES` enabled should now match
+   the executor's Barbarian free-win rule before withdrawal adjustment.
+
+QUEUE-057 BASELINE PRESERVED
+----------------------------
+- Current SAS `CombatOdds.cpp` is executable-semantically identical to supplied Base
+  AdvC 1.14 after comments/whitespace normalization.
+- The path-specific history inventory contains nine substantive AdvC commits touching
+  `CombatOdds.cpp` (2843, 2851, 2852, 2854, 2855, 2998, 3864, 3900, 4003) plus SAS's
+  later formatting/history mirror 5961.
+- F637 is the first surviving current Queue-057 root.
+
+POST-F637 LEDGER / EXACT RESUME
+-------------------------------
+Queue 057 `CvGameCoreDLL/CombatOdds.cpp` -- OPEN.
+F637 / provisional KI#959 -- CONFIRMED here (ignored `bHideFreeWins` forwarding).
+F638 / provisional KI#960 -- UNUSED.
+
+Exact continuation:
+C031-WIP469 physical -> Queue057 OPEN -> exclude F637 plus all prior album owners ->
+inspect the LFB interpolation/cache boundary near attacker odds 1000 first (the prior
+handoff specifically flagged non-interval values such as 999), including whether the
+rounded-up cache endpoint may exceed `COMBAT_DIE_SIDES` and whether that can corrupt the
+returned probability -> then continue first-strike/binomial bounds, cache dimensions,
+combat-limit setup, trivial-odds exits, and all remaining nine history strata -> freeze
+another physical WIP at the next settled boundary whether F638 is consumed or remains
+unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+===============================================================================
+C031-WIP470 -- QUEUE 057 CombatOdds.cpp -- F638 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP469.
+- Working source base: reconciled `AdvCiv-SAS_light_source_20260907T150520.zip`.
+- Supplied local comparison trees: Base AdvC 1.14, K-Mod 1.46, Civ4CE.
+- Queue 057 `CvGameCoreDLL/CombatOdds.cpp` remains OPEN.
+- F637 / provisional KI#959 remains CONFIRMED.
+- F638 / provisional KI#960 is CONFIRMED here.
+- F639 / provisional KI#961 is UNUSED.
+- No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified.
+
+-------------------------------------------------------------------------------
+POST-F637 NEGATIVE CONTROL -- LFB interpolation cannot query odds near 1000
+-------------------------------------------------------------------------------
+
+The preceding handoff specifically flagged a possible cache/interpolation problem for
+non-interval attacker per-round odds such as 999. That candidate does NOT survive the
+live wrapper contract.
+
+`LFBcalculateCombatOdds(Combatant const& att, Combatant const& def)` first decides
+whether the attacker is the stronger per-round side:
+
+    bool bFlip = (att.odds() > def.odds());
+
+It then calls `LFBlookupCombatOdds` with `def.odds()` when flipped and `att.odds()`
+otherwise. Since the two per-round odds sum to `COMBAT_DIE_SIDES`, the cache/interpolator
+always receives the weaker side's odds and therefore at most half of the die range
+(normally <= 500 for a 1000-sided combat die).
+
+Consequently a live 999 attacker-odds case is queried as the complementary 1, not 999,
+and the upper interpolation endpoint cannot run above 1000 through this wrapper.
+Preserve this as a Queue-057 negative control, not F638.
+
+-------------------------------------------------------------------------------
+F638 / provisional KI#960 -- ACO specific-outcome math misweights bilateral
+chance-first-strike rolls once either side has more than one chance first strike
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited Advanced Combat Odds / K-Mod defect; current-live and
+player-visible in ACO health-outcome / expected-HP help. Supplied Base AdvC 1.14
+retains the same mathematics exactly.
+
+ROOT
+----
+`combat_odds::getCombatOddsSpecific` models a requested terminal combat outcome after
+building:
+
+    int const AttFSnet = att.lowFS() - def.lowFS();
+    int const AttFSC = att.FSChances();
+    int const DefFSC = def.FSChances();
+
+Its three outcome branches then sum over a range of effective first-strike counts and
+finish with:
+
+    answer /= (AttFSC + DefFSC + 1);
+
+This inherited closed form is exact when only one side has chance first strikes, and
+also happens to handle the 1-chance-vs-1-chance case. It ceases to match the executor
+when both units have chance-first-strike ranges and at least one range contains more
+than one possible extra strike.
+
+The underlying reason is that the real game does not make one uniform draw over the
+combined net-first-strike range. Each unit independently rolls its own chance-first-
+strike count. The distribution of their difference therefore comes from the Cartesian
+product of the two uniform draws and has multiplicities that change across the net
+first-strike values. The ACO closed form does not preserve those multiplicities for the
+larger bilateral ranges.
+
+AUTHORITATIVE EXECUTOR ORACLE
+-----------------------------
+`CvUnit::setCombatUnit()` initializes each combatant separately:
+
+    setCombatFirstStrikes(pCombatUnit->immuneToFirstStrikes() ? 0 :
+            (firstStrikes() + SyncRandNum(chanceFirstStrikes() + 1)));
+
+Normal combat calls `setCombatUnit` for both attacker and defender, so absent immunity:
+
+    attacker realized FS = attacker guaranteed FS
+                           + uniform integer [0, attacker chance FS]
+    defender realized FS = defender guaranteed FS
+                           + uniform integer [0, defender chance FS]
+
+These are two independent synchronized RNG draws. During `resolveCombat`, simultaneous
+remaining first-strike counters cancel naturally because a successful combat roll only
+inflicts damage when the opposing side has no first strike left.
+
+Thus the exact ACO oracle for chance-first-strike state is to average the fixed-realized-
+first-strike combat probability over all
+`(AttFSC + 1) * (DefFSC + 1)` draw pairs (or equivalently use the correctly weighted
+distribution of their net difference).
+
+CURRENT-DATA ACTIVATION
+-----------------------
+This is not merely a mod-mod XML possibility.
+
+Current SAS promotion data includes:
+- `PROMOTION_FIRST_STRIKE1`: +1 chance first strike;
+- `PROMOTION_FIRST_STRIKE2`: +1 guaranteed first strike;
+- `PROMOTION_FIRST_STRIKE3`: +2 chance first strikes.
+
+`FIRST_STRIKE3` is valid for many current combat classes (including multiple archer,
+melee, gun, armor, naval and siege classes) and can be acquired through the current
+promotion tree. A unit carrying the First Strike chain through FS3 therefore reaches:
+
+    guaranteed first strikes = 1
+    chance first strikes     = 3
+
+An opposing eligible unit with only FS1 reaches:
+
+    guaranteed first strikes = 0
+    chance first strikes     = 1
+
+Current unit XML also contains innate chance-first-strike units, so bilateral chance
+ranges are ordinary supported combat state rather than a synthetic constructor-only
+case.
+
+SMALL EXACT FIXTURE
+-------------------
+For a clean arithmetic proof, take equal per-round combat odds (P_A = P_D = 0.5), one
+hit required to defeat either combatant, no withdrawal, no immunity, and the current-
+reachable first-strike states above:
+
+    attacker: 1 guaranteed + 3 chance
+    defender: 0 guaranteed + 1 chance
+
+The executor has eight equally likely independent draw pairs. Their net attacker first
+strikes are:
+
+    1, 0, 2, 1, 3, 2, 4, 3
+
+or by multiplicity:
+
+    net 0: 1 pair
+    net 1: 2 pairs
+    net 2: 2 pairs
+    net 3: 2 pairs
+    net 4: 1 pair
+
+With one hit needed and 50/50 normal rounds, attacker win probability for n nonnegative
+net first strikes is `1 - 0.5^(n+1)`. Therefore exact engine probability is:
+
+    (0.5
+     + 2*0.75
+     + 2*0.875
+     + 2*0.9375
+     + 0.96875) / 8
+    = 0.82421875
+    = 82.421875%
+
+A literal evaluation of the current `getCombatOddsSpecific` victory branch for the same
+inputs yields:
+
+    sum1 = 0
+    sum2 = 4.03125
+    divisor = AttFSC + DefFSC + 1 = 5
+    answer = 4.03125 / 5
+           = 0.80625
+           = 80.625%
+
+The error is therefore 1.796875 percentage points in this compact exact fixture.
+
+NORMAL MULTI-HIT CONTROL
+------------------------
+The root is not dependent on the one-hit simplification.
+
+With the same first-strike state, equal 50/50 per-round odds, and five successful hits
+required by each side, exact Cartesian-product enumeration gives these probabilities
+for attacker victory after respectively 0..4 defender hits:
+
+    exact:
+        0 hits: 0.079345703125
+        1 hit : 0.1300048828125
+        2 hits: 0.15057373046875
+        3 hits: 0.146697998046875
+        4 hits: 0.128265380859375
+
+    current ACO:
+        0 hits: 0.082421875
+        1 hit : 0.1302734375
+        2 hits: 0.14931640625
+        3 hits: 0.145166015625
+        4 hits: 0.127099609375
+
+The largest single displayed outcome error in that ordinary five-hit fixture is about
+0.3076 percentage points. Because ACO repeatedly consumes these specific-outcome
+probabilities for expected hit points, unharmed probabilities, bottom-HP probabilities,
+kill/pullout/retreat totals and the HP-bar distribution, the wrong weighting propagates
+through several player-facing ACO summaries.
+
+LIVE CONSUMERS
+--------------
+`CvGameCoreDLL/ACOText.cpp` calls `getCombatOddsSpecific` throughout the Advanced Combat
+Odds help path to compute, among other values:
+- attacker and defender unharmed probabilities;
+- expected attacker/defender HP;
+- lowest-surviving-HP probabilities;
+- attacker kill / combat-limit pullout / retreat / defender kill totals;
+- each printed HP-outcome probability.
+
+No gameplay combat resolution or AI attack decision uses this helper directly; F638 is
+a UI-prediction correctness defect, not a combat-executor mutation.
+
+LINEAGE / COMPARISON
+--------------------
+The function is explicitly marked as code from `ADVANCED COMBAT ODDS v1.1, 11/7/09,
+PieceOfMind`. Supplied K-Mod 1.46 retains the same `AttFSC` / `DefFSC` loop structure
+and final `(AttFSC + DefFSC + 1)` divisor in `CvGameTextMgr.cpp`.
+
+AdvC later refactored the combatant setup and moved the helper into `CombatOdds.cpp`;
+those changes did not replace the inherited bilateral chance-first-strike mathematics.
+Current SAS and supplied Base AdvC 1.14 have byte-for-byte identical normalized
+`getCombatOddsSpecific` function bodies after whitespace removal (same SHA-256 in the
+local audit comparison), so the defect is inherited rather than SAS-created.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for `getCombatOddsSpecific`, `AttFSC`, `DefFSC`,
+`chanceFirstStrikes`, Advanced Combat Odds and bilateral chance-first-strike wording
+find no existing finding that owns this probability-distribution root.
+
+Nearby combat findings are independent:
+- F200/KI#523 concerns loss of `AttackOddsChange` information after a 1..99 weighted-
+  odds clamp;
+- F204/KI#527 and F210/KI#533 concern air-domain misuse in debug/LFB strength paths;
+- F602/KI#925 concerns SAS `iCombatLimit=110` executor/predictor disagreement;
+- F637/KI#959 concerns a dropped `bHideFreeWins` argument in the separate public
+  `calculateCombatOdds` wrapper.
+
+F638 reproduces with ordinary lethal combat, no barbarian free wins, no air unit,
+no attack-odds personality modifier and combat limits <= max HP.
+
+REPAIR BOUNDARY
+---------------
+Do not try to patch only one algebraic endpoint or change the final divisor in
+isolation. The robust repair boundary is the chance-first-strike distribution itself.
+
+Two equivalent safe approaches are:
+1. enumerate attacker extra-FS draw `0..AttFSC` and defender extra-FS draw `0..DefFSC`,
+   evaluate the fixed realized/net-first-strike specific-outcome probability for each
+   pair, then divide by `(AttFSC + 1) * (DefFSC + 1)`; or
+2. precompute the exact multiplicity/weight of each possible net-first-strike value
+   from those two independent uniform draws, then apply the fixed-net formula using
+   those weights.
+
+Chance-first-strike counts are small in current data, so explicit pair averaging is a
+particularly clear correctness oracle. Preserve first-strike immunity by continuing to
+use the already-normalized `Combatant.lowFS()` / `FSChances()` values.
+
+VALIDATION TARGETS
+------------------
+1. Zero chance first strikes on both sides: unchanged.
+2. Chance FS only on attacker: unchanged and matches current formula.
+3. Chance FS only on defender: unchanged and matches current formula.
+4. One chance FS vs. one chance FS: preserve the currently correct result.
+5. Current chain fixture 1 guaranteed + 3 chance vs. 0 guaranteed + 1 chance:
+   exact one-hit equal-odds result = 82.421875%, not 80.625%.
+6. Swap attacker/defender and verify complementary terminal probabilities.
+7. Five-hit equal-odds fixture: every specific terminal probability must match direct
+   independent-draw enumeration, not only the summed victory probability.
+8. First-strike immunity on either side must collapse that opponent's normalized FS
+   count exactly as today.
+9. ACO total terminal probabilities should sum to 1 (modulo float precision and
+   withdrawal/combat-limit semantics) after the replacement.
+10. `calculateCombatOdds`/LFB ordinary battle odds remain behaviorally separate; F638
+    repairs only the ACO specific-outcome helper.
+
+POST-F638 LEDGER / EXACT RESUME
+-------------------------------
+Queue 057 `CvGameCoreDLL/CombatOdds.cpp` -- OPEN.
+F637 / provisional KI#959 -- CONFIRMED (ignored `bHideFreeWins` forwarding).
+F638 / provisional KI#960 -- CONFIRMED (bilateral chance-first-strike distribution).
+F639 / provisional KI#961 -- UNUSED.
+
+Exact continuation:
+C031-WIP470 physical -> Queue057 OPEN -> exclude F637/F638 plus all prior album owners
+-> continue mechanical arithmetic audit from `getBinomialCoefficient` and the
+`setupCombatantsImpl` hit/damage bounds through LFB cache dimensions, interval rounding,
+integer width, trivial odds, first-strike summations, combat-limit handling and the
+remaining nine path-history strata -> cross-check all survivors against Base AdvC 1.14,
+K-Mod/Civ4CE and whole-album ownership -> promote F639 only for a distinct current-live
+root -> freeze another physical WIP at the next settled boundary whether F639 is used
+or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+===============================================================================
+C031-WIP471 -- QUEUE 057 CombatOdds.cpp -- CLOSED / F639 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP470.
+- Queue 057 `CvGameCoreDLL/CombatOdds.cpp` is CLOSED.
+- Queue-057 confirmed roots: F637/KI#959 and F638/KI#960.
+- F639 / provisional KI#961 remains intentionally UNUSED.
+- Files complete: 37 / 169.
+- No gameplay source was modified.
+- Next priority file under the reconciled scheduling rule: Queue 058
+  `CvGameCoreDLL/ArmamentForecast.cpp` (693 queued lines).
+
+FINAL POST-F638 SATURATION PASS
+-------------------------------
+The remainder of Queue 057 was re-read mechanically after F638 rather than closed by
+history exhaustion alone. The following surfaces were challenged:
+
+1. `getBinomialCoefficient`
+   - all live uses are internal to CombatOdds;
+   - recurrence arithmetic is exact at each combinatorial step;
+   - ordinary current combat with `combatLimit <= MAX_HIT_POINTS` remains within the
+     historical round-count/coefficient domain because positive combat firepower keeps
+     per-hit damage bounded away from zero;
+   - SAS's one current `combatLimit > 100` data point can push the modeled rounds beyond
+     those ordinary assumptions, but that is downstream breadth of already-confirmed
+     F602/KI#925 (Janissary raw 110 damage requirement), not an independent F639.
+
+2. `setupCombatantsImpl`
+   - attacker/defender current strength, defender-context modifiers, current firepower,
+     mean-firepower rounding and per-hit damage match `CvUnit::getDefenderCombatValues`;
+   - attacker hit probability is deliberately reconstructed as the complement of the
+     executor's integer defender threshold, which is more faithful to the real
+     `SyncRandNum(...) < iDefenderOdds` branch than independently truncating both sides;
+   - zero per-round odds and zero attacker hits-to-win exits are coherent with current
+     callers;
+   - first-strike immunity and normalized guaranteed/chance counts match executor setup;
+   - above-max combat-limit disagreement remains F602;
+   - dropped free-win visibility remains F637.
+
+3. LFB fixed calculation / cache
+   - the four cache dimensions cover every input consumed by the cached fixed result:
+     net first strikes, attacker hits-to-win, defender hits-to-win and the rounded
+     per-round odds index;
+   - nested-vector growth obtains child pointers only after the corresponding parent
+     dimension is grown, so reallocation does not leave a surviving pointer into an
+     invalidated element range;
+   - `-1` is a safe "not computed" sentinel because combat probabilities are
+     nonnegative;
+   - the weaker-side wrapper bounds the live odds query to <= half the combat die;
+     interpolation may evaluate the adjacent 512 endpoint around a 500 query, but this
+     is a valid mathematical endpoint for the same fixed state and does not violate the
+     cache contract;
+   - direct physical-state sweeps over correlated strength/HP/damage states found the
+     16-point interpolation approximation within about one permille of the exact
+     fixed-net probability in the tested current combat domain. The much larger errors
+     obtainable by independently choosing impossible odds/hit-count tuples do not map
+     to the engine's coupled strength/firepower equations and are not promoted.
+
+4. LFB chance-first-strike distribution
+   - unlike F638's ACO helper, LFB explicitly loops every attacker realized FS value
+     and every defender realized FS value and divides by
+     `(att.FSChances()+1)*(def.FSChances()+1)`;
+   - that is the correct executor Cartesian-product distribution and is retained as the
+     positive oracle for F638.
+
+5. Floating-point synchronized-AI debt
+   - AdvC itself leaves a `Fixme` noting that LFB's float/pow/binomial path is called
+     from synchronized AI and could in principle be less deterministic than integer or
+     scaled arithmetic;
+   - practical 2843 also documents this concern in the LFB option comments;
+   - however, the supplied/current evidence does not demonstrate an actual current
+     cross-client divergence or a specific input whose final integer result differs by
+     platform. The album requires a demonstrated current-live contradiction, so this
+     remains explicit technical debt / OOS-risk commentary rather than F639.
+
+6. Monte Carlo diagnostics
+   - `MONTE_CARLO_ODDS_TEST` is hard-disabled in both assert and non-assert builds;
+   - its helper therefore has no gameplay effect;
+   - when F637 is repaired, its repeated setup call should forward the same
+     `bHideFreeWins` value for diagnostic consistency, already recorded under F637.
+
+7. History / comparison closure
+   - current SAS and supplied Base AdvC 1.14 remain executable-semantically identical
+     in CombatOdds, so no later 1.14 repair is missing;
+   - practical 2843 created the refactored CombatOdds file and LFB path;
+   - 2851 centralized free-win handling; 2852 changed rounding helpers; 2854 moved the
+     ACO specific-outcome helper; 2855 deleted redundant legacy odds code;
+   - later 3864/3900 are comment/const cleanup; 4003 introduced the F637 forwarding
+     omission;
+   - Civ4CE's stock `getCombatOdds` provides the original combinatorial/executor oracle;
+     K-Mod provides the inherited LFB/ACO ancestry. No additional distinct surviving
+     semantic regression emerged.
+
+QUEUE-057 ROOT LEDGER
+---------------------
+F637 / KI#959
+    `calculateCombatOdds(..., bHideFreeWins)` drops the Boolean when calling
+    `setupCombatants`, so the explicit combat-result-message request to reveal
+    Barbarian free wins still calculates hidden-free-win odds.
+
+F638 / KI#960
+    inherited ACO `getCombatOddsSpecific` misweights bilateral chance-first-strike
+    distributions when both sides have chance ranges and at least one side has more
+    than one chance; current SAS promotion/unit data reaches that state.
+
+F639 / KI#961
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 057 is closed for this audit pass. Remaining concerns are approximation policy,
+documented floating-point determinism debt, robustness outside current combat-data
+domains, disabled diagnostic code, or breadth of already-owned roots. None clears the
+album's independent current-live threshold for F639.
+
+EXACT CONTINUATION
+------------------
+C031-WIP471 physical -> Queue057 CLOSED -> F637-F638 confirmed -> F639/KI#961 UNUSED ->
+open next selected priority Queue058 `CvGameCoreDLL/ArmamentForecast.cpp` (693 lines) ->
+establish SAS vs Base AdvC/K-Mod/Civ4CE provenance and caller map -> audit arithmetic,
+cache/state lifetime, null/enum/range contracts and all file-history semantic strata ->
+whole-album dedup before numbering -> freeze the next physical WIP at the next settled
+boundary whether F639 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+===============================================================================
+C031-WIP472 -- QUEUE 058 ArmamentForecast.cpp -- F639 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP471.
+- Working source base: reconciled `AdvCiv-SAS_light_source_20260907T150520.zip`.
+- Supplied local comparison trees: Base AdvC 1.14, K-Mod 1.46, Civ4CE.
+- Queue 057 `CombatOdds.cpp` remains CLOSED with F637-F638.
+- Queue 058 `CvGameCoreDLL/ArmamentForecast.cpp` is OPEN.
+- F639 / provisional KI#961 is CONFIRMED here.
+- F640 / provisional KI#962 is UNUSED.
+- No gameplay source was modified.
+
+QUEUE-058 PROVENANCE BASELINE
+-----------------------------
+Current SAS `ArmamentForecast.cpp` has 694 physical lines (queue snapshot counted 693).
+After comments/whitespace are stripped, its executable token stream differs from
+supplied Base AdvC 1.14 at exactly ONE expression:
+
+    Base AdvC 1.14:
+        pTargetCity->getDistance() > getUWAI().maxLandDist()
+
+    current SAS:
+        pTargetCity->getDistanceByLand() > getUWAI().maxLandDist()
+
+That one deliberate SAS delta is the already-owned KI#591 repair from practical 6315:
+the target-specific naval/land buildup classification now uses the qualifying land
+route duration rather than a potentially faster mixed/sea route. It is not a Queue-058
+candidate.
+
+K-Mod 1.46 and Civ4CE do not contain `ArmamentForecast`; this class is AdvC/UWAI code.
+The supplied commit-diff history starts the file in practical 1253 and contains a long
+AdvC refinement lineage plus later merge/formatting mirrors.
+
+-------------------------------------------------------------------------------
+F639 / provisional KI#961 -- accumulated peace flag makes ArmamentForecast's
+hypothetical-vs-AreaAI branch depend on known-team iteration / TeamTypes order
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited AdvC/UWAI order-dependent state leak. Current-live in WarEvaluator
+peace-scenario military analyses. Supplied Base AdvC 1.14 retains the same logic.
+
+ROOT
+----
+Inside the per-known-team loop, ArmamentForecast keeps a global accumulated flag:
+
+    bool bPeaceAssumed = false;
+
+For each current `eOther`, it computes the pair-local condition:
+
+    bool bPeaceAssumedLoop = (... current eTeam/eOther relation ...);
+
+and, only when that current pair has a real war plan, latches the global flag:
+
+    if (bPeaceAssumedLoop && kTeam.AI_getWarPlan(eOther) != NO_WARPLAN)
+        bPeaceAssumed = true;
+
+The next decision combines the CURRENT team's reachability with the ACCUMULATED
+all-prior-teams peace flag:
+
+    bool const bReachEither = canReachEither(eOther, eTeam);
+    if (bReachEither && (bWarAssumed || bPeaceAssumed))
+        bFictionalScenario = true;
+
+`bWarAssumed` is pair-local. `bPeaceAssumed` is not.
+
+Consequently, once an earlier iteration sees an assumed-peace war plan, ANY later
+reachable known team can satisfy the expression even when that later team has no
+fictional war or peace relation at all. Conversely, a reachable unrelated team that
+appears earlier in the loop cannot see a peace flag that is latched later.
+
+WHY THIS IS DETERMINISTIC ORDER DEPENDENCE
+------------------------------------------
+`TeamAIIter<MAJOR_CIV,KNOWN_TO>` obtains its sequence from `CvAgents::MAJOR_ALIVE`.
+`CvAgents` constructs the base team sequence by increasing integer TeamTypes:
+
+    for (int i = 0; i < iMaxTeams; i++)
+        teamSeqCache(ALL).push_back(&GET_TEAM((TeamTypes)i));
+
+`updateAllCachedSequences` walks that sequence in order when filling
+`MAJOR_ALIVE`. Later insertion helpers explicitly insert by increasing agent ID.
+The KNOWN_TO iterator filters that ordered major-team cache without reordering it.
+
+Thus the ArmamentForecast loop order is stable TeamTypes order, not an unordered set.
+
+MINIMAL STATE PROOF
+-------------------
+Let forecast player/team P be on the "their side" of the military analysis, and let:
+
+    U = a known opponent whose current P-U war/war plan is assumed to end in the
+        peace scenario, but neither U nor P can reach the other;
+
+    R = another known team that P or R can reach, while no fictional P-R war or peace
+        is assumed in this scenario.
+
+For U:
+    bPeaceAssumedLoop = true
+    P has a war plan vs U -> bPeaceAssumed becomes true
+    bReachEither = false
+    -> bFictionalScenario remains false at U
+
+For R:
+    bPeaceAssumedLoop = false
+    bWarAssumed = false
+    bReachEither = true
+
+If TeamTypes(U) < TeamTypes(R):
+    U executes first and latches bPeaceAssumed=true.
+    R then evaluates:
+        true && (false || true)
+    -> bFictionalScenario = true.
+
+If TeamTypes(R) < TeamTypes(U):
+    R executes before the latch:
+        true && (false || false)
+    -> no change.
+    U later has bReachEither=false
+    -> bFictionalScenario remains false.
+
+The diplomatic, reachability and war-plan facts are otherwise the same. Only which
+known team occupies the lower TeamTypes slot changes the branch result.
+
+LIVE CONSEQUENCE
+----------------
+`bFictionalScenario` is not merely logging state.
+
+When true:
+    `predictArmament(...)` is called directly with the scenario-derived intensity,
+    defensive and naval flags accumulated above.
+
+When false:
+    ArmamentForecast enters the "Checking AreaAI" branch and can replace or strengthen
+    those inputs from the real current `AreaAI`, `AI_isFocusWar`, ALERT/CRUSH/TURTLE/
+    LAST_STAND/FINAL_WAR state and the power-curve sanity check; it also derives naval
+    and defensive classification from the current home-area AreaAI.
+
+Therefore identical military-analysis facts can produce different projected military
+power / branch production solely because the unrelated known teams occupy different
+TeamTypes slots.
+
+The situation is naturally reachable in the supported model: UWAI explicitly treats
+two known teams as unreachable when neither side's cache has a reachable city, while a
+third known team can be reachable. WarEvaluator evaluates a recursive peace scenario
+for every ordinary war-vs-peace utility calculation, constructing MilitaryAnalyst and
+InvasionGraph, whose nodes instantiate ArmamentForecast for the participating known
+players. No custom API or invalid enum is required.
+
+IMPORTANT SEMANTIC NUANCE
+-------------------------
+The global `bPeaceAssumed` itself has legitimate later uses:
+- report whether ANY war-plan peace is assumed;
+- suppress ALERT2 interpretation when the scenario assumes peace.
+
+F639 does NOT claim that the global flag should cease to exist.
+
+The defect is specifically coupling that accumulated flag to the CURRENT loop team's
+`bReachEither` before all pairs have been considered.
+
+There are two plausible intended policies:
+
+A. Pair-local policy:
+   A peace assumption makes the scenario fictional only when THAT same war pair can
+   reach each other.
+
+B. Global policy:
+   Any assumed peace can make the scenario fictional whenever the forecast player has
+   some meaningful reachable war theatre.
+
+The present code implements neither policy consistently; it implements "global peace
+flag AND a reachable team encountered at or after the first peace pair."
+
+REPAIR BOUNDARY
+---------------
+Choose the intended policy explicitly and make it order-independent.
+
+For pair-local semantics, compute a local qualified flag, e.g.:
+
+    bool const bPeaceAssumedForThisWar =
+        (bPeaceAssumedLoop &&
+         kTeam.AI_getWarPlan(eOther) != NO_WARPLAN);
+
+    if (bPeaceAssumedForThisWar)
+        bPeaceAssumed = true; // retain global aggregate for later uses
+
+    if (bReachEither && (bWarAssumed || bPeaceAssumedForThisWar))
+        bFictionalScenario = true;
+
+For deliberately global semantics, accumulate reachability separately through the
+whole loop and combine the two aggregates only after the loop, rather than combining
+a prefix-state flag with the current element:
+
+    bAnyReachable |= bReachEither;
+    ...
+    after loop:
+        if (bPeaceAssumed && bAnyReachable)
+            bFictionalScenario = true;
+
+The pair-local interpretation appears structurally more likely because the adjacent
+`bWarAssumed` operand is pair-local and the comments around `bReachEither` discuss the
+specific war's ability to cause buildup. But the audit finding does not require
+guessing that policy: either repair removes the current TeamTypes-order dependence.
+
+LINEAGE
+-------
+Practical 1253, the initial ArmamentForecast/UWAI file commit, already contains:
+
+    if(reachEither && (warAssumed || peaceAssumed))
+        fictionalScenario = true;
+
+with `peaceAssumed` latched earlier in the same ordered loop.
+
+The later comprehensive UWAI rewrites / merge snapshots (including practicals 2920,
+2954 and 3392) preserve the same local/global asymmetry. Current Base AdvC 1.14 still
+has it unchanged. Therefore this is an inherited AdvC root, not SAS-created.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for ArmamentForecast, peaceAssumed, fictional scenario,
+order-dependent, TeamTypes iteration order and related wording find no prior finding
+that owns this root.
+
+Prior order-dependent findings concern independent state in voting, city/resource
+scans, deal valuation, etc. KI#591 is the unrelated ArmamentForecast mixed-route
+distance mismatch. No existing finding covers peace-scenario branch selection based
+on the prefix position of an unrelated team.
+
+VALIDATION TARGETS
+------------------
+1. Construct a three-team logical fixture P/U/R as above.
+2. Run once with TeamTypes(U) < TeamTypes(R), once with only U/R IDs exchanged.
+3. Hold diplomacy, war plans, reachability, AreaAI and military data constant.
+4. Current code must demonstrate differing `bFictionalScenario` branch selection.
+5. Repaired code must make the branch invariant under U/R ID exchange.
+6. Verify an actually reachable assumed-peace pair still marks the scenario fictional.
+7. Verify a reachable assumed-war pair still marks it fictional through bWarAssumed.
+8. Verify global bPeaceAssumed still controls report text and ALERT2 suppression.
+9. Verify a peace assumption involving only unreachable pairs follows the explicitly
+   chosen pair-local/global policy rather than incidental iterator position.
+10. War and peace utility results should remain invariant under player/team slot
+    permutation when all game-state relationships are otherwise isomorphic.
+
+POST-F639 LEDGER / EXACT RESUME
+-------------------------------
+Queue 058 `CvGameCoreDLL/ArmamentForecast.cpp` -- OPEN.
+F639 / provisional KI#961 -- CONFIRMED.
+F640 / provisional KI#962 -- UNUSED.
+
+Exact continuation:
+C031-WIP472 physical -> Queue058 OPEN -> exclude F639 plus KI#591 and all prior album
+owners -> continue constructor state-machine audit (war counters, vassal/total-war
+classification, fictional-scenario transitions, AreaAI fallback) -> then
+`predictArmament` branch-weight arithmetic, unavailable-branch redistribution,
+nuclear/cavalry overlap, production/power scaling and `productionFromUpgrades` ->
+cross-check every surviving candidate against Base AdvC 1.14 and the full path-history
+strata -> promote F640 only for a distinct current-live root -> freeze the next physical
+WIP at the next settled boundary whether F640 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP473 -- QUEUE 058 ArmamentForecast.cpp -- F640 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP472.
+- Queue 058 `CvGameCoreDLL/ArmamentForecast.cpp` remains OPEN.
+- F639 / provisional KI#961 remains CONFIRMED.
+- F640 / provisional KI#962 is CONFIRMED here.
+- F641 / provisional KI#963 is UNUSED.
+- No gameplay source was modified.
+
+-------------------------------------------------------------------------------
+F640 / provisional KI#962 -- SAS's global 75% unit-upgrade discount is not
+removed by ArmamentForecast's inverse upgrade-cost model, so UWAI systematically
+understates the military production/power gained from ordinary upgrades
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED SAS-specific cross-file regression. The ArmamentForecast inverse remains the
+Base AdvC 1.14 formula while SAS practical 5157 changed the price producer.
+
+PRODUCER CHANGE
+---------------
+Current `CvUnit::upgradePrice` first computes the inherited raw price:
+
+    iPrice = BASE_UNIT_UPGRADE_COST
+           + production-cost difference * UNIT_UPGRADE_COST_PER_PRODUCTION;
+
+then applies the AI handicap multiplier where relevant. SAS subsequently adds:
+
+    static const int iSAS_UPGRADE_PRICE_UNIT_UPGRADE_COST_PERCENT =
+        std::max(0, GC.getDefineINT(
+            "SAS_UPGRADE_PRICE_UNIT_UPGRADE_COST_PERCENT"));
+
+    iPrice = (iPrice * iSAS_UPGRADE_PRICE_UNIT_UPGRADE_COST_PERCENT) / 100;
+
+and only afterward applies the individual unit's upgrade discount.
+
+Current SAS XML sets:
+
+    SAS_UPGRADE_PRICE_UNIT_UPGRADE_COST_PERCENT = 75
+
+and every current handicap sets:
+
+    iAIUnitUpgradePercent = 100
+
+The Main Changes Guide explicitly describes the resulting policy: both humans and AI
+pay 75% of the former/base upgrade price.
+
+STALE CONSUMER
+--------------
+`ArmamentForecast::productionFromUpgrades()` starts from:
+
+    scaled r = kPlayer.AI_getGoldToUpgradeAllUnits();
+
+That cached total is produced by `AI_updateGoldToUpgradeAllUnits`, which calls each
+candidate unit's REAL `upgradePrice`. It therefore already contains the SAS 75%
+multiplier.
+
+ArmamentForecast then says that it performs:
+
+    // An approximate inversion of CvUnit::upgradePrice
+
+but its inversion still knows only about the inherited terms:
+
+    rUpgrCostPerProd = UNIT_UPGRADE_COST_PER_PRODUCTION;
+    r /= rUpgrCostPerProd;
+
+    rTypicalGoldForProdDiff = rUpgrCostPerProd * 30;
+    rBaseCostModifier =
+        rTypicalGoldForProdDiff /
+        (rTypicalGoldForProdDiff + BASE_UNIT_UPGRADE_COST);
+    r *= rBaseCostModifier;
+
+and, for AI players only:
+
+    rAIUpgradeFactor = iAIUnitUpgradePercent / 100;
+    if (rAIUpgradeFactor > 0.1)
+        r /= rAIUpgradeFactor;
+
+There is no compensation for
+`SAS_UPGRADE_PRICE_UNIT_UPGRADE_COST_PERCENT`.
+
+Thus the forecast interprets already-discounted gold as though it had been generated by
+the old undiscounted price formula.
+
+EXACT CALIBRATION PROOF
+-----------------------
+The inherited inverse is explicitly calibrated around a "mean training cost difference
+of 30 hammers."
+
+Let:
+    B = BASE_UNIT_UPGRADE_COST
+    C = UNIT_UPGRADE_COST_PER_PRODUCTION
+
+Take an ordinary unit with:
+- a +30-hammer upgrade target;
+- no per-unit upgrade discount;
+- enough income/gold that the income cap does not bind;
+- current SAS AI handicap factor = 100%.
+
+Before the SAS global discount, the raw price is:
+
+    R = B + 30*C
+
+The inherited inverse computes:
+
+    (R / C) * (30*C / (30*C + B))
+    = 30
+
+which is exactly the intended 30-hammer calibration (apart from fixed/integer rounding).
+
+Current SAS first changes the real price to approximately:
+
+    G = 0.75 * R
+
+but ArmamentForecast runs the same inverse:
+
+    (0.75*R / C) * (30*C / (30*C + B))
+    = 22.5
+
+Therefore the same ordinary +30-hammer upgrade is represented as only about
+22.5 hammers of military production: a systematic 25% under-credit caused solely by
+the forgotten new global multiplier.
+
+Integer truncation in `CvUnit::upgradePrice` can move an individual fixture slightly
+around 22.5, but it cannot remove the root.
+
+INCOME-BOUND CASE ALSO REMAINS WRONG
+------------------------------------
+The repair cannot be dismissed on the ground that ArmamentForecast caps upgrades by
+available income before converting them.
+
+If the full discounted upgrade set is affordable, the whole discounted total must be
+converted back to the same production differences the units actually gain.
+
+If the income cap binds, each unit of actual upgrade gold now buys `1 / 0.75` as much
+pre-discount upgrade value as under the old pricing. Therefore the bounded gold amount
+also needs the global discount removed before translating it into production
+equivalent.
+
+The existing AI-handicap correction is already performed after the income cap for
+exactly the same conceptual reason.
+
+LIVE WAR-EVALUATION CONSEQUENCE
+-------------------------------
+`productionFromUpgrades()` is not a diagnostic-only estimate.
+
+On the first InvasionGraph simulation phase (the only phase where upgrading is allowed),
+`Node::predictArmament` constructs ArmamentForecast with `bNoUpgrading=false`.
+The returned upgrade-equivalent production is passed to:
+
+    predictArmament(..., rAdditionalProduction, ...)
+
+and then enters:
+
+    rTotalProductionForBuildUp = rAdditionalProduction;
+    rTotalProductionForBuildUp +=
+        iTurnsBuildUp * rArmamentPortion * rPerTurnProduction;
+
+That total is converted into predicted power for every available MilitaryBranch and is
+written into the graph-local military state consumed by MilitaryAnalyst/WarEvaluator.
+
+So current SAS's cheaper upgrade policy improves the power a player can obtain for a
+given amount of gold, while UWAI's armament projection credits only about 75% of the
+production-equivalent upgrade gain that its own inherited inverse intended. This can
+bias projected war outcomes and war/peace utility.
+
+LINEAGE
+-------
+The ArmamentForecast inverse dates to the initial AdvC UWAI implementation and current
+Base AdvC 1.14 retains it.
+
+SAS practical 5157 / ae78db3d20 introduced
+`SAS_UPGRADE_PRICE_UNIT_UPGRADE_COST_PERCENT` into `CvUnit::upgradePrice` with current
+value 75, while also setting the AI upgrade handicap percentage to 100. That practical
+did not update ArmamentForecast.
+
+The earlier practical-5157 archaeology correctly established that the new 75% price is
+actually paid consistently by humans and AI. F640 is a different, downstream result:
+the price producer is coherent, but one consumer that explicitly tries to invert that
+producer was not updated.
+
+WHOLE-ALBUM DEDUP / RELATED ROOTS
+---------------------------------
+No existing album finding owns the missing SAS-global-multiplier inversion.
+
+F365/KI#688 is independent. It proves that `AI_updateGoldToUpgradeAllUnits` caches a
+per-unit `upgradePrice` by UnitType even though Great-General `PROMOTION_LEADER` can
+give an individual unit a 100% upgrade discount. F640 reproduces with an ordinary unit
+having no individual discount and with only one unit of its type, so F365 is absent.
+
+The inherited per-unit `getUpgradeDiscount()` and optional Python upgrade-price override
+also make any aggregate inverse inherently approximate. They do not excuse the SAS
+regression: the new global 75% multiplier is uniform, deterministic, explicitly known
+to the DLL and affects essentially every ordinary upgrade.
+
+REPAIR BOUNDARY
+---------------
+Preserve the income affordability cap in ACTUAL discounted gold, then remove every
+known global multiplicative pricing factor before applying the inherited raw-price
+inverse.
+
+For the SAS factor specifically, after the income-bound step and before the
+`UNIT_UPGRADE_COST_PER_PRODUCTION` inversion, conceptually:
+
+    scaled rSASUpgradeFactor =
+        per100(SAS_UPGRADE_PRICE_UNIT_UPGRADE_COST_PERCENT);
+
+    if (rSASUpgradeFactor > small_safe_threshold)
+        r /= rSASUpgradeFactor;
+
+This mirrors the existing AI-handicap correction. The exact placement relative to the
+AI factor can be chosen for clarity because the two are multiplicative, but both should
+be applied after the actual-gold affordability cap.
+
+If the SAS factor is configured as zero or nearly zero, do not divide by it. As with the
+existing "AI upgrades free or almost free" case, aggregate gold alone is then
+insufficient to reconstruct the production difference; a stronger future solution
+would estimate upgrade targets directly rather than infer them from gold.
+
+VALIDATION TARGETS
+------------------
+1. Set SAS upgrade percent to 100: behavior must match the inherited forecast.
+2. Current 75%, AI handicap 100%, ordinary +30-hammer upgrade with no unit discount:
+   forecast should return approximately the same 30-hammer production equivalent as
+   the old 100% pricing, not ~22.5.
+3. Repeat with the income bound below the full upgrade bill; conversion must reflect
+   the greater upgrade value bought by each discounted gold unit.
+4. Human and AI at current SAS settings should receive the same global-factor
+   compensation; AI then additionally uses any configured AI handicap factor.
+5. Preserve F365 as a separate test: mixed ordinary/Great-General units still require
+   the aggregate price-cache fix and must not be considered repaired by F640.
+6. Changing `SAS_UPGRADE_PRICE_UNIT_UPGRADE_COST_PERCENT` should not silently change
+   the inferred production difference of a fixed set of fully affordable ordinary
+   upgrades; it should primarily change affordability.
+7. InvasionGraph first-phase predicted military power should reflect the corrected
+   upgrade-equivalent production; later no-upgrade phases remain unchanged.
+
+POST-F640 LEDGER / EXACT RESUME
+-------------------------------
+Queue 058 `CvGameCoreDLL/ArmamentForecast.cpp` -- OPEN.
+F639 / provisional KI#961 -- CONFIRMED.
+F640 / provisional KI#962 -- CONFIRMED.
+F641 / provisional KI#963 -- UNUSED.
+
+Exact continuation:
+C031-WIP473 physical -> Queue058 OPEN -> exclude F639/F640, F365 and all prior owners ->
+finish the simulated-city-loss/coastal-branch-state trace (decide same-root addendum to
+F269 vs distinct root only after caller/state proof) -> continue constructor/AreaAI
+state-machine negative controls -> finish `predictArmament` arithmetic and
+`productionFromUpgrades` producer/consumer contracts -> exhaust ArmamentForecast
+history and whole-body mechanical hazards -> either promote a genuinely independent
+F641 or close Queue058 cleanly -> freeze the next physical WIP at the next settled
+boundary regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP474 -- QUEUE 058 ArmamentForecast.cpp -- F641 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP473.
+- Queue 058 `CvGameCoreDLL/ArmamentForecast.cpp` remains OPEN.
+- F639 / provisional KI#961 remains CONFIRMED.
+- F640 / provisional KI#962 remains CONFIRMED.
+- F641 / provisional KI#963 is CONFIRMED here.
+- F642 / provisional KI#964 is UNUSED.
+- No gameplay source was modified.
+
+-------------------------------------------------------------------------------
+F641 / provisional KI#963 -- post-conquest concurrent ArmamentForecast still
+scans the real pre-loss city topology, so losing the last simulated coastal city
+can leave Fleet/Logistics production in a graph state with only inland cities
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited UWAI simulation-state/interface defect. Current-live in the normal
+second-half concurrent build-up that intentionally runs AFTER InvasionGraph has applied
+hypothetical city conquests. Base AdvC 1.14 retains the same behavior.
+
+SIMULATION ORDER / PRODUCER
+---------------------------
+`InvasionGraph::simulate` deliberately executes:
+
+    1. initial armament build-up;
+    2. `simulateLosses()` over the war horizon;
+    3. concurrent armament build-up for the second half.
+
+The initial tracked UWAI import (practical 1253) already contains this ordering and
+comments that the concurrent phase assumes reduced production output if cities have
+been lost.
+
+Successful city conquest does not mutate the real CvPlayer/CvCity map. In
+`Node::applyStep`, the defender records graph-local loss state:
+
+    addCityLoss(kStepCity);
+
+and the attacker records the corresponding conquest. This is intentional: InvasionGraph
+is a hypothetical war simulation.
+
+`Node::productionPortion()` translates those graph-local losses only into a scalar:
+
+    lost population / real current total population
+
+and `Node::predictArmament` passes that scalar to ArmamentForecast:
+
+    ArmamentForecast(..., pTargetCity, productionPortion());
+
+No lost-city set, remaining-city count, or graph-local city predicate is passed.
+
+STALE CONSUMER
+--------------
+During naval branch allocation, `ArmamentForecast::predictArmament` ignores the
+graph-local conquest state and scans the real player's unchanged cities:
+
+    int iRevealed = 0;
+    int iRevealedCoast = 0;
+    FOR_EACH_CITY(pCity, kPlayer)
+    {
+        if (pCity->isRevealed(TEAMID(m_eAnalyst)))
+        {
+            iRevealed++;
+            if (pCity->isCoastal())
+                iRevealedCoast++;
+        }
+    }
+
+It then compares that real-city scan against the real current city count:
+
+    if (iRevealed >= kPlayer.getNumCities() && iRevealedCoast <= 0)
+        rBranchPortions[FLEET] = 0;
+    else
+        rBranchPortions[FLEET] =
+            min(0.35, 0.08 + revealedCoastPortion / 2.8);
+
+Therefore cities already conquered in the graph continue to determine both:
+- whether the surviving simulated empire is known to have zero coastal cities;
+- the fraction of revealed cities counted as coastal.
+
+A scalar production reduction cannot preserve this topology.
+
+CLEAN CURRENT-LIVE FIXTURE
+--------------------------
+Let forecast player P currently own four real cities:
+
+    C = its only coastal city
+    I1, I2, I3 = inland cities
+
+Let the analyst be P itself (or otherwise have all four cities revealed), eliminating
+fog-of-war ambiguity.
+
+Let P and Q be in a mutual war/invasion-graph cycle. P's own primary target in Q remains
+naval: unreachable by land from P's capital, or beyond the qualifying land-distance
+threshold. P has valid pre-war Fleet/Logistics typical units.
+
+During `simulateLosses`, Q successfully conquers C.
+
+The graph now represents P as having exactly three surviving cities, all inland:
+
+    m_cityLosses = { C }
+    productionPortion() > 0
+    real CvPlayer ownership remains unchanged
+
+Because Q is P's own primary target, the current KI#590 repair does NOT clear P's
+outgoing edge merely because Q took C:
+
+    if (m_pPrimaryTarget != NULL && m_pPrimaryTarget != &kAttacker)
+        changePrimaryTarget(NULL);
+
+Here `m_pPrimaryTarget == &kAttacker`, so the naval target can remain live into the
+immediately following concurrent ArmamentForecast.
+
+CURRENT BRANCH RESULT
+---------------------
+Current ArmamentForecast still sees all four REAL cities:
+
+    iRevealed = 4
+    iRevealedCoast = 1
+    kPlayer.getNumCities() = 4
+
+The "all known and no coast" gate is false. The raw Fleet allocation becomes:
+
+    coast portion = 1 / 4 = 0.25
+
+    Fleet = 0.08 + 0.25 / 2.8
+          ~= 0.1692857
+
+before later defensive/intensity/nuclear transformations.
+
+If a valid Logistics representative exists, its allocation is also derived from this
+positive Fleet share:
+
+    Logistics = min(Fleet, 1 / typical cargo)
+
+so the same stale coastal city can support positive transport buildup as well.
+
+GRAPH-CONSISTENT RESULT
+-----------------------
+The simulated surviving-city view is:
+
+    remaining cities = 3
+    revealed remaining cities = 3
+    revealed remaining coastal cities = 0
+
+The existing own code's policy for that state is unambiguous:
+
+    all remaining cities revealed AND zero coast
+    -> Fleet portion = 0
+    -> Logistics portion = 0
+
+Thus this is not an argument about the chosen 0.08/2.8 heuristic. The graph satisfies
+the exact condition for which ArmamentForecast itself intentionally disables naval
+production, but the condition is evaluated against a city that the graph has already
+removed.
+
+IMPORTANT REPAIR TRAP
+---------------------
+Simply filtering C out of the `FOR_EACH_CITY` loop is insufficient if the comparison
+continues to use the real `kPlayer.getNumCities()`.
+
+That partial patch would produce:
+
+    iRevealed = 3
+    iRevealedCoast = 0
+    kPlayer.getNumCities() = 4   [still real/pre-loss]
+
+so:
+
+    iRevealed >= kPlayer.getNumCities()
+
+is false and ArmamentForecast falls into the heuristic branch:
+
+    Fleet = 0.08 + 0 / 2.8 = 0.08
+
+It would still forecast Fleet production for an all-revealed simulated empire with no
+coastal city.
+
+The repair therefore needs a coherent graph-local remaining-city view: both the city
+iteration/filter and the denominator/count must describe the same hypothetical state.
+
+PRE-LOSS MILITARY-BRANCH COPY MAKES THE INTERFACE GAP BROADER
+--------------------------------------------------------------
+`Node::initMilitary` copies the real UWAICache branches once at node construction:
+
+    new MilitaryBranch::Fleet(*kCacheMilitary[FLEET])
+    new MilitaryBranch::Logistics(*kCacheMilitary[LOGISTICS])
+
+and the graph explicitly treats typical units as stable for the evaluation ("they don't
+change").
+
+In real-cache refreshes, sea typical-unit selection calls
+`AI_isExpectingToTrain`, which scans real cities and rejects a sea unit unless enough
+qualifying coastal cities can actually train it. Thus loss of the last real coast can
+invalidate Fleet/Logistics trainability.
+
+A hypothetical graph loss does not trigger that real-cache refresh and cannot do so,
+because ownership was intentionally never changed. This means the branch copies can
+also retain pre-loss naval candidates after the graph has removed the enabling coast.
+
+The all-revealed fixture above does not NEED this second manifestation: stale city
+topology alone is sufficient to prove F641 because it creates a positive Fleet share.
+But it confirms that the scalar-only ArmamentForecast interface is missing production-
+capability state as well as population quantity.
+
+LIVE CONSEQUENCE
+----------------
+The concurrent ArmamentForecast converts the resulting branch portions into new branch
+power and permanently adds it to the graph-local `m_military` state. That military state
+is subsequently consumed by MilitaryAnalyst/WarEvaluator.
+
+So after the simulator itself has concluded that P lost its only coastal city, P can be
+credited with second-half Fleet and Logistics build-up as if that city still existed.
+This can strengthen later naval/offensive projections and change war-vs-peace utility.
+
+The production scalar does reduce P's TOTAL output after C is lost. It does not repair
+the allocation error: some of the reduced output is still assigned to naval branches
+that the surviving simulated city topology cannot support.
+
+LINEAGE
+-------
+Practical 1253 / f6ff6a182f introduced the core model together:
+- graph-local city losses;
+- population-based `productionPortion`;
+- initial build-up -> loss simulation -> concurrent build-up.
+
+Practical 1264 / 0884de493c then added ArmamentForecast's revealed-city/coastal-city
+branch allocation, using the real Civ player city iterator and real city count. From
+that point onward, the post-loss concurrent phase could consume pre-loss coastal
+topology.
+
+Current Base AdvC 1.14 retains:
+- the same simulation ordering;
+- the scalar-only `productionPortion` interface;
+- copied branch state;
+- the real `FOR_EACH_CITY` coastal scan and real `getNumCities()` denominator.
+
+Current SAS repairs several nearby InvasionGraph state leaks but still retains this one.
+
+WHOLE-ALBUM DEDUP / WHY THIS IS NOT F269 OR F214
+-------------------------------------------------
+Whole-album semantic searches found no prior owner for post-loss ArmamentForecast
+coastal/trainability state.
+
+F269/KI#592 is nearby but distinct. It proved that later BATTLE RESOLUTION read real
+`CvArea::getCitiesPerPlayer` after graph-local city losses, overstating area Army share
+and garrison rally sources. Current SAS repaired that with
+`Node::remainingCitiesInArea`, subtracting graph-local losses at those consumers.
+
+F641 survives that repair unchanged:
+- it occurs later in the concurrent PRODUCTION FORECAST;
+- ArmamentForecast does not receive Node's city-loss set;
+- it reads a different real-map inventory (`FOR_EACH_CITY` plus `getNumCities`);
+- repairing `remainingCitiesInArea` cannot alter it.
+
+The two findings share the general fact that hypothetical ownership is graph-local, but
+have independent consumers, independent effects and independent repair surfaces.
+F269's area-count helper cannot fix F641 without extending the simulation-state
+interface into ArmamentForecast.
+
+F214/KI#537 is also distinct. F214 fixes MilitaryBranch typical-unit refresh after a
+REAL game-state capability loss by resetting cached candidates before rescanning.
+F641 requires no real capability loss at all: the real UWAICache is correct for the
+unchanged real map, while the hypothetical InvasionGraph state intentionally differs
+from it. Calling the ordinary cache refresh would simply rediscover the still-real
+coastal city.
+
+F641 also does not depend on KI#591's mixed-route distance root; use a target that is
+unambiguously unreachable by land and naval classification remains true.
+
+REPAIR BOUNDARY
+---------------
+Do not mutate real CvCity ownership or the real UWAICache during war evaluation.
+
+Instead, give ArmamentForecast enough graph-local city state to reason about the
+surviving simulated empire. A narrow repair could pass:
+- the lost-city ID set (or a predicate/helper owned by Node), and
+- the simulated remaining-city count;
+
+then the coastal scan must:
+- skip every graph-lost city;
+- compare revealed remaining cities with the simulated remaining count.
+
+A stronger reusable design would expose a small simulation-aware city-view abstraction
+from InvasionGraph::Node and use it for any ArmamentForecast question whose answer
+depends on which cities remain, including branch trainability.
+
+For Fleet/Logistics specifically, loss of every simulated qualifying coastal city must
+make their new-production share zero even if the unchanged real UWAICache still has a
+pre-loss typical sea unit.
+
+Do not conflate this with the intentionally approximate population scaling of total
+production; F641 is the discrete topology/capability contradiction after that scaling.
+
+VALIDATION TARGETS
+------------------
+1. P has four fully revealed cities, exactly one coastal C, naval target Q.
+2. Before simulated loss of C, preserve ordinary positive Fleet/Logistics allocation.
+3. Q captures C in `simulateLosses`; P retains three inland cities and its target Q.
+4. Concurrent forecast must see:
+       remaining=3, revealed remaining=3, coastal remaining=0
+   and allocate Fleet=0, Logistics=0.
+5. Swap which of P's four cities is lost:
+   - lose inland city -> coast remains -> naval allocation remains possible;
+   - lose sole coastal city -> naval allocation becomes zero.
+6. A patch that merely skips lost cities but still compares against real
+   `getNumCities()` must FAIL the regression test (it leaves the 0.08 fallback);
+   both iterator and denominator must be simulation-aware.
+7. Repeat with more than one coast: Fleet ratio must use surviving coast / surviving
+   revealed cities, not pre-loss topology.
+8. Preserve fog-of-war policy: unknown surviving cities may still justify uncertainty,
+   but a city already known by the GRAPH to be lost must never count as an unknown or
+   surviving coast.
+9. Verify F269's remainingCitiesInArea battle calculations remain unchanged.
+10. Verify real-game UWAICache/MilitaryBranch state is not mutated by hypothetical
+    evaluation.
+
+POST-F641 LEDGER / EXACT RESUME
+-------------------------------
+Queue 058 `CvGameCoreDLL/ArmamentForecast.cpp` -- OPEN.
+F639 / provisional KI#961 -- CONFIRMED.
+F640 / provisional KI#962 -- CONFIRMED.
+F641 / provisional KI#963 -- CONFIRMED.
+F642 / provisional KI#964 -- UNUSED.
+
+Exact continuation:
+C031-WIP474 physical -> Queue058 OPEN -> exclude F639-F641, F214/F269/F365, KI#591
+and all prior album owners -> finish the remaining constructor state-machine and
+`predictArmament` controls -> inspect all `productionFromUpgrades` approximation edges
+not already F365/F640 -> exhaust the full ArmamentForecast practical-history list and
+mechanical hazards (division/clamps/overflow/null/state/report-mute contracts) ->
+compare surviving questions against Base AdvC 1.14 and whole-album ownership -> either
+promote a genuinely independent F642 or close Queue058 cleanly -> freeze the next
+physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP475 -- QUEUE 058 ArmamentForecast.cpp -- F642 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP474.
+- Queue 058 `CvGameCoreDLL/ArmamentForecast.cpp` remains OPEN.
+- F639-F641 / provisional KI#961-KI#963 remain CONFIRMED.
+- F642 / provisional KI#964 is CONFIRMED here.
+- F643 / provisional KI#965 is UNUSED.
+- No gameplay source was modified.
+
+NEGATIVE CONTROLS SINCE WIP474
+------------------------------
+Two sharp-looking current bodies were challenged and rejected before numbering F642.
+
+1. Shared UWAIReport mute state is NOT leaked by ArmamentForecast.
+   `UWAIReport::setMute(bool)` is deliberately a nesting counter:
+       true  -> m_iMuted++
+       false -> m_iMuted--
+   so ArmamentForecast's own AI-only true/false pair correctly restores a caller that
+   was already muted. InvasionGraph's concurrent-build-up outer mute therefore survives
+   the inner forecast calls.
+
+2. Fleet + Logistics multipliers do not make current branch portions negative in the
+   reachable maximum.
+   In offensive naval buildup with revealed coast, Home Guard is first reduced to 0.12.
+   Fleet and Logistics are each at most 0.35 before the low-navy multiplier; that
+   multiplier is clamped to 1.5 and then diluted to `(1.5+1)/2 = 1.25`.
+   Hence:
+       0.12 + 0.35*1.25 + 0.35*1.25 = 0.995
+   leaving Army >= 0.005. The assert is therefore consistent with current bounds.
+
+-------------------------------------------------------------------------------
+F642 / provisional KI#964 -- WarEvaluator's agent-target "considering peace /
+total war" parameters alter ArmamentForecast for unrelated current wars
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited AdvC/UWAI scenario-parameter leak. Current-live in ordinary peace
+evaluation during an ongoing war. Supplied Base AdvC 1.14 retains the same logic.
+
+ROOT
+----
+`ArmamentForecast::predictArmament` is instantiated for each InvasionGraph node/player,
+but its total-vs-limited-war adjustment reads the GLOBAL evaluation parameters for the
+analyst's agent-target pair:
+
+    WarEvalParameters const& kParams = m_kMA.evaluationParams();
+    if (kParams.isConsideringPeace())
+    {
+        if (kParams.isTotal())
+        {
+            rAtWarAdjustment = 0.05;
+            if (GET_TEAM(kParams.getAgent()).AI_getWarPlan(
+                    kParams.getTarget()) != WARPLAN_TOTAL)
+            {
+                eIntensity = FULL;
+            }
+        }
+        else rAtWarAdjustment -= 0.05;
+    }
+
+The comments describe the underlying K-Mod behavior being modeled as:
+- a civ focuses somewhat more production on military when IT is in total war;
+- when switching from limited to total, total war should imply full buildup.
+
+But none of the conditions above asks whether the FORECASTED player `m_ePlayer` is the
+agent, is fighting the target, or is itself in a total/limited war. The state belongs
+to `kParams.getAgent()` versus `kParams.getTarget()` and is applied to every node.
+
+WAR-EVALUATOR PARAMETER ORACLE
+------------------------------
+For an agent A already at war with main target B:
+
+    WarEvalParameters constructor:
+        m_bConsideringPeace = A.isAtWar(B) = true
+
+During the ordinary war-scenario evaluation:
+    WarEvaluator::evaluate(eWarPlan, ...)
+        sets m_kParams.isTotal according to eWarPlan.
+
+After computing that scenario, WarEvaluator recursively computes the peace baseline:
+
+    evaluate(NO_WARPLAN, false, iPreparationTime)
+
+and the recursive call executes:
+
+    m_bPeaceScenario = true;
+    m_kParams.setTotal(false);
+
+Afterward the original parameters are restored.
+
+Therefore for an ongoing TOTAL A-B war, the two scenarios intentionally differ as:
+
+    A-B war scenario:
+        isConsideringPeace = true
+        isTotal            = true
+
+    A-B peace scenario:
+        isConsideringPeace = true
+        isTotal            = false
+
+That is appropriate for A-B. F642 is that ArmamentForecast applies the same switch to
+players whose own war state has not changed between those scenarios.
+
+UNRELATED-COMPONENT ACTIVATION
+------------------------------
+MilitaryAnalyst intentionally includes more than the agent-target component.
+
+While constructing the analysis it gathers EVERY major known player currently at war:
+
+    if (isKnownToBeAtWar(TEAMID(ePlayer), kAgent.getID()))
+        currentlyAtWar.insert(ePlayer);
+
+and passes that whole set into InvasionGraph. The graph constructor makes a Node for
+each such player and links their current targets.
+
+The source explicitly explains why the extra components are simulated:
+
+    "Start with the agent's component, but simulate the other ones as well.
+     While they can't affect the outcome of the agent's wars, anticipating
+     conquests of other civs is going to be helpful for war evaluation."
+
+The peace scenario removes the A-B side war through `removeWar`; unrelated current wars
+continue normally. Nodes are deliberately not deleted merely because a simulated peace
+removes another war.
+
+MINIMAL CURRENT-LIVE FIXTURE
+----------------------------
+Let:
+    A = analyst/agent
+    B = A's main target
+    C and D = two other major civs known to A
+
+Actual state:
+    A and B are already at war under WARPLAN_TOTAL.
+    C and D are also already at war with each other.
+    C/D have no war, vassal, ally or reachability relationship to A/B that changes in
+    the evaluated A-B peace scenario.
+
+MilitaryAnalyst includes A, B, C and D because all are known current war parties.
+The recursive A-B peace scenario removes A-B but leaves C-D unchanged.
+
+Now inspect C's forecast.
+
+In the A-B WAR scenario:
+    kParams.isConsideringPeace() == true
+    kParams.isTotal()            == true
+
+so C receives:
+    rAtWarAdjustment = +0.05
+
+In the A-B PEACE scenario:
+    kParams.isConsideringPeace() == true
+    kParams.isTotal()            == false
+
+so the SAME C-D war receives:
+    rAtWarAdjustment = -0.05
+
+Thus C's armament share differs by an absolute 0.10 solely because A is comparing
+continued total war with peace against B.
+
+For a simple unclamped example with C's unchanged local forecast otherwise at NORMAL
+intensity and base armament portion 0.30:
+
+    C in A-B war scenario:
+        0.30 + 0.05 = 0.35
+
+    C in A-B peace scenario:
+        0.30 - 0.05 = 0.25
+
+That is 35% versus 25% of C's per-turn production assigned to armament even though
+nothing about C-D changed.
+
+The exact base buildUnitProb is not important to the proof: away from the clamp, the
+foreign parameter leak is always a 10-percentage-point war-minus-peace difference.
+
+FULL-INTENSITY FORM IS EVEN STRONGER WHEN REACHED
+-------------------------------------------------
+The same block contains:
+
+    if (GET_TEAM(kParams.getAgent()).AI_getWarPlan(kParams.getTarget()) !=
+        WARPLAN_TOTAL)
+        eIntensity = FULL;
+
+If a call evaluates total war while the agent's actual A-B plan is not yet TOTAL, then
+EVERY forecasted node -- including unrelated C -- can be forced to FULL intensity based
+on A's real war-plan type.
+
+This is the same root and should be fixed with it. The ordinary ongoing-total-war
+fixture above is sufficient by itself and does not depend on reaching this stronger
+form.
+
+PLAYER-VISIBLE / AI CONSEQUENCE
+-------------------------------
+The unrelated forecast is not discarded diagnostics.
+
+`InvasionGraph::simulateArmament` calls `Node::predictArmament` for every non-NULL node.
+ArmamentForecast converts the contaminated portion into additional branch power:
+
+    iTurnsBuildUp * rArmamentPortion * rPerTurnProduction
+
+and writes that into the graph-local MilitaryBranch state used by the simulated C-D
+combat.
+
+`simulateComponent` explicitly simulates the disconnected components. MilitaryAnalyst
+then exports their conquests, losses, gained/lost power and predicted scores.
+
+These results can enter WarUtility aspects. For example, `GreedForAssets::threatToCities`
+uses MilitaryAnalyst gained Army power for rival players that are part of the analysis,
+and `KingMaking` deliberately consults analyzed rivals' simulated relative losses.
+So changing C-D buildup can alter A's evaluated war-vs-peace utility even though the
+A-B choice did not change C-D's war state.
+
+This violates a useful invariance contract:
+    an unrelated continued C-D war should not receive different armament policy merely
+    because A's evaluated A-B branch is "total war" versus "peace."
+
+LINEAGE
+-------
+The root is present in practical 1253 / f6ff6a182f, the initial ArmamentForecast/UWAI
+import. The original code already read `params.isConsideringPeace()` and
+`params.isTotal()` inside `predictArmament` without qualifying the forecast player.
+
+The major UWAI revision/refactor (practicals 2920/2954) preserved the policy while
+renaming it to current structures. Current Base AdvC 1.14 retains it unchanged.
+SAS's only executable divergence in ArmamentForecast itself is the already-owned KI#591
+land-distance repair, so F642 is inherited rather than SAS-created.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for `rAtWarAdjustment`, "switch from limited to total",
+ArmamentForecast total-war/considering-peace parameter leakage, and unrelated forecast
+components find no existing root owner.
+
+F639 is distinct:
+    F639 is an iteration-order leak inside the constructor's per-known-team fictional-
+    scenario flag (`bPeaceAssumed` prefix state combined with current reachability).
+
+F642 is order-independent:
+    even with one unrelated C-D component and no F639 activation, the later
+    `predictArmament` arithmetic directly reads A-B scenario parameters while forecasting
+    C.
+
+F641 is also distinct:
+    F641 concerns graph-local POST-CONQUEST city topology missing from the concurrent
+    forecast interface.
+
+REPAIR BOUNDARY
+---------------
+The total/limited adjustment must be derived from the FORECAST PLAYER'S scenario war
+state, not copied wholesale from the analyst's A-B parameter object.
+
+At minimum:
+- special handling of `kParams.isTotal()` as the proposed A-B plan should be gated to
+  the agent (and perhaps its intended team/vassal participants if that is deliberately
+  modeled);
+- unrelated current-war nodes must derive any total-vs-limited production adjustment
+  from their own real/simulated war plans;
+- the recursive A-B peace scenario must not subtract 0.05 from an unrelated C whose
+  C-D war continues unchanged.
+
+A stronger design would compute an explicit per-node/per-war scenario war-plan
+classification in MilitaryAnalyst/InvasionGraph and pass that local classification to
+ArmamentForecast, avoiding future uses of agent-target parameters as though they were
+properties of every player.
+
+Do not simply remove the adjustment globally: the A-B agent forecast still needs a way
+to model the intended difference between limited and total war.
+
+VALIDATION TARGETS
+------------------
+1. Fixture A-B ongoing TOTAL, unrelated C-D ongoing war.
+2. Compare A-B war scenario and recursive A-B peace scenario.
+3. Hold every C-D local input fixed (AreaAI, intensity inputs, production, city state,
+   branch power, war plan).
+4. Current code must show C's raw armament portion differs by +0.05 versus -0.05.
+5. Repaired code must make C's forecast invariant under the A-B scenario switch.
+6. A's own forecast should still model the intended total-vs-limited adjustment.
+7. B/participating allies or vassals should follow one explicit documented response
+   policy rather than inheriting A's parameter accidentally.
+8. Repeat with a disconnected C-D component that yields different conquest outcomes
+   under 25% vs 35% buildup; those outcomes must no longer depend on A-B's total flag.
+9. Repeat an ordinary ongoing LIMITED A-B war: unrelated C-D must not receive a global
+   -0.05 merely because A is "considering peace."
+10. If the stronger limited->total transition path is retained, ensure it can force FULL
+    only for the intended A-B participants, never arbitrary unrelated nodes.
+
+POST-F642 LEDGER / EXACT RESUME
+-------------------------------
+Queue 058 `CvGameCoreDLL/ArmamentForecast.cpp` -- OPEN.
+F639 / provisional KI#961 -- CONFIRMED.
+F640 / provisional KI#962 -- CONFIRMED.
+F641 / provisional KI#963 -- CONFIRMED.
+F642 / provisional KI#964 -- CONFIRMED.
+F643 / provisional KI#965 -- UNUSED.
+
+Exact continuation:
+C031-WIP475 physical -> Queue058 OPEN -> exclude F639-F642 plus all prior album owners
+-> finish remaining constructor/predictArmament/productionFromUpgrades saturation ->
+explicitly revisit simulated-capital/AreaAI and target-city topology as likely F641
+breadth rather than new roots -> exhaust all 70-ish ArmamentForecast path-history
+entries with special attention to practical 1395 minor bugfixes, 1499 bugfix batch,
+2281 instance-cost work, 2605/2699/2609 buildup changes, 2920 revision, 3945 overflow
+repair and 4368 naval fixes -> mechanical divisors/clamps/nulls/report-state/overflow
+closure -> either promote a genuinely independent F643 or close Queue058 cleanly ->
+freeze another physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP476 -- QUEUE 058 ArmamentForecast.cpp -- CLOSED / F643 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP475.
+- Queue 058 `CvGameCoreDLL/ArmamentForecast.cpp` is CLOSED.
+- Queue-058 confirmed roots:
+    F639 / provisional KI#961
+    F640 / provisional KI#962
+    F641 / provisional KI#963
+    F642 / provisional KI#964
+- F643 / provisional KI#965 remains intentionally UNUSED.
+- Files complete: 38 / 169.
+- Files open: 0 / 169.
+- Next selected priority file: Queue 060 `CvGameCoreDLL/CvArea.cpp` (686 queued lines).
+- No gameplay source was modified.
+
+FINAL SATURATION PASS
+---------------------
+The post-F642 pass challenged every remaining current body and all 71 path-history
+entries rather than closing the file merely because four findings had already emerged.
+
+1. Constructor state machine
+   - war/war-plan counting, vassal exclusion, single-pushover handling, recent-attack
+     handling, total-war classification, peace-scenario preparation abandonment,
+     ALERT/DAGGER/AreaAI interactions and human defensive handling were re-read against
+     their later consumers;
+   - the historical vassal-war-count correction from practical 1677 is present;
+   - practical 1299's old power-curve typo (`bur < 18`) is repaired to `0.18`;
+   - no distinct surviving state leak beyond F639 and F642 was established.
+
+2. Report mute lifetime
+   - the apparent nested-mute problem is a false positive:
+     `UWAIReport::setMute(true)` increments a nesting counter and `setMute(false)`
+     decrements it;
+   - ArmamentForecast's inner AI-only mute pair therefore restores, rather than clears,
+     an outer InvasionGraph mute.
+
+3. Per-turn production / hurry estimate
+   - `AI_estimateYieldRate` intentionally uses demographic/history information and the
+     source explicitly documents that UWAI routinely cheats in this respect;
+   - current hurry XML has Population hurry at 27 production/population and Gold hurry
+     at 3 gold/production;
+   - the `(GoldPerProduction*2)/3 + ProductionPerPopulation/angerLength` expression is
+     a coarse heuristic and has counterintuitive mod-robustness semantics for arbitrary
+     gold-hurry XML, but current data does not produce an independent contradiction.
+     Preserve as tuning/robustness debt, not F643.
+
+4. Intensity and armament bounds
+   - peaceful-victory downgrading is intentionally one intensity step;
+   - era adjustment is bounded and current `AI_getCurrEraFactor` contracts make the
+     later naval era denominators positive whenever the code reaches them;
+   - armament portion is capped/clamped to [0, 0.75];
+   - F642 remains the only confirmed foreign scenario-parameter contamination in the
+     total/limited adjustment.
+
+5. Naval branch arithmetic
+   - practical 4368's two fixes are current:
+       * reveal status is checked from the analyst team, not forecast player's team;
+       * the all-revealed/no-coast Fleet=0 result is no longer immediately overwritten.
+   - with current reachable maxima, Home Guard + Fleet + Logistics cannot make Army
+     negative:
+       offensive naval Home Guard = 0.12;
+       Fleet <= 0.35;
+       Logistics <= 0.35;
+       each low-navy multiplier <= 1.25 after dilution;
+       total <= 0.995.
+   - cargo and fleet divisors are guarded by positive typical-power checks, and the
+     current-era gate plus strictly increasing/default AIEraFactor contract protects
+     the fleet era-factor denominator.
+
+6. Branch redistribution and overlap
+   - unavailable branch weight is redistributed proportionally only after the branch
+     portions sum to one; the near-one early return prevents division by zero;
+   - Cavalry's later copy of Army share is intentional overlap: the class contract says
+     all Cavalry is also Army, so it is not an exclusive production budget;
+   - Nuclear likewise represents strategic nuke power separately from Army's ordinary
+     combat usefulness;
+   - no double-budget root was established.
+
+7. Production-to-power scaling
+   - practical 3945's overflow repair is present:
+         branchPortion * totalProduction * (typicalPower / typicalCost)
+     rather than multiplying all scaled operands before division;
+   - typical-cost <=0 is skipped;
+   - current branch objects are fully created by InvasionGraph and their pointer/index
+     contracts hold for all callers.
+
+8. Upgrade inversion
+   - ordinary inherited approximation limitations (per-instance costs, unknown exact
+     upgrade mix, income bounding) remain heuristic by design;
+   - F365 owns the separate per-unit General/upgrade-discount cache collapse;
+   - F640 owns the concrete SAS 75%-global-price-factor omission;
+   - no third independent upgrade-conversion root survived.
+
+F641 SAME-ROOT BREADTH -- SIMULATED CAPITAL / ROUTE STATE
+---------------------------------------------------------
+The final state-lifetime pass found two additional manifestations of F641's already
+confirmed root. They are recorded as breadth, not new F643 findings.
+
+A. `getAreaAI(ePlayer)` always reads the REAL current capital:
+
+       CvCity const* pCapital = GET_PLAYER(ePlayer).getCapital();
+       return pCapital->getArea().getAreaAIType(...);
+
+   If InvasionGraph has hypothetically lost that capital before the concurrent forecast,
+   real ownership is intentionally unchanged, so AreaAI can still be selected from a
+   home area that the graph no longer regards as containing the player's surviving
+   capital/cities.
+
+B. the target-city naval classifier consumes UWAICache fields computed from the REAL
+   pre-simulation source-city/capital network:
+
+       pTargetCity->canReachByLandFromCapital()
+       pTargetCity->getDistanceByLand()
+
+   `UWAICache::City::updateDistance` explicitly weights the cache owner's real capital
+   and real qualifying source cities. Graph-local loss of that capital, the sole coastal
+   launch city, or other qualifying production cities does not rebuild this hypothetical
+   route state.
+
+These are the same interface defect already proved by F641:
+ArmamentForecast receives only a scalar `productionPortion()` after graph-local city
+losses, not a simulation-aware remaining-city/capital/capability view. A repair should
+therefore avoid three separate ad-hoc fixes and expose one coherent graph-local city
+view to:
+- revealed/coastal counts and remaining-city denominator;
+- home-area/capital selection where relevant;
+- target-route / naval-production capability where simulated city loss changes them.
+
+The deliberately approximate total-production scaling can remain scalar; discrete
+topology/capability questions cannot be reconstructed from that scalar.
+
+HISTORY CLOSURE
+---------------
+All 71 indexed ArmamentForecast history entries were classified.
+
+High-value semantic strata:
+- practical 1253: initial ArmamentForecast/UWAI implementation; source of F639/F642
+  and initial graph/forecast interface later implicated by F641;
+- practical 1264: added revealed-city/coastal branch allocation; historical birth of
+  F641's clean coastal manifestation;
+- practical 1275: observer-aware typical cost/power;
+- practicals 1287/1289: naval low-fleet/cargo buildup and Ancient-era zero protection;
+- practical 1299: corrected 18 -> 0.18 power-curve threshold;
+- practical 1335: no-war-vs-extra peace handling;
+- practical 1344: small-enemy/pushover forecast refinement;
+- practical 1363/1341: upgrade affordability/current-gold horizon refinements;
+- practical 1677: vassal war count and cached war-plan count corrections;
+- practical 2281: per-instance typical unit cost support;
+- practicals 2609/2699: current intensity/branch tuning;
+- practicals 2621/2734/2719: era-factor buildup refinements and custom-era support;
+- practical 2767: capital-specific land-reach target semantics;
+- practical 2920: comprehensive UWAI scaled-number rewrite, including current
+  per-hurry-type production estimate; no unported later correction found;
+- practical 2923/2957: follow-up correctness/compile adjustments;
+- practical 3945: predicted-power overflow repair;
+- practical 4368: analyst reveal-team and no-coast Fleet=0 repairs;
+- SAS practical 6315: KI#591 land-only route-duration repair.
+
+Merge/format/refactor-only mirrors and the remaining small historical changes reconcile
+with the current body. Current SAS remains executable-semantically identical to supplied
+Base AdvC 1.14 except the deliberate KI#591 `getDistanceByLand()` divergence, so there is
+no missed Base-1.14 ArmamentForecast repair.
+
+QUEUE-058 ROOT LEDGER
+---------------------
+F639 / KI#961
+    accumulated `bPeaceAssumed` prefix state is combined with the current team's
+    reachability, making fictional-scenario/AreaAI selection depend on TeamTypes order.
+
+F640 / KI#962
+    SAS global 75% upgrade-price multiplier reaches the price producer but is missing
+    from ArmamentForecast's inverse, under-crediting fully affordable ordinary upgrades
+    by about 25%.
+
+F641 / KI#963
+    post-conquest concurrent forecasting sees real pre-loss city topology/capability;
+    clean sole-coast fixture forecasts Fleet/Logistics where simulated remaining empire
+    has no coast. Same-root breadth also covers stale real-capital AreaAI and cached
+    pre-loss route/capital capability.
+
+F642 / KI#964
+    analyst agent-target `isConsideringPeace` / `isTotal` parameters alter every graph
+    node, so an unchanged unrelated C-D war can receive +0.05 vs -0.05 armament merely
+    because A compares total war with peace against B.
+
+F643 / KI#965
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 058 is closed for this pass. Remaining concerns are explicit approximation/tuning,
+mod-robustness outside current data, same-root breadth of F641, or historical defects
+already repaired. None clears the independent current-live threshold for F643.
+
+EXACT CONTINUATION
+------------------
+C031-WIP476 physical -> Queue058 CLOSED -> F639-F642 confirmed ->
+F643/KI#965 UNUSED -> open next selected priority Queue060
+`CvGameCoreDLL/CvArea.cpp` (686 queued lines) -> establish current SAS vs Base AdvC 1.14,
+K-Mod and Civ4CE provenance plus path-history/caller map -> audit area counters,
+serialization, ownership/units/cities/yields, AreaAI transitions, target-city and
+water/land topology interactions, enum/index/division/null contracts -> whole-album
+dedup before numbering -> promote F643 only for a distinct current-live root -> freeze
+the next physical WIP at the next settled boundary whether F643 is consumed or remains
+unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
 ===============================================================================

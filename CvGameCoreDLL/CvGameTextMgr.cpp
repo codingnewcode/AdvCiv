@@ -13332,7 +13332,8 @@ void CvGameTextMgr::setFoundCostHelp(CvWStringBuffer& szBuffer, CvPlot const& kC
 	// Civic upkeep
 	iProjPreInfl += kPlayer.getCivicUpkeep(NULL, true, 1);
 	// Unit cost (new city increases free units, Settler unit goes away)
-	iProjPreInfl += kPlayer.calculateUnitCost(CvCity::initialPopulation(), -1);
+	// <!-- custom: A founded Settler removes one total unit but no military-support unit. AdvCiv's shared delta falsely projected lower Pacifism upkeep. See KI#769. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	iProjPreInfl += kPlayer.calculateUnitCost(CvCity::initialPopulation(), -1, 0);
 	// Unit supply (Settler unit goes away)
 	if (kPlayer.calculateUnitSupply(kCityPlot.getOwner() != kPlayer.getID()))
 		iProjPreInfl--;

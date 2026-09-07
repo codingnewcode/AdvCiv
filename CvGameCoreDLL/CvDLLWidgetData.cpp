@@ -2313,12 +2313,16 @@ void CvDLLWidgetData::parseActionHelp(CvWidgetDataStruct &widgetDataStruct, CvWS
 				FAssert(iCurrentExpenses == kActivePlayer.calculateInflatedCosts());
 				int iExtraCost = 0;
 				int iUnits = 0;
+				// <!-- custom: Count military-support units separately so deleting civilian units does not project false Pacifism savings. See KI#769. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+				int iMilitaryUnits = 0;
 				for (CLLNode<IDInfo> const* pNode = kUI.headSelectionListNode();
 					pNode != NULL; pNode = kUI.nextSelectionListNode(pNode))
 				{
 					CvUnit const& kUnit = *::getUnit(pNode->m_data);
 					iExtraCost += kUnit.getUnitInfo().getExtraCost();
 					iUnits--;
+					if (kUnit.getUnitInfo().isMilitarySupport())
+						iMilitaryUnits--;
 					/*  No danger of double counting b/c it's not possible to select
 						a transport and its cargo at the same time */
 					std::vector<CvUnit*> apCargo;
@@ -2327,16 +2331,16 @@ void CvDLLWidgetData::parseActionHelp(CvWidgetDataStruct &widgetDataStruct, CvWS
 					{
 						iExtraCost += apCargo[i]->getUnitInfo().getExtraCost();
 						iUnits--;
+						if (apCargo[i]->getUnitInfo().isMilitarySupport())
+							iMilitaryUnits--;
 					}
 				}
 				int iProjectedSupply = 0;
 				bool bSupply = (!pHeadSelectedUnit->getPlot().isActiveTeam());
 				iProjectedSupply = kActivePlayer.calculateUnitSupply(bSupply ? iUnits : 0);
-				int iProjectedUnitCost = kActivePlayer.calculateUnitCost(0, iUnits);
-				int iProjectedExpenses = iProjectedSupply + iProjectedUnitCost +
-						iOtherExpenses - iExtraCost;
-				iProjectedExpenses = (iProjectedExpenses *
-						(iInflationPercent + 100)) / 100;
+				int iProjectedUnitCost = kActivePlayer.calculateUnitCost(0, iUnits, iMilitaryUnits);
+				int iProjectedExpenses = iProjectedSupply + iProjectedUnitCost + iOtherExpenses - iExtraCost;
+				iProjectedExpenses = (iProjectedExpenses * (iInflationPercent + 100)) / 100;
 				FAssert(iExtraCost >= 0 && iProjectedExpenses >= 0);
 				int iGold = iCurrentExpenses - iProjectedExpenses;
 				if(iGold > 0)
@@ -2354,11 +2358,11 @@ void CvDLLWidgetData::parseActionHelp(CvWidgetDataStruct &widgetDataStruct, CvWS
 					{
 						/*  Assume that the additional units are inside borders:
 							only recompute UnitCost. */
-						iProjectedExpenses = iProjectedSupply - iExtraCost +
-								iOtherExpenses;
-						iProjectedExpenses += kActivePlayer.calculateUnitCost(0, iUnits - i);
-						iProjectedExpenses = (iProjectedExpenses *
-								(iInflationPercent + 100)) / 100;
+						iProjectedExpenses = iProjectedSupply - iExtraCost + iOtherExpenses;
+						// <!-- custom: The future unit types are unknowable here; retain AdvCiv's best-case assumption that each hypothetical further deletion removes military support too.
+						// The actually selected units above now use their real types. See KI#769. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+						iProjectedExpenses += kActivePlayer.calculateUnitCost(0, iUnits - i, iMilitaryUnits - i);
+						iProjectedExpenses = (iProjectedExpenses * (iInflationPercent + 100)) / 100;
 						if(iProjectedExpenses < iOldProj)
 						{
 							iDeltaUnits = i;
