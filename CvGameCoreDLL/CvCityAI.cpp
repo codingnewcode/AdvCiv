@@ -10755,8 +10755,9 @@ int CvCityAI::AI_neededCultureDefenders() const
 			scaled::max(per100(1), getRevoltTestProbability());
 
 	scaled const rAIEraFactor = kOwner.AI_getCurrEraFactor();
-	scaled r = rTargetGarrisonStr / scaled::max(3,
-			(rAIEraFactor + fixp(0.5)) * (rAIEraFactor < fixp(3.5) ? 3 : 4));
+	// <!-- custom: AdvCiv practical 2723 accidentally dropped the original upward rounding while converting this calculation from double to scaled.
+	// Round the base requirement upward before the existing occupation/war adjustments, then retain their final nearest-integer rounding. See KI#864. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	scaled r = (rTargetGarrisonStr / scaled::max(3, (rAIEraFactor + fixp(0.5)) * (rAIEraFactor < fixp(3.5) ? 3 : 4))).ceil();
 	if (r > scaled::max(iPop, 3 + rAIEraFactor))
 		return 0; // Not worth it
 	if (isOccupation())
@@ -18458,6 +18459,11 @@ int CvCityAI::AI_countGoodTiles(bool bHealthy, bool bUnworkedOnly, int iThreshol
 {
 	//PROFILE_FUNC(); // advc.opt: Apparently not responsible for AI_yieldValue being somewhat slow
 	int iCount = 0;
+	// <!-- custom: `getCultureTurnsLeft()` returns -1 when the city has no positive Culture ETA.
+	// AdvCiv treated that sentinel as expansion within five turns and could suppress Build Culture indefinitely. See KI#863. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	int iCultureTurnsLeft = -1;
+	if (getCultureLevel() == 1)
+		iCultureTurnsLeft = getCultureTurnsLeft();
 
 	for (CityPlotIter it(*this, false); it.hasNext(); ++it)
 	{
@@ -18465,8 +18471,7 @@ int CvCityAI::AI_countGoodTiles(bool bHealthy, bool bUnworkedOnly, int iThreshol
 		//if (kPlot.getWorkingCity() == this)
 		// <advc.113> Anticipate border expansion
 		bool bValid = (kPlot.getWorkingCity() == this);
-		if(!bValid && kPlot.getOwner() == NO_PLAYER &&
-			getCultureLevel() == 1 && getCultureTurnsLeft() <= 5)
+		if (!bValid && kPlot.getOwner() == NO_PLAYER && iCultureTurnsLeft > 0 && iCultureTurnsLeft <= 5)
 		{
 			bValid = true;
 		}

@@ -957,10 +957,10 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#858 - (Provisional Pending inherited BtS future-happiness bound defect) Three recovery channels are capped at two](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-858)\
 [KI#859 - (Provisional Pending K-Mod obsolete-building valuation defect with incomplete AdvCiv repair) Retained effects are priced as lost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-859)\
 [KI#860 - (Provisional Pending inherited BtS stacked-anger valuation defect) Only one layer per source can recover](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-860)\
-[KI#861 - (Provisional Pending AdvCiv Worker-cache regression) Completion can double-count a Worker](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-861)\
+[KI#861 - (Fixed inherited AdvCiv bug) Completion could double-count a Worker](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-861)\
 [KI#862 - (Provisional Pending AdvCiv Worker-cache regression) Reassignment forgets the old target city](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-862)\
-[KI#863 - (Provisional Pending AdvCiv culture-governor regression) No culture ETA is treated as imminent expansion](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-863)\
-[KI#864 - (Provisional Pending AdvCiv refactor regression) Culture defenders lose ceiling division](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-864)\
+[KI#863 - (Fixed inherited AdvCiv bug) No Culture ETA was treated as imminent expansion](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-863)\
+[KI#864 - (Fixed inherited AdvCiv refactor bug) Culture-defender demand lost ceiling division](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-864)\
 [KI#865 - (Provisional Pending inherited K-Mod route-cache defect) City route target can survive topology changes](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-865)\
 [KI#866 - (Provisional Pending inherited Worker-demand cache defect) Plot mutations leave demand stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-866)\
 [KI#867 - (Provisional Pending AdvCiv-SAS culture-victory cache defect) Building completion can stale city rank](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-867)\
@@ -16643,11 +16643,15 @@ Found as F537 during ChatGPT-5.6-Sol's C031-WIP310 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-861"></a>
 
-## KI#861 - (Provisional Pending AdvCiv Worker-cache regression) Completion can double-count a Worker
+## KI#861 - (Fixed inherited AdvCiv bug) Completion could double-count a Worker
 
-The full city refresh already counts a Worker near completion, and the completion path then increments the cached available-Worker count again. The cache can therefore report one extra Worker until its next full refresh; condition the completion adjustment on real uncached completion state.
+The full city refresh already counted a Worker within three turns of completion. AdvCiv practical 1583 then added an unconditional cache increment before creating a completed Worker, so an ordinary one-turn completion represented the same Worker twice while the city immediately chose its next production order. The error is AdvCiv-specific and inherited by AdvCiv-SAS; BtS and K-Mod had the near-completion prediction but not the contradictory completion hook.
 
-Found as F538 during ChatGPT-5.6-Sol's C031-WIP311 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+The fix removes the speculative increment and performs the authoritative Worker-availability/demand refresh after the completed unit actually exists. The next production choice therefore sees the Worker exactly once, while a Worker completed unexpectedly through same-turn production changes is still included.
+
+A compiled full autoplay completed successfully after the repair.
+
+Found as F538 during ChatGPT-5.6-Sol's C031-WIP311 audit; independently reviewed, fixed and documented with the help of GPT-5.6-Sol and compile/runtime-tested with the help of wonderingabout, thanks.
 
 <a id="ki-862"></a>
 
@@ -16659,19 +16663,27 @@ Found as F539 during ChatGPT-5.6-Sol's C031-WIP312 audit; reconciled into Known 
 
 <a id="ki-863"></a>
 
-## KI#863 - (Provisional Pending AdvCiv culture-governor regression) No culture ETA is treated as imminent expansion
+## KI#863 - (Fixed inherited AdvCiv bug) No Culture ETA was treated as imminent expansion
 
-`AI_countGoodTiles` treats `getCultureTurnsLeft() == -1` as less than five turns, so a city with no Culture and no expansion ETA can be treated as about to expand and the human production governor can suppress Build Culture indefinitely.
+AdvCiv's `AI_countGoodTiles` treated `getCultureTurnsLeft() == -1` as less than five turns. The sentinel means that the city has no positive Culture rate or no remaining threshold and therefore no current expansion ETA, but the production governor could count unowned radius plots as imminent and suppress Build Culture indefinitely.
 
-Found as F540 during ChatGPT-5.6-Sol's C031-WIP313 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+The fix calculates the Culture ETA once and anticipates border expansion only for a positive result of five turns or fewer. This is an AdvCiv regression inherited by AdvCiv-SAS; the anticipation logic was added after K-Mod.
+
+A compiled full autoplay completed successfully after the repair.
+
+Found as F540 during ChatGPT-5.6-Sol's C031-WIP313 audit; independently reviewed, fixed and documented with the help of GPT-5.6-Sol and compile/runtime-tested with the help of wonderingabout, thanks.
 
 <a id="ki-864"></a>
 
-## KI#864 - (Provisional Pending AdvCiv refactor regression) Culture defenders lose ceiling division
+## KI#864 - (Fixed inherited AdvCiv refactor bug) Culture-defender demand lost ceiling division
 
-AdvC practical 2723 replaced a ceiling division in `AI_neededCultureDefenders` with truncating integer division. Border pressure can consequently require one defender too few; restore the intended ceiling arithmetic.
+AdvCiv practical 2723 converted `AI_neededCultureDefenders` from double to `scaled` arithmetic but accidentally dropped the original intermediate `ceil`. Final nearest-integer rounding was not equivalent: for example, an early base requirement of 4 / 3 historically became 2 but the current calculation returned 1. A culturally pressured city could consequently request one defender too few.
 
-Found as F541 during ChatGPT-5.6-Sol's C031-WIP315 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+The fix restores upward rounding at the original semantic stage before the existing occupation and war adjustments, then retains the final nearest-integer rounding after those modifiers. This is an AdvCiv refactor regression inherited by AdvCiv-SAS, not a deliberate defender rebalance.
+
+A compiled full autoplay completed successfully after the repair.
+
+Found as F541 during ChatGPT-5.6-Sol's C031-WIP315 audit; independently reviewed, fixed and documented with the help of GPT-5.6-Sol and compile/runtime-tested with the help of wonderingabout, thanks.
 
 <a id="ki-865"></a>
 

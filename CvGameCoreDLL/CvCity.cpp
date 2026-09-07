@@ -10531,10 +10531,6 @@ void CvCity::popOrder(int iNum, bool bFinish, ChooseProductionPlayers eChoose, b
 		kOwner.changeUnitClassMaking(GC.getInfo(eTrainUnit).getUnitClassType(), -1);
 		getArea().changeNumTrainAIUnits(getOwner(), eTrainAIUnit, -1);
 		kOwner.AI_changeNumTrainAIUnits(eTrainAIUnit, -1);
-		/*  <advc.113b> So that the new worker can already be taken into account
-			for choosing the next order */
-		if(eTrainAIUnit == UNITAI_WORKER)
-			AI().AI_changeWorkersHave(1); // </advc.113b>
 		doPopOrder(pOrderNode); // advc.064d (see case ORDER_CONSTRUCT)
 		if(!bFinish)
 			break;
@@ -10546,6 +10542,10 @@ void CvCity::popOrder(int iNum, bool bFinish, ChooseProductionPlayers eChoose, b
 		CvUnit* pUnit = kOwner.initUnit(eTrainUnit, getX(), getY(), eTrainAIUnit);
 		pUnit->finishMoves();
 		addProductionExperience(pUnit);
+		// <!-- custom: AdvCiv incremented the Worker cache before creating the unit, although its preceding city-turn refresh had already counted that same near-complete Worker.
+		// Rebuild the authoritative cache after the completed Worker exists so the next production choice sees it exactly once, including after unexpected same-turn completion. See KI#861. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		if (eTrainAIUnit == UNITAI_WORKER)
+			AI().AI_updateWorkersHaveAndNeeded();
 		// <!-- custom: Record completion before air-capacity relocation. A produced air unit with no valid destination can be destroyed below before the ordinary unitBuilt event fires. (GPT-5.6-Sol) -->
 		if (gGameRecordLogLevel >= 2) logSASGameRecordUnitCompleted(this, pUnit, false, iRawModifiedOverflow, iUnmodifiedOverflow, iKeptOverflow, iLostOverflowProduction, iUnusedOverflowCapacity, iOverflowGold);
 		CvPlot* pRallyPlot = getRallyPlot(); // (advc.001b: moved up)
