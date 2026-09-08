@@ -2,12 +2,12 @@ AdvCiv-SAS C++ File Audit Album
 Generated from local light-source snapshot only; no web/GitHub lookup used.
 
 CURRENT PROGRESS SUMMARY
-Files complete: 58 / 169
+Files complete: 65 / 169
 Files open: 1 / 169
-Last completed file: queue 168 CvGameCoreDLL/ArithmeticTraits.cpp (11 queued lines) - CLOSED AT C031-WIP509
-Current open file: ordinary queue 026 CvGameCoreDLL/CvInitCore.cpp (2,132 queued lines) - OPEN AT C031-WIP511
-Latest confirmed audit findings: F650-F655 / KI#972-KI#977 across the Queue 074, Queue 082, Queue 108, Queue 129 and Queue 026 audits. The remaining priority-reloop files closed cleanly through Queue 168, and ordinary queue order has resumed. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
-Next new root ID: F656 unused / provisional KI#978 next
+Last completed file: queue 033 CvGameCoreDLL/CvInfo_Terrain.cpp (1,672 queued lines) - CLOSED AT C031-WIP522
+Current open file: ordinary queue 034 CvGameCoreDLL/CvInfo_Civilization.cpp (1,637 queued lines) - OPEN AT C031-WIP522
+Latest confirmed audit findings: F656-F659 / KI#978-KI#981 across the Queue 026, Queue 028, Queue 029 and Queue 033 audits. The stronger-WIP priority reloop remains complete, and ordinary queue order has advanced through Queue 033. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
+Next new root ID: F660 unused / provisional KI#982 next
 
 The durable checkpoints and current cursor below are authoritative for finding status; the initial C010 snapshot and later WIP appends preserve their own historical source identities.
 
@@ -18,7 +18,7 @@ METHOD
 - Do not promote tuning disagreements, theoretical unsupported configurations, dead paths, or already-fixed history into new findings.
 - One root cause gets one finding even when several callers expose different symptoms.
 - False positives are recorded when useful so they are not rediscovered later.
-- The stronger-WIP priority reloop is complete through C031-WIP509. Continue the open ordinary Queue 026 `CvInitCore.cpp` from reconciled C031-WIP511, then resume ordinary numeric queue order. The WIP509-WIP511 numbering bridges the retry fork by retaining the omitted ArithmeticTraits closure before the fuller CvInitCore baseline and confirmed finding.
+- The stronger-WIP priority reloop is complete through C031-WIP509. Continue the open ordinary Queue 034 `CvInfo_Civilization.cpp` from C031-WIP522, then resume ordinary numeric queue order. The WIP509-WIP511 numbering retains the earlier retry-fork bridge; the later durable checkpoints are authoritative for current progress.
 
 QUEUE (current .cpp files, longest -> shortest)
 001  32205 CvGameCoreDLL/CvPlayerAI.cpp [COMPLETE ORIGINAL PASS / DEEP-METHOD RE-AUDIT CLOSED - C031-WIP65 / F321-F374]
@@ -46,15 +46,15 @@ QUEUE (current .cpp files, longest -> shortest)
 023   2430 CvGameCoreDLL/InvasionGraph.cpp [COMPLETE - SEE C022 DURABLE CHECKPOINT]
 024   2399 CvGameCoreDLL/CyCity.cpp [COMPLETE - SEE C031-WIP460 DURABLE CHECKPOINT]
 025   2247 CvGameCoreDLL/StartingPositionIteration.cpp [COMPLETE - SEE C031-WIP457 DURABLE CHECKPOINT]
-026   2132 CvGameCoreDLL/CvInitCore.cpp [OPEN - C031-WIP511 / F655]
-027   2099 CvGameCoreDLL/CvInfo_RandomEvent.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-028   2095 CvGameCoreDLL/CvXMLLoadUtilitySet.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-029   2052 CvGameCoreDLL/CyEnumsInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-030   1919 CvGameCoreDLL/CvInfo_Misc.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+026   2132 CvGameCoreDLL/CvInitCore.cpp [COMPLETE - C031-WIP513 / F655-F656]
+027   2099 CvGameCoreDLL/CvInfo_RandomEvent.cpp [COMPLETE - C031-WIP514]
+028   2095 CvGameCoreDLL/CvXMLLoadUtilitySet.cpp [COMPLETE - C031-WIP516 / F657]
+029   2052 CvGameCoreDLL/CyEnumsInterface.cpp [COMPLETE - C031-WIP518 / F658]
+030   1919 CvGameCoreDLL/CvInfo_Misc.cpp [COMPLETE - C031-WIP519]
 031   1812 CvGameCoreDLL/UWAICache.cpp [COMPLETE - SEE C020 DURABLE CHECKPOINT]
-032   1704 CvGameCoreDLL/CyUnit.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-033   1672 CvGameCoreDLL/CvInfo_Terrain.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-034   1637 CvGameCoreDLL/CvInfo_Civilization.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+032   1704 CvGameCoreDLL/CyUnit.cpp [COMPLETE - C031-WIP520]
+033   1672 CvGameCoreDLL/CvInfo_Terrain.cpp [COMPLETE - C031-WIP522 / F659]
+034   1637 CvGameCoreDLL/CvInfo_Civilization.cpp [OPEN - C031-WIP522]
 035   1619 CvGameCoreDLL/CvInfo_GameOption.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 036   1596 CvGameCoreDLL/CvMap.cpp [COMPLETE - SEE C031-WIP468 DURABLE CHECKPOINT]
 037   1576 CvGameCoreDLL/CvPythonCaller.cpp [COMPLETE - SEE C025 DURABLE CHECKPOINT]
@@ -170451,4 +170451,1930 @@ history strata -> whole-album dedup -> either promote a distinct current-live F6
 close Queue026 cleanly -> freeze the next physical WIP regardless.
 
 No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+
+===============================================================================
+C031-WIP512 -- QUEUE 026 CvInitCore.cpp -- F656 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP511.
+- Ordinary Queue 026 `CvGameCoreDLL/CvInitCore.cpp` remains OPEN.
+- F655 / provisional KI#977 remains CONFIRMED.
+- F656 / provisional KI#978 is CONFIRMED here.
+- F657 / provisional KI#979 is UNUSED.
+- No gameplay source was modified.
+
+-------------------------------------------------------------------------------
+F656 / provisional KI#978 -- transferred Python map filenames are execution aliases,
+but AdvC's cached Pangaea classifier treats the `_t` alias as the logical map-script
+identity; transferred Pangaea therefore caches `m_bPangaea = false`
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited AdvC map-setup classification defect on the native transferred-
+Python-map path. Current Base AdvC 1.14 retains the same root.
+
+ROOT -- TWO DIFFERENT MAP-NAME CONTRACTS ARE MIXED
+--------------------------------------------------
+`CvInitCore` deliberately has two representations of a Python map-script name.
+
+Persistent/logical identity is the raw member:
+
+    m_szMapScriptName
+
+The current writer serializes that raw member directly:
+
+    pStream->WriteString(m_szMapScriptName);
+
+and `getWBMapScript()` likewise tests the raw member directly.
+
+By contrast, public `getMapScriptName()` is also an execution-filename adapter. For a
+non-WB Python map transferred by the EXE it returns:
+
+    m_szMapScriptName + MAP_TRANSFER_EXT
+
+where:
+
+    MAP_TRANSFER_EXT = "_t"
+
+The inherited comment is explicit:
+
+    "If it's a transferred Python file, we have to hack in the transferred extension"
+
+That decorated value is correct when code needs to call the physically transferred
+Python module.
+
+`setMapScriptName` performs both kinds of work in sequence:
+
+    m_szMapScriptName = szMapScriptName;
+    refreshCustomMapOptions();
+    updatePangaea();
+
+`refreshCustomMapOptions()` intentionally consumes `getMapScriptName()` and sends that
+name to `pythonMapExists` and the Python custom-map-option calls. On a transferred map,
+this is exactly where the `_t` execution alias belongs.
+
+`updatePangaea()`, however, also consumes the same decorated getter:
+
+    m_bPangaea = (getMapScriptName().compare(L"Pangaea") == 0);
+
+When the raw logical script is `Pangaea` and `gDLL->getTransferredMap()` is true,
+`getMapScriptName()` returns `Pangaea_t`. The comparison is therefore deterministically:
+
+    L"Pangaea_t" == L"Pangaea"  ->  false
+
+and the cached logical classifier is wrong.
+
+TRANSFER-PATH ACTIVATION IS ESTABLISHED INTERNALLY
+--------------------------------------------------
+This is not based only on guessing when the opaque EXE toggles `getTransferredMap()`.
+
+Whole-current-source search finds `refreshCustomMapOptions()` private and called only by
+`setMapScriptName()`. Its inherited implementation specifically routes through the
+transfer-aware getter when checking and invoking the Python map module. Thus the native
+purpose of the `_t` branch is to make this setter/refresh lifecycle work for transferred
+Python maps.
+
+Current SAS `PrivateMaps/Pangaea.py` is a concrete transferred-map candidate and exposes:
+
+    getNumCustomMapOptions()       -> 3
+    getNumHiddenCustomMapOptions() -> 2
+
+so the transfer-aware custom-option refresh is meaningful for the exact script whose
+logical classifier is broken by the following line.
+
+CURRENT CONSUMERS -- THE FALSE CACHE IS GAMEPLAY/SETUP STATE
+------------------------------------------------------------
+`m_bPangaea` is not decorative metadata. Current SAS has three independent consumers.
+
+1. `StartingPositionIteration.cpp`
+
+    bool const bIgnoreScript =
+        (GC.getInitCore().isPangaea() && !GC.getGame().isTeamGame());
+
+The comment explains the contract: Pangaea overrides `assignStartingPlots`, but its
+special behavior is relevant only for team games. In an ordinary non-team Pangaea game,
+AdvC's fair-start iteration is therefore allowed to ignore the script's claimed start.
+
+If the transferred Pangaea cache is false, a start reported as script-selected is no
+longer ignored; the iterator can bail/revert instead of following the intended Pangaea
+special case.
+
+2. `CitySiteEvaluator.cpp`
+
+    if (GC.getInitCore().isPangaea())
+        rMult /= 2;
+
+Pangaea deliberately halves the production multiplier applied to the coastal/naval
+component of city-site value. A false cache omits that halving and changes AI city-site
+scoring.
+
+3. `CvPlayerAI.cpp::AI_neededExplorers_bulk`
+
+    if (GC.getInitCore().isPangaea())
+        iNeeded = (iNeeded + 1) / 2;
+
+A false cache omits Pangaea's reduction in needed water explorers and can change AI
+naval-exploration demand.
+
+The setup and gameplay consumers therefore make the wrong cache materially observable;
+this is not merely a displayed map name ending in `_t`.
+
+HISTORY / LINEAGE
+-----------------
+The transfer-aware `getMapScriptName()` behavior is inherited from the Firaxis/K-Mod
+line. Supplied K-Mod and Civ4CE both retain the same `_t` execution-name adapter and use
+it from custom-map-option refresh.
+
+AdvC practical 1276 already introduced a logical Pangaea check directly against
+`getMapScriptName()`, so the logical-name / transferred-filename mismatch predates the
+cache.
+
+Practical 2280 added the Pangaea special case to Starting Position Iteration.
+
+Practical 2284 then centralized Pangaea identity into `CvInitCore::m_bPangaea` and
+introduced the current `updatePangaea()` implementation. The same practical:
+- resets the cache to false;
+- updates it after `setMapScriptName`;
+- serializes it in `CvInitCore`;
+- changes consumers from direct map-name comparison to `isPangaea()`.
+
+Thus practical 2284 preserves and centralizes the older bad comparison instead of
+separating logical identity from the transferred execution alias. Current Base AdvC
+1.14 still has the same `updatePangaea()` body.
+
+SOURCE-COPY SUPPORTING HAZARD -- DO NOT OVERCLAIM ACTIVATION YET
+----------------------------------------------------------------
+`resetGame(CvInitCore* pSource, ...)` also copies the persisted map name through the
+execution getter:
+
+    setMapScriptName(pSource->getMapScriptName());
+
+If this copy occurs while `getTransferredMap()` is true, a source raw name `Pangaea`
+can be stored in the destination as `Pangaea_t`; the destination getter can then append
+another `_t` and expose `Pangaea_t_t` during its immediate refresh.
+
+The local source proves that transformation algebraically, but the exact opaque-EXE
+ordering of `resetGame(pSource)` versus the transfer flag has not been established.
+Keep this as supporting evidence for the same raw-name/execution-alias design hazard,
+not as a second independently claimed live consequence of F656.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for `Pangaea`, `transferred map`, `MAP_TRANSFER_EXT`, map-script
+name/path, `isPangaea` and `updatePangaea` find no confirmed owner for this transferred-
+Pangaea classification root.
+
+Related findings are independent:
+- F634 concerns stale cached lake state during native normalization.
+- F636 concerns Ice-insensitive area topology in city-bearing WB scenarios.
+- KI#46 is SAS's deliberate current-format-only save-reader policy.
+- KI#209 and F655 concern random civ/leader setup bookkeeping.
+
+REPAIR BOUNDARY
+---------------
+The narrow semantic repair is to classify Pangaea from the raw logical identity rather
+than from the transfer-aware execution filename, e.g. inside `updatePangaea()`:
+
+    m_bPangaea = (m_szMapScriptName.compare(L"Pangaea") == 0);
+
+That preserves the `_t` getter exactly where it is needed for Python execution while
+keeping logical map identity independent of file transfer.
+
+A broader cleanup may also make `resetGame(pSource,...)` copy the raw member rather than
+`pSource->getMapScriptName()`, because the current writer already establishes raw
+`m_szMapScriptName` as the persisted representation. Do not make that broader change
+without validating the EXE copy lifecycle first.
+
+VALIDATION TARGETS
+------------------
+1. Local/non-transferred Pangaea: `isPangaea()` remains true.
+2. Transferred Pangaea: Python lookup still targets `Pangaea_t`, while `isPangaea()` is
+   true.
+3. Transferred non-Pangaea Python map: classifier remains false and `_t` lookup remains
+   intact.
+4. WB maps: raw WB filename detection remains unchanged; no transfer suffix is added.
+5. Pangaea's 3 custom options / 2 hidden options remain available on the transfer path.
+6. Non-team Pangaea continues through the intended SPI ignore-script special case.
+7. Pangaea coastal city-site production weighting still receives its /2 multiplier.
+8. Pangaea water-explorer need still receives `(iNeeded + 1) / 2`.
+9. Save/write/load preserves the logical Pangaea flag and raw map-script identity.
+10. If the source-copy cleanup is attempted separately, explicitly test for one and only
+    one `_t` suffix through loaded-core / live-core transfer copies.
+
+POST-F656 LEDGER / EXACT RESUME
+-------------------------------
+Queue 026 `CvGameCoreDLL/CvInitCore.cpp` -- OPEN.
+F655 / provisional KI#977 -- CONFIRMED.
+F656 / provisional KI#978 -- CONFIRMED.
+F657 / provisional KI#979 -- UNUSED.
+
+Exact continuation:
+C031-WIP512 physical -> Queue026 OPEN -> exclude F655/F656 plus KI#209 and all prior
+setup/map owners -> continue Advanced Start/start-point scaling, slot/netID/claim/ready,
+force-control and unsaved read-preservation, game-type visibility/load-state transitions,
+WB state/source-copy symmetry beyond the F656 raw-name hazard, `m_bCivLeaderSetupKnown`
+bookkeeping, full current read/write pairing and remaining CvInitCore history strata ->
+whole-album dedup -> either promote distinct F657 or close Queue026 cleanly -> freeze the
+next physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP513 -- QUEUE 026 CvInitCore.cpp -- CLOSED / F657 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP512.
+- Queue 026 `CvGameCoreDLL/CvInitCore.cpp` is CLOSED.
+- Queue-026 confirmed roots: F655/KI#977 and F656/KI#978.
+- F657 / provisional KI#979 remains intentionally UNUSED.
+- Files complete: 59 / 169.
+- No gameplay source was modified.
+- The stronger-WIP priority reloop is already complete; ordinary numeric queue order
+  therefore resumes with Queue 027 `CvGameCoreDLL/CvInfo_RandomEvent.cpp`
+  (2,099 queued lines).
+
+FINAL POST-F656 SATURATION PASS
+-------------------------------
+The remaining CvInitCore surface was challenged mechanically and historically after
+F656 rather than closed merely because the obvious setup paths had been exhausted.
+The following candidate families were resolved without consuming F657.
+
+1. Advanced Start point initialization
+   - `resetAdvancedStartPoints()` starts from the selected era's configured points and
+     applies `WorldInfo::getAdvancedStartPointsMod()` before storing the result;
+   - every current SAS world size, including the added SAS24/SAS32/SAS40/SAS48 sizes,
+     configures that modifier as 100, matching the source comment that the world-size
+     effect has been removed through XML;
+   - the old game-speed adjustment is deliberately disabled and start-cost scaling is
+     handled elsewhere under advc.250c;
+   - `getAdvancedStartMinPoints()` correctly skips unit classes with `NO_UNIT` before
+     testing the default settler/founder unit, carrying practical 4333's mod-support
+     fix. No current mismatch survives here.
+
+2. Game-type visibility and save/load transitions
+   - `read()` deliberately reads the serialized `..._LOAD` game type directly rather
+     than routing it through `setType()`; practical 1944 introduced that representation
+     so within-game loading can reset players safely;
+   - the apparently skipped `setType()` side effects do not yield a distinct current
+     defect on the demonstrated copy paths: `resetGame(pSource,bSaveGameType)` compares
+     the broader `getGameMultiplayer()` family (network MP + Pitboss + PBEM + Hotseat),
+     and when the family changes it calls `setType()` before copying game options;
+   - same-family loads already have the corresponding option-visibility family, while
+     `read()` explicitly refreshes every initialized player's human/team state at the
+     end;
+   - scenario identity after game start is intentionally no longer represented by
+     `CvInitCore::getScenario()`; the source comment directs runtime consumers to
+     `CvGame::isScenario()` instead. No independent F657 was established.
+
+3. Force controls and the `bBeforeRead` preservation boundary
+   - normal `resetGame()` does reset `m_abForceControls`; only `resetGame(true)` returns
+     before the unsaved-session fields are cleared;
+   - ForceControls are intentionally marked unsaved in CvInitCore and are setup-screen
+     controls (speed, handicap, options, victories, max turns, city elimination and
+     Advanced Start), not persistent game rules;
+   - the Python WB descriptor can write/read textual `ForceControl=` tokens, but its
+     current `CvGameDesc.apply()` does not itself apply that tuple; native setup/EXE
+     handling therefore cannot be reconstructed farther from the supplied source;
+   - losing or retaining ForceControl UI constraints after a save has already become a
+     running game is not a demonstrated gameplay-state contradiction. Keep this as an
+     opaque setup-lifecycle note, not F657.
+
+4. Unsaved state preserved across `read()`
+   - sync/map seed members, active player/team, mode, network IDs, ready flags and
+     Python/XML checks are intentionally outside CvInitCore's save stream;
+   - actual game RNG state is serialized by `CvGame` itself, so a preserved InitCore
+     seed during a load is not evidence that the loaded game resumes from the wrong RNG
+     state;
+   - `resetPlayer(true)` preserves network/session data while clearing saved player
+     initialization fields and resetting previously-live `CvPlayer` objects as required
+     by advc.001p/advc.706. No distinct stale gameplay member was found.
+
+5. Network ID compression
+   - Firaxis/K-Mod/Civ4CE store `m_aiNetID` as `int`; AdvC's enum-map rewrite eventually
+     changed it to `ArrayEnumMap<PlayerTypes,PlayerTypes>` and `setNetID` explicitly casts
+     the EXE's `int getAssignedNetworkID(...)` result to `PlayerTypes`;
+   - this means values outside the single-byte PlayerTypes domain would be truncated,
+     and the current 48-civ DLL constrains player IDs themselves to that domain;
+   - local history shows AdvC deliberately relies on `-1`/`0` in SP, Hotseat and R&F,
+     while network games ask the EXE for the assigned ID. The supplied sources do not
+     establish an EXE network-ID value outside the PlayerTypes range, nor a current
+     failing connection fixture;
+   - because the album requires a demonstrated live contract rather than an interface-
+     width suspicion, this remains a targeted robustness/network test candidate and
+     does not consume F657.
+
+6. Slot / claim / ready lifecycle
+   - `getAvailableSlot()` first claims unassigned OPEN slots and only then unassigned
+     COMPUTER slots when Take Over AI is enabled;
+   - `closeInactiveSlots()` and `reopenInactiveSlots()` preserve the documented
+     Pitboss/Hotseat/PBEM distinctions, and the host-only synchronization caveat is
+     explicit;
+   - save read converts serialized `SLOTCLAIM_ASSIGNED` to `SLOTCLAIM_RESERVED`, avoiding
+     treating the prior process's live connection claim as a current assignment;
+   - slot-status changes refresh `CvPlayer::updateHuman()` when player statics exist.
+     No independent ownership/claim inversion survived.
+
+7. Player reassignment and active-team state
+   - current SAS already fixes KI#209, the practical-2532 copy/paste error that saved the
+     target's random-leader state from its random-civilization flag;
+   - all saved and unsaved slot data are swapped in `reassignPlayer`, including the
+     compressed net ID, ready flag and compatibility checks;
+   - practical 4151's network-coop fix is present: `setTeam()` refreshes both the player
+     team type and cached active team, while `setActivePlayer()` routes through
+     `updateActiveTeam()`;
+   - no additional reassignment root distinct from KI#209 emerged.
+
+8. Random civ/leader setup bookkeeping beyond F655
+   - `externalRNGCall` marks setup-known state, detects the EXE's 10000-sided civ/leader
+     selection calls only before any player has ever been alive, and records random-civ
+     / random-leader provenance;
+   - those provenance maps and `m_bCivLeaderSetupKnown` are copied by InitCore-to-InitCore
+     resets and paired in the current save stream;
+   - `wasLeaderRandomlyChosen()` intentionally treats a random civilization as implying
+     a random leader when Unrestricted Leaders is off, which is necessary for the joint
+     civ/leader re-randomizer rather than contradictory bookkeeping;
+   - the only concrete surviving algorithmic defect found in that routine is F655's
+     missing post-assignment `abLeaderTaken` update. No second randomization root was
+     forced into F657.
+
+9. WB/map source-copy symmetry after F656
+   - raw `m_szMapScriptName` is the serialized logical name; `getMapScriptName()` may add
+     `_t` only as the transferred-Python execution alias;
+   - F656 owns the demonstrated logical-Pangaea misclassification caused by using that
+     decorated getter in `updatePangaea()`;
+   - `resetGame(pSource)` also copies through the decorated getter, so a double-suffix
+     algebra remains possible if that copy occurs while the EXE transfer flag is set,
+     but the supplied source does not establish that opaque ordering. It remains
+     supporting breadth of F656, not an independently promoted F657.
+
+10. Dynamic arrays, enum/index access and string setters
+    - custom map options and victories are freed/reset before replacement; live internal
+      callers pass distinct source storage or local temporary arrays;
+    - getters guard externally indexable custom-option/victory/string arrays or use
+      EnumMap range machinery; remaining malformed-save counts are untrusted-file
+      hardening rather than normal gameplay bugs;
+    - string-to-enum setters leave state unchanged on unknown XML type strings, an
+      inherited setup/API behavior with no current shipped invalid-string fixture;
+    - the long-name scenario crash guard is diagnostic-only and intentionally does not
+      alter release behavior.
+
+11. Current read/write pairing
+    - the current-format writer and reader pair the same saved fields in the same order:
+      load game type, descriptive strings/raw map name/Pangaea/WB flag, standard map
+      parameters, custom options, victories, game and MP options, stat reporting, turn
+      controls, elimination/Advanced Start, player strings/flags/civ/leader/team/
+      handicap/color/art style, random-choice provenance, setup-known flag, slot status/
+      claims, playable and minor flags;
+    - intentionally unsaved session members remain on both sides of the stream boundary;
+    - SAS's current-format-only reader policy and removed historical `uiFlag` branches
+      are already a deliberate project compatibility decision, not a new Queue-026
+      finding.
+
+12. History / comparison closure
+    - current SAS and supplied Base AdvC 1.14 remain executable-semantically aligned for
+      common CvInitCore behavior except deliberate SAS reset/read/current-format changes
+      already reconciled in this audit;
+    - the important surviving history strata were checked: practical 1325/1944
+      within-game-load fixes, 1832 48-civ WB compatibility, 2284 Pangaea cache, 2300+
+      enum-map conversion, 2531/2532/2539 reset/random-selection changes, 3183/3392 enum
+      rewrites, 3556 long-name warning, 3579 True Starts integration, 4151 network-coop
+      fix, 4288 QuickStart fix and 4333 unique-unit Advanced Start support;
+    - K-Mod and Civ4CE are identical to each other in CvInitCore and preserve the older
+      int-netID / transferred-map ancestry. No later external oracle exposed another
+      current-live root beyond F655/F656.
+
+QUEUE-026 ROOT LEDGER
+---------------------
+F655 / KI#977
+    `reRandomizeCivsAndLeaders()` filters against `abLeaderTaken` but never marks a
+    newly assigned random leader as taken, allowing duplicate leaders when AdvC's
+    enhanced civ-selection weighting is enabled and enough unique leaders exist.
+
+F656 / KI#978
+    transferred Python map filenames use `_t` as an execution alias, but AdvC's
+    `updatePangaea()` classifies through that decorated getter; transferred Pangaea
+    therefore caches false and changes SPI/AI Pangaea-specific behavior.
+
+F657 / KI#979
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 026 is closed for this audit pass. Remaining concerns are opaque EXE lifecycle
+questions, API/input hardening, configuration/state that is intentionally unsaved, or
+supporting breadth of F656. None clears the album's independent current-live threshold
+for F657.
+
+EXACT CONTINUATION
+------------------
+C031-WIP513 physical -> Queue026 CLOSED -> F655-F656 confirmed -> F657/KI#979 UNUSED ->
+open ordinary Queue027 `CvGameCoreDLL/CvInfo_RandomEvent.cpp` (2,099 lines) -> establish
+current SAS vs Base AdvC 1.14 / K-Mod / Civ4CE provenance and caller/data map -> audit
+random-event XML loading, event/trigger field defaults, array ownership, enum/index
+contracts, probability/value semantics and all file-history semantic strata -> whole-
+album dedup before numbering -> freeze the next physical WIP at the next settled
+boundary whether F657 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP514 -- QUEUE 027 CvInfo_RandomEvent.cpp -- CLOSED / F657 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP513.
+- Queue 027 `CvGameCoreDLL/CvInfo_RandomEvent.cpp` is CLOSED.
+- Queue-027 confirmed roots: none.
+- F657 / provisional KI#979 remains intentionally UNUSED.
+- Files complete: 60 / 169.
+- No gameplay source was modified.
+- Ordinary numeric queue order advances to Queue 028
+  `CvGameCoreDLL/CvXMLLoadUtilitySet.cpp` (2,095 queued lines).
+
+BASELINE / PROVENANCE
+---------------------
+1. Current SAS vs supplied Base AdvC 1.14
+   - Current `CvInfo_RandomEvent.cpp` is executable-semantically identical to supplied
+     Base AdvC 1.14 after comments/formatting are removed. The current SAS additions in
+     the associated header are Sevopedia/Python text-return wrappers, not event-state
+     semantics.
+   - Therefore there is no missed later Base-AdvC-1.14 random-event-info repair hiding
+     ahead of SAS in this file.
+
+2. K-Mod / Civ4CE ancestry
+   - K-Mod 1.46 and supplied Civ4CE/BtS are executable-identical to each other for the
+     inherited CvEventInfo/CvEventTriggerInfo implementations inspected here.
+   - The common current-vs-K-Mod behavioral deltas are confined to AdvC XML-default
+     loading helpers, defensive null-aware accessors, the advc.003t enum-map replacement
+     of the four BuildingExtra* tuple vectors, the moved/refactored
+     `isPlotEventTrigger()` helper, disabled XML-cache implementation details and later
+     assertion/type hygiene.
+   - No current semantic difference outside those known strata survived the pass.
+
+CURRENT-DATA FIXTURE
+--------------------
+The supplied current SAS XML was parsed directly rather than reasoning from schema
+intent alone:
+
+- 339 EventInfo entries in `Assets/XML/Events/CIV4EventInfos.xml`;
+- 197 EventTriggerInfo entries in `Assets/XML/Events/CIV4EventTriggerInfos.xml`;
+- all 339 EventInfos contain the standard array/list container tags used by this loader,
+  including UnitCombatPromotions, UnitClassPromotions, TechFlavors, PlotExtraYields,
+  FreeSpecialistCounts, AdditionalEvents, EventTimes and ClearEvents;
+- 59 triggers have `iNumPlotsRequired > 0`.
+
+The current XML and live consumers were used below as the acceptance oracle for parser
+and default-value concerns.
+
+FINAL QUEUE-027 SATURATION PASS
+-------------------------------
+
+1. Promotion-array allocation / absent-list concern -- CLOSED
+   Initial inspection of `CvEventInfo::read()` looked hazardous because it allocates
+   `m_piUnitCombatPromotions` / `m_piUnitClassPromotions`, then only populates them under
+   `if (pszPromotions != NULL)`.
+
+   The exact overload resolves the concern. `CvXMLLoadUtility::SetVariableListTagPair`
+   for `CvString**` calls `InitStringList` first and fills the entire list with the
+   supplied default. These two calls explicitly pass `"NONE"`; only the empty-string
+   default is eligible for the advc.003t all-default deallocation optimization.
+   Therefore `pszPromotions` remains allocated and every slot is converted through
+   `FindInInfoClass("NONE")` to `NO_PROMOTION` when no non-default entry exists.
+
+   The primitive array getters likewise return 0/NO_PROMOTION when their compact
+   all-default arrays are NULL. No uninitialized live read survives.
+
+2. Plot-trigger classification -- CLOSED against all current producers
+   The moved `CvEventTriggerInfo::isPlotEventTrigger()` initially looked as though it
+   could reject Python-selected plot triggers with `iNumPlotsRequired=1`. That suspicion
+   came from probing generic field names rather than the inherited XML contract.
+
+   The actual fields/defaults reconcile all current data:
+   - `m_iPlotType` is loaded from XML `iPlotType`, not `PlotType`;
+   - constructor default 0 is `PLOT_PEAK`, while `NO_PLOT` is -1;
+   - Hiyo Silver explicitly uses plot type 1 (`PLOT_HILLS`);
+   - Dustbowl continuation explicitly uses -1 but also sets XML
+     `bPrereqEventPlot=1`, which is the inherited location-prerequisite flag stored in
+     member `m_bPrereqEventCity` and accepted by the predicate when `!isPickCity()`;
+   - Holy Mountain and Volcano inherit the peak default, matching their intended
+     location shape.
+
+   A mechanical evaluation of the current 59 triggers with `iNumPlotsRequired > 0`
+   finds zero for which `isPlotEventTrigger()` returns false. The helper itself is the
+   same inherited predicate that practical 1948 moved from CvGameCoreUtils onto the
+   info class. No location-selection regression was established.
+
+3. `bPrereqEventCity` vs XML `bPrereqEventPlot` naming -- EXISTING CONTROL
+   The member-name/tag-name mismatch is inherited Firaxis semantics, not a new parser
+   typo. Existing album work already challenged it while auditing city/plot random-event
+   history: pick-city consumers use the location-sensitive prerequisite as city-local
+   event history, while plot consumers compare stored prerequisite coordinates.
+   Do not duplicate that control as F657.
+
+4. XML cache read/write surface -- COMPILED OUT
+   The large `#if ENABLE_XML_FILE_CACHE` read/write blocks are not current runtime
+   behavior: `CvInfo_Base.h` defines `ENABLE_XML_FILE_CACHE 0` under advc.003i.
+   Their legacy serialization symmetry was still spot-checked, but cache-only defects
+   cannot clear the album's current-live threshold from this configuration.
+
+5. advc.xmldefault ID loading -- SAFE in current file
+   Practical 2222 replaced repeated temporary-string + `FindInInfoClass` sequences with
+   `SetInfoIDFromChildXmlVal` for EventInfo and EventTriggerInfo identity fields. The
+   destination members are initialized to their correct NO_* defaults where absence
+   needs a sentinel, and current XML uses the expected tags. No omitted-tag path was
+   found that converts a meaningful NO_* default into a valid enum accidentally.
+
+6. advc.003t BuildingExtra* enum-map conversion -- SAFE for current data
+   Practical 3183 replaced the inherited tuple/vector representation with compact
+   enum maps:
+   - BuildingExtraYield: BuildingClass x Yield -> short change;
+   - BuildingExtraCommerce: BuildingClass x Commerce -> short change;
+   - BuildingExtraHappy / BuildingExtraHealth: BuildingClass -> char change.
+
+   Two superficially suspicious details were resolved:
+   - the loader calls `SetVariableListTagRate(..., "BuildingExtraYield")` and
+     `...Commerce` in singular form, but `XMLTagPairRateIterator` deliberately appends
+     `s` for the outer XML container and then seeks singular child entries. This exactly
+     matches unchanged Firaxis `<BuildingExtraYields><BuildingExtraYield>...` and
+     `<BuildingExtraCommerces><BuildingExtraCommerce>...` structure;
+   - current values fit comfortably within the compact representations. Current ranges
+     are +1..+5 for extra yields, +1..+25 for extra commerce, +1..+3 happiness and +1
+     health.
+
+   A per-EventInfo duplicate-key census found no duplicate BuildingClass/Yield,
+   BuildingClass/Commerce or BuildingClass Happy/Health keys whose old first-match vector
+   semantics could differ from compact map insertion. No current representation-loss
+   root survives.
+
+7. Compact all-default array ownership -- SAFE
+   AdvC's generic primitive `SetVariableListTagPair` may delete all-zero arrays as an
+   optimization. Every corresponding current getter in CvEventInfo is null-aware and
+   maps NULL back to the semantic default (0 or NO_PROMOTION). Destruction uses
+   SAFE_DELETE_ARRAY throughout. The 339-entry current data census did not expose an
+   accessor that assumes a compacted all-default array must remain allocated.
+
+8. Trigger text / era vector pairing -- SAFE on loader and current XML
+   `getTextEra(i)` asserts against `m_aszText.size()` rather than independently against
+   `m_aiTextEra.size()`, but the XML loader pushes one era for every accepted TriggerText
+   and the disabled cache reader likewise reads exactly the text count into the era
+   vector. `getNumTexts()` explicitly asserts equality. Current XML did not produce an
+   unpaired text/era sequence. This remains internal-invariant style, not F657.
+
+9. Constructor defaults and plot type 0 -- INHERITED DATA CONTRACT
+   `CvEventTriggerInfo` initializes `m_iPlotType(0)`, which means PLOT_PEAK rather than
+   NO_PLOT. This is inherited unchanged from Firaxis/K-Mod/Civ4CE and is used by shipped
+   triggers that omit iPlotType (e.g. peak-shaped Holy Mountain/Volcano cases). Changing
+   it to NO_PLOT as generic enum style would silently alter existing event behavior.
+   No bug is assigned merely from the unusual default.
+
+10. Existing random-event roots are in consumers, not this parser
+    Whole-album dedup is especially important here. Prior confirmed findings already own
+    multiple live random-event defects downstream of these correctly loaded fields,
+    including:
+    - F353: AI_eventValue values BonusRevealed through unrelated BonusType;
+    - F354: non-city BuildingExtraYield/Commerce changes are collected but never valued;
+    - F355: BuildingExtraHappy/Health valuation loses BuildingClass identity;
+    - later player/city findings cover event trigger revalidation, team/global scope and
+      ClearEvents city-history behavior.
+
+    Those findings are evidence that the EventInfo fields are live; they do not imply a
+    second loading root here. No parser/default/representation defect was found that
+    explains or duplicates them.
+
+11. History closure
+    The small semantic history touching this split file was exhausted:
+    - practical 1644 split CvInfos;
+    - practical 1948 moved/refactored the plot-trigger predicate without changing its
+      inherited logic;
+    - practical 2222/2236 introduced XML-default-safe ID readers;
+    - practical 3183/3392 converted tuple/vector data to enum maps;
+    - later edits are merge/type/organization/formatting strata.
+    No later Base AdvC 1.14 repair is missing from SAS, and no K-Mod/Civ4CE oracle
+    contradicts current behavior on the audited live fields.
+
+QUEUE-027 ROOT LEDGER
+---------------------
+F657 / KI#979
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 027 is closed for this audit pass. The live parser/default/ownership and compact
+representation contracts reconcile with current XML and current consumers. Remaining
+oddities are inherited naming/default conventions, disabled XML-cache code, defensive
+assertion opportunities, or defects already owned by downstream player/city/AI findings.
+None clears the threshold for a distinct F657.
+
+EXACT CONTINUATION
+------------------
+C031-WIP514 physical -> Queue027 CLOSED -> F657/KI#979 UNUSED -> open ordinary Queue028
+`CvGameCoreDLL/CvXMLLoadUtilitySet.cpp` (2,095 lines) -> establish current SAS vs Base
+AdvC 1.14 / K-Mod / Civ4CE provenance -> prioritize shared XML loader ownership,
+parser-level restoration, sibling iteration, list allocation/default compaction,
+enum/index validation, modular/default inheritance, progress/cache gates and current
+XML producers -> dedup against all prior parser/info findings before numbering ->
+freeze the next physical WIP at the next settled boundary whether F657 is consumed or
+remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+
+===============================================================================
+C031-WIP515 -- QUEUE 028 CvXMLLoadUtilitySet.cpp -- F657 CONFIRMED / OPEN
+===============================================================================
+
+HANDOFF STATE
+-------------
+- Parent physical stone: C031-WIP514.
+- Queue 028 `CvGameCoreDLL/CvXMLLoadUtilitySet.cpp` remains OPEN.
+- New confirmed root: F657 / provisional KI#979.
+- Next unused root: F658 / provisional KI#980.
+- Files complete remain: 60 / 169.
+- No gameplay source was modified.
+
+F657 / provisional KI#979
+-------------------------
+TITLE
+    AdvC's enum-map XML helper allocates temporary commerce arrays with `new[]`
+    but destroys them with scalar `delete`; current BuildingInfo loading executes
+    this mismatched deallocation 51 times on shipped CommerceChangeOriginalOwners.
+
+STATUS
+    CONFIRMED current-live inherited AdvC C++ lifetime / allocator-pairing defect.
+    The persistent building data are copied into the enum map before the temporary is
+    freed, so the deterministic semantic payload is normally already captured; the
+    defect is the invalid deallocation itself. In standard C++ the new[]/delete mismatch
+    is undefined behavior. In AdvC DEBUG builds, the project's own global allocation
+    shims additionally route the two forms through different Civ4 DLL allocation APIs,
+    making the pairing error concrete rather than stylistic.
+
+ROOT CONTRACT -- ARRAY ALLOCATION, SCALAR DELETION
+---------------------------------------------------
+Current `CvXMLLoadUtility.h` implements the temporary-array wrapper:
+
+    template<class InfoMap>
+    void SetVariableListPerCommerce(InfoMap& kMap, TCHAR const* szRootTagName)
+    {
+        ...
+        bool* pbTmp = NULL;
+        int iSet = SetCommerceArray(&pbTmp);
+        if (pbTmp != NULL)
+        {
+            ...
+            kMap.insert(eLoopCommerce, pbTmp[eLoopCommerce]);
+            ...
+            delete pbTmp;
+        }
+    }
+
+But `SetCommerceArray` -> `SetCommerce` allocates through `InitList`:
+
+    InitList(ppbCommerce, NUM_COMMERCE_TYPES);
+
+and `InitList` is:
+
+    *ppList = new T[iListLen];
+
+For this instantiation T is bool. Therefore the allocation expression is `new bool[...]`
+and the only valid matching delete-expression is `delete[] pbTmp`. `delete pbTmp` is a
+new[]/delete mismatch and has undefined behavior under the C++ object-allocation rules.
+
+The sibling `SetVariableListPerYield` helper contains the same typo:
+
+    int* piTmp = NULL;
+    ...
+    delete piTmp;
+
+but current source has no caller of `SetVariableListPerYield`. Do not split the dormant
+int variant into a second finding; it is the same helper-family typo and should be fixed
+at the same time with `delete[]`.
+
+CURRENT SHIPPED ACTIVATION -- 51 ORDINARY BUILDING READS
+--------------------------------------------------------
+Current `CvBuildingInfo::read()` invokes the commerce helper twice for every building:
+
+    pXML->SetVariableListPerCommerce(
+            CommerceFlexible(), "CommerceFlexibles");
+    pXML->SetVariableListPerCommerce(
+            CommerceChangeOriginalOwner(), "CommerceChangeOriginalOwners");
+
+The first container is empty in current CIV4BuildingInfos.xml and therefore normally does
+not allocate a temporary. The second is live and common.
+
+Namespace-aware census of current `Assets/XML/Buildings/CIV4BuildingInfos.xml`:
+
+    BuildingInfo entries                         = 166
+    CommerceFlexibles containers present         = 166
+    non-empty CommerceFlexibles                   =   0
+    CommerceChangeOriginalOwners present          = 166
+    non-empty CommerceChangeOriginalOwners        =  51
+    non-empty entries containing a true value     =  51
+
+Representative current data:
+
+    BUILDING_ACADEMY
+        CommerceChangeOriginalOwners = [0, 0, 1]
+
+    BUILDING_GREAT_LIBRARY
+        CommerceChangeOriginalOwners = [0, 0, 1]
+
+and the same pattern is used by shrines, wonders and other buildings. This is the same
+51-entry current producer population already independently established in the album for
+F477's historical-PlayerTypes alias root; F477 concerns the stored owner value after
+capture/recycled-player reuse, not XML allocation lifetime.
+
+`LoadPreMenuGlobals()` normally loads all BuildingInfos on application startup:
+
+    LoadGlobalClassInfo(GC.m_paBuildingInfo, "CIV4BuildingInfos", ...);
+
+so these 51 mismatched delete-expressions are reached during ordinary current SAS XML
+initialization, before a game needs to be played. This is not modular-XML or malformed-
+XML robustness only.
+
+DEBUG-BUILD ALLOCATOR ORACLE -- THE FORMS REALLY ROUTE DIFFERENTLY
+------------------------------------------------------------------
+Queue 096 already established the current AdvC/SAS debug allocator contract, and direct
+source inspection reconfirms it in `CvMemoryManager.cpp`:
+
+    operator new[](size_t size)
+        -> gDLL->newMemArray(...)
+
+    operator delete(void* p)
+        -> gDLL->delMem(...)
+
+    operator delete[](void* p)
+        -> gDLL->delMemArray(...)
+
+Therefore a DEBUG build taking the current helper path allocates through the array API
+`newMemArray` and then sends that pointer to the scalar deallocator `delMem`. The correct
+pair is `newMemArray` / `delMemArray`.
+
+Release builds compile these custom global allocator shims out, so the exact practical
+manifestation depends on the Visual C++ CRT implementation; for trivial bool arrays it
+may appear benign on a particular allocator. That does not make the source valid: the
+C++ delete-expression is mismatched and the program has undefined behavior at each live
+deallocation. No stronger claim about a deterministic Release-build crash is required.
+
+ANCESTRY / INTRODUCTION BOUNDARY
+--------------------------------
+Base AdvC 1.14 retains the exact same scalar deletes in both helpers.
+
+K-Mod 1.46 and supplied Civ4CE/BtS do not have these temporary enum-map wrappers. Their
+inherited `CvBuildingInfo::read` loads `CommerceChangeOriginalOwners` directly into the
+persistent bool array:
+
+    pXML->SetCommerce(&m_pbCommerceChangeOriginalOwner);
+
+and later destroys that persistent array through `SAFE_DELETE_ARRAY`. There is no
+corresponding temporary new[]/scalar-delete pair.
+
+The current helpers are marked `advc.003t` and arise from AdvC practical 3183,
+`59a3e3190061b421b117b58d047aa1196259f5fa` (2021-08-17), "Rewrite of enum map classes",
+which replaced many persistent XML arrays with compact enum maps and introduced the
+new temporary-array conversion helpers. Current SAS inherited the typo unchanged.
+
+WHOLE-ALBUM DEDUP
+-----------------
+- F477 owns `CommerceChangeOriginalOwners` historical PlayerTypes aliasing after a dead
+  player slot is recycled into a colony. It does not concern XML parsing or temporary
+  storage lifetime.
+- Queue 096 `CvMemoryManager.cpp` closed without a root and documented the distinct
+  newMem/newMemArray and delMem/delMemArray debug routes. F657 uses that as an allocator
+  oracle but is a separate live caller bug.
+- Prior parser/info findings concern wrong fields, compact-map semantics, default/null
+  handling or downstream random-event consumers. No prior root owns this mismatched
+  delete-expression.
+
+REPAIR BOUNDARY
+---------------
+Minimal C++03-safe repair in `CvXMLLoadUtility.h`:
+
+    delete[] pbTmp;
+
+and, for the same latent typo in the unused sibling helper:
+
+    delete[] piTmp;
+
+No XML schema, map encoding, BuildingInfo semantics or serialized data need change.
+
+QUEUE-028 CONTINUATION
+----------------------
+F657 is frozen. Continue Queue 028 under F658 / provisional KI#980 unused.
+
+Highest-value remaining surfaces:
+- `SetGlobalClassInfo` default-object lifetime across monolithic + modular loads;
+- pass-2 type-index lookup and replacement bounds;
+- `LoadDiplomacyInfo` modular ordering / override identity;
+- parser restoration in SetYields / SetCommerce / FeatureStruct / ImprovementBonuses;
+- XMLTagPairIterator and XMLTagPairRateIterator sibling/depth contracts;
+- invalid enum/index error paths, but promote only if current shipped data activates them;
+- SAS-specific early Vote/Event loading and static MAX_NUM_LANGUAGES change (currently
+  reconciled as safe, retain as negative controls unless later evidence contradicts it);
+- whole-album dedup before consuming F658.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP516 -- QUEUE 028 CvXMLLoadUtilitySet.cpp -- CLOSED / QUEUE 029 OPEN
+===============================================================================
+
+HANDOFF STATE
+-------------
+- Parent physical stone: C031-WIP515.
+- Queue 028 `CvGameCoreDLL/CvXMLLoadUtilitySet.cpp`: CLOSED.
+- Confirmed Queue-028 root: F657 / provisional KI#979.
+- F658 / provisional KI#980 remains UNUSED.
+- Files complete: 61 / 169.
+- Ordinary Queue 029 `CvGameCoreDLL/CyEnumsInterface.cpp` is now OPEN.
+- The stale top-of-album progress/queue lines inherited through the recent append-only WIPs
+  have been reconciled in this physical copy through Queue 029, so the header again agrees
+  with the durable tail state.
+- No gameplay source was modified.
+
+QUEUE-028 FINAL SATURATION / NEGATIVE CONTROLS
+----------------------------------------------
+1. Current SAS-specific Vote/Event preload moves -- RECONCILED
+   - VoteInfo is now loaded in PreMenu immediately after CivicInfo. `CvVoteInfo::read()`
+     resolves ForceCivics and VoteSource data whose producers are already loaded there.
+   - EventInfo/EventTriggerInfo are now loaded at the end of the PreMenu info block. Their
+     current readers resolve yields, commerce, terrain/features, units/classes, buildings,
+     civs/leaders, religions/corporations and other info families that are already loaded by
+     that point. EventInfo pass 2 still runs only after the full EventInfo pass-1 population.
+   - The move is therefore not itself a demonstrated dependency-order regression.
+
+2. `LoadOptionalGlobals()` unconditional `DestroyFXml()` after the eager-event move --
+   NOT a new SAS root
+   - `CvGame::reset()` calls `CvGlobals::loadOptionalXMLInfo()` for every non-constructor
+     reset, so the no-True-Starts branch is genuinely reachable after the event preload move.
+   - However, supplied Base AdvC 1.14 already has a supported path with no parser created in
+     this call: when GAMEOPTION_NO_EVENTS is enabled, the game is not network multiplayer,
+     and True Starts is disabled, the inherited event block is skipped and the function still
+     ends in `DestroyFXml()`.
+   - The XML interface signature is `DestroyFXml(FXml*& xml)`, i.e. ownership is passed by
+     reference. The longstanding Base path plus that interface contract are strong evidence
+     that destroying a null/already-cleared parser handle is intentional/safe. The SAS move
+     merely makes that existing branch common; it does not establish a new double-destroy.
+
+3. GlobalDefine load-order regression -- CLOSED against current data
+   - SAS adds `GlobalDefines_advciv_sas.xml` before the BBAI/AI/TechDiffusion/LFB define
+     files. A name census found 743 SAS defines and ZERO duplicate names in those four files
+     loaded afterward (9 + 38 + 8 + 10 definitions respectively).
+   - Therefore none of the current SAS-specific define overrides is silently undone by those
+     later inherited files.
+
+4. `MAX_NUM_LANGUAGES` local -> static-const optimization -- SAFE under current contract
+   - The value is read only after SetGlobalDefines and represents the fixed XML-language
+     ceiling for the process. No current runtime setter/reload path mutates that define before
+     a later LoadGlobalText call. Caching the lookup does not change current language selection.
+
+5. FunctionTypes six-enum/five-XML asymmetry -- ALREADY OWNED AS NEGATIVE CONTROL
+   - Queue 040 already proved C++ has six FunctionTypes including FUNC_STEPKEY while stock and
+     current GlobalTypes XML supplies five strings. `SetGlobalStringArray(..., bUseEnum=true)`
+     allocates six safely and leaves the sixth string empty; no current SAS/CE asset or caller
+     consumes FUNC_STEPKEY. Do not rediscover this as F658.
+
+6. `SetGlobalClassInfo` default/pass-2 lifecycle -- CURRENT MONOLITHIC PATH RECONCILES
+   - Current AdvC-SAS has ModularLoading disabled. In the ordinary path the static XML-default
+     object is released on the final call for each class load.
+   - The only current `*_DEFAULTS` info element is LEADER_DEFAULTS, and LeaderHeadInfo is a
+     one-pass class. No current two-pass class combines XML-default inheritance with a live
+     module boundary.
+   - Current two-pass classes (Tech, Promotion, Improvement, Project, Civilization, Event)
+     perform pass 2 immediately after their complete pass-1 population when modular loading is
+     off. Current Type strings are unique across the non-text XML census, so GetChildTypeIndex
+     maps each pass-2 record back to the intended same-vector index.
+   - Module-failure/static-default cleanup edges remain mod robustness debt only.
+
+7. Diplomacy modular ordering -- BELOW CURRENT-LIVE THRESHOLD
+   - `LoadGlobalClassInfo` sorts module files; `LoadDiplomacyInfo` does not. That can make
+     repeated diplomacy-type merges dependent on EXE enumeration order under modular XML.
+   - Current `AdvCiv-SAS.ini` has ModularLoading=0, so no current shipped activation was
+     established. Keep as a modular-support note, not F658.
+
+8. Yield/commerce fixed-array loops and comments -- CURRENT DATA SAFE
+   - `SetYields` and templated `SetCommerce` diagnose an excessive sibling count but would
+     still index by that count, making malformed/oversized XML a genuine hardening concern.
+   - AdvC's own XML helper comments record that XML comment nodes do not appear to inflate the
+     relevant child counts. Current XML census finds no yield list above NUM_YIELD_TYPES=3 and
+     no commerce list above NUM_COMMERCE_TYPES=4; inline K-Mod/SAS comments inside such lists do
+     not create a demonstrated current overflow.
+
+9. `SetFeatureStruct` / `SetImprovementBonuses` current producer validation -- CLEAN
+   - Current BuildInfos feature structures reference only known current FeatureTypes; the
+     current comment before a Fallout struct is safely skipped by the helper's value-navigation
+     contract.
+   - Current ImprovementInfos bonus structures reference only known BonusTypes, contain no
+     overlong yield arrays, and have no duplicate live bonus-key condition requiring a separate
+     parser root.
+   - Their error branches can still index a negative/out-of-range key after logging if fed bad
+     XML, but current shipped data does not activate those branches.
+
+10. Generic primitive tag-pair out-of-range branch -- REAL HARDENING ISSUE, NOT CURRENT ROOT
+    - The templated `SetVariableListTagPair(T**...)` logs/asserts when `pair.first >=
+      iInfoBaseLength` but then still writes `(*pptList)[pair.first]`. The string/audio siblings
+      have analogous trust-after-assert patterns.
+    - This should ideally `continue`/reject malformed keys, but current XML/type census and the
+      already-audited info producers provide no current out-of-category key reaching the branch.
+      Per the album threshold, keep it as malformed/mod XML robustness debt rather than F658.
+
+11. `XMLTagPairIterator` / `XMLTagPairRateIterator` parser-depth and temporary ownership -- CLEAN
+    - Base-destructor parser-level restoration balances every local descent used by the current
+      iterator consumers; rate iterator temporary arrays are destroyed with `delete[]`.
+    - Singular code tag names intentionally pluralize to the Firaxis outer XML container
+      (`BuildingExtraYield` -> `BuildingExtraYields`, etc.), already confirmed against current
+      random-event data in Queue 027.
+    - No current duplicate-key or compact-rate representation loss survived the producer census.
+
+12. Global actions / fixed mission-command lookups -- NO CURRENT ACTIVATION DEFECT
+    - The AdvC rewrite preserves the inherited ActionInfo population and subtype index updates.
+      `SetGlobalActionInfo` is called once in the normal bootstrap with an initially empty
+      ActionInfo vector, making the inherited mission-offset compatibility term zero.
+    - Required MISSION_/COMMAND_ identities are present in current info data. No second-call or
+      action-vector reload path was established.
+
+13. `ReadGlobalDefines`/post-global error paths -- CURRENT FILE SET VALID
+    - `ReadGlobalDefines` can return true after a LoadCivXml failure and several post-global
+      conversion branches rely on diagnostics rather than aborting. Those are legitimate loader
+      robustness weaknesses.
+    - All required current shipped GlobalDefines files are present and the current post-global
+      type strings resolve in the loaded info universe. No normal startup activation was found.
+
+CONFIRMED ROOT RETAINED
+-----------------------
+F657 / provisional KI#979 remains the sole Queue-028 finding:
+- `SetVariableListPerCommerce` allocates a temporary with `new bool[...]` and destroys it
+  with scalar `delete`;
+- current `CommerceChangeOriginalOwners` data executes the mismatched deallocation for 51
+  BuildingInfos during ordinary startup;
+- the dormant Yield sibling has the same typo and belongs to the same repair root;
+- repair both with `delete[]`.
+
+CLOSURE JUDGMENT
+----------------
+Queue 028 is closed for this audit pass. After F657, the remaining shared-loader surfaces
+reduce to current-safe contracts, already-owned controls, disabled modular/cache paths, or
+malformed-XML hardening where no shipped producer activates the unsafe error branch. No evidence
+supports consuming F658 merely to increase the finding count.
+
+EXACT CONTINUATION
+------------------
+C031-WIP516 physical -> Queue028 CLOSED -> F657/KI#979 confirmed -> F658/KI#980 UNUSED ->
+files complete 61/169 -> Queue029 `CvGameCoreDLL/CyEnumsInterface.cpp` (2,052 queued lines)
+OPEN -> establish current SAS vs Base AdvC 1.14 / K-Mod / Civ4CE provenance -> audit every
+Python-exposed enum binding against the actual C++ enum values and EXE/Python consumers,
+with special attention to omitted/renamed enum members, duplicate Python names, wrong enum
+class registrations, value shifts, sentinel exposure, stale commented bindings, and any SAS
+C++ enum additions not exported to Python -> whole-album dedup before numbering -> freeze the
+next physical WIP at the next settled boundary whether F658 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+
+
+===============================================================================
+C031-WIP517 -- QUEUE 029 CyEnumsInterface.cpp -- F658 FROZEN / CONTINUE OPEN
+===============================================================================
+
+HANDOFF STATE
+-------------
+- Parent physical stone: C031-WIP516.
+- Queue 029 `CvGameCoreDLL/CyEnumsInterface.cpp`: OPEN.
+- Confirmed Queue-029 root: F658 / provisional KI#980.
+- F659 / provisional KI#981 is UNUSED.
+- Files complete remain 61 / 169; Queue 029 is not closed yet.
+- No gameplay source was modified.
+
+F658 / provisional KI#980 -- AdvC Python `NO_GLOBE_LAYER` binding exports the enum COUNT sentinel instead of `NO_GLOBE_LAYER`, so ordinary no-layer reports store and serialize the wrong GlobeLayerTypes value
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ROOT / CONTRACT
+---------------
+AdvC added two DLL-only state values after the real globe-layer range:
+
+    enum GlobeLayerTypes
+    {
+        GLOBE_LAYER_STRATEGY = -1,
+        GLOBE_LAYER_TRADE,       // 0
+        GLOBE_LAYER_UNIT,        // 1
+        GLOBE_LAYER_RESOURCE,    // 2
+        GLOBE_LAYER_RELIGION,    // 3
+        GLOBE_LAYER_CULTURE,     // 4
+    #ifdef _USRDLL
+        NUM_GLOBE_LAYER_TYPES,   // 5 -- count / one-past-last real layer
+        NO_GLOBE_LAYER,          // 6 -- actual no-layer state
+        GLOBE_LAYER_UNKNOWN      // 7 -- initialization/unknown state
+    #endif
+    };
+
+The matching Python interface should therefore expose the symbolic no-layer state as value 6.
+Current SAS instead inherits this binding:
+
+    python::enum_<GlobeLayerTypes>("GlobeLayerTypes")
+        ...
+        .value("NUM_GLOBE_LAYER_TYPES", NUM_GLOBE_LAYER_TYPES)
+        .value("NO_GLOBE_LAYER", NUM_GLOBE_LAYER_TYPES)
+        ;
+
+Thus two different Python names collapse to value 5, while the actual C++ `NO_GLOBE_LAYER`
+value 6 is not exposed at all.
+
+LIVE CURRENT ACTIVATION
+-----------------------
+This is not a dormant public-API typo. Current `Assets/Python/Screens/CvMainInterface.py`
+uses the bad name in the normal globe-view update path:
+
+    eCurrentLayerType = GlobeLayerTypes.NO_GLOBE_LAYER
+    if iCurrentLayerID >= 0:
+        ... translate a real layer ...
+    gc.getGame().reportCurrentLayer(eCurrentLayerType)
+
+Whenever the engine reports no current globe layer (`iCurrentLayerID < 0`), Python therefore
+passes 5 rather than the intended 6.
+
+The exposed `CyGame::reportCurrentLayer(int)` performs only a cast and forwards the value:
+
+    m_kGame.reportCurrentLayer((GlobeLayerTypes)iLayer);
+
+and, outside the save-restore branch, `CvGame::reportCurrentLayer` stores it directly:
+
+    else m_eCurrentLayer = eLayer;
+
+`CvGame::write` then serializes `m_eCurrentLayer`. Therefore ordinary current play can populate
+and save the internal current-layer state with `NUM_GLOBE_LAYER_TYPES` -- a count sentinel --
+when the semantic state is `NO_GLOBE_LAYER`.
+
+CURRENT CONSEQUENCE / SEVERITY BOUNDARY
+---------------------------------------
+The immediate visible gameplay effect is muted by the current consumers: the important hot
+checks mostly ask only whether `getCurrentLayer()` equals `GLOBE_LAYER_RESOURCE` or
+`GLOBE_LAYER_UNIT`, and both the wrong count value 5 and correct no-layer value 6 compare false.
+The Python UI likewise only branches specially on Resource/Unit after reporting the layer.
+
+That does not make the binding correct. The active Python->DLL contract transmits the wrong enum
+identity, `CvGame` stores a value that means "number of real layer types" rather than "no layer",
+and savegames preserve that wrong identity. Future/current code that distinguishes count from
+no-layer would inherit corrupted state. This is a low-current-impact but fully live value-binding
+defect, not merely theoretical external API misuse.
+
+LINEAGE / ORACLE
+----------------
+AdvC practical 1465 / commit `1e107b2c01f79eca77c363287362969920c635e6`
+("Unit layer updated upon visible moves") introduced the complete current-layer reporting system
+and the typo in the same change. Its CyEnumsInterface hunk added:
+
+    .value("NUM_GLOBE_LAYER_TYPES", NUM_GLOBE_LAYER_TYPES)
+    .value("NO_GLOBE_LAYER", NUM_GLOBE_LAYER_TYPES)
+
+while the same practical added distinct `NO_GLOBE_LAYER` and `GLOBE_LAYER_UNKNOWN` values to
+`CvEnums.h` and made `CvMainInterface.py` initialize the reported state from
+`GlobeLayerTypes.NO_GLOBE_LAYER`.
+
+Supplied Base AdvC 1.14 retains the same bad binding unchanged. K-Mod 1.46 and Civ4CE do not have
+AdvC's added NO/UNKNOWN globe-layer reporting states, so they are ancestry controls rather than a
+corrected downstream oracle.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album grep/review found no prior `NO_GLOBE_LAYER`, `reportCurrentLayer`,
+`GLOBE_LAYER_UNKNOWN` or `NUM_GLOBE_LAYER_TYPES` owner. Queue 008 audited downstream `CvGame.cpp`
+without owning this producer: its report/store code behaves according to the enum value Python
+supplies. F658 therefore belongs to Queue 029's binding layer.
+
+NARROW REPAIR BOUNDARY
+----------------------
+The direct repair is one token in `CyEnumsInterface.cpp`:
+
+    .value("NO_GLOBE_LAYER", NO_GLOBE_LAYER)
+
+No enum ordering, save layout, Python caller, globe-layer engine ID or UI translation needs to
+change. Existing saves that happened to store the old count sentinel remain a compatibility
+consideration, but the producer should stop generating that invalid semantic state.
+
+QUEUE-029 CONTROLS / SIDE DISCOVERY SO FAR
+------------------------------------------
+1. `TaskTypes.TASK_CONSCRIPT` is inherited as `TASK_HURRY` in SAS, Base AdvC, K-Mod and Civ4CE.
+   C++ dispatch distinguishes the tasks, so the binding is plainly wrong, but no current shipped
+   Python caller of `TaskTypes.TASK_CONSCRIPT` was found. Keep as latent public-API cleanup unless
+   a supported current caller appears; do not merge it into F658.
+
+2. `MemoryTypes.MEMORY_DECLARED_WAR_RECENT` is bound to `MEMORY_INDEPENDENCE`. The copy/paste
+   error was introduced by AdvC together with the new memory enum and survives Base AdvC 1.14.
+   Current SAS Sevopedia memory metadata uses string/index data rather than the Python enum
+   attribute, and no shipped `MemoryTypes.MEMORY_DECLARED_WAR_RECENT` access was found. Keep as a
+   latent binding typo unless a current consumer appears; do not merge it into F658.
+
+3. `BUTTONPOPUP_KICKED` -> `BUTTONPOPUP_PITBOSS_DISCONNECT` is inherited through Civ4CE/K-Mod and
+   appears to be a compatibility alias, not a newly established root.
+
+4. Active-Python missing-member census initially produced many false alarms. BUG intentionally
+   creates custom `WidgetTypes` at runtime through `WidgetUtil.createWidget`; FontUtil similarly
+   augments `FontSymbols`; BULL-only sentry constants sit in guarded compatibility code. Those
+   dynamically-created names are not omissions from CyEnumsInterface.
+
+5. Cross-file SAS KI#108 bug discovered during the binding census -- REAL but NOT Queue-029-owned:
+   current `CvDiplomacy.isSimpleVassalSelfOffer()` (introduced in SAS practical/commit 5480,
+   `51122e118b...`) compares against `TradeableItems.NO_TRADE_ITEM`, but Python historically
+   exposes the -1 trade sentinel as `TradeableItems.NO_TRADEABLE_ITEMS`. The requested attribute
+   therefore raises AttributeError. A broad `except: pass` swallows that error. If a second trade
+   item exists, retrieval can succeed, the missing-name comparison then throws, and the helper can
+   fall through to `True` instead of rejecting the mixed offer. If that mixed demand is accepted,
+   the caller can wrongly suppress `DIPLOEVENT_MADE_DEMAND`, contrary to KI#108's explicit
+   "pure one-item Vassal/Surrender only" contract. The narrow repair belongs in the new Python
+   helper (use the actually exported sentinel or avoid probing an unavailable list length), not
+   in the inherited enum binding. Preserve this for the SAS issue/fix workflow rather than
+   misnumbering it as F658.
+
+EXACT CONTINUATION
+------------------
+C031-WIP517 physical -> Queue029 OPEN -> F658/KI#980 confirmed -> F659/KI#981 UNUSED -> continue
+full binding census, especially C++ enum member vs Python name/value identity, SAS-specific
+WorldSize/Control/Feat/UnitAI/SASAutoPlay additions, hardcoded sentinels/counts, duplicate-value
+aliases, and every remaining genuinely active Python enum reference after dynamic BUG/Font
+extensions are removed -> compare Base AdvC/K-Mod/Civ4CE/history -> preserve the KI#108 Python
+sentinel bug as a separate cross-file issue -> whole-album dedup -> either promote a genuinely
+live independent F659 or close Queue029 cleanly -> freeze the next physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+
+===============================================================================
+C031-WIP518 -- QUEUE 029 CyEnumsInterface.cpp -- CLOSED / QUEUE 030 OPEN
+===============================================================================
+
+HANDOFF STATE
+-------------
+- Parent physical stone: C031-WIP517.
+- Queue 029 `CvGameCoreDLL/CyEnumsInterface.cpp`: CLOSED.
+- Confirmed Queue-029 root: F658 / provisional KI#980.
+- F659 / provisional KI#981 remains UNUSED.
+- Files complete: 62 / 169.
+- Ordinary Queue 030 `CvGameCoreDLL/CvInfo_Misc.cpp` (1,919 queued lines) is OPEN.
+- No gameplay source was modified.
+
+QUEUE-029 FINAL SATURATION / NEGATIVE CONTROLS
+-----------------------------------------------
+1. Binding inventory and duplicate-value sweep
+   - After removing comments, current SAS registers 154 Boost.Python enum classes and 1,413
+     active `.value(...)` calls in this file.
+   - No duplicate Python member name occurs within a registered class.
+   - Only four registered C++ symbols are deliberately/accidentally exposed under two Python
+     names: BUTTONPOPUP_PITBOSS_DISCONNECT, TASK_HURRY, MEMORY_INDEPENDENCE and
+     NUM_GLOBE_LAYER_TYPES. The last is F658; the Task/Memory pairs are latent typos discussed
+     below; the ButtonPopup pair is an inherited compatibility alias.
+
+2. All ten Python-name/C++-symbol spelling mismatches were classified
+   - `PLOT_STYLE_NONE -> NO_PLOT_STYLE`: explicit AdvC naming compatibility.
+   - `BUTTONPOPUP_KICKED -> BUTTONPOPUP_PITBOSS_DISCONNECT`: inherited through Civ4CE/K-Mod;
+     no independent current defect established.
+   - `FORCECONTROL_MAX_CITY_ELIMINATIONS -> FORCECONTROL_MAX_CITY_ELIMINATION`: Python plural
+     compatibility spelling for the same intended control.
+   - `NUM_VOICETARGETS -> NUM_VOICETARGET_TYPES`: count-name spelling compatibility.
+   - `TASK_CONSCRIPT -> TASK_HURRY`: real inherited copy/paste typo, but no shipped Python
+     consumer of the bad member was found; latent public-API debt, not F659.
+   - `NO_ENTITY_EVENT_NONE -> NO_ENTITYEVENT` and `ANIMCAT_NONE -> NO_ANIMCAT`: sentinel naming
+     compatibility for dynamically-populated info enums.
+   - `NO_TRADEABLE_ITEMS -> TRADE_ITEM_NONE`: intentional old Python spelling for the -1 trade
+     sentinel after AdvC regularized the C++ enum aliases.
+   - `MEMORY_DECLARED_WAR_RECENT -> MEMORY_INDEPENDENCE`: real AdvC copy/paste typo, but current
+     shipped memory UI/provider code uses index/string metadata and never accesses this Python
+     enum attribute; latent API debt, not F659.
+   - `NO_GLOBE_LAYER -> NUM_GLOBE_LAYER_TYPES`: F658, current-live and serialized.
+
+3. Current shipped Python access census
+   - Direct `EnumClass.MEMBER` references were compared against the current hardcoded bindings.
+   - The apparent BUG widget omissions are intentional: `WidgetUtil.createWidget` allocates
+     values starting at `WidgetTypes.NUM_WIDGET_TYPES`, and current Assets/Config XML explicitly
+     registers the CDA, GP bar, BUG option, Info-screen and Tech-chooser widget names seen in
+     Python.
+   - FontUtil intentionally adds dynamic FontSymbols used by BUG/UI screens.
+   - BULL-only sentry Activity/Mission members in UnitUtil are compatibility probes inside a
+     guarded try/except and are absent from current SAS C++ by design.
+   - `TradeableItems.TRADE_DISENGAGE` appears only inside unused BUG DealUtil helper definitions;
+     no current caller of those helpers was found. `TRADE_CITY` appears only in TradeUtil's test
+     routine while the actual current binding is the inherited plural `TRADE_CITIES`.
+   - After those runtime extensions/guarded/test-only cases are removed, no second current
+     hardcoded Python enum access points to an unbound Queue-029 member. The one real active
+     missing name is SAS KI#108's `NO_TRADE_ITEM`, which is the separate caller bug below.
+
+4. SAS-specific enum-interface changes versus supplied Base AdvC 1.14 -- RECONCILED
+   Current semantic differences reduce to:
+   - new `SASAutoPlayEndCause` class;
+   - ControlTypes replacement/removal matching the current advisor redesign;
+   - FeatTypes names matching SAS's split archer/mounted/melee combat families;
+   - UnitAITypes great-person renames matching current CvEnums;
+   - two current WidgetTypes additions already introduced for fixed advisor hovers;
+   - WorldSizeTypes Arena + SAS24/SAS32/SAS40/SAS48 additions.
+
+   Each current addition maps to its same-named C++ constant. The current WorldInfo XML order is
+   exactly Arena, Duel, Tiny, Small, Standard, Large, Huge, SAS24, SAS32, SAS40, SAS48, matching
+   the C++ WorldSizeTypes order fixed in SAS practical 5971. All nine SASAutoPlayEndCause values
+   match CvEnums.h and their live AIAutoPlay.py consumers.
+
+5. Inherited Task typo -- retained below current finding threshold
+   `TaskTypes.TASK_CONSCRIPT` is bound to `TASK_HURRY` in current SAS, Base AdvC 1.14, K-Mod and
+   Civ4CE. Current C++ `CvCity::doTask` distinguishes hurry from conscription, so an external
+   Python caller would execute the wrong city task. However, the current shipped Python tree has
+   no `TaskTypes.TASK_CONSCRIPT` access. Per the album's supported-current-caller rule, preserve
+   this as a real latent API bug without consuming F659.
+
+6. AdvC Memory typo -- retained below current finding threshold
+   AdvC introduced `MEMORY_DECLARED_WAR_RECENT` and simultaneously exported that Python name as
+   `MEMORY_INDEPENDENCE`; Base AdvC 1.14 still carries it. Current Python does not access the bad
+   enum attribute, so no current manifestation independent of the binding itself was established.
+
+7. Cross-file SAS KI#108 regression exposed by the census -- ACTIONABLE, NOT Queue-029 ROOT
+   SAS practical 5480 added `CvDiplomacy.isSimpleVassalSelfOffer()` with
+   `TradeableItems.NO_TRADE_ITEM`. The inherited Python API actually exposes the -1 sentinel as
+   `NO_TRADEABLE_ITEMS`. The helper's broad exception swallows the resulting AttributeError; when
+   a second item can be retrieved, that can let a mixed Vassal/Surrender demand pass the helper's
+   intended "no second item" test and suppress `DIPLOEVENT_MADE_DEMAND` after acceptance.
+   This directly undermines KI#108's documented narrow pure-one-item guard. Repair the Python
+   caller (e.g. use the exported sentinel) in the ordinary issue/fix workflow; do not alter the
+   historical enum alias merely to make the erroneous new caller name work.
+
+CONFIRMED ROOT RETAINED
+-----------------------
+F658 / provisional KI#980 remains the sole Queue-029 finding:
+- Python `GlobeLayerTypes.NO_GLOBE_LAYER` exports `NUM_GLOBE_LAYER_TYPES` instead;
+- current CvMainInterface uses that name on every ordinary no-layer report;
+- CyGame casts/forwards it and CvGame stores/serializes the count sentinel as current-layer state;
+- immediate behavior is mostly masked by current Resource/Unit equality-only consumers;
+- repair the binding to `.value("NO_GLOBE_LAYER", NO_GLOBE_LAYER)`.
+
+CLOSURE JUDGMENT
+-----------------
+Queue 029 is saturated for this audit pass. The remaining anomalies are intentional compatibility
+names, dynamic BUG/Font extensions, guarded/test-only references, or real but currently dormant
+public API typos lacking a supported shipped caller. No evidence supports spending F659 merely on
+an omission that current SAS never consumes.
+
+EXACT CONTINUATION
+------------------
+C031-WIP518 physical -> Queue029 CLOSED -> F658/KI#980 confirmed -> F659/KI#981 UNUSED ->
+files complete 62/169 -> Queue030 `CvGameCoreDLL/CvInfo_Misc.cpp` OPEN -> establish current SAS vs
+Base AdvC 1.14 / K-Mod / Civ4CE semantic provenance -> audit its mixed info readers/getters,
+array ownership/default initialization, enum/index resolution, XML read/write symmetry,
+leader/action/diplomacy/misc data contracts and any SAS changes -> current XML producer census +
+whole-album dedup before numbering -> freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+
+===============================================================================
+C031-WIP519 -- QUEUE 030 CvInfo_Misc.cpp -- CLOSED / QUEUE 032 OPEN
+===============================================================================
+
+HANDOFF STATE
+-------------
+- Parent physical stone: C031-WIP518.
+- Queue 030 `CvGameCoreDLL/CvInfo_Misc.cpp`: CLOSED.
+- No new Queue-030 finding was promoted.
+- F659 / provisional KI#981 remains UNUSED.
+- Files complete: 63 / 169.
+- Queue 031 `UWAICache.cpp` was already complete from the earlier priority/deep pass, so ordinary
+  order advances to Queue 032 `CvGameCoreDLL/CyUnit.cpp` (1,704 queued lines), now OPEN.
+- No gameplay source was modified.
+
+QUEUE-030 PROVENANCE BASELINE
+-----------------------------
+A normalized current-SAS versus supplied Base AdvC 1.14 comparison reduced the entire 1,919-line
+file to one executable SAS divergence plus one comment-only language note:
+
+1. `CvMainMenuInfo::getSoundtrack()` contains the SAS opening-menu shuffle-bag feature.
+2. The `CvGameText::read` language-count area has a SAS comment only; executable behavior remains
+   Base AdvC 1.14.
+
+Every other executable body in current `CvInfo_Misc.cpp` is Base-AdvC-equivalent. K-Mod 1.46 and
+Civ4CE provide the older monolithic `CvInfos.cpp` ancestry for the inherited classes. This made
+Queue 030 principally a current-data/lifetime audit of the one SAS divergence plus a targeted
+inherited reader/getter saturation pass rather than a broad SAS rewrite review.
+
+SAS MAIN-MENU SHUFFLE -- CURRENTLY CLEAN / TARGETED RUNTIME OBSERVATION ONLY
+----------------------------------------------------------------------------
+The custom getter keeps a function-static shuffle bag and consumes one entry whenever the EXE
+asks `CvMainMenuInfo::getSoundtrack()` for the configured trigger profile. This initially looked
+risky because an exported getter with destructive static state would skip/consume tracks if the
+closed-source EXE queried it more than once for one logical menu opening.
+
+The local evidence does not justify promoting that concern:
+- there is no local DLL/Python caller; `getSoundtrack()` is a DllExport consumed by the EXE, so
+  exact call multiplicity cannot be proved from the supplied source set;
+- SAS practical 5485 / `34d4d7d39242f5824ea69f7524c6995b0901bc76` introduced the feature with
+  the explicit contract "no repeats until all configured scripts are played once";
+- the later build check validates the trigger and every active shuffle entry against
+  `Audio2DScripts.xml`;
+- the current light-source configuration has shuffle enabled, trigger `AS2D_OPENING_MENU`, exactly
+  two active entries (`AS2D_OPENING_MENU_01`, `_02`), seven `NONE` slots, no duplicate active
+  script, and both active scripts plus the trigger exist in current `Audio2DScripts.xml`;
+- KI#110's retained runtime notes explicitly separate the old Sevopedia/BUG path-startup failures
+  from the shuffle itself and state that the music shuffle "seems to work fine."
+
+The implementation also guarantees a nonempty bag through its trigger fallback before the RNG
+range is formed and correctly uses `getASyncRand()` for UI/non-synchronized selection. Without a
+reproduction showing multiple `getSoundtrack()` consumptions per logical opening, the stateful
+getter remains a worthwhile targeted runtime observation, not F659.
+
+INHERITED DIPLOMACY NULL-POINTER TYPO -- REAL DEAD CODE, NOT F659
+-----------------------------------------------------------------
+AdvC practical 1610 / `409be17bbd437acf2670994d2bb5d1516ada865e`, "Store empty tag pair lists
+as NULL pointers," compacted all-default `SetVariableListTagPair` arrays to NULL. In the obsolete
+`CvDiplomacyTextInfo` class, four getters were changed to shapes such as:
+
+    return (m_pResponses[i].m_pbCivilizationTypes[j] == NULL ? false :
+            m_pResponses[i].m_pbCivilizationTypes[j]);
+
+That is not a pointer check: `[j]` is evaluated before the comparison, so a compacted NULL list
+would be dereferenced. The comment clearly intended null-safe behavior, and the K-Mod predecessor
+had simply indexed an always-allocated array.
+
+This does not become a current root because `CvDiplomacyTextInfo` has no current `CvGlobals` info
+array/getter and no shipped producer/consumer path beyond its standalone Boost.Python class
+binding. The live diplomacy system is `CvDiplomacyInfo` / `CvDiplomacyResponse` in
+`CvInfo_Civilization.cpp`; its corresponding AdvC-compaction-aware getters correctly use:
+
+    m_pbCivilizationTypes != NULL ? m_pbCivilizationTypes[i] : false
+
+(and equivalent pointer-first tests for leader, attitude and diplomacy-power arrays). The bad
+legacy getters are therefore useful dead-code archaeology and a possible cleanup if the class is
+ever resurrected, but not a supported-current F659.
+
+CURRENT XML / VECTOR SHAPE CONTROLS
+-----------------------------------
+1. `CvWorldPickerInfo`
+   Current `CIV4WorldPickerInfos.xml` contains 32 WorldPickerInfo entries. Every one has exactly
+   12 `<Size>` values: Random plus the current 11 world sizes (Arena, Duel, Tiny, Small, Standard,
+   Large, Huge, SAS24, SAS32, SAS40, SAS48). Twenty-five entries intentionally have only the
+   generic Random climate/water decal/gloss; seven have 6 climate and 4/4 water paths. No current
+   size-vector underflow relative to the SAS world-size extension was found.
+
+2. Allocation / destruction symmetry
+   Live dynamic allocations in this file pair `new[]` with `SAFE_DELETE_ARRAY`: diplomacy
+   response arrays, tutorial-message arrays and tutorial script lists. The Queue-028 scalar
+   delete bug does not repeat here. `CvQuestInfo` is commented out as `advc.003j: unused`.
+
+3. `CvEffectInfo` / `CvAttachableInfo` default-copy stubs
+   Their copy constructors deliberately error instead of copying, but both advertise
+   `isDefaultsType() == false`; the XML-default template therefore does not use these as defaults
+   types. No current default-inheritance activation was established.
+
+4. Animation/entity vectors
+   `CvAnimationPathInfo` and `CvEntityEventInfo` retain inherited EXE-facing index APIs with
+   upper-bound or caller-count contracts. Negative indices could harden poorly in some getters,
+   but no current DLL/Python producer supplies a negative index; this remains external-API
+   robustness rather than a supported-current root.
+
+5. Tutorial / legacy UI structures
+   Tutorial arrays are initialized from counted `TutorialMessage` children and destroyed
+   symmetrically. The old Quest implementation is compiled out. Slide-show, throne-room,
+   route/river model, landscape and formation readers remain the Base/K-Mod inherited contracts;
+   no current source/data mismatch survived the pass.
+
+6. `CvGameText::read`
+   Current SAS executable behavior is Base AdvC/K-Mod behavior. The pre-existing language-count
+   fallback and sibling traversal were reviewed but no current language fixture or supported
+   caller demonstrated a new wrong-language/out-of-range root. The existing SAS source comment
+   correctly leaves this external/localization contract untouched.
+
+HISTORY / DEDUP CONTROLS
+------------------------
+- AdvC changes touching the split file after Queue-030's ancestry point are predominantly the
+  CvInfos split, assertion/style cleanup, XML default plumbing, setter cleanup and enum-map
+  refactoring. Supplied Base AdvC 1.14 carries the same inherited implementations.
+- Practical 1783's `GetXmlVal(fVal)` WorldPicker adjustment matches the current XML helper API.
+- Practical 2222's RouteType `SetInfoIDFromChildXmlVal` conversion and the explicit non-default
+  Effect/Attachable copy stubs survive consistently.
+- Practical 3183's broad enum-map rewrite does not create a second current allocation or compact-
+  pointer defect in this file.
+- Whole-album review found existing main-menu/profile and KI#110 music-path investigations but no
+  owner that would turn the unproved stateful getter concern into a duplicate finding.
+- No existing finding is undermined or reopened by Queue 030.
+
+CLOSURE JUDGMENT
+-----------------
+Queue 030 is saturated for this audit pass. The sole current SAS semantic divergence is the
+opening-music shuffle, whose current pool/references are valid and whose recorded runtime behavior
+is healthy; the only sharp inherited pointer bug found is in an obsolete unregistered diplomacy
+class while the live sibling uses the correct pointer-first test. The remaining concerns are
+external-EXE/API robustness or invalid-data/module-reload cases without a current producer.
+Do not spend F659 merely to turn those into findings.
+
+EXACT CONTINUATION
+------------------
+C031-WIP519 physical -> Queue030 CLOSED -> F659/KI#981 UNUSED -> files complete 63/169 -> Queue031
+already complete from prior pass -> Queue032 `CvGameCoreDLL/CyUnit.cpp` OPEN -> establish current
+SAS vs Base AdvC 1.14 / K-Mod / Civ4CE provenance -> reconcile every Python wrapper argument,
+return sentinel, ownership/lifetime and enum cast against `CvUnit` plus current shipped Python
+callers -> prioritize wrappers that silently drop/replace parameters, stale-unit/null handling,
+wrong enum domains and Python-visible behavior divergence -> whole-album dedup before numbering ->
+either promote a demonstrated F659 or close Queue032 cleanly -> freeze the next physical WIP at
+the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+
+===============================================================================
+C031-WIP520 -- QUEUE 032 CyUnit.cpp -- CLOSED / QUEUE 033 OPEN
+===============================================================================
+
+HANDOFF STATE
+-------------
+- Parent physical stone: C031-WIP519.
+- Queue 032 `CvGameCoreDLL/CyUnit.cpp`: CLOSED.
+- No new Queue-032 finding was promoted.
+- F659 / provisional KI#981 remains UNUSED.
+- Files complete: 64 / 169.
+- Queue 033 `CvGameCoreDLL/CvInfo_Terrain.cpp` (1,672 queued lines): OPEN.
+- No gameplay source was modified.
+
+QUEUE-032 PROVENANCE BASELINE
+-----------------------------
+Current SAS `CyUnit.cpp` is executable-token-identical to supplied Base AdvC 1.14 after comments
+and whitespace are removed. Therefore there is no SAS-specific Queue-032 regression and no newer
+Base-AdvC CyUnit-wrapper repair that SAS failed to port.
+
+K-Mod 1.46 and Civ4CE provide the older wrapper baseline. K-Mod and Civ4CE are themselves
+executable-equivalent here apart from K-Mod commenting out the obsolete `canCargoAllMove` and
+`canMoveThrough` wrappers. Relative to K-Mod, the current AdvC/SAS differences are a compact set
+of signature/rename adaptations plus the `isWorker` helper and const-wrapper constructor.
+
+ADVC SIGNATURE-ADAPTATION AUDIT -- RECONCILED
+---------------------------------------------
+The material K-Mod -> current wrapper changes were traced against current `CvUnit` declarations,
+their introducing history and current shipped Python callers:
+
+1. Path movement
+   `generatePath` now passes a plot by reference plus `MovementFlags`; `canMoveInto` and
+   `canMoveOrAttackInto` likewise pass plot references. Current shipped Python has no
+   `CyUnit.generatePath` caller. `AStarTools.py` does call `canMoveOrAttackInto(plot, true)`;
+   the wrapper preserves K-Mod's two-argument Python contract and lets AdvC's later
+   `bDangerCheck=false` default remain false. The AStar caller supplies valid CyPlots.
+
+2. Territory / area
+   AdvC merged `CvUnit::canEnterArea` into `canEnterTerritory(..., pArea)`. The CyUnit wrapper's
+   old `canEnterArea` public name delegates to that merged function with the same team,
+   right-of-passage and area inputs. There is no shipped current Python call.
+
+3. Cargo loading
+   `canLoadUnit` -> `canLoadOnto` and `canLoad` -> `canLoadOntoAnyUnit` preserve the old public
+   wrapper meanings after AdvC's load-function rename/reference conversion. No shipped current
+   Python caller exercises either wrapper.
+
+4. Sea Patrol
+   After AdvC added `bCheckActivity`, the wrapper deliberately passes `true`; practical 3866
+   states this is "For the same behavior as in K-Mod." No contradictory current caller was found.
+
+5. Air Bomb / nuke / interceptor
+   The route-capable air-bomb refactor changes `canAirBombAt` from `(fromPlot,x,y)` internally to
+   `(targetPlot,fromPlot)`. The wrapper reconstructs target `(x,y)`, validates it and forwards
+   the optional source plot. `canNukeAt` and `bestInterceptor` received matching reference/null
+   adaptations. None has a shipped current Python caller.
+
+6. Experience
+   AdvC changed the final `CvUnit::changeExperience` argument from boolean update-global to a
+   global-percent integer. The legacy Python boolean is intentionally translated to 100 or 0,
+   preserving its original all-or-none meaning. No shipped current Python caller uses it.
+
+7. Renamed/internal methods
+   `isNoCapture -> isNoCityCapture`, `isCombat -> isInCombat`, owner/X/Y accessors and AI
+   accessors follow current C++ renames/refactors. `isWorker` is the deliberate AdvC addition.
+   Current Python's sole visible `isCombat()` occurrence is a comment documenting why the
+   Military Advisor correctly uses `canFight()` instead; `isWorker()` has one normal live caller.
+
+INHERITED WRONG-METHOD / ENUM-CAST SWEEP -- CLEAN
+-------------------------------------------------
+A mechanical wrapper-name -> underlying-method census found only nine non-identical method names:
+`canEnterArea/canEnterTerritory`, the two load-renames, `isNoCapture/isNoCityCapture`,
+`isCombat/isInCombat`, `isInGroup/getGroupID`, `getNameForm/getName(form)`, and the two
+UnitAI accessors. Each is an intentional current contract; there is no surviving sibling of the
+old K-Mod `CyUnit::canJoin -> CvUnit::canFound` typo (fixed by AdvC practical 2536).
+
+Every wrapper parameter annotated with an enum domain was also compared with the cast used in the
+body. No wrong enum domain survived. The active `CyUnitInterface1.cpp` Boost.Python table binds
+each exported Python name to the same-named `CyUnit` method, with no active duplicate or
+misdirected function pointer.
+
+NULL / WRAPPER-LIFETIME HARDENING -- BELOW FINDING THRESHOLD
+-------------------------------------------------------------
+A number of inherited wrappers dereference auxiliary `CyPlot*`, `CyUnit*`, `CyArea*` or `CyCity*`
+arguments after checking only `m_pUnit`; examples include `canMoveInto`, `canLoadUnit`,
+`setTransportUnit`, several combat-strength helpers and `attackForDamage`. Some later AdvC
+wrappers are more defensive (`canNukeAt`, `bestInterceptor`, `canAirBombAt`, `canBuild`).
+
+These are real public-Python API hardening inconsistencies, but the current shipped Python census
+did not find a supported call that passes Python `None`, a NULL-internal wrapper, or an invalid
+plot into one of the sharp functions. Calls to the only active changed movement wrapper use plots
+constructed directly from `CyMap`. Per the album rule, do not spend F659 on hypothetical
+third-party Python misuse or generic stale-wrapper lifetime behavior inherited across the Cy API.
+
+OTHER CONTROLS
+--------------
+- Pointer-return wrappers continue the inherited Civ4 convention of allocating a Cy wrapper even
+  when the wrapped game object can be NULL; Python is expected to use `isNone()`. Return-value
+  policies in the binding file match that convention.
+- `getBuildType` contains AdvC/K-Mod's corrected ternary cast; the old pointer-cast precedence oddity
+  does not survive current code.
+- Practical 1372's temporary `isFound -> canFound` wrapper change was explicitly reverted by
+  practical 3056 when `CvUnit::canFound()` was removed; current behavior matches K-Mod again.
+- Current SAS/Base AdvC equivalence means no unported upstream fix remains to search for in this file.
+- Whole-album checks found numerous deeper `CvUnit` movement/loading roots, but none owns or is
+  contradicted by a distinct current CyUnit-wrapper defect from this pass.
+
+CLOSURE JUDGMENT
+-----------------
+Queue 032 is saturated for this audit pass. The historical signature changes reconcile, the
+current shipped Python callers do not activate the remaining NULL-hardening edges, and the
+mechanical wrong-method/enum-cast/binding sweeps found no independent current root. F659 remains
+unused rather than being consumed by public-API robustness alone.
+
+EXACT CONTINUATION
+------------------
+C031-WIP520 physical -> Queue032 CLOSED -> F659/KI#981 UNUSED -> files complete 64/169 ->
+Queue033 `CvGameCoreDLL/CvInfo_Terrain.cpp` OPEN -> establish current SAS vs Base AdvC 1.14 /
+K-Mod / Civ4CE provenance -> audit terrain/feature/improvement/bonus/route/world info readers,
+array/map ownership and defaults, enum/index resolution, XML shape assumptions and any SAS
+extensions -> current XML producer census + whole-album dedup before numbering -> either promote
+a demonstrated F659 or close Queue033 cleanly -> freeze the next physical WIP at the next settled
+boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+
+===============================================================================
+C031-WIP521 -- QUEUE 033 CvInfo_Terrain.cpp -- F659 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+HANDOFF STATE
+-------------
+- Parent physical stone: C031-WIP520.
+- Queue 033 `CvGameCoreDLL/CvInfo_Terrain.cpp`: OPEN.
+- F659 / provisional KI#981: CONFIRMED.
+- F660 / provisional KI#982: UNUSED.
+- Files complete remains 64 / 169 because Queue 033 is not yet closed.
+- No gameplay/source file was modified.
+
+QUEUE-033 BASELINE / CURRENT-DATA CONTROLS SO FAR
+--------------------------------------------------
+Current SAS `CvInfo_Terrain.cpp` is line-for-line content-identical to supplied Base AdvC 1.14
+apart from file representation/line endings. Any Queue-033 root is therefore inherited AdvC
+behavior, not a SAS-only regression or a missed newer Base-AdvC repair.
+
+Current shipped XML census:
+- 9 TerrainInfos
+- 6 FeatureInfos
+- 35 BonusInfos
+- 2 RouteInfos
+- 24 ImprovementInfos
+- 12 GoodyInfos
+- 92 TechInfos (for the technology-cache/dependency checks)
+
+The first data-contract sweep is clean:
+- all 6 FeatureInfo ArtDefineTags resolve;
+- all 35 BonusInfo ArtDefineTags resolve;
+- all 24 ImprovementInfo ArtDefineTags resolve;
+- every ImprovementInfo explicitly supplies `bActsAsCity`;
+- current ImprovementPillage / ImprovementUpgrade references that are present resolve;
+- current TechYieldChanges / RouteYieldChanges keys are valid and non-duplicated;
+- current BonusTypeStruct keys are valid and non-duplicated;
+- all shipped terrain and feature FootstepSounds roots are present, so the questionable inherited
+  NULL-array fallback of 0 does not activate;
+- `CvFeatureInfo::getNumVarieties()` would be unsafe for a missing feature ArtInfo, but no current
+  feature has a missing ArtDefine reference;
+- the empty/missing RoutePillage value safely resolves to NO_ROUTE.
+
+F659 / provisional KI#981 -- AdvC enum-macro global cleanup reordered dependent info destruction and leaks nested yield rows
+----------------------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+Two live info destructors require another still-loaded info-family count in order to free their
+nested 2D arrays:
+
+1. `CvImprovementInfo::~CvImprovementInfo()` frees:
+       m_ppiTechYieldChanges[0 .. GC.getNumTechInfos()-1]
+       m_ppiRouteYieldChanges[0 .. GC.getNumRouteInfos()-1]
+
+2. `CvCivicInfo::~CvCivicInfo()` frees:
+       m_ppiImprovementYieldChanges[0 .. GC.getNumImprovementInfos()-1]
+
+K-Mod's inherited explicit `CvGlobals::deleteInfoArrays()` ordering satisfies those lifetime
+dependencies:
+
+    CivicInfo
+      before ImprovementInfo
+        before RouteInfo
+        before TechInfo
+
+In particular, the supplied K-Mod source deletes:
+    m_paCivicInfo
+    m_paImprovementInfo
+    m_paRouteInfo
+    ...
+    m_paTechInfo
+
+AdvC practical 1752 / ce3dc24000fc371696417c14c8306ff9d04707fb
+("CvGlobals::getInfo functions added") replaced the hand-written cleanup order with:
+
+    #define DELETE_INFO_ARRAY(Name, Dummy) deleteInfoArray(m_pa##Name##Info);
+    DO_FOR_EACH_INFO_TYPE(DELETE_INFO_ARRAY);
+
+That macro iterates the general info declaration order, not a destruction-dependency order.
+Current order places Route before Improvement, then later Tech and Civic:
+
+    Route ... Improvement ... Tech, Civic
+
+`deleteInfoArray` deletes all objects and immediately calls `array.clear()`. Therefore:
+
+- by the time `CvImprovementInfo::~CvImprovementInfo()` executes,
+  `GC.getNumRouteInfos()` is already 0;
+- by the time `CvCivicInfo::~CvCivicInfo()` executes,
+  `GC.getNumImprovementInfos()` is already 0.
+
+Both destructors still `SAFE_DELETE_ARRAY` their outer pointer array, but their row-deletion loops
+execute zero times. The nested `new int[NUM_YIELD_TYPES]` rows are consequently leaked.
+
+CURRENT SHIPPED ACTIVATION
+--------------------------
+This does not depend on optional XML content. Both readers allocate their complete 2D matrices
+unconditionally through `CvXMLLoadUtility::Init2DIntList`:
+
+- every one of the 24 current ImprovementInfos allocates 2 RouteInfo rows;
+- every one of the 25 current CivicInfos allocates 24 ImprovementInfo rows;
+- NUM_YIELD_TYPES is 3.
+
+Thus one normal global cleanup skips:
+
+    24 * 2  = 48 Improvement route-yield row allocations
+    25 * 24 = 600 Civic improvement-yield row allocations
+
+for 648 leaked `new int[3]` allocations in the current data set: 7,776 bytes of raw integer
+payload, plus allocator bookkeeping/alignment overhead.
+
+The Improvement tech-yield rows do NOT share this failure because current global cleanup still
+destroys ImprovementInfo before TechInfo; `GC.getNumTechInfos()` therefore remains valid while
+that first row loop executes.
+
+ANCESTRY / ORACLE
+-----------------
+- Supplied K-Mod retains the explicit dependency-safe cleanup order.
+- AdvC practical 1752 is the exact regression point: the same diff removes the explicit
+  Civic -> Improvement -> Route -> Tech order and substitutes `DO_FOR_EACH_INFO_TYPE`.
+- Current Base AdvC 1.14 retains the macro cleanup and the same dependent destructors.
+- Current SAS inherits it unchanged.
+- A mechanical scan of current destructors for `GC.getNum*Infos()` lifetime dependencies found
+  exactly these two destructors, so the known nested-info cleanup impact is bounded rather than
+  an open-ended guess.
+
+CONSEQUENCE / SEVERITY BOUNDARY
+-------------------------------
+This is a real normal-cleanup memory-management defect, not gameplay-state corruption. With the
+current data the raw leak is small (about 7.6 KiB plus allocator overhead), and DLL-local source
+does not prove repeated same-process global cleanup/reload cycles. If cleanup occurs only at final
+process/DLL teardown, the operating system will reclaim the memory shortly afterward.
+
+The finding is therefore low gameplay severity but high source certainty: the intended
+destructors are demonstrably prevented from freeing allocations that were made during ordinary
+XML loading.
+
+REPAIR DIRECTION
+----------------
+Do not use the general enum/info declaration order as a destruction order where destructors query
+other info-family sizes.
+
+At minimum preserve the dependency chain:
+    CivicInfo before ImprovementInfo before RouteInfo,
+while keeping ImprovementInfo before TechInfo.
+
+A broader robust repair is to make nested arrays self-describing / store their allocation
+dimensions so destructors do not depend on mutable global info-vector counts during teardown.
+If retaining centralized deletion order, use an explicit cleanup-specific order (or explicit
+special cases) rather than silently reusing `DO_FOR_EACH_INFO_TYPE`.
+
+DEDUP / OWNERSHIP
+-----------------
+The earlier Queue-040 `CvGlobals.cpp` audit recorded unrelated cleanup/lifetime controls
+(`CvAgents` ownership, XML-loader lifetime, info-map reset) but did not own this nested-array
+destruction-order failure. Whole-album search found no existing finding for the
+Civic/Improvement/Route teardown dependency.
+
+Queue 033 exposed the defect through `CvImprovementInfo::~CvImprovementInfo`; the common root is
+the AdvC practical-1752 global deletion-order refactor, with the pending Queue-067
+`CvInfo_Civics.cpp` destructor as a same-root sibling. Keep the two leaks under one finding.
+
+QUEUE-033 REMAINING CURSOR
+--------------------------
+Continue from F660 UNUSED:
+- finish `CvBonusInfo::updateCache` against the actual current tech dependency graph and its two
+  live consumers;
+- finish route-prerequisite vectorization / Python fixed-count compatibility;
+- finish feature river-side invariants and current placement-data constraints;
+- finish improvement matrix allocation/default/pass-2 and bonus-struct ownership controls;
+- finish GoodyInfo and remaining inherited K-Mod/Civ4CE semantic deltas;
+- whole-album dedup and final mechanical pointer/index/divisor/history saturation;
+- either promote a genuinely independent F660 or close Queue 033 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+
+===============================================================================
+C031-WIP522 -- QUEUE 033 CvInfo_Terrain.cpp CLOSED / QUEUE 034 OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP521.
+- Queue 033 `CvGameCoreDLL/CvInfo_Terrain.cpp` (1,672 queued lines): CLOSED.
+- Confirmed Queue-033 root: F659 / provisional KI#981.
+- F660 / provisional KI#982: UNUSED.
+- Files complete: 65 / 169.
+- Queue 034 `CvGameCoreDLL/CvInfo_Civilization.cpp` (1,637 queued lines): OPEN.
+- Gameplay/source files remain untouched.
+
+QUEUE-033 FINAL RESULT
+----------------------
+Current SAS `CvInfo_Terrain.cpp` is line-for-line content-identical to supplied Base AdvC 1.14
+apart from file representation/line endings. The queue therefore contained no SAS-only regression
+and no missed Base-AdvC-1.14 repair.
+
+F659 remains the sole confirmed root:
+AdvC practical 1752 replaced K-Mod's explicit dependency-safe info destruction order with the
+generic `DO_FOR_EACH_INFO_TYPE` order. Current cleanup deletes RouteInfo before ImprovementInfo
+and ImprovementInfo before CivicInfo. `CvImprovementInfo::~CvImprovementInfo()` and
+`CvCivicInfo::~CvCivicInfo()` obtain nested-array row counts from those already-cleared global
+info families, so their row-deletion loops execute zero times. Current data skips 48
+Improvement/Route rows plus 600 Civic/Improvement rows = 648 `new int[3]` allocations,
+7,776 bytes raw integer payload plus allocator overhead per global cleanup. Keep both
+manifestations under F659; do not create a later duplicate from Queue 067.
+
+FINAL CURRENT-DATA / NEGATIVE CONTROLS
+--------------------------------------
+Info/data census used throughout the saturation:
+- 9 TerrainInfos
+- 6 FeatureInfos
+- 35 BonusInfos
+- 2 RouteInfos
+- 24 ImprovementInfos
+- 12 GoodyInfos
+- 92 TechInfos
+- 22 BuildInfos
+- 93 UnitClassInfos
+
+Cross-reference validation against the current light-source XML found no invalid current refs:
+- Bonus TechReveal / TechCityTrade / TechObsolete, terrain and feature references;
+- Feature terrain references;
+- Route prereq-bonus, OR-bonus, movement-tech and RoutePillage references;
+- Improvement ImprovementPillage / ImprovementUpgrade, terrain, feature, bonus, tech and route
+  keys;
+- Build tech/improvement links used by the bonus-improvement cache;
+- Goody UnitClass / BarbarianClass references.
+No duplicate current TechYieldChanges, RouteYieldChanges or BonusTypeStruct keys were found.
+
+Art/audio/data controls:
+- all 6 FeatureInfo ArtDefineTags resolve;
+- all 35 BonusInfo ArtDefineTags resolve;
+- all 24 ImprovementInfo ArtDefineTags resolve;
+- every current TerrainInfo and FeatureInfo has a FootstepSounds root, so the inherited
+  questionable NULL-array fallback of 0 is not current-live;
+- `CvFeatureInfo::getNumVarieties()` would be unsafe if a Feature ArtInfo were absent, but no
+  current feature activates that state;
+- all 11 non-empty current GoodyInfo Sound values resolve in the current Audio2DScripts.xml;
+  GOODY_TECH intentionally has an empty Sound.
+
+FEATURE / RIVER-SIDE HISTORY CONTROL
+------------------------------------
+The apparent Oasis XML mismatch is intentional history, not a surviving bug:
+- practical 2321 ("Allow Oases at river corners") introduced `bNoRiverSide` and temporarily
+  changed Oasis from `bNoRiver=1` to `bNoRiver=0, bNoRiverSide=1`;
+- practical 2335 explicitly says "Don't allow Oases on river corners after all" and reverted
+  Oasis to `bNoRiver=1`;
+- current SAS and Base AdvC retain that deliberate revert.
+The reader's consistency rules remain coherent:
+- `bNoRiver` implies `bNoRiverSide`;
+- `bRequiresRiverSide` implies `bRequiresRiver`.
+Current FLOOD_PLAINS supplies both requires-river flags; current Oasis intentionally forbids any
+river contact.
+
+FEATURE MOVE/EFFECT CONTROL
+---------------------------
+Current `OnUnitChangeTo` fields are empty. Current positive effect-probability feature entries are
+Forest/Jungle and use the normal bird-scatter effect path. No current feature supplies a
+non-empty invalid transition target.
+
+ROUTE CONTROL
+-------------
+Current route topology:
+- Road: RoutePillage empty -> NO_ROUTE.
+- Railroad: RoutePillage -> ROAD.
+- Railroad has two valid OR bonus prerequisites (Coal/Oil).
+AdvC practical 2796's prereq-vector conversion is compatible with current data:
+- native C++ can represent arbitrary vector length;
+- the Python accessor explicitly bounds-checks and returns NO_BONUS outside the vector;
+- current maximum is two, within the inherited Python fixed-count expectation.
+RoutePillage's Air-Bomb downgrade behavior and sabotage's intentional full-route removal are
+separate documented contracts, not a mismatch.
+
+IMPROVEMENT CONTROL
+-------------------
+Every current improvement explicitly supplies `bActsAsCity`.
+Current upgrade chain is acyclic:
+    Cottage -> Hamlet -> Village -> Town
+with the expected reverse pillage chain:
+    Hamlet -> Cottage, Village -> Hamlet, Town -> Village.
+`finalUpgrade()` also has an explicit loop detector for malformed/cyclic data.
+The improvement bonus array is allocated on both reader branches, and current BonusTypeStructs
+are valid/nonduplicate. Every current resource-improvement pairing treated as improveable by the
+bonus-tech cache has at least one positive bonus yield, so the cache's `bAnyImprovYield` filter
+does not omit a current trade-only/yield-zero resource path.
+
+BONUS IMPROVEMENT-TECH CACHE CONTROL
+------------------------------------
+`CvBonusInfo::updateCache()` is invoked after BuildInfos and ImprovementInfos have loaded.
+A dependency-graph check across the current 92 TechInfos found no current resource for which the
+research-cost heuristic chooses a technologically ancestral/earlier prerequisite in place of a
+later required build/reveal technology. The important water-Oil case resolves to Marine
+Technology rather than stopping incorrectly at Combustion.
+Its two live consumers (`CitySiteEvaluator` and the game bonus valuation path) therefore receive
+coherent current cache values.
+
+BONUS GENERATION NUMERIC CONTROL
+--------------------------------
+Current map-placed bonuses (placement order >= 0) have valid nonnegative placement parameters.
+The two deliberately disabled pseudo-bonuses, BONUS_DRAMA and BONUS_MUSIC, use
+`iPlacementOrder=-1`, so their all-zero random-appearance/tile/player settings never enter normal
+bonus placement.
+
+GOODY CONTROL
+-------------
+All current Goody numeric/reference combinations fit the live `CvPlayer::canReceiveGoody` /
+`receiveGoody` contracts. In particular:
+- hostile current goodies have `iMinBarbarians` > 0 before the probability-rescaling division;
+- the good Scout goody's `BarbarianClass=UNITCLASS_WORKER` is AdvC's upgrade-class mechanism,
+  not a hostile-spawn configuration;
+- GOODY_MAP's `iBarbarianUnitProb=100` with `bBad=0` is explicitly documented in the current XML
+  as AdvC's upgrade/additional-outcome probability;
+- current Goody unit classes and audio scripts resolve.
+
+LOWER-THRESHOLD ROBUSTNESS EDGES PRESERVED
+------------------------------------------
+Do not silently forget these, but they do not consume F660 under the current-live threshold:
+- a malformed bad GoodyInfo with a non-NONE BarbarianClass but `iMinBarbarians=0` could reach a
+  divide-by-zero in the hostile probability rescaling; no current bad goody has that shape;
+- missing Feature ArtInfo would make `getNumVarieties()` unsafe; no current feature has one;
+- the terrain/feature NULL footstep fallback of 0 is semantically questionable relative to the
+  usual -1 "none" convention, but all current entries allocate the list;
+- XML-file-cache serialization surfaces remain compiled out under the current
+  `ENABLE_XML_FILE_CACHE=0` configuration.
+
+HISTORY SATURATION
+------------------
+Functional history strata checked/reconciled include:
+- 4037 route air-bomb/RoutePillage support;
+- 3183 enum-map conversion;
+- 3147 XML-info refactor;
+- 2796 route prereq vectorization;
+- 2335 / 2321 Oasis river-corner revert/introduction;
+- 2307 bonus improvement-tech cache;
+- 2236 / 2222 XML defaults;
+- 2060 optional XML tags;
+- 1932 global-warming preservation;
+- 1732 XML/enum cleanup;
+- 1644 split from CvInfos.cpp.
+No independent current-live F660 survived the history or final mechanical pass.
+
+NEXT EXACT CURSOR
+-----------------
+C031-WIP522 physical
+-> 65 / 169 files complete
+-> Queue 033 CLOSED
+-> F659 / KI#981 confirmed
+-> F660 / KI#982 UNUSED
+-> Queue 034 `CvInfo_Civilization.cpp` OPEN
+-> establish current SAS vs Base AdvC 1.14 semantic baseline
+-> compare K-Mod/Civ4CE ancestry
+-> audit CvCivilizationInfo / CvLeaderHeadInfo / CvTraitInfo / diplomacy-response ownership and
+   XML default/pass-2 contracts
+-> trace current XML activation and live consumers
+-> whole-album dedup
+-> promote F660 only for an independent supported root
+-> freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol.
 ===============================================================================

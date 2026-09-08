@@ -9897,7 +9897,12 @@ void CvPlayer::setLastStateReligion(ReligionTypes eNewReligion)
 	//kGame.updateCitySight(false, true);
 
 	ReligionTypes const eOldReligion = getLastStateReligion();
+	// <!-- custom: Religious-building commerce depends on the player's effective state-religion identity, but BtS changed that identity without invalidating the city caches.
+	// Retain it across the mutation and rebuild only when the effective identity changes. See KI#799. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	ReligionTypes const eOldEffectiveReligion = getStateReligion();
 	m_eLastStateReligion = eNewReligion;
+	if (eOldEffectiveReligion != getStateReligion())
+		updateBuildingCommerce();
 
 	// religion visibility now part of espionage
 	//kGame.updateCitySight(true, true);
@@ -10429,7 +10434,9 @@ void CvPlayer::changeStateReligionBuildingCommerce(CommerceTypes eCommerce, int 
 	{
 		m_aiStateReligionBuildingCommerce.add(eCommerce, iChange);
 		FAssert(getStateReligionBuildingCommerce(eCommerce) >= 0);
-		updateCommerce(eCommerce);
+		// <!-- custom: The empire-wide bonus is an input to each city's cached building-commerce amount; updating only total commerce continued to read the stale cache. See KI#799. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		FOR_EACH_CITY_VAR(pLoopCity, *this)
+			pLoopCity->updateBuildingCommerce(eCommerce);
 	}
 }
 
@@ -11011,12 +11018,11 @@ void CvPlayer::setCivics(CivicOptionTypes eCivicOption, CivicTypes eNewValue)
 		return;
 
 	CvGame& kGame = GC.getGame();
-	// <!-- custom: Old effective state religion is recorder-only pre-mutation context.
-	// Cache the later post-initialization/non-Barbarian gameplay condition once, then read the old religion only when that condition and level 2+ both hold.
-	// Setup calls therefore avoid even the recorder-level read. (ChatGPT-5.6-Sol) -->
+	// <!-- custom: Cache the post-initialization/non-Barbarian condition shared by SASGameRecord and religious-building commerce invalidation.
+	// Civic switches across the state-religion boundary change the player input used by every city's cached building commerce, so retain the old effective religion even when logging is disabled; setup calls still avoid the read. See KI#799. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 	bool const bPostInitMajorCiv = (kGame.isFinalInitialized() && !isBarbarian());
 	bool const bLogCivicChange = (bPostInitMajorCiv && gGameRecordLogLevel >= 2);
-	ReligionTypes const eOldEffectiveStateReligion = (bLogCivicChange ? getStateReligion() : NO_RELIGION);
+	ReligionTypes const eOldEffectiveStateReligion = (bPostInitMajorCiv ? getStateReligion() : NO_RELIGION);
 	bool const bWasStateReligion = isStateReligion(); // advc.106
 
 	m_aeCivics.set(eCivicOption, eNewValue);
@@ -11024,6 +11030,9 @@ void CvPlayer::setCivics(CivicOptionTypes eCivicOption, CivicTypes eNewValue)
 		processCivics(eOldCivic, -1);
 	if (getCivics(eCivicOption) != NO_CIVIC)
 		processCivics(getCivics(eCivicOption), 1);
+	// <!-- custom: Rebuild once after both old and new civic effects are processed; refreshing each raw state-religion-count change would recompute the same cache twice. See KI#799. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (bPostInitMajorCiv && eOldEffectiveStateReligion != getStateReligion())
+		updateBuildingCommerce();
 
 	kGame.updateSecretaryGeneral();
 	kGame.AI_makeAssignWorkDirty();

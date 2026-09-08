@@ -581,7 +581,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#488 - (Fixed AdvCiv-SAS cautious-health defect) Resource plots lost Forest/Jungle health](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-488)\
 [KI#489 - (Fixed AdvCiv-SAS regression against AdvCiv Barbarian normalization) First Barbarian city received capital-only gates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-489)\
 [KI#490 - (Fixed AdvCiv-SAS first-city gate defect) Unusable overlapping plots affected preliminary BFC quality](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-490)\
-[KI#491 - (Provisional Pending inherited AdvCiv found-value defect) Duplicate-resource value depends on BFC enumeration order](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-491)\
+[KI#491 - (Provisional Pending Architectural inherited AdvCiv found-value defect) Duplicate-resource value depends on BFC enumeration order](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-491)\
 [KI#492 - (Fixed inherited AdvCiv performance defect) StartingPositionIteration discarded full city-site evaluations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-492)\
 [KI#493 - (Provisional Pending inherited AdvCiv information leak) First-colony value reads hidden foreign city counts](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-493)\
 [KI#494 - (Provisional Pending inherited AdvCiv regression) Fog hardening defeats deadlocked-resource allowance](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-494)\
@@ -892,13 +892,13 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#793 - (Fixed AdvCiv Permanent-Alliance cache defect) Human-involved alliances leave AgentIterator member caches stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-793)\
 [KI#794 - (Fixed inherited war-weariness cache defect with ineffective AdvCiv repair) Team elimination leaves former enemies angry for another turn](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-794)\
 [KI#795 - (Fixed inherited BtS Advanced Start legality defect) Railroad can be purchased without Coal or Oil](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-795)\
-[KI#796 - (Provisional Pending inherited BBAI/K-Mod colony lifecycle regression) A recycled colony can revive a dead team's stale technology state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-796)\
-[KI#797 - (Provisional Pending AdvCiv AgentIterator cache defect) Recycled colonies duplicate ever-alive entries](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-797)\
-[KI#798 - (Provisional Pending inherited midgame event-state defect with incomplete BBAI repair) A new colony can repeat an expired global event](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-798)\
-[KI#799 - (Provisional Pending inherited BtS building-commerce cache defect) State-religion changes leave religious-building commerce stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-799)\
-[KI#800 - (Provisional Pending inherited recycled-player identity defect) Historical owner references alias a new colony](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-800)\
-[KI#801 - (Provisional Pending inherited recycled-player plot-group lifetime defect) Old IDs can create a false trade network](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-801)\
-[KI#802 - (Provisional Pending inherited BBAI/K-Mod recycled-team cleanup defect) A colony can inherit an extinct civilization's blockade](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-802)\
+[KI#796 - (Provisional Pending Architectural inherited BBAI/K-Mod colony lifecycle regression) A recycled colony can revive a dead team's stale technology state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-796)\
+[KI#797 - (Provisional Pending Architectural AdvCiv AgentIterator cache defect) Recycled colonies duplicate ever-alive entries](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-797)\
+[KI#798 - (Provisional Pending Architectural inherited midgame event-state defect with incomplete BBAI repair) A new colony can repeat an expired global event](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-798)\
+[KI#799 - (Fixed inherited BtS building-commerce cache defect) State-religion changes leave religious-building commerce stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-799)\
+[KI#800 - (Provisional Pending Architectural inherited recycled-player identity defect) Historical owner references alias a new colony](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-800)\
+[KI#801 - (Provisional Pending Architectural inherited recycled-player plot-group lifetime defect) Old IDs can create a false trade network](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-801)\
+[KI#802 - (Provisional Pending Architectural inherited BBAI/K-Mod recycled-team cleanup defect) A colony can inherit an extinct civilization's blockade](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-802)\
 [KI#803 - (Provisional Pending inherited BtS first-discovery defect exposed by SAS data) A cityless teammate can consume a religion slot](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-803)\
 [KI#804 - (Provisional Pending inherited BtS first-free-unit defect exposed by SAS data) A cityless discoverer silently loses its reward](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-804)\
 [KI#805 - (Provisional Pending inherited BtS mixed-team first-free-tech defect exposed by SAS data) An AI recipient receives a human-only popup](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-805)\
@@ -1074,7 +1074,10 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#975 - (Provisional Pending AdvCiv colony-revival cache regression) Revived colonies remain absent from alive sequences](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-975)\
 [KI#976 - (Provisional Pending inherited K-Mod/AdvCiv AI strength-memory lifecycle defect) Revived teams use ancient enemy locations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-976)\
 [KI#977 - (Provisional Pending AdvCiv random-setup defect gated off by SAS defaults) Enhanced assignment can duplicate leaders](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-977)\
-[KI#978 - (Provisional Pending investigation) F656 remains unassigned during the CvInitCore audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-978)\
+[KI#978 - (Provisional Pending inherited AdvCiv transferred-map classification defect) Pangaea's `_t` execution alias disables Pangaea-specific logic](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-978)\
+[KI#979 - (Provisional Pending inherited AdvCiv allocator-pairing defect) XML enum-map temporaries use scalar `delete`](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-979)\
+[KI#980 - (Provisional Pending AdvCiv Python enum-binding defect) `NO_GLOBE_LAYER` exports the count sentinel](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-980)\
+[KI#981 - (Provisional Pending inherited AdvCiv info-cleanup lifetime defect) Dependency order leaks nested arrays](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-981)\
 
 <a id="ki-1"></a>
 
@@ -12947,7 +12950,7 @@ The repaired Debug-opt DLL compiled successfully, and the requested Large Archip
 
 <a id="ki-491"></a>
 
-## KI#491 - (Provisional Pending inherited AdvCiv found-value defect) Duplicate-resource value depends on BFC enumeration order
+## KI#491 - (Provisional Pending Architectural inherited AdvCiv found-value defect) Duplicate-resource value depends on BFC enumeration order
 
 Album F168 finds that same-type resource empire value is awarded to the first CityPlot copy and suppressed for later copies, so differing culture reliability makes found value order-dependent. Repair needs broader two-pass resource aggregation; pending independent implementation review.
 
@@ -16251,7 +16254,7 @@ Validated directly in a Modern Advanced Start. Road remained purchasable while R
 
 <a id="ki-796"></a>
 
-## KI#796 - (Provisional Pending inherited BBAI/K-Mod colony lifecycle regression) A recycled colony can revive a dead team's stale technology state
+## KI#796 - (Provisional Pending Architectural inherited BBAI/K-Mod colony lifecycle regression) A recycled colony can revive a dead team's stale technology state
 
 BBAI replaced BtS's unconditional recycled-team reset with a test that treats every assigned teammate as evidence that the old team still exists, even when all those players and the team are dead. Recycling one member of a fully defeated multi-member team therefore resets the player but preserves stale team technologies; persistent player-level technology effects can then disagree with the revived team state. K-Mod, Base AdvCiv 1.14 and SAS inherit the regression. The conservative repair is to recycle only dead singleton-team slots, unless full team detachment, reset and dependent-cache reconstruction are implemented.
 
@@ -16259,7 +16262,7 @@ Found as F473/provisional KI#796 during ChatGPT-5.6-Sol's C031-WIP196 `CvPlayer.
 
 <a id="ki-797"></a>
 
-## KI#797 - (Provisional Pending AdvCiv AgentIterator cache defect) Recycled colonies duplicate ever-alive entries
+## KI#797 - (Provisional Pending Architectural AdvCiv AgentIterator cache defect) Recycled colonies duplicate ever-alive entries
 
 AdvCiv's colony-created cache hook unconditionally inserts the new player and team into `CIV_EVER_ALIVE`. A defeated slot was deliberately retained there as historical state, so recycling even a clean singleton-team slot inserts the same pointers twice. Consumers such as known-technology team counts can then overcount that team and suppress first-discovery rewards. BtS and K-Mod lack this `AgentIterator` cache layer; Base AdvCiv 1.14 and SAS retain the integration defect. Ever-alive insertion must be uniqueness-preserving rather than merely suppressing its duplicate assertion.
 
@@ -16267,7 +16270,7 @@ Found as F474/provisional KI#797 during ChatGPT-5.6-Sol's C031-WIP197 `CvPlayer.
 
 <a id="ki-798"></a>
 
-## KI#798 - (Provisional Pending inherited midgame event-state defect with incomplete BBAI repair) A new colony can repeat an expired global event
+## KI#798 - (Provisional Pending Architectural inherited midgame event-state defect with incomplete BBAI repair) A new colony can repeat an expired global event
 
 Midgame player initialization clears durable trigger-fired state and attempts to reconstruct it from short-lived EventInfo occurrence records. Ordinary non-quest occurrences expire after two turns while their non-recurring trigger identity must remain permanent, so a colony created later—even in a never-alive slot—can forget an old global trigger and become eligible to fire it again. BtS has the broader late-player problem; BBAI/K-Mod attempted an incomplete reconstruction retained by Base AdvCiv and SAS. Initialization should inherit global/team trigger identity from other players' durable fired-trigger state, without inheriting local history from a recycled identity.
 
@@ -16275,15 +16278,21 @@ Found as F475/provisional KI#798 during ChatGPT-5.6-Sol's C031-WIP198 `CvPlayer.
 
 <a id="ki-799"></a>
 
-## KI#799 - (Provisional Pending inherited BtS building-commerce cache defect) State-religion changes leave religious-building commerce stale
+## KI#799 - (Fixed inherited BtS building-commerce cache defect) State-religion changes leave religious-building commerce stale
+
+Screenshots/files for this issue: [google drive folder link](https://drive.google.com/drive/folders/10_A50_QtKqEIBsVPJDfkpXpsB2YvBj07?usp=sharing).
 
 City building-commerce caches include player-level state-religion identity and empire-wide state-religion building-commerce bonuses, but changing religion, crossing the state-religion civic boundary, or changing that bonus does not rebuild the cache. Religious buildings can therefore retain or miss Spiral Minaret, University of Sankore and similar commerce until the later turn-boundary safety rebuild. The invalidation omission exists in BtS/Civ4CE and K-Mod and remains in Base AdvCiv 1.14 and SAS. Every transition of either external input should immediately recompute the affected cities' building commerce.
 
 Found as F476/provisional KI#799 during ChatGPT-5.6-Sol's C031-WIP199 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
+Prepared by immediately rebuilding city building-commerce caches after a remembered state-religion change, once after a civic switch changes the effective state religion, and narrowly for the affected commerce type after an empire-wide state-religion building-commerce bonus changes. The civic path compares the effective religion only after both old and new civic effects are processed, avoiding two redundant rebuilds. The existing turn-boundary rebuild remains because it also covers time-based building-commerce changes. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Validated directly at turns 1-2 with Hinduism remembered, a Hindu Temple and Spiral Minaret in Rome, and the Pyramids/Versailles zero-anarchy setup. Switching from Theocracy to Free Religion removed the Temple's `+2` Gold immediately before ending the turn; after the one-turn revolution lock, restoring Theocracy immediately restored the same `+2`. Screenshots 0564-0569 retain both transitions and city-building tooltips. Validated by wonderingabout with the help of GPT-5.6-Sol, thanks.
+
 <a id="ki-800"></a>
 
-## KI#800 - (Provisional Pending inherited recycled-player identity defect) Historical owner references alias a new colony
+## KI#800 - (Provisional Pending Architectural inherited recycled-player identity defect) Historical owner references alias a new colony
 
 When no never-alive slot remains, inherited colony logic can reuse a defeated `PlayerTypes` value for a new civilization. BBAI's recycled-player cleanup clears per-player-indexed data but not persistent values naming the old identity, including city original/previous owners, building original owners and revealed plot owners. Those records then silently name the unrelated colony, affecting current SAS mechanics such as original-owner-only Great Library Culture and Max City Elimination counters. BtS already permits slot reuse; BBAI/K-Mod, Base AdvCiv and SAS retain the incomplete cleanup. The safest architectural repair is to stop recycling `EVER_ALIVE` identities rather than maintain an open-ended scrub list.
 
@@ -16291,7 +16300,7 @@ Found as F477/provisional KI#800 during ChatGPT-5.6-Sol's C031-WIP200 `CvPlayer.
 
 <a id="ki-801"></a>
 
-## KI#801 - (Provisional Pending inherited recycled-player plot-group lifetime defect) Old IDs can create a false trade network
+## KI#801 - (Provisional Pending Architectural inherited recycled-player plot-group lifetime defect) Old IDs can create a false trade network
 
 Recycled-player cleanup destroys the old player's plot-group free-list without invalidating that player's group IDs stored on every plot. The new colony's fresh free-list can reuse the same numeric IDs, rebinding geographically unrelated old plots into real new groups; normal rebuilding can preserve the alias and incorrectly permit resource trade across a nonexistent network. K-Mod/BBAI contain the same omitted cleanup and reusable IDs, and Base AdvCiv 1.14 and SAS inherit them. Refusing `EVER_ALIVE` slot reuse also cures this root; otherwise every raw per-plot ID must be invalidated before new groups are allocated.
 
@@ -16299,7 +16308,7 @@ Found as F478/provisional KI#801 during ChatGPT-5.6-Sol's C031-WIP201 `CvPlayer.
 
 <a id="ki-802"></a>
 
-## KI#802 - (Provisional Pending inherited BBAI/K-Mod recycled-team cleanup defect) A colony can inherit an extinct civilization's blockade
+## KI#802 - (Provisional Pending Architectural inherited BBAI/K-Mod recycled-team cleanup defect) A colony can inherit an extinct civilization's blockade
 
 When an enemy blockader survives the last player of its target team, war teardown makes the target dead before the unit later removes its blockade; the alive-team removal iterator then omits that target, permanently stranding serialized per-plot blockade counts. BBAI/K-Mod recycled-team cleanup does not clear them, so a new colony reusing the team ID can be unable to work valid coastal tiles and can acquire a false blockaded trade network. Base AdvCiv and SAS inherit this cleanup/lifetime defect. Team reinitialization should clear its map-side blockade counts through an invalidating mutator; refusing `EVER_ALIVE` identity reuse also prevents the recycled manifestation.
 
@@ -17739,8 +17748,32 @@ Found as F655/provisional KI#977 during ChatGPT-5.6-Sol's reconciled C031-WIP511
 
 <a id="ki-978"></a>
 
-## KI#978 - (Provisional Pending investigation) F656 remains unassigned during the CvInitCore audit
+## KI#978 - (Provisional Pending inherited AdvCiv transferred-map classification defect) Pangaea's `_t` execution alias disables Pangaea-specific logic
 
-Queue 026 `CvInitCore.cpp` remains open at reconciled C031-WIP511 after confirming F655/KI#977. Keep F656/KI#978 reserved for the next independent root while that audit continues.
+AdvC uses an `_t` filename suffix as an execution alias when transferring Python map scripts, but `CvInitCore::updatePangaea` classifies the decorated getter instead of the persistent logical map-script identity. Transferred Pangaea therefore caches `m_bPangaea = false`, disabling Pangaea-specific starting-position and AI behavior even though Python correctly executes `Pangaea_t`. Base AdvCiv 1.14 and SAS retain the defect. Pending classifying from the undecorated persistent identity while preserving the `_t` execution lookup and WorldBuilder-map behavior.
 
-Reserved during ChatGPT-5.6-Sol's reconciled C031-WIP511 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+Found as F656/provisional KI#978 during ChatGPT-5.6-Sol's C031-WIP512-WIP513 `CvInitCore.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-979"></a>
+
+## KI#979 - (Provisional Pending inherited AdvCiv allocator-pairing defect) XML enum-map temporaries use scalar `delete`
+
+AdvC's enum-map XML helper allocates temporary commerce arrays with `new[]` but destroys them with scalar `delete`. Current BuildingInfo loading executes the mismatched deallocation 51 times for `CommerceChangeOriginalOwners`; an unused sibling yield helper contains the same typo. The parsed data have already been copied before destruction, but the allocation/deallocation mismatch is undefined behavior and crosses distinct Civ4 allocation shims in Debug builds. Pending replacing both scalar deletions with `delete[]`.
+
+Found as F657/provisional KI#979 during ChatGPT-5.6-Sol's C031-WIP515-WIP516 `CvXMLLoadUtilitySet.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-980"></a>
+
+## KI#980 - (Provisional Pending AdvCiv Python enum-binding defect) `NO_GLOBE_LAYER` exports the count sentinel
+
+AdvC's Python binding registers `GlobeLayerTypes.NO_GLOBE_LAYER` with `NUM_GLOBE_LAYER_TYPES` rather than the C++ `NO_GLOBE_LAYER` value. `CvMainInterface` uses that exported name for ordinary no-layer reports, so `CyGame` stores and serializes the count sentinel instead of -1; current equality-only consumers mostly mask the invalid state. Pending binding the Python name to the actual `NO_GLOBE_LAYER` enumerator.
+
+Found as F658/provisional KI#980 during ChatGPT-5.6-Sol's C031-WIP517-WIP518 `CyEnumsInterface.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-981"></a>
+
+## KI#981 - (Provisional Pending inherited AdvCiv info-cleanup lifetime defect) Dependency order leaks nested arrays
+
+AdvC replaced K-Mod's explicit dependency-safe global-info destruction order with a generic enum-macro order. Current cleanup deletes RouteInfo before ImprovementInfo and ImprovementInfo before CivicInfo, but the later destructors query those already-cleared family counts to free nested rows; their loops therefore execute zero times. Current data skip 48 Improvement/Route rows plus 600 Civic/Improvement rows: 648 arrays and 7,776 bytes of raw integer payload, plus allocator overhead, per global cleanup. Pending restoring a dependency-safe destruction order without changing load-time enum-map organization.
+
+Found as F659/provisional KI#981 during ChatGPT-5.6-Sol's C031-WIP521-WIP522 `CvInfo_Terrain.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
