@@ -886,7 +886,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#787 - (Provisional Pending AdvCiv spaceship-message regression) One observer's revealed capital coordinates leak to later observers](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-787)\
 [KI#788 - (Fixed inherited BtS Permanent-Alliance cache defect) Team absorption leaves vassal-city maintenance stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-788)\
 [KI#789 - (Fixed inherited BtS vassal-maintenance cache defect) Vassal city-count changes do not refresh the master](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-789)\
-[KI#790 - (Provisional Pending inherited K-Mod timer regression exposed by SAS data) -100% anarchy modifiers create negative or 101-turn cooldowns](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-790)\
+[KI#790 - (Fixed inherited K-Mod timer regression exposed by SAS data) -100% anarchy modifiers create negative or 101-turn cooldowns](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-790)\
 [KI#791 - (Provisional Pending AdvCiv worker-build decay defect) Neutral partial Roads and Forts retain invested work forever](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-791)\
 [KI#792 - (Fixed AdvCiv maintenance-cache regression) Eliminating a master-team member leaves surviving members' maintenance stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-792)\
 [KI#793 - (Fixed AdvCiv Permanent-Alliance cache defect) Human-involved alliances leave AgentIterator member caches stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-793)\
@@ -16179,11 +16179,17 @@ Validated in the same Huge Pangaea Debug-opt autoplay: several live vassal relat
 
 <a id="ki-790"></a>
 
-## KI#790 - (Provisional Pending inherited K-Mod timer regression exposed by SAS data) -100% anarchy modifiers create negative or 101-turn cooldowns
+## KI#790 - (Fixed inherited K-Mod timer regression exposed by SAS data) -100% anarchy modifiers create negative or 101-turn cooldowns
+
+Screenshots/files for this issue: [google drive folder link](https://drive.google.com/drive/folders/1c574lEyWKo-_YmZYnwRakbymFjqdgTtv?usp=sharing).
 
 K-Mod proportionally rescales active revolution, conversion and anarchy timers through `100 + oldModifier`. Its clamp substitutes 1 when the old modifier is -100% or lower, turning an ordinary one-turn cooldown into -99 when acquiring another -100% source or 101 when moving from -200% back to -100%. SAS makes both directions directly reachable through its retained Pyramids and Versailles modifiers. The singular formula is a K-Mod regression inherited by Base AdvCiv and SAS; BtS uses a different nonsingular adjustment.
 
 Found as F467/provisional KI#790 during ChatGPT-5.6-Sol's C031-WIP188 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+Prepared by retaining K-Mod's proportional timer correction only when its old scale is positive and clamping a transition below -100% to a zero scale. When the old scale is already singular, an active revolution or conversion cooldown is recomputed from the minimum under the new modifier instead of dividing through an invented denominator of 1; normal active anarchy is already zero and remains untouched. This prevents negative timers and the reverse 101-turn inflation while preserving ordinary positive-scale behavior. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Validated at turn 0 with non-Spiritual Augustus. Adding Pyramids, changing civics and then adding Versailles preserved the expected one-turn lock instead of producing the former -99 immediate unlock; after that lock expired, changing civics with both wonders and removing Versailles again preserved a one-turn lock instead of inflating it to 101 turns. Both transitions became available after exactly one end turn. Screenshots and a reproducible intermediate save are retained at the linked folder. Validated by wonderingabout with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-791"></a>
 

@@ -8037,16 +8037,26 @@ void CvPlayer::changeAnarchyModifier(int iChange)
 
 	/*setRevolutionTimer(std::max(0, ((100 + iChange) * getRevolutionTimer()) / 100));
 	setConversionTimer(std::max(0, ((100 + iChange) * getConversionTimer()) / 100));*/ // BtS
-	// K-Mod. The original code is wrong, and it is missing the anarchy length change.
-	changeRevolutionTimer(getRevolutionTimer() * iChange /
-			std::max(1, 100 + getAnarchyModifier()));
-	changeConversionTimer(getConversionTimer() * iChange /
-			std::max(1, 100 + getAnarchyModifier()));
-	changeAnarchyTurns(getAnarchyTurns() * iChange /
-			std::max(1, 100 + getAnarchyModifier()));
-	// K-Mod end
-
+	// <!-- custom: K-Mod's proportional correction is valid only while the old scale is positive; substituting 1 at -100% turns SAS's ordinary one-turn minimum into -99 or 101 when its two -100% wonders are gained or lost.
+	// Preserve the proportional result above -100%, including a zero-clamped crossing, but treat an already singular timer as the clamped minimum under the new modifier. Normal active anarchy is zero there and needs no invented rescaling. See KI#790. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	int const iOldScale = 100 + getAnarchyModifier();
+	int const iNewScale = std::max(0, iOldScale + iChange);
+	if (iOldScale > 0)
+	{
+		int const iScaleChange = iNewScale - iOldScale;
+		changeRevolutionTimer(getRevolutionTimer() * iScaleChange / iOldScale);
+		changeConversionTimer(getConversionTimer() * iScaleChange / iOldScale);
+		changeAnarchyTurns(getAnarchyTurns() * iScaleChange / iOldScale);
+	}
 	m_iAnarchyModifier += iChange;
+	if (iOldScale <= 0)
+	{
+		static const int iMIN_CONVERSION_TURNS = GC.getDefineINT("MIN_CONVERSION_TURNS");
+		if (getRevolutionTimer() > 0)
+			setRevolutionTimer(getMinTurnsBetweenRevolutions());
+		if (getConversionTimer() > 0)
+			setConversionTimer(std::max(1, ((100 + getAnarchyModifier()) * iMIN_CONVERSION_TURNS) / 100));
+	}
 }
 
 
