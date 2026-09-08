@@ -891,7 +891,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#792 - (Fixed AdvCiv maintenance-cache regression) Eliminating a master-team member leaves surviving members' maintenance stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-792)\
 [KI#793 - (Fixed AdvCiv Permanent-Alliance cache defect) Human-involved alliances leave AgentIterator member caches stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-793)\
 [KI#794 - (Fixed inherited war-weariness cache defect with ineffective AdvCiv repair) Team elimination leaves former enemies angry for another turn](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-794)\
-[KI#795 - (Provisional Pending inherited BtS Advanced Start legality defect) Railroad can be purchased without Coal or Oil](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-795)\
+[KI#795 - (Fixed inherited BtS Advanced Start legality defect) Railroad can be purchased without Coal or Oil](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-795)\
 [KI#796 - (Provisional Pending inherited BBAI/K-Mod colony lifecycle regression) A recycled colony can revive a dead team's stale technology state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-796)\
 [KI#797 - (Provisional Pending AdvCiv AgentIterator cache defect) Recycled colonies duplicate ever-alive entries](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-797)\
 [KI#798 - (Provisional Pending inherited midgame event-state defect with incomplete BBAI repair) A new colony can repeat an expired global event](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-798)\
@@ -16237,11 +16237,17 @@ Validated with the matching Debug-opt DLL in two Small Pangaea, five-player Conq
 
 <a id="ki-795"></a>
 
-## KI#795 - (Provisional Pending inherited BtS Advanced Start legality defect) Railroad can be purchased without Coal or Oil
+## KI#795 - (Fixed inherited BtS Advanced Start legality defect) Railroad can be purchased without Coal or Oil
+
+Screenshots/files for this issue: [google drive folder link](https://drive.google.com/drive/folders/16g_-UmY5Wf89PBpYj-XHzUEMpn9GkLoG?usp=sharing).
 
 BtS Advanced Start validates a route purchase's matching Build technology but omits the route's mandatory and alternative resource prerequisites, then installs the route directly without revalidation. A Modern Advanced Start can therefore purchase Railroad with Steam Power but neither connected Coal nor Oil, although an ordinary Worker correctly rejects the same Build. Civ4CE, K-Mod, Base AdvCiv 1.14 and SAS retain the inherited Firaxis omission. Route additions should accept any matching Build that passes normal plot/build legality; removal and refunds should remain possible without retroactively requiring the resource.
 
 Found as F472/provisional KI#795 during ChatGPT-5.6-Sol's C031-WIP193 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+Prepared by making a concrete Advanced Start route addition require at least one matching Build that passes the normal `CvPlayer::canBuild` legality path. This applies Railroad's connected Coal-or-Oil requirement without duplicating only part of route legality, and correctly permits a future route with multiple alternative BuildInfos when any one is legal. Generic price/help queries retain the inherited technology check, while removing and refunding an existing route does not retroactively require a currently connected resource. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Validated directly in a Modern Advanced Start. Road remained purchasable while Railroad was unavailable without connected Coal or Oil; after buying a second city that connected Oil, Railroad became purchasable and charged points, and removing it remained available and refunded its cost. Screenshots 0531-0542 retain the full setup and transition. Validated by wonderingabout with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-796"></a>
 

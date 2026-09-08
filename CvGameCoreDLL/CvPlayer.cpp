@@ -14148,15 +14148,22 @@ int CvPlayer::getAdvancedStartRouteCost(RouteTypes eRoute, bool bAdd, CvPlot con
 			return -1;
 	}
 
-	// Tech requirement
+	// <!-- custom: BtS checked only the matching Build technology, so Advanced Start could place Railroad without its required connected Coal or Oil.
+	// For additions on a concrete plot, require any matching Build to pass the normal plot/build legality path; keep generic-price queries and removals independent of current plot resources. See KI#795. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool bFoundLegalBuild = false;
 	FOR_EACH_ENUM(Build)
 	{
-		if (GC.getInfo(eLoopBuild).getRoute() == eRoute)
+		CvBuildInfo const& kBuild = GC.getInfo(eLoopBuild);
+		if (kBuild.getRoute() != eRoute)
+			continue;
+		if (bAdd && pPlot != NULL ? canBuild(*pPlot, eLoopBuild) : GET_TEAM(getTeam()).isHasTech(kBuild.getTechPrereq()))
 		{
-			if (!GET_TEAM(getTeam()).isHasTech(GC.getInfo(eLoopBuild).getTechPrereq()))
-				return -1;
+			bFoundLegalBuild = true;
+			break;
 		}
 	}
+	if (!bFoundLegalBuild)
+		return -1;
 
 	// Increase cost if the XML defines that additional units will cost more
 	if (GC.getInfo(eRoute).getAdvancedStartCostIncrease() != 0)
