@@ -156,6 +156,8 @@ private:
 	bool isRevealed(CvPlot const& p) const;
 	PlayerTypes getRevealedOwner(CvPlot const& p) const;
 	TeamTypes getRevealedTeam(CvPlot const& p) const;
+	// <!-- custom: Count only cities the evaluating team owns or can locate when an ordinary found-value heuristic asks about an area's settlement state. See KI#493 and KI#495. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	int countKnownCities(CvArea const& kLoopArea, PlayerTypes eOwner = NO_PLAYER) const;
 	BonusTypes getBonus(CvPlot const& p) const;
 	ImprovementTypes getBonusImprovement(BonusTypes eBonus, CvPlot const& p, bool& bCanTrade, bool& bCanTradeSoon, int* aiImprovementYield, bool& bCanImprove, bool& bCanImproveSoon, bool& bRemoveFeature) const;
 	bool isNearTech(TechTypes eTech) const;

@@ -2232,6 +2232,30 @@ TeamTypes AIFoundValue::getRevealedTeam(CvPlot const& p) const
 	return TEAMID(ePlayer);
 }
 
+// <!-- custom: Raw CvArea totals reveal cities beyond the evaluating team's knowledge. Count own/team cities and foreign cities whose sites are deducible, optionally for one revealed owner.
+// Without an owner filter, exclude Barbarian cities like AdvCiv's getNumCivCities test; with one, preserve the culture modifier's ability to count cities belonging to a revealed Barbarian owner. See KI#493 and KI#495. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+int AIFoundValue::countKnownCities(CvArea const& kLoopArea, PlayerTypes eOwner) const
+{
+	int iKnownCities = 0;
+	for (PlayerIter<ALIVE> it; it.hasNext(); ++it)
+	{
+		CvPlayer const& kLoopPlayer = *it;
+		if ((eOwner == NO_PLAYER && kLoopPlayer.isBarbarian()) ||
+			(!kSet.isAllSeeing() && !GET_TEAM(kLoopPlayer.getTeam()).isHasMet(eTeam)) ||
+			(eOwner != NO_PLAYER && kLoopPlayer.getID() != eOwner))
+			continue;
+		FOR_EACH_CITY(pLoopCity, kLoopPlayer)
+		{
+			if (!pLoopCity->isArea(kLoopArea))
+				continue;
+			if (!kSet.isAllSeeing() && kLoopPlayer.getTeam() != eTeam && !kTeam.AI_deduceCitySite(*pLoopCity))
+				continue;
+			iKnownCities++;
+		}
+	}
+	return iKnownCities;
+}
+
 // (replacing all CvPlot::getBonusType and getNonObsoleteBonusType calls)
 BonusTypes AIFoundValue::getBonus(CvPlot const& p) const
 {
@@ -2409,8 +2433,8 @@ int AIFoundValue::calculateCultureModifier(CvPlot const& p, bool bForeignOwned, 
 	if (bForeignOwned)
 	{
 		if ((pForeignCity != NULL && pForeignCity->isCapital()) ||
-			// Likely to struggle with a single colony against multiple rival cities
-			(iAreaCities <= 0 && p.getArea().getCitiesPerPlayer(getRevealedOwner(p)) > 1))
+			// <!-- custom: Keep the single-colony culture penalty, but base it on rival cities the evaluating team can locate rather than hidden CvArea totals. See KI#495. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+			(iAreaCities <= 0 && countKnownCities(p.getArea(), getRevealedOwner(p)) > 1))
 		{
 			iOtherCulture = (3 * iOtherCulture) / 2;
 		}
@@ -2794,7 +2818,8 @@ bool AIFoundValue::isBonusOwnedOrClaimedByFutureBFC(BonusTypes eBonus) const
 			if (pLoopPlot == NULL || pLoopPlot->getBonusType(kPlayer.getTeam()) != eBonus)
 				continue;
 
-			PlayerTypes const ePlotOwner = pLoopPlot->getOwner();
+			// <!-- custom: The bonus is team-known, but ownership can change under fog; use remembered ownership so hidden border changes cannot alter settlement value. See KI#496. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+			PlayerTypes const ePlotOwner = getRevealedOwner(*pLoopPlot);
 			if (ePlotOwner == NO_PLAYER || ePlotOwner == ePlayer)
 			{
 				// <!-- custom: A contested occurrence establishes nothing about other copies. Keep searching until any matching future-BFC bonus is safely claimable, making this empire-wide result independent of city/plot iteration order. See KI#485. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
@@ -4108,7 +4133,8 @@ int AIFoundValue::adjustToCitiesPerArea(int iValue) const
 	if (kTeam.isCapitulated() || iCities <= 0)
 		return iValue; // </advc.130v>
 
-	if (kArea.getNumCivCities() <= 0) // advc.031: Had been counting Barbarian cities
+	// <!-- custom: Preserve AdvCiv's civilian first-colony test without letting an unknown rival city remove the bonus; use the same known/deducible-city policy as ordinary site evaluation. See KI#493. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (countKnownCities(kArea) <= 0) // advc.031: Had been counting Barbarian cities
 	{
 		//iValue *= 2;
 		// K-Mod: presumably this is meant to be a bonus for being the first on a new continent.

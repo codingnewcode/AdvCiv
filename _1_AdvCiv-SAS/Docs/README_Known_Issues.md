@@ -583,13 +583,13 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#490 - (Fixed AdvCiv-SAS first-city gate defect) Unusable overlapping plots affected preliminary BFC quality](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-490)\
 [KI#491 - (Provisional Pending Architectural inherited AdvCiv found-value defect) Duplicate-resource value depends on BFC enumeration order](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-491)\
 [KI#492 - (Fixed inherited AdvCiv performance defect) StartingPositionIteration discarded full city-site evaluations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-492)\
-[KI#493 - (Provisional Pending inherited AdvCiv information leak) First-colony value reads hidden foreign city counts](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-493)\
-[KI#494 - (Provisional Pending inherited AdvCiv regression) Fog hardening defeats deadlocked-resource allowance](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-494)\
-[KI#495 - (Provisional Pending inherited AdvCiv information leak) Culture modifier reads hidden area city totals](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-495)\
-[KI#496 - (Provisional Pending AdvCiv-SAS KI#178 information leak) Future-BFC resources use live hidden ownership](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-496)\
-[KI#497 - (Provisional Pending inherited AdvCiv information leak) Raw city-radius counters expose hidden cities](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-497)\
-[KI#498 - (Provisional Pending inherited AdvCiv information leak) Culture valuation reads exact hidden working-city state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-498)\
-[KI#499 - (Provisional Pending inherited AdvCiv information leak) Found value reads live hidden plot culture](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-499)\
+[KI#493 - (Fixed inherited K-Mod information leak left incomplete by AdvCiv fog hardening) First-colony value reads hidden foreign city counts](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-493)\
+[KI#494 - (Pending Knowledge-Boundary inherited AdvCiv regression) Fog hardening defeats deadlocked-resource allowance](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-494)\
+[KI#495 - (Fixed inherited AdvCiv information leak) Culture modifier reads hidden area city totals](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-495)\
+[KI#496 - (Fixed AdvCiv-SAS KI#178 information leak) Future-BFC resources use live hidden ownership](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-496)\
+[KI#497 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Raw city-radius counters expose hidden cities](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-497)\
+[KI#498 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Culture valuation reads exact hidden working-city state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-498)\
+[KI#499 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Found value reads live hidden plot culture](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-499)\
 [KI#500 - (Pending Knowledge-Boundary AdvCiv-SAS first-settler regression) Runtime evaluation retains starting-location omniscience](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-500)\
 [KI#501 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Foreign pressure reads hidden current culture level](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-501)\
 [KI#502 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Runtime city-site evaluation reads hidden area topology](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-502)\
@@ -12968,57 +12968,63 @@ Found in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; independentl
 
 <a id="ki-493"></a>
 
-## KI#493 - (Provisional Pending inherited AdvCiv information leak) First-colony value reads hidden foreign city counts
+## KI#493 - (Fixed inherited K-Mod information leak left incomplete by AdvCiv fog hardening) First-colony value reads hidden foreign city counts
 
-Album F170 finds that the first-colony landmass bonus uses complete CvArea city counts despite the nearby revealed-area anti-cheat adjustment. Pending independent implementation review.
+Album F170 found that K-Mod's first-colony landmass bonus used the complete `CvArea` city count. AdvCiv excluded Barbarian cities and explicitly knowledge-limited the nearby area-size input, but left the city-existence test omniscient. A shared city counter now includes own/team cities and only foreign cities whose sites the evaluating team can deduce, preserving the intended civilian first-colony test without revealing a hidden rival colony.
 
-Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+After successful compilation, a Huge Continents, Normal-speed full autoplay with 16 independent teams completed by Domination on turn 330 without an observed issue. The exact hidden-information contrast remains source verified.
+
+Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; independently reviewed, prepared and documented with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-494"></a>
 
-## KI#494 - (Provisional Pending inherited AdvCiv regression) Fog hardening defeats deadlocked-resource allowance
+## KI#494 - (Pending Knowledge-Boundary inherited AdvCiv regression) Fog hardening defeats deadlocked-resource allowance
 
-Album F171 finds that advc.181 can reject the explicitly allowed fogged alternate city site and falsely classify a resource as deadlocked. Pending independent implementation review.
+Album F171 finds that advc.181 can reject the explicitly allowed fogged alternate city site and falsely classify a resource as deadlocked. Independent review confirmed that preserving the allowance without restoring omniscient `canFound` requires a separate prospective-site knowledge policy; deferred with the broader city-site knowledge-boundary work.
 
 Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-495"></a>
 
-## KI#495 - (Provisional Pending inherited AdvCiv information leak) Culture modifier reads hidden area city totals
+## KI#495 - (Fixed inherited AdvCiv information leak) Culture modifier reads hidden area city totals
 
-Album F172 finds that an unknown second rival city can trigger the opposing-culture multiplier in an otherwise identical revealed state. Pending independent implementation review.
+Album F172 found that an unknown second rival city could trigger AdvCiv's opposing-culture multiplier in an otherwise identical revealed state. The multiplier now uses the KI#493 shared counter and therefore responds only when the evaluating team can locate more than one city belonging to the revealed plot owner in that area.
 
-Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+After successful compilation, a Huge Continents, Normal-speed full autoplay with 16 independent teams completed by Domination on turn 330 without an observed issue. The exact hidden-information contrast remains source verified.
+
+Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; independently reviewed, prepared and documented with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-496"></a>
 
-## KI#496 - (Provisional Pending AdvCiv-SAS KI#178 information leak) Future-BFC resources use live hidden ownership
+## KI#496 - (Fixed AdvCiv-SAS KI#178 information leak) Future-BFC resources use live hidden ownership
 
-Album F173 finds that a revealed resource is filtered through its live owner rather than team-revealed ownership, allowing unseen ownership changes to alter site value. Pending independent implementation review.
+Album F173 found that the SAS KI#178 future-BFC resource helper first required team-known resource information but then filtered it through live ownership, allowing an unseen border change to alter site value. It now uses the evaluator's established revealed-owner helper, which retains live ownership for all-seeing evaluation and remembered team ownership otherwise.
 
-Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+After successful compilation, a Huge Continents, Normal-speed full autoplay with 16 independent teams completed by Domination on turn 330 without an observed issue. The exact hidden-information contrast remains source verified.
+
+Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; independently reviewed, prepared and documented with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-497"></a>
 
-## KI#497 - (Provisional Pending inherited AdvCiv information leak) Raw city-radius counters expose hidden cities
+## KI#497 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Raw city-radius counters expose hidden cities
 
-Album F174 finds multiple ordinary site-evaluation paths reading knowledge-blind isCityRadius/getCityRadiusCount state. Pending independent implementation review.
+Album F174 finds multiple ordinary site-evaluation paths reading knowledge-blind `isCityRadius`/`getCityRadiusCount` state. Repair needs a shared known/deducible city-radius policy across several callers; deferred with the broader city-site knowledge-boundary work.
 
 Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-498"></a>
 
-## KI#498 - (Provisional Pending inherited AdvCiv information leak) Culture valuation reads exact hidden working-city state
+## KI#498 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Culture valuation reads exact hidden working-city state
 
-Album F175 finds calculateCultureModifier reading hidden working-city identity, geometry, area and capital status even when the city is not deducible. Pending independent implementation review.
+Album F175 finds `calculateCultureModifier` reading hidden working-city identity, geometry, area and capital status even when the city is not deducible. A safe repair must define a conservative owner-only estimate for that case rather than merely nulling one pointer; deferred with the broader city-site knowledge-boundary work.
 
 Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-499"></a>
 
-## KI#499 - (Provisional Pending inherited AdvCiv information leak) Found value reads live hidden plot culture
+## KI#499 - (Pending Knowledge-Boundary inherited AdvCiv information leak) Found value reads live hidden plot culture
 
-Album F176 finds current culture amounts and rankings being consumed on revealed but presently fogged plots. Pending independent implementation review.
+Album F176 finds current culture amounts and rankings being consumed on revealed but presently fogged plots. Repair requires an explicit knowledge-safe culture proxy or remembered snapshot rather than a local substitution; deferred with the broader city-site knowledge-boundary work.
 
 Found and documented in the C++ File Audit Album with the help of ChatGPT-5.6-Sol; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
