@@ -887,10 +887,10 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#788 - (Fixed inherited BtS Permanent-Alliance cache defect) Team absorption leaves vassal-city maintenance stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-788)\
 [KI#789 - (Fixed inherited BtS vassal-maintenance cache defect) Vassal city-count changes do not refresh the master](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-789)\
 [KI#790 - (Fixed inherited K-Mod timer regression exposed by SAS data) -100% anarchy modifiers create negative or 101-turn cooldowns](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-790)\
-[KI#791 - (Provisional Pending AdvCiv worker-build decay defect) Neutral partial Roads and Forts retain invested work forever](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-791)\
+[KI#791 - (Provisional Pending Architectural AdvCiv worker-build decay defect) Neutral partial Roads and Forts retain invested work forever](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-791)\
 [KI#792 - (Fixed AdvCiv maintenance-cache regression) Eliminating a master-team member leaves surviving members' maintenance stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-792)\
 [KI#793 - (Fixed AdvCiv Permanent-Alliance cache defect) Human-involved alliances leave AgentIterator member caches stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-793)\
-[KI#794 - (Provisional Pending inherited war-weariness cache defect with ineffective AdvCiv repair) Team elimination leaves former enemies angry for another turn](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-794)\
+[KI#794 - (Fixed inherited war-weariness cache defect with ineffective AdvCiv repair) Team elimination leaves former enemies angry for another turn](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-794)\
 [KI#795 - (Provisional Pending inherited BtS Advanced Start legality defect) Railroad can be purchased without Coal or Oil](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-795)\
 [KI#796 - (Provisional Pending inherited BBAI/K-Mod colony lifecycle regression) A recycled colony can revive a dead team's stale technology state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-796)\
 [KI#797 - (Provisional Pending AdvCiv AgentIterator cache defect) Recycled colonies duplicate ever-alive entries](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-797)\
@@ -16193,7 +16193,7 @@ Validated at turn 0 with non-Spiritual Augustus. Adding Pyramids, changing civic
 
 <a id="ki-791"></a>
 
-## KI#791 - (Provisional Pending AdvCiv worker-build decay defect) Neutral partial Roads and Forts retain invested work forever
+## KI#791 - (Provisional Pending Architectural AdvCiv worker-build decay defect) Neutral partial Roads and Forts retain invested work forever
 
 AdvCiv's build-progress decay runs from each player's turn but visits only that player's owned land plots. Partial Roads and outside-borders Forts are valid on neutral land, yet no player ever advances those plots' interruption timer; their invested work therefore never begins decaying after the documented eight idle turns. The omission dates to AdvCiv's original `advc.011` dispatcher and remains in Base AdvCiv 1.14 and SAS; BtS/Civ4CE and K-Mod do not contain this decay system. A repair must update eligible plot-global progress exactly once per global turn rather than merely removing the ownership test and multiplying decay by the number of players.
 
@@ -16225,11 +16225,15 @@ Validated in the same Huge Pangaea Debug-opt autoplay: SASGameRecord recorded te
 
 <a id="ki-794"></a>
 
-## KI#794 - (Provisional Pending inherited war-weariness cache defect with ineffective AdvCiv repair) Team elimination leaves former enemies angry for another turn
+## KI#794 - (Fixed inherited war-weariness cache defect with ineffective AdvCiv repair) Team elimination leaves former enemies angry for another turn
 
 BtS/K-Mod leave surviving enemies' cached war-weariness anger stale until their next normal turn after the final player of an enemy team is eliminated. AdvCiv attempted an immediate repair, but first clears the dead team's wars and only afterward searches for still-at-war enemies; the guard is therefore false precisely when elimination ended the war. Base AdvCiv 1.14 and SAS retain this ineffective ordering, allowing one more city/economic turn to use obsolete anger. A repair should remember former enemies before war teardown and refresh their living players afterward, analogously to normal `makePeace` processing.
 
 Found as F471/provisional KI#794 during ChatGPT-5.6-Sol's C031-WIP192 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+Prepared by snapshotting every living major enemy player only when the eliminated player is the final living member of its team, before `changeAliveCount` clears the wars. After teardown, those exact former enemies immediately rebuild cached war-weariness anger; a teammate's death while its team remains alive does not trigger an unnecessary refresh. This replaces AdvCiv's ineffective post-teardown `isAtWar` discovery loop and restores the same invariant as ordinary peace before the survivors' next city/economy processing. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Validated with the matching Debug-opt DLL in two Small Pangaea, five-player Conquest-enabled autoplays. `SASGameRecord_20260908T063157Z_new1.log` completed 500 turns normally after eliminating players 2 and 4; `SASGameRecord_20260908T064333Z_new2.log` reached a turn-321 Conquest victory after eliminating players 0, 2 and 3. The latter directly exercised repeated final-team elimination and post-war cache refreshes through victory. Validated by wonderingabout with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-795"></a>
 

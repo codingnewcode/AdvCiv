@@ -9124,6 +9124,14 @@ void CvPlayer::setAlive(bool bNewValue)
 	// Hoisting one recorder-level query here would charge every setAlive call while never serving both branches on the same call. (ChatGPT-5.6-Sol) -->
 	if (isAlive() == bNewValue)
 		return;
+	// <!-- custom: AdvCiv tried to refresh former enemies' cached war-weariness anger after elimination, but final-team death had already cleared every war before its isAtWar test.
+	// Snapshot the affected living players before that teardown and refresh them afterward, before their next city/economy processing. See KI#794. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	std::vector<PlayerTypes> aeFormerWarEnemies;
+	if (!bNewValue && GET_TEAM(getTeam()).getAliveCount() == 1)
+	{
+		for (PlayerIter<MAJOR_CIV,ENEMY_OF> itEnemy(getTeam()); itEnemy.hasNext(); ++itEnemy)
+			aeFormerWarEnemies.push_back(itEnemy->getID());
+	}
 	/*	<advc.003m> Moved up b/c, once the team's AliveCount is set to 0,
 		at-war status is lost. Need that for lifting blockades.
 		Not sure about killing cities (there should be none anyway).
@@ -9194,16 +9202,10 @@ void CvPlayer::setAlive(bool bNewValue)
 		}
 	}
 	else
-	{	// <advc.001> CvTeam::makePeace does this, but here they've missed it.
-		FOR_EACH_ENUM(CivPlayer)
-		{
-			CvPlayer& kWarEnemy = GET_PLAYER((PlayerTypes)eLoopCivPlayer);
-			if (kWarEnemy.isAlive() && kWarEnemy.getID() != getID() &&
-				!kWarEnemy.isMinorCiv() && GET_TEAM(kWarEnemy.getTeam()).isAtWar(getTeam()))
-			{
-				kWarEnemy.updateWarWearinessPercentAnger();
-			}
-		} // </advc.001>
+	{
+		// <!-- custom: Apply the pre-teardown snapshot after final-team death has ended the wars; this replaces AdvCiv's ineffective post-teardown discovery loop above. See KI#794. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		for (size_t i = 0; i < aeFormerWarEnemies.size(); i++)
+			GET_PLAYER(aeFormerWarEnemies[i]).updateWarWearinessPercentAnger();
 		clearResearchQueue();
 		clearPopups(); // advc
 		//killUnits(); // advc.003m: Moved up
