@@ -884,12 +884,12 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#785 - (Fixed AdvCiv espionage wrong-owner regression) Force Civic used the spy owner's cooldown modifier](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-785)\
 [KI#786 - (Fixed inherited K-Mod espionage wrong-owner defect) Post-sabotage production checked the spy owner](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-786)\
 [KI#787 - (Provisional Pending AdvCiv spaceship-message regression) One observer's revealed capital coordinates leak to later observers](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-787)\
-[KI#788 - (Provisional Pending inherited BtS Permanent-Alliance cache defect) Team absorption leaves vassal-city maintenance stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-788)\
-[KI#789 - (Provisional Pending inherited BtS vassal-maintenance cache defect) Vassal city-count changes do not refresh the master](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-789)\
+[KI#788 - (Fixed inherited BtS Permanent-Alliance cache defect) Team absorption leaves vassal-city maintenance stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-788)\
+[KI#789 - (Fixed inherited BtS vassal-maintenance cache defect) Vassal city-count changes do not refresh the master](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-789)\
 [KI#790 - (Provisional Pending inherited K-Mod timer regression exposed by SAS data) -100% anarchy modifiers create negative or 101-turn cooldowns](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-790)\
 [KI#791 - (Provisional Pending AdvCiv worker-build decay defect) Neutral partial Roads and Forts retain invested work forever](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-791)\
-[KI#792 - (Provisional Pending AdvCiv maintenance-cache regression) Eliminating a master-team member leaves surviving members' maintenance stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-792)\
-[KI#793 - (Provisional Pending AdvCiv Permanent-Alliance cache defect) Human-involved alliances leave AgentIterator member caches stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-793)\
+[KI#792 - (Fixed AdvCiv maintenance-cache regression) Eliminating a master-team member leaves surviving members' maintenance stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-792)\
+[KI#793 - (Fixed AdvCiv Permanent-Alliance cache defect) Human-involved alliances leave AgentIterator member caches stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-793)\
 [KI#794 - (Provisional Pending inherited war-weariness cache defect with ineffective AdvCiv repair) Team elimination leaves former enemies angry for another turn](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-794)\
 [KI#795 - (Provisional Pending inherited BtS Advanced Start legality defect) Railroad can be purchased without Coal or Oil](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-795)\
 [KI#796 - (Provisional Pending inherited BBAI/K-Mod colony lifecycle regression) A recycled colony can revive a dead team's stale technology state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-796)\
@@ -1071,7 +1071,10 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#972 - (Provisional Pending AdvCiv WarEvaluator cache-lifecycle regression) Per-instance writes can survive scheduled invalidation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-972)\
 [KI#973 - (Provisional Pending inherited BtS fractal-inversion defect activated by SAS large maps) Interpolation uses uninverted boundary cells](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-973)\
 [KI#974 - (Provisional Pending AdvCiv AgentIterator revival regression) Shared-team revival corrupts cached sequences](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-974)\
-[KI#975 - (Provisional Pending investigation) F653 remains unassigned during the CvAgents audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-975)\
+[KI#975 - (Provisional Pending AdvCiv colony-revival cache regression) Revived colonies remain absent from alive sequences](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-975)\
+[KI#976 - (Provisional Pending inherited K-Mod/AdvCiv AI strength-memory lifecycle defect) Revived teams use ancient enemy locations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-976)\
+[KI#977 - (Provisional Pending AdvCiv random-setup defect gated off by SAS defaults) Enhanced assignment can duplicate leaders](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-977)\
+[KI#978 - (Provisional Pending investigation) F656 remains unassigned during the CvInitCore audit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-978)\
 
 <a id="ki-1"></a>
 
@@ -16152,19 +16155,27 @@ Found as F464/provisional KI#787 during ChatGPT-5.6-Sol's C031-WIP184 `CvPlayer.
 
 <a id="ki-788"></a>
 
-## KI#788 - (Provisional Pending inherited BtS Permanent-Alliance cache defect) Team absorption leaves vassal-city maintenance stale
+## KI#788 - (Fixed inherited BtS Permanent-Alliance cache defect) Team absorption leaves vassal-city maintenance stale
 
 Number-of-cities maintenance divides a master team's vassal-city burden among its current members. Permanent Alliance absorption changes that member count without refreshing either ally's cached city maintenance, so authoritative expenses can remain at the pre-alliance value. The dependency and missing invalidation originate in BtS and remain in Civ4CE, K-Mod, Base AdvCiv 1.14 and SAS.
 
 Found as F465/provisional KI#788 during ChatGPT-5.6-Sol's C031-WIP186 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
+Prepared by rebuilding maintenance for every member of the surviving team after all Permanent-Alliance player reassignment is complete. Both original and absorbed members therefore use the final merged member-count divisor and vassal set before their next economy processing. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Validated in a Huge Pangaea Debug-opt autoplay with mixed starting teams, vassals and Permanent Alliances enabled. SASGameRecord recorded team 2 absorbing player 9 and the game completed normally with a turn-427 domination victory. Validated by wonderingabout with the help of GPT-5.6-Sol, thanks.
+
 <a id="ki-789"></a>
 
-## KI#789 - (Provisional Pending inherited BtS vassal-maintenance cache defect) Vassal city-count changes do not refresh the master
+## KI#789 - (Fixed inherited BtS vassal-maintenance cache defect) Vassal city-count changes do not refresh the master
 
 The same cached maintenance formula depends on the total cities owned by living vassals. Founding, conquering or losing a vassal city refreshes only that vassal player's maintenance, leaving each master player's authoritative maintenance stale until an unrelated invalidator happens to run. BtS introduced the dependency and omission; K-Mod reduced the burden to half without adding invalidation, and Base AdvCiv 1.14 and SAS retain it.
 
 Found as F466/provisional KI#789 during ChatGPT-5.6-Sol's C031-WIP187 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+Prepared centrally in `CvTeam::changeNumCities`: after a vassal team's authoritative city count changes, every living member of its current master team refreshes maintenance. This covers founding, capture and loss at their shared mutation boundary while avoiding setup-time partial state. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Validated in the same Huge Pangaea Debug-opt autoplay: several live vassal relationships and changing city holdings exercised the central invalidation through turn 427 without a crash or observed economy failure. Validated by wonderingabout with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-790"></a>
 
@@ -16184,19 +16195,27 @@ Found as F468/provisional KI#791 during ChatGPT-5.6-Sol's C031-WIP189 `CvPlayer.
 
 <a id="ki-792"></a>
 
-## KI#792 - (Provisional Pending AdvCiv maintenance-cache regression) Eliminating a master-team member leaves surviving members' maintenance stale
+## KI#792 - (Fixed AdvCiv maintenance-cache regression) Eliminating a master-team member leaves surviving members' maintenance stale
 
 AdvCiv changed the vassal-city maintenance divisor from BtS/K-Mod's persistent team-member count to the number of living team members. When one member of a multi-player master team is eliminated while a teammate and their vassal relationship survive, that divisor changes immediately but the surviving members' cached city and total maintenance are not refreshed; their next economy processing can therefore undercharge maintenance until an unrelated invalidation occurs. This mismatch was introduced by AdvCiv's 2020 AgentIterator refactor and remains in Base AdvCiv 1.14 and SAS. A repair should either invalidate maintenance whenever alive team membership changes, including symmetric revival, or deliberately restore the persistent-member divisor.
 
 Found as F469/provisional KI#792 during ChatGPT-5.6-Sol's C031-WIP190 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
+Prepared by refreshing current team members' maintenance immediately after AdvCiv's AgentIterator defeat/revival hook establishes the new living-member set. This preserves AdvCiv's alive-only divisor while repairing both elimination and symmetric revival, guarded outside final initialization and barbarian setup. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Validated in the same Huge Pangaea Debug-opt autoplay: mixed two-player teams participated, six players were eliminated, and the game completed normally at turn 427. This covers the elimination-side cache transition; the symmetric revival path remains source-verified through the same shared call site. Validated by wonderingabout with the help of GPT-5.6-Sol, thanks.
+
 <a id="ki-793"></a>
 
-## KI#793 - (Provisional Pending AdvCiv Permanent-Alliance cache defect) Human-involved alliances leave AgentIterator member caches stale
+## KI#793 - (Fixed AdvCiv Permanent-Alliance cache defect) Human-involved alliances leave AgentIterator member caches stale
 
 AdvCiv introduced cached `AgentIterator` team/member sequences and later added the necessary full-cache rebuild after a Permanent Alliance, but called it only after the AI-AI diplomacy branch's direct deal implementation. Human-AI and human-human alliances instead use the generic deal path, which reassigns the absorbed players without rebuilding those caches; later `MemberIter` consumers can omit the absorbed player, including player-level technology effects. Base AdvCiv 1.14 and SAS retain this partial AdvCiv integration. The repair belongs after the generic Permanent Alliance transaction, with the AI-only duplicate removed, so every producer restores the same cache invariant.
 
 Found as F470/provisional KI#793 during ChatGPT-5.6-Sol's C031-WIP191 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+Prepared by moving the full AgentIterator rebuild into `CvTeam::addTeam` immediately after every absorbed player has its final team identity. The common transaction now covers AI-AI, human-AI, human-human and exported deal paths; AdvCiv's later AI-only duplicate was removed. Prepared with the help of GPT-5.6-Sol, thanks.
+
+Validated in the same Huge Pangaea Debug-opt autoplay: SASGameRecord recorded team 2 changing from member 3 to members 3 and 9 after a Permanent Alliance, and subsequent play completed normally through a turn-427 domination victory. The common transaction also source-verifies the human-involved paths that share it. Validated by wonderingabout with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-794"></a>
 
@@ -17676,12 +17695,36 @@ Found as F651/provisional KI#973 during ChatGPT-5.6-Sol's C031-WIP492 `CvFractal
 
 AdvC practical 2010 generalized colony-specific AgentIterator insertion into `CvAgents::playerRevived`, but the helper treats a player ID as a team ID, reinserts an already-live shared team, omits restored vassal membership, and classifies a revived minor civilization as a major player. This can corrupt several cached player/team sequences when a non-parent civilization is revived. Pending a lifecycle-level repair; because revival is rare, rebuilding all cached sequences is the simpler robust direction instead of duplicating fragile incremental membership rules.
 
-Found as F652/provisional KI#974 during ChatGPT-5.6-Sol's open C031-WIP496 `CvAgents.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+Found as F652/provisional KI#974 during ChatGPT-5.6-Sol's C031-WIP496 `CvAgents.cpp` audit and confirmed through its C031-WIP498 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-975"></a>
 
-## KI#975 - (Provisional Pending investigation) F653 remains unassigned during the CvAgents audit
+## KI#975 - (Provisional Pending AdvCiv colony-revival cache regression) Revived colonies remain absent from alive sequences
 
-Queue 108 `CvAgents.cpp` remains open at C031-WIP496 after confirming F652/KI#974. Keep F653/KI#975 reserved for the next independent root while that audit continues.
+AdvC practical 2010 correctly routes a newly created colony through `CvAgents::colonyCreated`, but uses the persistent `getParent() == NO_PLAYER` state to decide whether an ever-alive player being revived should call `playerRevived`. A defeated colony retains its parent, so WorldBuilder revival can restore authoritative player/team life while every cached alive sequence still omits that colony; the same guard also skips its adjacent UWAI revival setup. This is distinct from KI#974, where the callback runs but rebuilds shared-team, minor and vassal membership incorrectly. Pending distinguishing first colony creation from later revival and restoring every ever-alive player regardless of parent, preferably through the full cache rebuild already favored for KI#974.
 
-Reserved during ChatGPT-5.6-Sol's C031-WIP496 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+Found as F653/provisional KI#975 during ChatGPT-5.6-Sol's C031-WIP497 `CvAgents.cpp` audit and confirmed through its C031-WIP498 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-976"></a>
+
+## KI#976 - (Provisional Pending inherited K-Mod/AdvCiv AI strength-memory lifecycle defect) Revived teams use ancient enemy locations
+
+K-Mod's enemy-strength memory decays once per turn while a team is alive, but neither defeat nor revival clears or re-ages it. A fully defeated team takes no AI turns, so its tactical memory freezes; after WorldBuilder or `verifyAlive` revives the team, pathfinding and attack decisions can immediately consume full-strength enemy stacks remembered from before elimination, even where those units vanished many turns earlier. AdvC's sparse-map refactor retains this inherited lifecycle. Pending clearing and reinitializing the team strength-memory map specifically on the authoritative team-alive transition from 0 to 1; do not clear it when only one member of a still-alive shared team returns because normal team decay continued.
+
+Found as F654/provisional KI#976 during ChatGPT-5.6-Sol's C031-WIP504 `AIStrengthMemoryMap.cpp` audit and confirmed through its C031-WIP505 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-977"></a>
+
+## KI#977 - (Provisional Pending AdvCiv random-setup defect gated off by SAS defaults) Enhanced assignment can duplicate leaders
+
+AdvC practical 2532's `CvInitCore::reRandomizeCivsAndLeaders` records fixed leaders in `abLeaderTaken` and uses that map to promise unique random leaders, but never marks each newly assigned random leader as taken. With the upstream-recommended `PER_EXTRA_LEADER_CIV_SELECTION_WEIGHT = 20`, a deterministic 48-player SAS fixture assigned only 38 distinct leaders despite 55 being available; updating the local map after `setLeader` produced 48 distinct leaders. Default SAS deliberately sets the define to 0 and returns to BtS assignment before this path, so normal current setup is unaffected, but the supported configurable AdvC feature remains defective. Pending the narrow post-assignment map update while preserving synchronized RNG order and the existing insufficient-leader fallback.
+
+Found as F655/provisional KI#977 during ChatGPT-5.6-Sol's reconciled C031-WIP511 open `CvInitCore.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-978"></a>
+
+## KI#978 - (Provisional Pending investigation) F656 remains unassigned during the CvInitCore audit
+
+Queue 026 `CvInitCore.cpp` remains open at reconciled C031-WIP511 after confirming F655/KI#977. Keep F656/KI#978 reserved for the next independent root while that audit continues.
+
+Reserved during ChatGPT-5.6-Sol's reconciled C031-WIP511 audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.

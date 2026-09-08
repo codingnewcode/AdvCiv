@@ -23067,7 +23067,7 @@ void CvPlayerAI::AI_doDiplo()
 						else
 						{
 							kGame.implementDeal(getID(), ePlayer, weGive, theyGive);
-							GC.getAgents().allianceFormed(); // advc.agent
+							// <!-- custom: The common CvTeam::addTeam transaction now rebuilds AgentIterator for AI and human Permanent Alliances alike; remove AdvCiv's AI-only duplicate. See KI#793. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 							break; // move on to next player since we are on the same team now
 						}
 					}

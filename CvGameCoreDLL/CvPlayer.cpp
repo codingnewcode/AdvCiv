@@ -9146,6 +9146,13 @@ void CvPlayer::setAlive(bool bNewValue)
 		}
 	}
 	// </advc.agent>
+	// <!-- custom: AdvCiv made vassal-city maintenance depend on the number of living master-team members, but defeat/revival changed that cached divisor without refreshing surviving teammates.
+	// AgentIterator membership has reached its new state here, so restore the maintenance invariant symmetrically. See KI#792. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (kGame.isFinalInitialized() && !isBarbarian())
+	{
+		for (MemberIter it(getTeam()); it.hasNext(); ++it)
+			it->updateMaintenance();
+	}
 	// Report event to Python
 	CvEventReporter::getInstance().setPlayerAlive(getID(), bNewValue);
 

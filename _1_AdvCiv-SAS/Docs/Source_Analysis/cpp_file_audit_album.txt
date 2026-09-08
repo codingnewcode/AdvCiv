@@ -2,12 +2,12 @@ AdvCiv-SAS C++ File Audit Album
 Generated from local light-source snapshot only; no web/GitHub lookup used.
 
 CURRENT PROGRESS SUMMARY
-Files complete: 47 / 169
+Files complete: 58 / 169
 Files open: 1 / 169
-Last completed file: queue 096 CvGameCoreDLL/CvMemoryManager.cpp (286 queued lines) - CLOSED AT C031-WIP495
-Current open file: priority queue 108 CvGameCoreDLL/CvAgents.cpp (258 queued lines) - OPEN AT C031-WIP496
-Latest confirmed audit findings: F650-F652 / KI#972-KI#974 across the Queue 074, Queue 082 and Queue 108 audits. Queue 089 and Queue 096 closed cleanly. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
-Next new root ID: F653 unused / provisional KI#975 next
+Last completed file: queue 168 CvGameCoreDLL/ArithmeticTraits.cpp (11 queued lines) - CLOSED AT C031-WIP509
+Current open file: ordinary queue 026 CvGameCoreDLL/CvInitCore.cpp (2,132 queued lines) - OPEN AT C031-WIP511
+Latest confirmed audit findings: F650-F655 / KI#972-KI#977 across the Queue 074, Queue 082, Queue 108, Queue 129 and Queue 026 audits. The remaining priority-reloop files closed cleanly through Queue 168, and ordinary queue order has resumed. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
+Next new root ID: F656 unused / provisional KI#978 next
 
 The durable checkpoints and current cursor below are authoritative for finding status; the initial C010 snapshot and later WIP appends preserve their own historical source identities.
 
@@ -18,7 +18,7 @@ METHOD
 - Do not promote tuning disagreements, theoretical unsupported configurations, dead paths, or already-fixed history into new findings.
 - One root cause gets one finding even when several callers expose different symptoms.
 - False positives are recorded when useful so they are not rediscovered later.
-- Process every still-PENDING queue entry explicitly marked `priority next wip` before resuming ordinary queue order; among equally marked entries, follow queue order. Continue open Queue 108 `CvAgents.cpp` from C031-WIP496 before selecting another file. This preserves the user's requested stronger-WIP priorities without making ChatGPT choose between competing continuation notes.
+- The stronger-WIP priority reloop is complete through C031-WIP509. Continue the open ordinary Queue 026 `CvInitCore.cpp` from reconciled C031-WIP511, then resume ordinary numeric queue order. The WIP509-WIP511 numbering bridges the retry fork by retaining the omitted ArithmeticTraits closure before the fuller CvInitCore baseline and confirmed finding.
 
 QUEUE (current .cpp files, longest -> shortest)
 001  32205 CvGameCoreDLL/CvPlayerAI.cpp [COMPLETE ORIGINAL PASS / DEEP-METHOD RE-AUDIT CLOSED - C031-WIP65 / F321-F374]
@@ -46,7 +46,7 @@ QUEUE (current .cpp files, longest -> shortest)
 023   2430 CvGameCoreDLL/InvasionGraph.cpp [COMPLETE - SEE C022 DURABLE CHECKPOINT]
 024   2399 CvGameCoreDLL/CyCity.cpp [COMPLETE - SEE C031-WIP460 DURABLE CHECKPOINT]
 025   2247 CvGameCoreDLL/StartingPositionIteration.cpp [COMPLETE - SEE C031-WIP457 DURABLE CHECKPOINT]
-026   2132 CvGameCoreDLL/CvInitCore.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+026   2132 CvGameCoreDLL/CvInitCore.cpp [OPEN - C031-WIP511 / F655]
 027   2099 CvGameCoreDLL/CvInfo_RandomEvent.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 028   2095 CvGameCoreDLL/CvXMLLoadUtilitySet.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 029   2052 CvGameCoreDLL/CyEnumsInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -128,11 +128,11 @@ QUEUE (current .cpp files, longest -> shortest)
 105    265 CvGameCoreDLL/CvInfo_City.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 106    264 CvGameCoreDLL/CvDiploParameters.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 107    262 CvGameCoreDLL/FAStarFunc.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-108    258 CvGameCoreDLL/CvAgents.cpp [OPEN - C031-WIP496 / F652]<-(priority current next wip)
+108    258 CvGameCoreDLL/CvAgents.cpp [COMPLETE - C031-WIP498 / F652-F653]
 109    246 CvGameCoreDLL/CvPopupInfo.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-110    240 CvGameCoreDLL/AgentIteratorTest.cpp [PENDING]<-(priority next wip after the first reloop)
+110    240 CvGameCoreDLL/AgentIteratorTest.cpp [COMPLETE - C031-WIP499 / no new root]
 111    240 CvGameCoreDLL/CvArtFileMgr.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-112    237 CvGameCoreDLL/UWAI.cpp [PENDING]<-(priority next wip after the first reloop)
+112    237 CvGameCoreDLL/UWAI.cpp [COMPLETE - C031-WIP500 / no new root]
 113    235 CvGameCoreDLL/CyTeamInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 114    211 CvGameCoreDLL/CvInfo_Symbol.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 115    208 CvGameCoreDLL/CvMessageControl.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -140,17 +140,17 @@ QUEUE (current .cpp files, longest -> shortest)
 117    204 CvGameCoreDLL/FAssert.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 118    204 CvGameCoreDLL/FDialogTemplate.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 119    191 CvGameCoreDLL/CyStructsInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-120    186 CvGameCoreDLL/AgentIterator.cpp [PENDING]<-(priority next wip after the first reloop)
+120    186 CvGameCoreDLL/AgentIterator.cpp [COMPLETE - C031-WIP501 / no new root]
 121    177 CvGameCoreDLL/CvXMLLoadUtilityInit.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 122    175 CvGameCoreDLL/RFTotalScore.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-123    175 CvGameCoreDLL/TeamPathFinder.cpp [PENDING]<-(priority next wip after the first reloop)
+123    175 CvGameCoreDLL/TeamPathFinder.cpp [COMPLETE - C031-WIP502 / no new root]
 124    171 CvGameCoreDLL/CyGlobalContextInterface4.cpp [PENDING]
-125    166 CvGameCoreDLL/UWAIReport.cpp [PENDING]<-(priority next wip after the first reloop)
+125    166 CvGameCoreDLL/UWAIReport.cpp [COMPLETE - C031-WIP503 / no new root]
 126    150 CvGameCoreDLL/CvDllTranslator.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 127    149 CvGameCoreDLL/CyMapGenerator.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 128    149 CvGameCoreDLL/ReproTest.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-129    145 CvGameCoreDLL/AIStrengthMemoryMap.cpp [PENDING]<-(priority next wip after the first reloop)
-130    137 CvGameCoreDLL/CvRandom.cpp [PENDING]<-(priority next wip after the first reloop)
+129    145 CvGameCoreDLL/AIStrengthMemoryMap.cpp [COMPLETE - C031-WIP505 / F654]
+130    137 CvGameCoreDLL/CvRandom.cpp [COMPLETE - C031-WIP506 / no new root]
 131    134 CvGameCoreDLL/Shelf.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 132    127 CvGameCoreDLL/CvReplayMessage.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 133    124 CvGameCoreDLL/CyGlobalContextInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -158,7 +158,7 @@ QUEUE (current .cpp files, longest -> shortest)
 135     96 CvGameCoreDLL/TSCProfiler.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 136     95 CvGameCoreDLL/CyArgsList.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 137     94 CvGameCoreDLL/CyMapInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-138     91 CvGameCoreDLL/CvDLLInterfaceIFaceBase.cpp [PENDING]<-(priority next wip after the first reloop)
+138     91 CvGameCoreDLL/CvDLLInterfaceIFaceBase.cpp [COMPLETE - C031-WIP507 / no new root]
 139     90 CvGameCoreDLL/CyPlayerInterface2.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 140     89 CvGameCoreDLL/CvCivilization.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 141     84 CvGameCoreDLL/CvDLLEntity.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -171,7 +171,7 @@ QUEUE (current .cpp files, longest -> shortest)
 148     79 CvGameCoreDLL/CyHallOfFameInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 149     78 CvGameCoreDLL/CvBugOptions.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 150     76 CvGameCoreDLL/PlayerHistory.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-151     74 CvGameCoreDLL/WarEvalParameters.cpp [PENDING]<-(priority next wip after the first reloop)
+151     74 CvGameCoreDLL/WarEvalParameters.cpp [COMPLETE - C031-WIP508 / no new root]
 152     73 CvGameCoreDLL/BarbarianWeightMap.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 153     73 CvGameCoreDLL/CyGameCoreUtilsInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 154     73 CvGameCoreDLL/CyGlobalContextInterface2.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -188,7 +188,7 @@ QUEUE (current .cpp files, longest -> shortest)
 165     20 CvGameCoreDLL/CyRandomInterface.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 166     18 CvGameCoreDLL/ModName.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 167     16 CvGameCoreDLL/PlotRadiusIterator.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-168     11 CvGameCoreDLL/ArithmeticTraits.cpp [PENDING]<-(priority next wip after the first reloop)
+168     11 CvGameCoreDLL/ArithmeticTraits.cpp [COMPLETE - C031-WIP509 / no new root]
 169      5 CvGameCoreDLL/_precompile.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 
 INITIAL C010 SOURCE IDENTITY
@@ -168230,6 +168230,2225 @@ all CvAgents history strata -> check the additional colony-parent revival skip
 or independent F653 only after lifecycle proof -> whole-album dedup -> either promote a
 distinct current-live F653 or close Queue108 cleanly -> freeze the next physical WIP
 regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP497 -- QUEUE 108 CvAgents.cpp -- F653 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP496.
+- Queue 108 `CvGameCoreDLL/CvAgents.cpp` remains OPEN.
+- F652 / provisional KI#974 remains CONFIRMED.
+- F653 / provisional KI#975 is CONFIRMED here.
+- F654 / provisional KI#976 is UNUSED.
+- No gameplay source was modified.
+
+-------------------------------------------------------------------------------
+F653 / provisional KI#975 -- defeated colonies are excluded from the generic
+`playerRevived` cache-restoration path solely because `getParent()!=NO_PLAYER`, so
+WorldBuilder revival can make the CvPlayer/CvTeam alive again while all CvAgents
+alive caches still omit them
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED AdvC regression in the explicit revival lifecycle. Base AdvC 1.14 retains the
+same guard. This is independent of F652:
+- F652 corrupts cache restoration when `playerRevived` IS called with a shared-team /
+  minor / vassal player;
+- F653 skips `playerRevived` entirely for a previously created colony.
+
+ROOT
+----
+Current `CvPlayer::setAlive` changes authoritative player/team life state first:
+
+    bool const bEverAlive = isEverAlive();
+    m_bAlive = bNewValue;
+    GET_TEAM(getTeam()).changeAliveCount(isAlive() ? 1 : -1);
+
+then updates CvAgents:
+
+    if (!isAlive())
+        GC.getAgents().playerDefeated(getID());
+    else if (bEverAlive && getParent() == NO_PLAYER) // Colonies are handled by initInGame
+        GC.getAgents().playerRevived(getID());
+
+The comment is only valid for a colony's FIRST creation:
+    `CvPlayer::initInGame`
+        -> `GC.getAgents().colonyCreated(getID())`.
+
+It is not valid for a colony that was already created, later defeated, and is now being
+revived.
+
+PARENT PERSISTS ACROSS DEFEAT
+-----------------------------
+A colony receives:
+
+    GET_PLAYER(eNewPlayer).setParent(getID());
+
+during the ordinary split-empire creation path.
+
+`m_eParent` is initialized to NO_PLAYER only during player reset/new identity and is
+serialized. Ordinary `setAlive(false)` / defeat does not clear it. Searches of current
+CvPlayer mutation paths show no defeat-time `setParent(NO_PLAYER)`.
+
+Therefore a correctly created colony C has:
+
+    C.getParent() != NO_PLAYER
+
+both before and after elimination.
+
+DEFEAT REMOVES CACHES
+---------------------
+On C's death, `setAlive(false)` always calls:
+
+    CvAgents::playerDefeated(C)
+
+which removes C from:
+- player CIV_ALIVE;
+- player MAJOR_ALIVE when major;
+- MEMBER_ALIVE[team];
+- VASSAL_ALIVE[master] when applicable;
+
+and, if C was the last alive team member, removes its team from:
+- team CIV_ALIVE;
+- team MAJOR_ALIVE;
+- team VASSAL_ALIVE[master].
+
+The persistent EVER_ALIVE/MEMBER historical caches intentionally remain.
+
+SUPPORTED REVIVAL PRODUCER
+---------------------------
+`CvPlayer::verifyAlive` is generic:
+
+    if (!isAlive())
+    {
+        if (getNumCities() > 0 || getNumUnits() > 0)
+            setAlive(true);
+        return;
+    }
+
+It has no parent/colony exclusion.
+
+Current SAS recently documented a reproducible WorldBuilder revival lifecycle in this
+same `setAlive(true)` branch (KI#475.3):
+    leave WorldBuilder after giving a dead player a unit
+    -> verifyAlive
+    -> setAlive(true)
+    -> revived-player UWAI initialization.
+
+That source fix was written for the generic dead-player workflow, and the producer does
+not prohibit a previously created colony. WorldBuilder can give a dead colony a unit or
+city just as it can any other dead PlayerTypes slot.
+
+CLEAN FIXTURE
+-------------
+1. Human/AI parent P creates ordinary colony C through `splitEmpire`.
+2. C is initialized normally:
+       C.parent = P
+       C is a vassal on its own team
+       CvAgents colonyCreated inserts its live player/team/member/vassal entries.
+3. C is later eliminated.
+       playerDefeated removes all C live-cache entries.
+       C.parent remains P.
+4. In WorldBuilder, give C one unit or city and exit.
+5. `verifyAlive(C)` calls `setAlive(true)`.
+
+Current authoritative state becomes:
+    C.isAlive() == true
+    C's team alive count increments, potentially 0 -> 1.
+
+But the CvAgents branch evaluates:
+    bEverAlive == true
+    getParent() != NO_PLAYER
+
+and therefore SKIPS `playerRevived(C)`.
+
+No `initInGame` runs here; this is revival of an existing identity, not colony creation.
+No `updateAllCachedSequences()` follows.
+
+RESULTING CACHE CONTRADICTION
+-----------------------------
+For an ordinary singleton colony team that had fully died:
+
+    authoritative:
+        C.isAlive() == true
+        GET_TEAM(C.team).isAlive() == true
+
+    CvAgents:
+        PlayerIter<CIV_ALIVE>      -> omits C
+        PlayerIter<MAJOR_CIV>      -> omits C
+        MemberIter<MEMBER_ALIVE>   -> omits C
+        PlayerIter<VASSAL_OF>      -> omits C
+        TeamIter<CIV_ALIVE>        -> omits C's revived team
+        TeamIter<MAJOR_CIV>        -> omits C's revived team
+        TeamIter<VASSAL_OF>        -> omits C's revived team
+
+The exact AgentIterator cache specializations deliberately trust these cached sequences
+instead of rechecking `isAlive`, so the revived civilization is invisible to every
+consumer using those iterators.
+
+CURRENT-LIVE CONSEQUENCES
+-------------------------
+This omission is immediately semantic, not merely diagnostic.
+
+Examples include:
+- MilitaryAnalyst / InvasionGraph:
+      `PlayerIter<MAJOR_CIV>` omits the revived colony entirely from war simulation.
+- diplomacy/war/team update loops:
+      many `PlayerIter<MAJOR_CIV>` / `TeamIter<CIV_ALIVE>` loops never see it.
+- city/site and plot logic:
+      generic CIV_ALIVE / MAJOR_CIV scans exclude a player that owns real units/cities.
+- vassal iteration:
+      the revived colony remains a real vassal by authoritative team state but is absent
+      from `PlayerIter<ALIVE,VASSAL_OF>` and team-vassal caches.
+- team-count dependent strategy:
+      if its team had gone 0->1 alive, `TeamIter<CIV_ALIVE>::count()` undercounts the
+      number of actual live teams.
+
+A particularly clean observable invariant is simply:
+
+    CvGame authoritative alive players
+        includes C
+
+while:
+
+    PlayerIter<CIV_ALIVE>::count()
+        does not increase on C revival.
+
+No later per-turn repair exists; `updateAllCachedSequences` is normally reserved for
+game start/load and special explicit topology changes such as Permanent Alliance.
+
+EXACT BIRTH IN PRACTICAL 2010
+-----------------------------
+Practical 2010 / commit
+`56af3a8dfa7f97c1fa229e1b9499a91428db0ed1`
+introduced generic revival handling while fixing AI Auto Play defeat/revival.
+
+Before that commit, CvAgents only had the new-colony insertion helper.
+
+The commit added in `CvPlayer::setAlive`:
+
+    else if (bEverAlive && getParent() == NO_PLAYER) // Colonies are handled by initInGame
+        GC.getAgents().playerRevived(getID());
+
+and simultaneously generalized the old `colonyCreated` insertion body into
+`playerSetAliveInGame(..., bRevive)`.
+
+The parent guard correctly avoids double-inserting a colony during its FIRST
+`initInGame` creation. But it also suppresses every LATER resurrection of that same
+colony identity.
+
+Current Base AdvC 1.14 retains the same condition unchanged.
+
+K-Mod/Civ4CE do not have persistent CvAgents cached alive sequences, so their direct
+player/team scans cannot become stale through this omitted callback.
+
+WHOLE-ALBUM DEDUP
+-----------------
+F652/KI#974:
+    `playerRevived` is called, but its implementation assumes PlayerID==TeamID/new team/
+    major status and corrupts shared-team/minor/vassal revival.
+
+F653:
+    `playerRevived` is never called because an old colony still has a parent.
+
+Fixing F652 only inside `CvAgents::playerRevived` or `playerSetAliveInGame` leaves F653
+unchanged.
+
+F447/KI#770:
+    malformed recycled colony creation chooses a defeated player whose OLD TEAM is
+    still alive, skips initInGame, transfers cities and later revives the old identity.
+    F653 requires a correctly created ordinary colony first, then a later ordinary
+    defeat and explicit revival. No player-slot recycling or malformed split is needed.
+
+F474/KI#797 and F647/KI#969:
+    recycled identity/history state; again no recycling is needed for F653.
+
+No existing confirmed finding owns the parent-gated omission of generic colony revival.
+
+REPAIR BOUNDARY
+---------------
+The lifecycle distinction should be:
+    FIRST colony creation
+versus:
+    revival of an already-ever-alive player,
+not:
+    parentless
+versus:
+    colony.
+
+A safe design is:
+
+1. During `initInGame` / initial colony creation:
+       continue using `colonyCreated` exactly once.
+
+2. During any `setAlive(false -> true)` where `bEverAlive==true`:
+       restore CvAgents revival state regardless of parent.
+
+If F652 is repaired by making:
+    `playerRevived -> updateAllCachedSequences()`,
+then F653's caller repair becomes especially simple:
+    call `playerRevived` for every ever-alive revival.
+
+If a narrow incremental cache update is retained, it must also restore the colony's
+current vassal membership and team state.
+
+Do not call `initInGame` on revival: that would incorrectly reset an existing colony
+identity. The missing action is only cache/UWAI revival state.
+
+UWAI NOTE
+---------
+The same parent guard also skips the adjacent:
+
+    initRevivedPlayerInGame / processNewPlayerInGame
+
+for revived colonies. Current live consequence proof for F653 requires only the
+CvAgents omission, but the UWAI skip should be audited/fixed in the same lifecycle
+change; a revived colony should not retain deleted/dead UWAI state merely because it has
+a parent.
+
+VALIDATION TARGETS
+------------------
+1. Create ordinary colony C; verify live caches contain it exactly once.
+2. Eliminate C; verify all live caches remove it.
+3. Revive C through WorldBuilder unit/city:
+   - C.isAlive true;
+   - player CIV_ALIVE / MAJOR_ALIVE contains C once;
+   - MEMBER_ALIVE contains C once;
+   - vassal-player cache contains C when relation persists;
+   - if team went 0->1, team CIV_ALIVE / MAJOR_ALIVE / vassal cache contains team once.
+4. `PlayerIter<CIV_ALIVE>::count()` increments exactly once on revival.
+5. MilitaryAnalyst/normal diplomacy iterators see C after revival.
+6. Parent value remains unchanged; this is revival, not new colony creation.
+7. First colony creation still uses `colonyCreated` only once and does not double insert.
+8. Parentless revival continues working after F652 repair.
+9. Shared-team colony/mod scenario combines correctly with F652's idempotent restoration.
+10. UWAI revived-player state is initialized for revived colonies too.
+11. Save/load after revival reconstructs identical caches through full rebuild.
+
+POST-F653 LEDGER / EXACT RESUME
+-------------------------------
+Queue 108 `CvGameCoreDLL/CvAgents.cpp` -- OPEN.
+F652 / provisional KI#974 -- CONFIRMED.
+F653 / provisional KI#975 -- CONFIRMED.
+F654 / provisional KI#976 -- UNUSED.
+
+Exact continuation:
+C031-WIP497 physical -> Queue108 OPEN -> exclude F652/F653 plus F470/F474/F469 and
+other AgentIterator/recycled-state owners -> finish `updateVassal` symmetry and team/
+player death ordering, colonyCreated reuse behavior, updateAllCachedSequences exact
+predicate coverage, insert/erase uniqueness, allianceFormed rebuild, status cache
+routing and all CvAgents history strata -> check whether any remaining update path can
+leave VASSAL_ALIVE/MAJOR_ALIVE inconsistent independently of F652/F653 -> whole-album
+dedup -> either promote a distinct current-live F654 or close Queue108 cleanly -> freeze
+the next physical WIP regardless.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP498 -- QUEUE 108 CvAgents.cpp -- CLOSED / F654 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP497.
+- Queue 108 `CvGameCoreDLL/CvAgents.cpp` is CLOSED.
+- Queue-108 confirmed roots:
+    F652 / provisional KI#974
+    F653 / provisional KI#975
+- F654 / provisional KI#976 remains intentionally UNUSED.
+- Files complete: 48 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 110 `CvGameCoreDLL/AgentIteratorTest.cpp` (240 queued lines).
+- No gameplay source was modified.
+
+FINAL QUEUE-108 SATURATION PASS
+-------------------------------
+1. Full rebuild predicates
+   -----------------------
+   `updateAllCachedSequences()` reconstructs every derived sequence from authoritative
+   player/team state:
+   - CIV_EVER_ALIVE: non-Barbarian ever-alive civs;
+   - CIV_ALIVE: non-Barbarian alive civs;
+   - MAJOR_ALIVE: alive nonminor civs;
+   - MEMBER: all player slots by current team;
+   - MEMBER_ALIVE: alive players by current team;
+   - VASSAL_ALIVE: alive major vassal teams/players by current master.
+
+   Ordering follows the ALL vectors' increasing IDs and is therefore deterministic.
+   This full rebuild is the positive oracle for both F652 and F653.
+
+2. `playerDefeated`
+   ----------------
+   Ordinary death removes the player from all live player/member caches and removes the
+   team only when the authoritative team becomes dead. Vassal membership is removed
+   from the current master before a dead team later cancels its vassal agreement.
+
+   This ordering matches `CvPlayer::setAlive(false)`, which decrements team alive count
+   before calling `playerDefeated`.
+
+3. `updateVassal`
+   --------------
+   Practical 2324 fixed the inherited crash when a team with already-dead members
+   becomes/frees a vassal. Current code:
+   - inserts/removes only alive member players;
+   - handles the dead-vassal-team cancellation ordering explicitly;
+   - updates both player VASSAL_ALIVE and team VASSAL_ALIVE caches.
+
+   Normal setVassal caller ordering updates authoritative `m_eMaster` before calling the
+   CvAgents hook. No independent stale/master-orientation root survived.
+
+   F652 remains the revival-specific omission of vassal membership because
+   `playerSetAliveInGame` never restores it.
+
+4. `colonyCreated`
+   ---------------
+   For a genuinely never-alive colony slot, insertion into ever-alive/alive/major/member
+   caches is coherent.
+
+   Its `insertIntoVector(..., false)` behavior on reused EVER_ALIVE slots can create
+   duplicate historical entries; that exact recycled-colony root is already
+   F474/KI#797 and is not renumbered here.
+
+5. `allianceFormed`
+   ----------------
+   Permanent Alliance takes the conservative full `updateAllCachedSequences()` route
+   when the hook is called. F470/KI#793 owns the separate human-involved PA path that
+   can omit this hook altogether.
+
+6. Insert / erase helpers
+   ----------------------
+   `insertIntoVector` preserves increasing ID order. Its debug duplicate assertion does
+   not prevent release duplication, which is why lifecycle callers must themselves be
+   idempotent:
+   - F474 owns reused EVER_ALIVE insertion;
+   - F652 owns team duplicate insertion during shared-team revival.
+
+   Ordinary non-revival live hooks meet uniqueness preconditions.
+
+   `eraseFromSeqCache` removes exactly one expected entry. Under coherent caches that is
+   sufficient; multi-duplicate states are downstream of already-owned insertion roots.
+
+7. Cache routing / iterator trust
+   ------------------------------
+   AgentIterator's exact-cache specializations intentionally avoid rechecking predicates
+   when a cache is supposed to be exact. This design makes CvAgents lifecycle
+   correctness critical but is not independently defective when the caches are built
+   through `updateAllCachedSequences`.
+
+HISTORY CLOSURE
+---------------
+All CvAgents path-history strata were classified.
+
+High-value changes:
+- practical 1816: initial AgentIterator/CvAgents cache architecture and lifecycle hooks;
+- practical 1817: compile-time cache/predicate routing refactor;
+- practical 1848: scenario initialization timing fix;
+- practical 2010: generic revival support; exact birth of both F652 and F653:
+    * old colony insertion helper generalized to `playerRevived`;
+    * parentless-only revival guard added in CvPlayer;
+- practical 2324: dead-member vassal-cache crash repair;
+- practical 2547: assert-local compile-warning cleanup;
+- later practicals are include/refactor/iterator modernization;
+- SAS 6022/6083 are formatting/instrumentation-adjacent and do not alter cache semantics.
+
+Supplied Base AdvC 1.14 retains F652/F653. K-Mod/Civ4CE do not have this persistent
+CvAgents exact-cache layer.
+
+QUEUE-108 ROOT LEDGER
+---------------------
+F652 / KI#974
+    generic revival reuses colony-new-team assumptions: raw PlayerID as TeamID,
+    unconditional team reinsertion, no vassal restoration, unconditional major status.
+
+F653 / KI#975
+    defeated colony revival never calls `playerRevived` because persistent parent
+    excludes it; authoritative alive state returns while all live AgentIterator caches
+    can remain missing the colony/team.
+
+F654 / KI#976
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 108 is closed. Remaining problems are exact breadth of F652/F653 or already-owned
+recycled/alliance insertion roots. No independent F654 survives.
+
+EXACT CONTINUATION
+------------------
+C031-WIP498 physical -> Queue108 CLOSED -> F652-F653 confirmed ->
+F654/KI#976 UNUSED -> open priority Queue110
+`CvGameCoreDLL/AgentIteratorTest.cpp` (240 lines) -> establish compile/runtime activation
+and whether failures can affect current game startup/load -> compare every tested
+predicate/cache relation against current AgentIterator/CvAgents contracts -> audit test
+side effects, RNG/state mutation, assert/release differences and historical purpose ->
+whole-album dedup -> promote F654 only for a distinct current-live root -> freeze the
+next physical WIP at the next settled boundary whether F654 is consumed or unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP499 -- QUEUE 110 AgentIteratorTest.cpp -- CLOSED / F654 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP498.
+- Queue 110 `CvGameCoreDLL/AgentIteratorTest.cpp` is CLOSED.
+- No new root was promoted.
+- F654 / provisional KI#976 remains UNUSED.
+- Files complete: 49 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 112 `CvGameCoreDLL/UWAI.cpp` (237 queued lines).
+- No gameplay source was modified.
+
+ACTIVATION
+----------
+The actual profiling/test workload is entirely wrapped in:
+
+    //#define AGENT_ITERATOR_TEST
+
+    #ifdef AGENT_ITERATOR_TEST
+        ...
+    #endif
+
+The define is commented out in current source.
+
+`CvAgents::gameStart` does call:
+
+    int TestAgentIterator(int);
+    int iNonsense = TestAgentIterator(100);
+
+after loading a save, but with the macro disabled the function body is simply:
+
+    int r = 0;
+    return r;
+
+The `if (iNonsense == -1)` fallback can never execute.
+
+Therefore:
+- no iterator loop is run;
+- no profiling code is instantiated;
+- no game state is mutated;
+- no cache validation/assertion happens;
+- the file adds only a tiny constant-return call on save load.
+
+The commented test loops themselves are historical microbenchmarks comparing
+AgentIterator, raw MAX_* loops and direct cached-vector traversal. They are not a
+current correctness oracle because they merely accumulate IDs and do not compare
+results or assert equality.
+
+HISTORY / SCOPE
+---------------
+The file was introduced alongside AgentIterator/CvAgents as a profiling aid and remains
+developer-only scaffolding. No shipped code enables `AGENT_ITERATOR_TEST`.
+
+Any discrepancy in the commented/raw benchmark predicates would affect only a manually
+enabled profiling experiment, not current game logic.
+
+QUEUE-110 ROOT LEDGER
+---------------------
+F654 / KI#976
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 110 is closed. It is dormant test/profiling code under current build settings.
+
+EXACT CONTINUATION
+------------------
+C031-WIP499 physical -> Queue110 CLOSED -> F654/KI#976 UNUSED ->
+open priority Queue112 `CvGameCoreDLL/UWAI.cpp` (237 lines) -> establish current
+SAS/Base AdvC 1.14 provenance and all wrapper/caller state transitions -> audit
+initialization/reset/read/write enablement, background-UWAI mode, cache invalidation,
+new/revived-player processing, team wrapper access, report lifetime and option toggles ->
+dedup especially against F650/F652/F653 and earlier UWAI owner/cache findings ->
+promote F654 only for a distinct current-live root -> freeze the next physical WIP at
+the next settled boundary whether F654 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP500 -- QUEUE 112 UWAI.cpp -- CLOSED / F654 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP499.
+- Queue 112 `CvGameCoreDLL/UWAI.cpp` is CLOSED.
+- No new root was promoted.
+- F654 / provisional KI#976 remains UNUSED.
+- Files complete: 50 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 120 `CvGameCoreDLL/AgentIterator.cpp` (186 queued lines).
+- No gameplay source was modified.
+
+SATURATION PASS
+---------------
+1. Global enable/background state
+   ------------------------------
+   `m_bEnabled` is serialized. `m_bInBackground` is intentionally not: immediately after
+   loading, `CvGameAI::AI_sortOutUWAIOptions(true)` reconstructs background mode from
+   the current GlobalDefine before UWAI turn logic resumes.
+
+   `isEnabled(bool)` correctly distinguishes foreground versus background execution.
+
+2. UI cache invalidation
+   ---------------------
+   UWAI simply forwards:
+       invalidateUICache -> WarEvaluator::clearCache.
+   F650 owns the demonstrated dirty-bit bug inside WarEvaluator; UWAI adds no separate
+   stale state.
+
+3. New-player initialization
+   -------------------------
+   `initNewPlayerInGame`:
+       clears WarEvaluator cache;
+       initializes the new team UWAI;
+       initializes the new player UWAI.
+
+   The supported `CvPlayer::initInGame` creation path uses a fresh player/team slot
+   whose team is the normal same-ID new team, so the `GET_TEAM(eNewPlayer)` assumption
+   is valid there.
+
+   `processNewPlayerInGame` then updates that player's UWAICache and runs team `turnPre`
+   for current major teams after CvAgents colony/new-player insertion has occurred.
+
+   Malformed recycled-colony creation is already F447; generic revival cache corruption
+   is F652/F653.
+
+4. Revived-player initialization
+   -----------------------------
+   Current SAS's KI#475.3/KI#548 repair:
+       initializes player UWAI skipped by dead-at-load deserialization;
+       rebuilds incremental military unit counts for units created while the player was
+       dead;
+       intentionally does not reinitialize a surviving shared team's UWAI.
+
+   CvTeam::changeAliveCount handles a team returning from zero members. This division of
+   ownership is coherent.
+
+   Defeated colonies skip this helper only because the adjacent CvPlayer parent guard
+   skips the whole revival block; that is same-root breadth of F653, not an independent
+   UWAI.cpp defect.
+
+5. `processNewPlayerInGame`
+   ------------------------
+   The full cache update before team `turnPre` is necessary because several WarUtility
+   aspects can run immediately for the new player. Current ordering supplies initialized
+   owner/cache state before those uses.
+
+   Any player absent from TeamAIIter due F652/F653 is a CvAgents root already owned.
+
+6. `maxSeaDist` / `isReady`
+   ------------------------
+   - map-size and wrap scaling are bounded positive heuristics;
+   - scenario readiness deliberately delays war planning for the first two elapsed
+     turns because team AI initialization is incomplete at scenario start.
+   No arithmetic/lifecycle contradiction survives.
+
+7. Personality weighting
+   ---------------------
+   Current SAS sets `UWAI_PERSONALITY_PERCENT=120`, so the transformation is active.
+
+   The shared `aiDevNull` fallback would be suspicious because different absent arrays
+   have different logical defaults (e.g. MemoryDecay getter defaults to -1), and dummy
+   values can participate in medians. However current SAS's 57 LeaderHeadInfos allocate
+   ALL eight array groups traversed by this function:
+       Flavors
+       ContactRands
+       ContactDelays
+       MemoryDecays
+       MemoryAttitudePercents
+       NoWarAttitudeProbs
+       UnitAIWeightModifiers
+       ImprovementWeightModifiers
+
+   Thus no current leader uses `aiDevNull`; the fallback remains mod/XML robustness only.
+
+   The SAS `static const` read of UWAI_PERSONALITY_PERCENT would ignore a runtime
+   `setDefineINT` change after first execution, but current Python does not mutate this
+   define. Same dynamic-define debt class as Queue 089.
+
+8. XML vector lifetime
+   -------------------
+   `doXML` is invoked from the normal XML loading pipeline once per DLL XML-load
+   lifecycle. No current supported second call on the same UWAI instance without game/
+   DLL reconstruction was found, so the push_back vectors do not accumulate duplicate
+   aspect entries in current use.
+
+HISTORY CLOSURE
+---------------
+High-value strata:
+- practical 1841/1842: initial UWAI global wrapper and naming;
+- practical 1846/2019: scenario/new-player integration;
+- practical 2920/2954: comprehensive UWAI/scaled rewrite;
+- practical 3999: fix broken UWAI_PERSONALITY_PERCENT handling and add null-array
+  compatibility;
+- later 4023/4065: refinements;
+- SAS 5044: static-const personality define optimization;
+- SAS 6283/6300: revived-player/UWAICache lifecycle repairs KI#475.3/KI#548.
+
+No Base AdvC 1.14 repair is missing from the inherited core wrapper.
+
+QUEUE-112 ROOT LEDGER
+---------------------
+F654 / KI#976
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 112 is closed. Remaining sharp edges are current-unactivated XML/dynamic-define
+robustness or breadth of already-owned player-revival/cache roots.
+
+EXACT CONTINUATION
+------------------
+C031-WIP500 physical -> Queue112 CLOSED -> F654/KI#976 UNUSED ->
+open priority Queue120 `CvGameCoreDLL/AgentIterator.cpp` (186 lines) -> audit the
+compile-time cache-selection matrix, exact-vs-filtered predicate trust, barbarian
+insertion, relation parameter validation, end/next pointer lifetime and all status/
+relation combinations -> reconcile especially against F652/F653 and existing
+AgentIterator cache roots -> compare history and test scaffolding -> promote F654 only
+for a distinct current-live root -> freeze next physical WIP at the next settled
+boundary whether F654 is consumed or unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP501 -- QUEUE 120 AgentIterator.cpp -- CLOSED / F654 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP500.
+- Queue 120 `CvGameCoreDLL/AgentIterator.cpp` is CLOSED.
+- No new root was promoted.
+- F654 / provisional KI#976 remains UNUSED.
+- Files complete: 51 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 123 `CvGameCoreDLL/TeamPathFinder.cpp` (175 queued lines).
+- No gameplay source was modified.
+
+IMPORTANT PARKED ITERATOR DEFECT
+--------------------------------
+`PlayerIter<EVER_ALIVE,MEMBER_OF>` has a genuine cache/filter mismatch.
+
+For that template combination:
+    eCACHE_SUBSETEQ = NO_CACHE
+    eCACHE_SUPER    = MEMBER
+
+The MEMBER cache intentionally contains EVERY player slot currently assigned to the
+team, regardless of ever-alive state.
+
+But the optimized helper says:
+
+    isEverAlive(kAgent):
+        return (eCACHE != CvAgents::ALL || kAgent.isEverAlive());
+
+Since eCACHE_SUPER is MEMBER rather than ALL, this returns true unconditionally and
+does not test `kAgent.isEverAlive()`.
+
+Five current call sites use the exact combination:
+- CvTeam tech-era propagation;
+- CvTeam persistent player-level tech processing;
+- CvCity team-culture percent;
+- CvPlot team-culture percent;
+- CvTeamAI vassal/nuke-memory logic.
+
+If a team's MEMBER cache contains a never-alive slot, those calls will incorrectly
+process it as ever-alive.
+
+WHY IT REMAINS BELOW F654
+-------------------------
+A current supported activation was not established.
+
+At normal initialization, unused player slots retain their own TeamID. Shared-team
+participants configured for a game become actual/ever-alive players. Current colony,
+revival and recycling paths deal with players that are already ever-alive.
+
+No shipped WB scenario or ordinary current lifecycle was found that leaves:
+    player.isEverAlive()==false
+while:
+    player.getTeam()==an active existing team's TeamID.
+
+Thus the code-level predicate defect is real and should be unit-tested/fixed, but the
+album's current-live threshold is not met.
+
+A narrow future fix would make `isEverAlive` recognize only caches that actually imply
+ever-alive:
+    CIV_EVER_ALIVE / CIV_ALIVE / MAJOR_ALIVE / MEMBER_ALIVE / VASSAL_ALIVE,
+not generic MEMBER.
+
+OTHER MATRIX CONTROLS
+---------------------
+- ALIVE+MEMBER_OF uses exact MEMBER_ALIVE and is coherent.
+- ANY_STATUS+MEMBER_OF intentionally uses MEMBER without filtering.
+- VASSAL_OF cache routing correctly falls back to current relation checks when a cached
+  exact set is unavailable.
+- POTENTIAL_ENEMY / KNOWN / ENEMY combinations select supersets that include minor/
+  Barbarian agents as required by AgentPredicates comments.
+- HUMAN intentionally routes through MAJOR_ALIVE because enum/documentation classify it
+  among major non-Barbarian statuses.
+- barbarian synthetic insertion is excluded for relations/statuses whose underlying
+  exact cache already contains or intentionally excludes it.
+- relation constructors assert a valid TeamTypes argument whenever relation != ANY.
+- `short` cache position/size fields are safe for current 48-player/team maxima.
+- random iterator shuffled-index ownership pairs new/delete[] correctly.
+- recursion in `generateNext` is bounded by the cache length (<50 current agents).
+
+HISTORY / SCOPE
+---------------
+The implementation was introduced with the CvAgents architecture and then refactored
+into compile-time cache/predicate selection. Later changes are predicate additions,
+template/iterator modernization and performance cleanup.
+
+F652/F653 are lifecycle corruption of exact caches. Queue 120 itself behaves correctly
+when those caches satisfy their declared invariants, apart from the parked
+EVER_ALIVE+MEMBER_OF optimization above.
+
+QUEUE-120 ROOT LEDGER
+---------------------
+F654 / KI#976
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 120 is closed. One exact template-level robustness defect is preserved in this
+checkpoint but lacks a supported current state that activates it.
+
+EXACT CONTINUATION
+------------------
+C031-WIP501 physical -> Queue120 CLOSED -> F654/KI#976 UNUSED ->
+open priority Queue123 `CvGameCoreDLL/TeamPathFinder.cpp` (175 lines) -> establish all
+callers and cache/state lifetime -> audit reachable-team graph construction, city/plot
+ownership transitions, vassal/master/open-border/war traversal assumptions, path
+distance and invalidation, null/index/recursion contracts -> compare with Base AdvC
+history and existing path/topology findings -> promote F654 only for a distinct
+current-live root -> freeze next physical WIP at the next settled boundary whether
+F654 is consumed or unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP502 -- QUEUE 123 TeamPathFinder.cpp -- CLOSED / F654 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP501.
+- Queue 123 `CvGameCoreDLL/TeamPathFinder.cpp` is CLOSED.
+- No new root was promoted.
+- F654 / provisional KI#976 remains UNUSED.
+- Files complete: 52 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 125 `CvGameCoreDLL/UWAIReport.cpp` (166 queued lines).
+- No gameplay source was modified.
+
+SATURATION PASS
+---------------
+1. SHALLOW_WATER deep-water ownership
+   ----------------------------------
+   The pathfinder blocks deep water unless:
+       plot team == moving team.
+
+   This initially looks inconsistent with the "mustn't enter deep water" summary, but
+   the real `CvUnit::canMoveInto` has the same inherited AdvC/Firaxis exception for
+   terrain/feature impassability inside the unit team's own cultural borders.
+
+   Therefore UWAI's shallow transport finder is modeling a real movement rule rather
+   than granting hypothetical extra access.
+
+2. Hypothetical-war territory
+   --------------------------
+   A plot is treated as hostile/passable-under-war when:
+       moving team already at war with plot team
+   OR:
+       plot team's master == war target's master.
+
+   This correctly folds the target's master/vassal bloc into a hypothetical declaration:
+   war on a vassal implicates its master; war on a master implicates its vassals.
+
+   Other unrelated war plans and defensive pacts are intentionally not assumed because
+   they may be abandoned/canceled.
+
+3. Canal semantics
+   ---------------
+   Water modes can step through land only when a city or ActsAsCity improvement supplies
+   a canal. Expensive full team-base checking was intentionally reduced to this physical
+   canal predicate because border legality is separately checked.
+
+   Current callers use the finder for strategic reachability, not exact unit loading
+   legality.
+
+4. Destination shortcuts
+   ----------------------
+   - LAND destination requires same area and nonwater.
+   - water modes allow water destinations without an initial same-water-area precheck so
+     canals can connect otherwise separate water areas;
+   - coastal land destinations are allowed as unload destinations but not traversal.
+
+   The finder still has to generate an actual path through valid steps, so accepting a
+   broad destination shape does not itself create reachability.
+
+5. Route cost
+   ----------
+   LAND mode intentionally ignores hills/features/rivers and assumes the from-plot route
+   type for both routed endpoints. Enemy/hypothetical-enemy routes are ignored. These
+   are documented strategic-distance approximations, not executor-equivalence claims.
+
+6. Reset / reuse
+   -------------
+   UWAICache allocates one set of node maps and resets nodes/metrics for each known team,
+   matching KmodPathFinder's reuse contract. Static one-off callers call `init` before
+   each new team context.
+
+   War target is never the moving team on current callers; NULL is safely replaced by
+   Barbarian team solely to avoid downstream null checks when no hypothetical enemy is
+   needed.
+
+7. Limits / arithmetic
+   -------------------
+   current max path limits, movement denominator and route changes remain positive;
+   heuristic weight is initialized before any generated path; `getPathCost` is read only
+   after successful generation.
+
+HISTORY / PROVENANCE
+--------------------
+TeamPathFinder is an AdvC strategic finder layered on KmodPathFinder. Its major history
+replaced older team reachability helpers and then received performance/refactor changes.
+Current Base AdvC 1.14 retains the same semantics; no later repair is missing from SAS.
+
+Related map/path findings concern different layers:
+- F636 stale scenario area topology;
+- KmodPathFinder live path-state findings elsewhere;
+- Queue 068 legacy verifier is compiled out.
+
+QUEUE-123 ROOT LEDGER
+---------------------
+F654 / KI#976
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 123 is closed. Remaining differences from exact unit movement are explicitly
+documented strategic approximations and match current caller expectations.
+
+EXACT CONTINUATION
+------------------
+C031-WIP502 physical -> Queue123 CLOSED -> F654/KI#976 UNUSED ->
+open priority Queue125 `CvGameCoreDLL/UWAIReport.cpp` (166 lines) -> audit report
+ownership, mute nesting, stream/file lifetime, encoding/format calls, player/team name
+lookup, synchronized-state isolation and diagnostic side effects -> dedup especially
+against prior report/background findings -> promote F654 only for a distinct
+current-live root -> freeze next physical WIP at the next settled boundary whether
+F654 is consumed or unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP503 -- QUEUE 125 UWAIReport.cpp -- CLOSED / F654 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP502.
+- Queue 125 `CvGameCoreDLL/UWAIReport.cpp` is CLOSED.
+- No new root was promoted.
+- F654 / provisional KI#976 remains UNUSED.
+- Files complete: 53 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 129 `CvGameCoreDLL/AIStrengthMemoryMap.cpp` (145 queued lines).
+- No gameplay source was modified.
+
+SATURATION PASS
+---------------
+1. Mute nesting is deliberately reference-counted:
+       setMute(true)  -> ++m_iMuted
+       setMute(false) -> --m_iMuted.
+   This preserves an outer mute through nested ArmamentForecast/InvasionGraph/
+   WarEvaluator diagnostics. Live pairs examined do not return between mute/unmute.
+
+2. Silent reports set m_iMuted=1 and ignore setMute calls entirely, preserving stable
+   silence without counter drift.
+
+3. Report buffering/file writes:
+   every nonmuted `log` appends then flushes/clears the report; destructor only appends
+   the Textile footer when residual text exists, then frees every allocated narrow-string
+   buffer. No persistent gameplay state is touched.
+
+4. Network multiplayer suppresses the report unless general logging is enabled, matching
+   the anti-cheat comment. Reporting remains diagnostic only.
+
+5. `narrow` has a generic empty-string hazard:
+       while (s[s.length()-1] == ' ')
+   would index before the string if the converted name were empty or the caller supplied
+   `iCharLimit=0`.
+   Current callers use positive defaults (8/12) and current leader/unit/tech/city names
+   are nonempty. No supported activation was found; preserve as API hardening only.
+
+6. enum/name accessors receive validated current Player/Team/Unit/Tech/WarPlan values
+   from diagnostic callers. SAS's shared WarPlan token helper removes the old duplicate
+   label map rather than adding state.
+
+HISTORY CLOSURE
+---------------
+The file's history is report-formatting, naming, silent/mute behavior, scaled-UWAI
+refactors and SAS diagnostic-label cleanup. No gameplay mutation or unported Base AdvC
+repair survives.
+
+QUEUE-125 ROOT LEDGER
+---------------------
+F654 / KI#976
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 125 is closed. Remaining edges are diagnostic/API robustness only.
+
+EXACT CONTINUATION
+------------------
+C031-WIP503 physical -> Queue125 CLOSED -> F654/KI#976 UNUSED ->
+open priority Queue129 `CvGameCoreDLL/AIStrengthMemoryMap.cpp` (145 lines) ->
+audit initialization/reset/read/write size/team identity, visibility/decay update
+semantics, plot-index bounds, team death/revival/alliance lifecycle and consumers ->
+dedup against existing AI-memory/team-revival findings -> promote F654 only for a
+distinct current-live root -> freeze next physical WIP at the next settled boundary
+whether F654 is consumed or unused.
+
+No gameplay source was modified.
+===============================================================================
+
+===============================================================================
+C031-WIP504 -- QUEUE 129 AIStrengthMemoryMap.cpp -- F654 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP503.
+- Queue 129 `CvGameCoreDLL/AIStrengthMemoryMap.cpp` is OPEN.
+- F654 / provisional KI#976 is CONFIRMED here.
+- F655 / provisional KI#977 is UNUSED.
+- No gameplay source was modified.
+
+-------------------------------------------------------------------------------
+F654 / provisional KI#976 -- a fully defeated team's enemy-strength memory stops
+decaying while the team is dead and is not reset/re-aged on revival, so revived AI
+can immediately pathfind and choose attacks using enemy stacks remembered from many
+turns before its elimination
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited K-Mod/AdvC strength-memory lifecycle defect with a current supported
+revival producer (WorldBuilder / verifyAlive). It is independent of F652/F653:
+those findings concern CvAgents/UWAI revival cache membership; F654 survives even when
+the player/team are restored to all correct iterator caches.
+
+PURPOSE / NORMAL LIFETIME
+-------------------------
+AIStrengthMemoryMap is explicitly a rough memory of enemy land strength on plots.
+
+It is updated when AI_localDefenceStrength actually observes a plot:
+
+    GET_TEAM(getTeam()).AI_strengthMemory().set(p, iPlotTotal);
+
+and, once per alive team turn, decayed in:
+
+    CvTeamAI::AI_doTurnPost()
+        -> m_strengthMemory.decay();
+
+`decay()` applies:
+    4% reduction every turn, rounding down,
+
+unless the plot is currently visible and no enemy unit is there, in which case the
+entry is erased immediately.
+
+This is plainly time-sensitive intelligence rather than permanent history.
+
+DEFEAT DOES NOT RESET THE MAP
+-----------------------------
+On player/team elimination:
+- `CvPlayer::setAlive(false)` removes units/cities/deals and updates CvAgents;
+- `CvTeam::changeAliveCount(0)` clears wars/vassal relations/war plans as appropriate.
+
+Neither path calls:
+    CvTeamAI::AI_reset()
+or:
+    m_strengthMemory.reset().
+
+The strength-memory map therefore remains allocated with every pre-defeat entry.
+
+`CvTeamAI::AI_reset` WOULD clear it:
+
+    m_strengthMemory.reset();
+
+but AI_reset is used for true team reset/reinitialization, not ordinary death.
+
+DEAD INTERVAL ALSO STOPS DECAY
+------------------------------
+The only normal decay call is `CvTeamAI::AI_doTurnPost`.
+
+A dead team does not take AI turns, so for every turn spent dead:
+    no visible-empty erasure;
+    no 4% decay.
+
+The map is therefore frozen exactly at its elimination-time values.
+
+REVIVAL DOES NOT RE-AGE OR CLEAR IT
+-----------------------------------
+When a previously dead team's first member is revived:
+
+    CvPlayer::verifyAlive
+        -> setAlive(true)
+        -> CvTeam::changeAliveCount(+1)
+
+`CvTeam::changeAliveCount` does initialize UWAI when the team transitions 0 -> 1:
+
+    if (m_iAliveCount == 1 && previous <= 0 && isMajorCiv() && UWAI enabled)
+        AI().uwai().init(getID());
+
+but it does NOT reset `CvTeamAI` and does not touch `m_strengthMemory`.
+
+Current SAS's KI#475.3 revived-player helper likewise initializes player UWAI and rebuilds
+that player's military unit census only. It intentionally avoids reinitializing the
+whole team and does not touch strength memory.
+
+Therefore a correctly restored revived team inherits the exact strength-memory map from
+the moment it died.
+
+SUPPORTED REPRODUCTION
+----------------------
+Use the same current WorldBuilder revival lifecycle already documented by KI#475.3:
+
+1. Team T is alive under AI control.
+2. While enemy stack E is visible at fog-capable plot P, normal AI strength evaluation
+   stores:
+       strengthMemory[P] = 1000
+   (any positive representative value works).
+3. T is eliminated.
+4. Leave T dead for N turns while the world continues.
+5. Enemy E moves away / dies; P is not visible to T because T is dead.
+6. In WorldBuilder, give T's dead player a unit or city and leave WB.
+7. `verifyAlive` revives T.
+
+Current:
+    strengthMemory[P] is still exactly 1000.
+
+A continuously alive team's corresponding memory would have decayed every turn.
+
+INTEGER DECAY DELTA
+-------------------
+The recurrence is:
+
+    value_next = floor(96 * value / 100).
+
+Starting from 1000:
+
+    after 10 turns  -> 662
+    after 25 turns  -> 353
+    after 50 turns  -> 120
+    after 75 turns  -> 36
+    after 100 turns -> 5
+    after 105 turns -> 0
+
+So a 100-turn dead interval can revive with:
+    current stale value = 1000
+versus:
+    normal time-aged value = 5.
+
+After 105 turns, the correct normal-memory analogue would be zero while current revival
+still preserves the full original 1000.
+
+FIRST REVIVED TURN CAN CONSUME STALE VALUE BEFORE DECAY
+-------------------------------------------------------
+The first post-revival decay is not immediate. It remains scheduled for:
+
+    CvTeamAI::AI_doTurnPost()
+
+at the end of the team's turn.
+
+AI/pathfinding activity earlier in that revived turn can therefore consume the full
+stale value before even one 4% decay has occurred.
+
+DIRECT PATHFINDER CONSEQUENCE
+-----------------------------
+`GroupPathFinder` uses strength memory whenever MOVE_ATTACK_STACK evaluates a fogged
+destination:
+
+    if (kTo.isVisible(eTeam))
+        compute actual local defence;
+    else
+        iEnemyDefence =
+            GET_TEAM(eTeam).AI_strengthMemory().get(kTo.plotNum());
+
+If positive, the remembered defence:
+- adds PATH_COMBAT_WEIGHT;
+- computes attack ratio against the remembered strength;
+- adds potentially large movement cost when the ratio is below 400%.
+
+Thus a revived land stack can avoid/reroute around P because of an enemy army that
+existed before the civilization died, even if that army disappeared a century earlier.
+
+OTHER LIVE CONSUMERS
+--------------------
+The same map is consulted by:
+- CvSelectionGroupAI path/stack decisions;
+- CvUnitAI city assault and target-safety logic;
+- additional AI danger/attack computations.
+
+F654 therefore changes actual AI movement/targeting, not only diagnostics.
+
+SAVE/LOAD DOES NOT SELF-HEAL
+----------------------------
+AIStrengthMemoryMap is serialized for each team. Normal CvTeamAI read begins from reset,
+then reads the stored sparse map back.
+
+If the game is saved while the team is dead and later loaded, its frozen pre-defeat
+memory is preserved exactly; no elapsed-dead-time metadata exists from which to apply
+missed decay on revival.
+
+LINEAGE
+-------
+K-Mod introduced the original strength-memory concept and per-turn decay.
+
+AdvC practical 2676 refactored it into `AIStrengthMemoryMap`, preserving:
+- reset only through CvTeamAI reset;
+- per-turn decay in team AI turn-post;
+- direct serialization.
+
+Subsequent practicals optimize sparse storage, reproducibility and plot indexing but do
+not add defeat/revival lifetime handling.
+
+Current Base AdvC 1.14 retains the same lifecycle. SAS's recent revival fixes initialize
+UWAI/player caches but do not reset/re-age strength memory.
+
+WHOLE-ALBUM DEDUP
+-----------------
+No existing finding owns strength-memory persistence through a fully dead team interval.
+
+Earlier Permanent Alliance audits explicitly classified unmerged StrengthMemory as
+tactical/fog-of-war state rather than durable relationship state. That supports F654's
+lifetime interpretation: it is transient intelligence that should not remain frozen
+indefinitely.
+
+F652/F653:
+    revival AgentIterator/cache restoration.
+
+KI#475.3/KI#548:
+    revived player UWAI initialization and missed military-unit inventory.
+
+Neither changes the team strength-memory map.
+
+REPAIR BOUNDARY
+---------------
+The safest revival policy is to clear strength memory when a team returns from zero
+alive members:
+
+    m_strengthMemory.reset();
+    m_strengthMemory.init(map.numPlots(), teamID);
+
+(or a dedicated clear-for-revival helper).
+
+Why reset rather than replaying N missed decays:
+- exact observations may be arbitrarily old;
+- during death the team has no meaningful visibility/intelligence network;
+- no death-turn timestamp is currently stored with each entry;
+- a fresh zero map is conservative and deterministic.
+
+If designers prefer remembered intelligence after resurrection, store team death turn
+and apply the missed number of integer decay steps before the first consumer. Entries
+whose plots are now visible and empty should also be cleared before use.
+
+Do not reset a shared team when only one member dies/revives and another member kept the
+team alive; in that case AI_doTurnPost continued decaying the TEAM's memory normally.
+The trigger should be the authoritative team alive-count transition 0 -> 1.
+
+VALIDATION TARGETS
+------------------
+1. Alive team memory 1000, 100 normal turns -> 5.
+2. Fully dead team for 100 turns, then revival:
+   current fails at 1000; repaired policy should be fresh/appropriately aged.
+3. 105-turn dead interval:
+   no full-strength phantom remains.
+4. Shared team where one member dies but team stays alive:
+   do not clear memory on member revival; normal team decay continued.
+5. Revived team first AI turn:
+   GroupPathFinder must not consume pre-death phantom defence.
+6. Visible empty remembered plot after revival:
+   memory is zero before strategic movement.
+7. Save while dead -> load -> revive:
+   same repaired result as uninterrupted dead interval.
+8. Current ordinary alive-team decay remains unchanged.
+9. F652/F653 revival-cache tests compose independently.
+
+POST-F654 LEDGER / EXACT RESUME
+-------------------------------
+Queue 129 `CvGameCoreDLL/AIStrengthMemoryMap.cpp` -- OPEN.
+F654 / provisional KI#976 -- CONFIRMED.
+F655 / provisional KI#977 -- UNUSED.
+
+Exact continuation:
+C031-WIP504 physical -> Queue129 OPEN -> exclude F654 plus F652/F653 and prior tactical-
+memory owners -> finish sparse-map read/write/reset/decay bounds and team-leader
+visibility semantics -> inspect zero-entry retention, malformed plot indices and
+reproducibility ordering -> classify all AIStrengthMemoryMap history -> either promote
+a genuinely independent F655 or close Queue129 cleanly -> freeze next physical WIP
+regardless.
+
+No gameplay source was modified.
+===============================================================================
+
+===============================================================================
+C031-WIP505 -- QUEUE 129 AIStrengthMemoryMap.cpp -- CLOSED / F655 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP504.
+- Queue 129 `CvGameCoreDLL/AIStrengthMemoryMap.cpp` is CLOSED.
+- Queue-129 confirmed root:
+    F654 / provisional KI#976
+- F655 / provisional KI#977 remains UNUSED.
+- Files complete: 54 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 130 `CvGameCoreDLL/CvRandom.cpp` (137 queued lines).
+- No gameplay source was modified.
+
+FINAL CONTROLS
+--------------
+- Sparse zero entries are semantically zero and bounded by map plots; save output drops
+  them. No unbounded current growth.
+- read/write pair current sparse entries coherently. Invalid serialized plot indices are
+  malformed-save robustness; current writer only emits CvPlot::plotNum values.
+- ENABLE_REPRO_TEST sorts hash-map output explicitly; ordinary save order need not be
+  deterministic because loading reconstructs the same key/value map.
+- team leader used for visible-enemy-unit clearing is maintained on alive transitions;
+  detection/visibility semantics are team-based for current use.
+- reset/init clear the map for genuine new-team/player initialization.
+- only the fully-dead-team revival lifetime omits reset/aging; that is F654.
+
+HISTORY CLOSURE
+---------------
+Practical 2676 refactored K-Mod strength memory into this sparse class. Later changes
+adjusted decay iteration, plot-index caching, reproducibility ordering and Barbarian
+support without altering the defeat/revival lifetime. No second current root survived.
+
+QUEUE-129 ROOT LEDGER
+---------------------
+F654 / KI#976
+    fully dead team freezes tactical enemy-strength memory and resumes with stale
+    pre-defeat values on revival.
+
+F655 / KI#977
+    UNUSED.
+
+EXACT CONTINUATION
+------------------
+C031-WIP505 physical -> Queue129 CLOSED -> F654 confirmed ->
+F655/KI#977 UNUSED -> open priority Queue130 `CvGameCoreDLL/CvRandom.cpp` (137 lines) ->
+audit RNG state transition, range mapping/bias, zero/negative bounds, synchronized vs
+async callers, seed/reset/read/write lifecycle, shuffle ownership and reproducibility
+contracts -> compare K-Mod/Civ4CE/Base AdvC lineage and whole-album RNG findings ->
+promote F655 only for a distinct current-live root -> freeze next WIP regardless.
+
+No gameplay source was modified.
+===============================================================================
+
+===============================================================================
+C031-WIP506 -- QUEUE 130 CvRandom.cpp -- CLOSED / F655 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP505.
+- Queue 130 `CvGameCoreDLL/CvRandom.cpp` is CLOSED.
+- No new root was promoted.
+- F655 / provisional KI#977 remains UNUSED.
+- Files complete: 55 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 138 `CvGameCoreDLL/CvDLLInterfaceIFaceBase.cpp` (91 queued lines).
+- No gameplay source was modified.
+
+SATURATION PASS
+---------------
+1. Core RNG transition
+   -------------------
+   The inherited 32-bit LCG:
+       seed = 1103515245 * seed + 12345
+   uses unsigned arithmetic and therefore has defined modulo-2^32 wraparound.
+
+   Output range mapping uses the upper 16 seed bits:
+       floor(high16 * range / 65536)
+   and returns exactly [0,range-1] for positive 16-bit ranges. The small unavoidable
+   modulo bias when 65536 is not divisible by the range is inherited RNG policy, not a
+   contract error.
+
+2. SAS KI#72 int-range safety guard
+   --------------------------------
+   Current SAS adds:
+       if (iNum <= 0) {
+           assert only when negative;
+           return 0;
+       }
+
+   Base AdvC 1.14 asserted on a negative int before casting to unsigned short; a real
+   `AI_chooseProduction` caller produced -4 and SAS fixed both the observed callers and
+   this central safety net.
+
+   The guard also means `get(0)` no longer advances the RNG seed. This is deliberate
+   current SAS semantics and was already treated as such in the album's earlier
+   zero-agent starting-location control:
+       MapRandNum(0) -> 0 without advancing RNG.
+
+   No supported current caller was found that relies on a dummy zero-range call
+   consuming one synchronized random state transition. Do not create a new root for a
+   deliberate safety-policy stream change.
+
+3. Shuffle
+   -------
+   Both array and vector overloads implement Fisher-Yates:
+       j = i + get(size-i)
+   over positive current sizes.
+
+   Empty vector asserts only as an intent warning; loop body is safe. The raw array
+   overload's negative size would be API misuse, and all current callers derive
+   nonnegative element counts.
+
+4. `weightedChoice`
+   ----------------
+   Current live callers supply:
+   - valid-plot probability weights from nonnegative maps;
+   - Barbarian shelf weights after a total-weight >0 check;
+   - ordinary uniform candidate vectors.
+
+   If summed weights exceed 65535, proportional downscaling floors each entry and
+   recomputes total. With current candidate vector sizes, a positive distribution cannot
+   have every entry round to zero under this scaling; at least one significant current
+   weight survives. Negative individual weights are unsupported and absent in callers.
+
+   A zero total intentionally returns NULL without an RNG draw; callers already treat
+   "no weighted candidate" as no selection.
+
+5. Float helper
+   ------------
+   `getFloat` divides `get(65535)` by 65535. Since get(65535) returns at most 65534,
+   result lies in [0,1), not 1.0.
+
+6. External/setup RNG
+   ------------------
+   `getExternal` first reports the call to `CvInitCore::externalRNGCall`, then executes
+   the same generator. This is the intended setup-random-option tracking path.
+
+7. State lifetime / serialization
+   ------------------------------
+   `reset`, `init`, `reseed`, `read` and `write` operate on the one serialized
+   `m_uiRandomSeed` consistently.
+
+   `CvRandomExtended` serializes its diagnostic file name immediately after base seed;
+   read clears then restores it symmetrically. Logging observes the PRE-draw seed as
+   intended for reproducibility traces and does not mutate RNG state.
+
+HISTORY / PROVENANCE
+--------------------
+Current `CvRandom.cpp` is executable-semantically identical to Base AdvC 1.14; SAS's
+meaningful local change is the KI#72 int-overload safety guard in `CvRandom.h`.
+
+K-Mod/AdvC history in this small file covers:
+- initial high-bit LCG wrapper;
+- external RNG setup tracking;
+- logging/reproducibility support;
+- shuffle relocation/refactor;
+- weighted-choice helper and overflow downscaling;
+- enum/style/include cleanup.
+
+No later Base 1.14 repair is missing and no independent current-live F655 survived.
+
+QUEUE-130 ROOT LEDGER
+---------------------
+F655 / KI#977
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 130 is closed. Remaining concerns are unsupported invalid-range/negative-weight
+API hardening or intentional RNG-policy choices, not a distinct current gameplay bug.
+
+EXACT CONTINUATION
+------------------
+C031-WIP506 physical -> Queue130 CLOSED -> F655/KI#977 UNUSED ->
+open priority Queue138 `CvGameCoreDLL/CvDLLInterfaceIFaceBase.cpp` (91 lines) ->
+establish whether this tiny interface file contains live executable wrappers or only
+ABI scaffolding -> audit virtual/interface forwarding, pointer/reference lifetimes,
+export/EXE contracts and any SAS divergence -> compare Base/K-Mod/Civ4CE and album
+ownership -> promote F655 only for a distinct current-live root -> freeze next WIP at
+the next settled boundary whether F655 is consumed or unused.
+
+No gameplay source was modified.
+===============================================================================
+
+===============================================================================
+C031-WIP507 -- QUEUE 138 CvDLLInterfaceIFaceBase.cpp -- CLOSED / F655 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP506.
+- Queue 138 `CvGameCoreDLL/CvDLLInterfaceIFaceBase.cpp` is CLOSED.
+- No new root was promoted.
+- F655 / provisional KI#977 remains UNUSED.
+- Files complete: 56 / 169.
+- Files open: 0 / 169.
+- Next selected priority file:
+    Queue 151 `CvGameCoreDLL/WarEvalParameters.cpp` (74 queued lines).
+- No gameplay source was modified.
+
+SATURATION PASS
+---------------
+This tiny cpp file contains only the AdvC/K-Mod `addMessage` wrapper plus the SAS label-
+font wrapper.
+
+1. AdvC message filtering / force behavior
+   - R&F silent AI Auto Play intentionally drops messages while the human is disabled.
+   - ordinary AI messages are suppressed unless R&F is preserving them for a later
+     human chapter.
+   - major/log/chat messages during ordinary AI Auto Play are forced immediately and
+     stripped of sound/icon/arrows as intended.
+   - globe view correctly clears `bForce`; practical 4038 fixed the older reversed
+     condition that had forced essentially every normal on-screen message.
+   - default duration and default WHITE flash color are bounded/current.
+
+2. Plot overload
+   The CvPlot-reference overload forwards only the plot coordinates and otherwise
+   preserves the same message arguments. All live callers pass a valid plot reference.
+
+3. SAS label-font wrapper
+   SAS practical 5668 added one centralized wrapper around the outgoing message text:
+       `<font=SAS_UI_FONT_LABEL> ... </font>`
+   unless the string is empty, already contains `<font=`, or the configured label size
+   is outside 1..4.
+
+   Current `SAS_UI_FONT_LABEL` is XML configuration loaded before normal message traffic;
+   no runtime setter for this define exists in current Python/C++ call sites. Therefore
+   the local static-const cache is consistent with current configuration lifetime.
+
+   Existing message markup (color/link/icon tags) is intentionally nested inside the
+   outer font tag and the EXE already parses such tagged message payloads. Strings that
+   already carry their own font markup are left untouched. No current malformed-markup,
+   gameplay or logging contradiction was demonstrated.
+
+4. ABI/interface boundary
+   `addMessageExternal` remains the protected pure-virtual EXE-facing slot with the same
+   signature/order as Base AdvC. The nonvirtual wrapper does not alter object ownership
+   or retain any caller pointer/string reference after return.
+
+PROVENANCE / HISTORY
+--------------------
+- practical 3177 moved the growing inline wrapper from the interface header into a cpp;
+- practical 3179 renamed the file to the current InterfaceIFaceBase spelling;
+- practical 4038 fixed the reversed globe-view force test;
+- SAS 5000 caches the WHITE color lookup;
+- SAS 5668 adds centralized event-message label-font wrapping;
+- later SAS changes are formatting/comment cleanup.
+
+Current Base AdvC 1.14 matches all non-SAS wrapper behavior. K-Mod/Civ4CE carry the
+underlying interface/message semantics in their older header/source layout.
+
+QUEUE-138 ROOT LEDGER
+---------------------
+F655 / KI#977
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 138 is closed. Remaining concerns are presentation/configuration choices or
+unsupported runtime mutation of a static UI define, not a distinct current-live bug.
+
+EXACT CONTINUATION
+------------------
+C031-WIP507 physical -> Queue138 CLOSED -> F655/KI#977 UNUSED ->
+open priority Queue151 `CvGameCoreDLL/WarEvalParameters.cpp` (74 lines) ->
+audit constructor state, ally/extra-target closure over masters/vassals, sponsor/
+immediate-DoW coupling, no-war-vs-extra semantics and the cache perfect-hash encoding ->
+carry forward Queue074's proven mathematical getID collisions but promote only if two
+supported cache states actually collide -> compare history/Base AdvC and whole-album
+ownership -> freeze next WIP whether F655 is consumed or unused.
+
+No gameplay source was modified.
+===============================================================================
+
+===============================================================================
+C031-WIP508 -- QUEUE 151 WarEvalParameters.cpp -- CLOSED / F655 UNUSED
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP507.
+- Queue 151 `CvGameCoreDLL/WarEvalParameters.cpp` is CLOSED.
+- No new root was promoted.
+- F655 / provisional KI#977 remains UNUSED.
+- Files complete: 57 / 169.
+- Files open: 0 / 169.
+- All explicitly marked `priority next wip` queues are now complete.
+- Ordinary queue order resumes with:
+    Queue 026 `CvGameCoreDLL/CvInitCore.cpp` (2132 queued lines).
+- No gameplay source was modified.
+
+SATURATION PASS
+---------------
+1. Constructor state
+   -----------------
+   Agent/target/report/sponsor/capitulation are stored directly.
+   `consideringPeace` is derived from actual current agent-target war state.
+   Capitulation is asserted to be an at-war evaluation.
+   Sponsor implies immediate DoW as intended.
+
+2. War ally / extra target closure
+   --------------------------------
+   `addWarAlly` and `addExtraTarget` add:
+       supplied team
+       its master
+       its direct major vassals.
+
+   A generic call with a dependent vassal would not automatically add all sibling
+   vassals of that vassal's master. This is a real abstract closure limitation.
+
+   Current callers do not provide a clean activation:
+   - diplo-vote ally lists are built from FREE_MAJOR_CIV candidates;
+   - end-all-war extra targets are FREE_MAJOR_CIV enemies;
+   - imminent-two-front extra target comes from FREE_MAJOR_CIV potential enemies;
+   - direct joint-war handling normalizes a vassal main target to its master before
+     parameter construction;
+   - no supported caller was found that passes a dependent vassal as ally/extra target
+     and then requires sibling-vassal closure.
+
+   Keep as parameter-API robustness, not F655.
+
+3. `isNoWarVsExtra`
+   ----------------
+   The helper requires:
+       extra targets present
+       not considering peace
+       not immediate DoW
+       agent not actually at war with main target.
+   That matches its documented use: compare war against the main target while dropping
+   the extra wars in the recursive peace scenario. Current callers intentionally call
+   `setNotConsideringPeace` where this special comparison is wanted.
+
+4. Sponsor / immediate-DoW coupling
+   --------------------------------
+   Constructor sponsor and later `setSponsor` both force immediateDoW=true.
+   Clearing/replacing sponsor with NO_PLAYER does not automatically clear immediateDoW,
+   but no current caller uses setSponsor as a reversible toggle; the flag can also be
+   deliberately set independently for vote/joint-war scenarios.
+
+5. `getID` perfect-hash claim is false
+   -----------------------------------
+   Queue 074 already established the arithmetic defect.
+
+   Current positional sequence does:
+       ... total; *2;
+       naval; *2;
+       prep+1; *50;
+
+   so preparation time is added after only a base-2 shift and can overlap the naval/
+   total positions. Algebraic examples:
+       nonnaval prep=2  == naval prep=0
+       limited prep=4   == total prep=0
+   with all other encoded fields equal.
+
+   The declared "perfect hash" therefore is not injective in the full documented
+   parameter domain.
+
+   However the full cache-caller sweep still does not yield two supported colliding
+   states with the same remaining fields under an enabled cache:
+   - sponsored declare-war-trade forces immediate DoW and prep=0;
+   - willing-to-talk/at-war UI cache uses prep=0;
+   - current explicit 3/5/default-preparation callers do not share sponsor,
+     considering-peace, immediate-DoW and cache-use state in a colliding pair;
+   - warAllies/extraTargets scenarios are intended to run uncached.
+
+   Keep this as a strong unit-test/robustness defect but not F655 without a current
+   gameplay collision.
+
+6. Range / width
+   -------------
+   - large-player DLL uses `__int64` WarEvalParamID; practical 2948 fixes the old
+     48-civ width risk.
+   - prep+1<50 remains an assert-domain requirement. Very slow custom game speeds can
+     produce larger theoretical defaults, but current cache-active callers force small
+     preparation values.
+   - ally/extra-target sets are intentionally excluded from the ID and assert empty
+     whenever getID is called; current supported cached callers obey that contract.
+
+HISTORY / PROVENANCE
+--------------------
+High-value history:
+- practical 1253: initial WarEvalParameters/UWAI parameter object;
+- practical 1335: extra-target/no-war-vs-extra semantics;
+- practical 1478: int mixed-base cache ID;
+- practical 2770: capitulation parameter assertion/context;
+- practical 2920/2954: scaled/UWAI refactor;
+- practical 2948: 48-civ ID width fix;
+- later changes are type/style/include cleanup.
+
+Current SAS and Base AdvC 1.14 retain the same semantic parameter implementation.
+K-Mod/Civ4CE do not contain this exact AdvC UWAI parameter class.
+
+QUEUE-151 ROOT LEDGER
+---------------------
+F655 / KI#977
+    UNUSED.
+
+CLOSURE JUDGMENT
+----------------
+Queue 151 is closed. The malformed mixed-base hash is a real latent robustness defect,
+but no distinct current-live colliding cache state was proved after the complete caller
+sweep. Other sharp surfaces are caller-constrained parameter API limitations.
+
+SCHEDULING TRANSITION
+---------------------
+The reconciled album rule was to process every still-pending entry explicitly marked
+`priority next wip` before returning to ordinary queue order.
+
+Queue 168 `CvGameCoreDLL/ArithmeticTraits.cpp` remains the final such marked entry.
+
+Complete Queue 168 before ordinary queue order resumes at Queue 026 `CvGameCoreDLL/CvInitCore.cpp`.
+
+EXACT CONTINUATION
+------------------
+C031-WIP508 physical -> Queue151 CLOSED -> F655/KI#977 UNUSED ->
+open final priority Queue168 `CvGameCoreDLL/ArithmeticTraits.cpp` -> inspect the tiny
+compile-time trait definitions and history -> close or promote only a distinct current-live
+root -> then resume ordinary Queue026.
+
+No gameplay source was modified.
+===============================================================================
+
+===============================================================================
+C031-WIP509 -- QUEUE 168 ArithmeticTraits.cpp -- CLOSED / PRIORITY RELOOP COMPLETE
+===============================================================================
+
+CLOSURE STATE
+-------------
+- Parent physical stone: C031-WIP508.
+- Queue 168 `CvGameCoreDLL/ArithmeticTraits.cpp` is CLOSED.
+- No new root was promoted.
+- F655 / provisional KI#977 remains UNUSED.
+- Files complete: 58 / 169.
+- Files open: 0 / 169.
+- ALL explicitly marked priority-next-WIP entries are now complete.
+- Ordinary queue order resumes at Queue 026 `CvGameCoreDLL/CvInitCore.cpp`.
+- Queue 108 table bookkeeping was reconciled to its already-physical WIP498 closure.
+- No gameplay source was modified.
+
+QUEUE-168 CLOSURE
+-----------------
+The implementation file defines only:
+    arithm_traits<float>::min = -FLT_MAX
+    arithm_traits<float>::max =  FLT_MAX
+    arithm_traits<double>::min = -DBL_MAX
+    arithm_traits<double>::max =  DBL_MAX
+
+The negative minima are intentionally correct; C/C++ `FLT_MIN` and `DBL_MIN` are the
+smallest positive normalized values, not the lowest representable values.
+
+The header's integer, bool, enum and ScaledNum specializations are compile-time trait
+metadata. The two cpp history touches are introduction and small cleanup. There is no
+runtime state/lifetime/caller surface from which a current bug could emerge.
+
+QUEUE-168 ROOT LEDGER
+---------------------
+F655 / KI#977
+    UNUSED.
+
+PRIORITY-RELOOP COMPLETION
+--------------------------
+The special stronger-WIP scheduling tranche that began after the earlier reconciled
+album notes is now fully exhausted. Do not continue using the stale "skip until priority
+WIPs are done" annotations as active scheduling barriers; their condition is satisfied.
+
+Resume the normal numeric queue at the first still-PENDING entry:
+    Queue 026 `CvGameCoreDLL/CvInitCore.cpp` (2,132 queued lines).
+
+EXACT CONTINUATION
+------------------
+C031-WIP509 physical -> all priority queues complete -> F655/KI#977 UNUSED ->
+open ordinary Queue026 CvInitCore.cpp -> establish SAS/Base AdvC/K-Mod/Civ4CE semantic
+diff and full history/caller map -> audit game/setup slot lifecycle, options/custom map
+options, player/team/civ/leader selections, random setup, WB/load copy/reset, multiplayer
+sync/serialization, string/password/map-script state, external RNG option tracking,
+enum/index/range/ownership contracts -> whole-album dedup before numbering -> promote
+F655 only for a distinct current-live root -> freeze the next physical WIP at the next
+settled boundary whether F655 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified.
+===============================================================================
+
+===============================================================================
+C031-WIP510 -- QUEUE 026 CvInitCore.cpp -- OPEN BASELINE / F655 UNUSED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP509.
+- All explicit priority-next queues are complete.
+- Ordinary queue order has resumed.
+- Queue 026 `CvGameCoreDLL/CvInitCore.cpp` is OPEN.
+- F655 / provisional KI#977 remains UNUSED.
+- Files complete: 58 / 169.
+- Files open: 1 / 169.
+- No gameplay source was modified.
+
+INITIAL PROVENANCE / SEMANTIC DIFF
+----------------------------------
+Current SAS `CvInitCore.cpp` has exactly 2132 physical lines, matching the queue count.
+
+A function-body normalization against supplied Base AdvC 1.14 found only two semantic
+function differences:
+    `resetGame`
+    `read`
+
+Everything else is executable-semantically Base-1.14-compatible once comments/formatting
+are removed.
+
+`read`
+------
+The difference is the already-reconciled SAS KI#46 policy:
+- historical `uiFlag < N` save-migration branches were removed;
+- current reader consumes the current writer layout directly;
+- current same-version pairing remains the relevant audit contract.
+
+Do not treat loss of old-save compatibility as a Queue-026 finding unless a current
+writer/current reader mismatch is established.
+
+`resetGame` / `resetPlayer`
+---------------------------
+SAS practical 5083 caches XML standard defaults as local static constants, but only
+inside:
+
+    if (GC.isCachingDone())
+
+This preserves the Base AdvC protection against querying defines before XML is loaded.
+
+Cached values:
+    STANDARD_CLIMATE
+    STANDARD_SEALEVEL
+    STANDARD_ERA
+    STANDARD_GAMESPEED
+    STANDARD_TURNTIMER
+    STANDARD_CALENDAR
+    STANDARD_HANDICAP
+
+Current Python/C++ search finds no runtime setter for any of these exact defines.
+Normal setup/reset calls therefore see immutable post-XML configuration and the static
+cache does not presently create a live stale-value defect.
+
+Keep dynamic-define mutation as mod/API robustness only.
+
+QUEUE-026 AUDIT PLAN / EXACT RESUME
+-----------------------------------
+C031-WIP510 physical -> Queue026 OPEN -> F655/KI#977 UNUSED ->
+continue from the current semantic-diff baseline into:
+
+1. reset/uninit/default lifecycle:
+   - game fields;
+   - player fields;
+   - dynamic custom-map-option/victory arrays;
+   - graphics-dependent civ cleanup.
+
+2. player slot/state matrix:
+   - SlotStatus / SlotClaim;
+   - human/open/computer/takeover-AI semantics;
+   - reassignPlayer;
+   - team/civ/leader/color/art/handicap/random-choice flags;
+   - active-player and network slot interactions;
+   - recycled/new-player cross-checks against F477/F479/F647/F652.
+
+3. map/game setup:
+   - map script and Python existence;
+   - hidden/custom map options;
+   - world/climate/sea/era/speed/calendar;
+   - turn timer, victories and options;
+   - scenario/WB no-player and Pangaea state.
+
+4. network/admin/PBEM/hotseat:
+   - passwords/email/SMTP;
+   - ready/slot claim;
+   - multiplayer checksum fields;
+   - active-player and game-type transitions.
+
+5. serialization:
+   - current write/read order;
+   - array lengths and allocation ownership;
+   - reset-before-read;
+   - strings/enum maps;
+   - current-version-only KI#46 boundaries.
+
+6. full path-history classification and whole-album dedup.
+
+Promote F655 only for a distinct current-live root; freeze another physical WIP at the
+next settled boundary whether F655 is consumed or remains unused.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
+===============================================================================
+
+===============================================================================
+C031-WIP511 -- QUEUE 026 CvInitCore.cpp -- F655 CONFIRMED
+===============================================================================
+
+CONTINUATION STATE
+------------------
+- Parent physical stone: C031-WIP510.
+- Ordinary Queue 026 `CvGameCoreDLL/CvInitCore.cpp` remains OPEN.
+- F655 / provisional KI#977 is CONFIRMED here.
+- F656 / provisional KI#978 is UNUSED.
+- No gameplay source was modified.
+
+EARLY QUEUE-026 CONTROLS CLOSED BELOW F655
+------------------------------------------
+Several initially sharp reset/load/setup surfaces were traced through their complete
+current lifecycles before numbering anything:
+
+1. `clearCustomMapOptions` does not zero `m_iNumHiddenCustomMapOptions`, so a Python-map
+   -> WorldBuilder-map refresh can leave a stale hidden count. AdvC practical 1390
+   deliberately removed the option-count getters from the EXE export surface, and the
+   one current SAS C++ consumer clamps hidden options to the actual option count. WB
+   maps have zero custom options there, so no current gameplay/UI consequence was
+   demonstrated.
+
+2. `CvInitCore::read` loads `m_aeCiv` directly and can temporarily coexist with an old
+   `CvPlayer::m_pCivilization` wrapper. The actual loaded-core -> live-core handoff goes
+   through `resetPlayer(..., pSource)`, which calls `setCiv` before the player's second
+   reset. A changed civilization therefore rebuilds the wrapper; an unchanged one
+   already matches. The temporary mismatch does not survive normal load.
+
+3. Practical 2323's EnumMap read-size memory-corruption repair, practical 4151's
+   active-team network-coop synchronization repair and practical 4288's QuickStart
+   `setType(string)` fall-through repair are all present.
+
+4. The SAS practical-5083 static caches for standard Climate/SeaLevel/Era/GameSpeed/
+   TurnTimer/Calendar/Handicap are created only after XML caching is complete. Current
+   Python/C++ does not mutate these exact defines at runtime.
+
+RETRY-BRANCH EVIDENCE RETAINED FOR CONTINUATION
+-----------------------------------------------
+The earlier competing C031-WIP510 download treated Queue026 as closed before the later,
+stronger branch proved F655. Its closure judgment and F655-unused ledger are superseded,
+but these useful controls were not present verbatim in that later branch and are retained
+as evidence for its continuing saturation pass:
+
+- `setActivePlayer` updates the prior player-history snapshot before switching, refreshes
+  the cached active team and claims the new slot; identity setters refresh live derived
+  state once player statics exist.
+- `getAvailableSlot` prefers OPEN slots, then eligible takeover-AI computer slots;
+  `closeInactiveSlots` / `reopenInactiveSlots` follow their Pitboss, Hotseat, PBEM and
+  scenario mode restrictions.
+- Name, password and checksum-string arrays pair their bounds and ownership. The total-name-
+  length counter is only an `FASSERT_ENABLE` scenario diagnostic, not release gameplay.
+- The current writer/read stream was mechanically paired across setup strings and enums,
+  custom/victory/game options, turn and Advanced Start state, per-player strings and maps,
+  random-choice flags, slot state and playable/minor flags. Read clears dynamic storage
+  first, intentionally changes assigned claims to reserved, and preserves AdvC's within-
+  game-load player-reset ordering. KI#46 removed old-format migration, not current-format
+  symmetry.
+
+These controls remain inputs rather than a replacement for the open stronger audit. The
+later branch's supported-config interpretation of F655 is authoritative.
+
+-------------------------------------------------------------------------------
+F655 / provisional KI#977 -- `reRandomizeCivsAndLeaders` never marks a newly
+assigned random leader as taken, so its "unique leaders" algorithm can assign the
+same leader to multiple players even when enough unique leaders exist
+-------------------------------------------------------------------------------
+
+STATUS
+------
+CONFIRMED inherited AdvC setup-algorithm defect with a supported but currently
+configuration-gated SAS activation.
+
+IMPORTANT SCOPE:
+Current AdvC-SAS deliberately sets:
+
+    PER_EXTRA_LEADER_CIV_SELECTION_WEIGHT = 0
+
+which returns from this AdvC re-randomizer immediately and retains BtS behavior.
+Therefore F655 does NOT affect default current SAS setup.
+
+The XML define is, however, an intentional supported AdvC configuration feature. Base
+AdvC 1.14 recommends and ships value 20. When enabled in current SAS, the 48-player DLL
+and 36-civilization roster make the uniqueness failure directly reachable.
+
+ROOT
+----
+`CvInitCore::reRandomizeCivsAndLeaders` first builds a persistent map of leaders already
+claimed by NON-random setup slots:
+
+    EagerEnumMap<LeaderHeadTypes,bool> abLeaderTaken;
+
+    for each setup player:
+        if (!abRandomize[player])
+            abLeaderTaken.set(getLeader(player), true);
+        else
+            iRandomLeadersNeeded++;
+
+It then counts every playable leader not in that map:
+
+    if (bPlayable && !abLeaderTaken.get(eLeader))
+        iLeadersAvailable++;
+
+and explicitly refuses the enhanced algorithm when uniqueness is impossible:
+
+    if (iRandomLeadersNeeded > iLeadersAvailable)
+    {
+        FAssertMsg(...,
+            "Can't assign unique leaders; falling back on BtS algorithm.");
+        return;
+    }
+
+For each random player, civilization weights and the candidate leader list are again
+filtered through the SAME `abLeaderTaken` map:
+
+    if (!abLeaderTaken.get(leadersPerCiv[eCiv][j]))
+        iWeight += iPER_EXTRA_LEADER_CIV_SELECTION_WEIGHT;
+
+    ...
+
+    if (!abLeaderTaken.get(leadersPerCiv[eNewCiv][j]))
+        aeAvailableLeaders.push_back(...);
+
+After selecting the random leader, however, current code only does:
+
+    setCiv(ePlayer, eNewCiv);
+    setLeader(ePlayer, eNewLeader);
+
+It NEVER executes:
+
+    abLeaderTaken.set(eNewLeader, true);
+
+Thus the map describes only fixed/non-random setup leaders for the whole function.
+Every leader assigned to an earlier random player remains "available" to every later
+random player.
+
+CIV-USE STATE DOES UPDATE
+-------------------------
+This omission is especially clear because the adjacent civilization state IS updated:
+
+    aiTakersPerCiv.add(eNewCiv, 1);
+
+The algorithm therefore remembers that a civilization was selected but forgets that its
+leader was selected.
+
+For the first pass it spreads random players over least-used civilizations. Once the
+number of random players exceeds the number of playable civilizations, civilization
+reuse is intentional; at that point one-leader civilizations can deterministically
+reuse their only leader because the leader-taken map was never changed.
+
+CURRENT SAS DATA
+----------------
+Mechanical current-XML enumeration gives:
+
+    MAX_CIV_PLAYERS:                       48
+    playable civilizations:                36
+    unique playable mapped leaders:        55
+
+So a 48-player all-random setup passes the function's own uniqueness feasibility test:
+
+    iRandomLeadersNeeded = 48
+    iLeadersAvailable    = 55
+
+and the enhanced algorithm promises to assign unique leaders.
+
+The 48 slots necessarily exceed the 36 civilization identities, so at least 12
+civilization assignments must be repeats after the least-used-civ pass has exhausted
+all 36 once.
+
+EXACT SYNCHRONIZED-RNG REPRODUCTION
+-----------------------------------
+A literal arithmetic translation of the current routine was run against the current
+SAS civilization/leader XML order and current `CvRandom` implementation:
+
+    seed = 1103515245 * seed + 12345 (mod 2^32)
+
+    result =
+        (((seed >> 16) & 65535) * upper) / 65536
+
+Fixture:
+    48 SS_TAKEN/SS_COMPUTER major slots
+    all 48 had civilization + leader chosen randomly
+    unrestricted leaders OFF
+    PER_EXTRA_LEADER_CIV_SELECTION_WEIGHT = 20
+    synchronization seed = 0
+    current SAS 36-civ / 55-leader XML
+
+Current algorithm:
+    assignments completed: 48
+    distinct leaders:      38
+
+A particularly simple duplicate is:
+
+    Player 2:
+        CIVILIZATION_AZTEC
+        LEADER_MOCTEZUMA
+
+    Player 36:
+        CIVILIZATION_AZTEC
+        LEADER_MOCTEZUMA
+
+The later Aztec assignment sees Montezuma as available because `abLeaderTaken` still
+contains only leaders that were fixed before re-randomization.
+
+The same seed produces ten duplicated leader identities overall. Other sampled valid
+seeds (1, 42, 12345, 0xDEADBEEF) likewise completed all 48 assignments with only
+38-41 distinct leaders, confirming that the seed-0 example is not a numerical corner.
+
+ONE-LINE ORACLE
+---------------
+Using the same exact XML/RNG fixture but updating the local map immediately after each
+random assignment:
+
+    abLeaderTaken.set(eNewLeader, true);
+
+produces:
+
+    assignments completed: 48
+    distinct leaders:      48
+
+with the same seed 0.
+
+The corrected algorithm therefore satisfies the current precheck (`55 >= 48`) without
+needing to fall back to BtS behavior.
+
+HISTORY -- EXACT BIRTH IN PRACTICAL 2532
+----------------------------------------
+Practical 2532 / commit `60a15e6434` ("Handle assignment of random civs and leaders in
+the DLL") introduced the entire `reRandomizeCivsAndLeaders` routine.
+
+That original patch already contains:
+- `abLeaderTaken`;
+- the unique-leader feasibility assertion;
+- civilization weighting by not-yet-taken leaders;
+- available-leader filtering;
+- the final `setCiv` / `setLeader`;
+- NO update of `abLeaderTaken` after assigning the random leader.
+
+The omission therefore exists from the feature's introduction.
+
+Practical 2539 later amended random-civ setup bookkeeping but did not add the missing
+leader update. Current Base AdvC 1.14 retains the same function.
+
+Current SAS has already repaired a separate practical-2532 copy/paste bug in
+`reassignPlayer` (KI#209). F655 is independent and remains in the still-live
+re-randomization body.
+
+BASE ADVC VS CURRENT SAS ACTIVATION
+-----------------------------------
+Base AdvC 1.14 ships:
+
+    PER_EXTRA_LEADER_CIV_SELECTION_WEIGHT = 20
+
+and documents 20 as the recommended setting. Its standard smaller player ceiling makes
+the >civilization-count duplicate-civ activation much less ordinary because Base has
+more playable civs than normal simultaneous players.
+
+AdvC-SAS expands the DLL to 48 civilization players but deliberately sets the define to
+0 because the mod prefers equal civilization probability over multi-leader civ bias.
+That default masks F655.
+
+If the documented enhanced selection feature is re-enabled in SAS -- e.g. value 20 as
+upstream recommends -- a normal 48-random-player setup activates the bug immediately.
+This is therefore configuration-gated current functionality, not an unreachable
+future-data-only issue.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album searches for:
+- `reRandomizeCivsAndLeaders`;
+- `abLeaderTaken`;
+- duplicate/unique randomized leader;
+- `PER_EXTRA_LEADER_CIV_SELECTION_WEIGHT`
+
+find no confirmed owner for this missing post-assignment update.
+
+Related roots are independent:
+- KI#209: practical-2532 `reassignPlayer` copied the civ-random flag into the saved
+  leader-random flag.
+- F616/F621: True Starts uses the same XML define in a different civilization-fitness
+  pipeline and has separate duplicate/pair-weighting defects.
+
+F655 reproduces with True Starts off.
+
+REPAIR BOUNDARY
+---------------
+The narrow repair is exactly what the algorithm's data structure requires:
+
+    LeaderHeadTypes eNewLeader = ...
+    setCiv(ePlayer, eNewCiv);
+    setLeader(ePlayer, eNewLeader);
+    abLeaderTaken.set(eNewLeader, true);
+
+Updating the map before the next player makes:
+- later civilization weights reflect remaining unique leaders;
+- civilizations with no unused leader become ineligible;
+- later `aeAvailableLeaders` lists exclude prior random assignments;
+- the initial `iRandomLeadersNeeded <= iLeadersAvailable` contract meaningful.
+
+Do not mark the leader only inside CvInitCore's persistent setup flags; `abLeaderTaken`
+is deliberately a local temporary selection-state map and must be updated locally.
+
+VALIDATION TARGETS
+------------------
+1. Current default SAS define 0:
+   preserve exact BtS/current behavior; function continues to return early.
+2. Define 20, 48 all-random SAS players, sync seed 0:
+   all 48 assignments complete with 48 distinct leaders.
+3. Repeat seeds 1, 42, 12345 and 0xDEADBEEF:
+   no duplicate leader identities.
+4. Fixed/non-random leaders remain excluded exactly as today.
+5. Random civilization with fixed/non-random leader-only cases continue to use the BtS
+   path as intended.
+6. Unrestricted Leaders remains an immediate return.
+7. If requested random leaders exceed all available unique playable leaders, preserve
+   the existing fallback assertion/return.
+8. Civ-use balancing (`aiTakersPerCiv`) remains unchanged.
+9. A one-leader civilization selected a second time can only be chosen when its sole
+   leader is still genuinely unused.
+10. Network host-only re-randomization remains deterministic from sync seed and does not
+    introduce new net messages.
+
+POST-F655 LEDGER / EXACT RESUME
+-------------------------------
+Queue 026 `CvGameCoreDLL/CvInitCore.cpp` -- OPEN.
+F655 / provisional KI#977 -- CONFIRMED.
+F656 / provisional KI#978 -- UNUSED.
+
+Exact continuation:
+C031-WIP511 physical -> Queue026 OPEN -> exclude F655 plus KI#209 and all prior setup/
+slot/random-civ owners -> continue remaining reset/setup/network/serialization audit:
+Advanced Start and start-point scaling, transferred-map name/path semantics, slot/netID/
+claim/ready state, force-control and unsaved read-preservation, game-type visibility,
+Pangaea/WB state, source-copy/reset symmetry, random-civ bookkeeping around
+`m_bCivLeaderSetupKnown`, full current read/write pairing and all remaining CvInitCore
+history strata -> whole-album dedup -> either promote a distinct current-live F656 or
+close Queue026 cleanly -> freeze the next physical WIP regardless.
 
 No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol during this audit.
 ===============================================================================

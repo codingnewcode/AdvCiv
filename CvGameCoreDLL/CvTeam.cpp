@@ -473,6 +473,11 @@ void CvTeam::addTeam(TeamTypes eTeam)
 		if (GET_PLAYER((PlayerTypes)i).getTeam() == eTeam)
 			GET_PLAYER((PlayerTypes)i).setTeam(getID());
 	}
+	// <!-- custom: AdvCiv rebuilt AgentIterator only in the AI-AI caller after a Permanent Alliance, leaving generic human-involved deals with stale member/team sequences.
+	// Rebuild at the common transaction boundary after every absorbed player has its final team, then refresh the member-count-dependent vassal maintenance for the merged team. See KI#788 and KI#793. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	GC.getAgents().allianceFormed();
+	for (MemberIter it(getID()); it.hasNext(); ++it)
+		it->updateMaintenance();
 	updateLeaderID(); // advc.opt
 	// <kekm.13>
 	// "AP resident and UN secretary general teams need to be updated if that team will not be used anymore."
@@ -591,7 +596,7 @@ void CvTeam::addTeam(TeamTypes eTeam)
 		kPlot.updateTeam(); // advc.opt: Need to update cached team
 	}
 	// <!-- custom: Reassigning Permanent-Alliance members changes whether their stationary units are allied garrisons or outside friendly borders.
-	// Rebuild both relational caches only after plot teams reflect the merged team; scan players directly because a human-involved alliance can leave AgentIterator membership stale at this boundary. See KI#778, KI#781 and KI#793. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	// Rebuild both relational caches only after plot teams reflect the merged team; scan players directly because these values depend on current unit plots rather than only the now-repaired AgentIterator membership. See KI#778 and KI#781. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
 		CvPlayer& kPlayer = GET_PLAYER((PlayerTypes)i);
@@ -2704,6 +2709,13 @@ void CvTeam::changeNumCities(int iChange)
 {
 	m_iNumCities += iChange;
 	FAssert(getNumCities() >= 0);
+	// <!-- custom: The inherited number-of-cities maintenance cache also depends on the current city count of every vassal, but city lifecycle updates only the city's owner.
+	// Refresh the master after the authoritative team count changes; final-initialization guards setup-time partial state. See KI#789. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (iChange != 0 && isAVassal() && GC.getGame().isFinalInitialized())
+	{
+		for (MemberIter it(getMasterTeam()); it.hasNext(); ++it)
+			it->updateMaintenance();
+	}
 }
 
 
