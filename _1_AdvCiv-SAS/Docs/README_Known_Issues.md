@@ -944,7 +944,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#845 - (Provisional Pending AdvCiv emphasis-state regression) Special production preserves stale commerce emphasis](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-845)\
 [KI#846 - (Provisional Pending inherited K-Mod plot-override lifecycle defect) Former culture cities retain stolen plots](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-846)\
 [KI#847 - (Provisional Pending inherited K-Mod sacrifice-cost defect) Same-type specialists can create a negative subsidy](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-847)\
-[KI#848 - (Provisional Pending K-Mod auto-production variable defect) One XP building is validated and another queued](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-848)\
+[KI#848 - (Fixed inherited K-Mod auto-production variable defect) One XP building was validated and another queued](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-848)\
 [KI#849 - (Provisional Pending AdvCiv defender-cache key regression) Air-first calls contaminate land demand](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-849)\
 [KI#850 - (Provisional Pending inherited K-Mod culture-pressure overflow amplified by SAS limits) Maximum pressure can become negative](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-850)\
 [KI#851 - (Provisional Pending AdvCiv forced-specialist regression) Fallback removal leaves the force target active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-851)\
@@ -953,7 +953,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#854 - (Fixed BtS-origin anger/growth ordering defect reintroduced by K-Mod) Equal timing counted recovery too early](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-854)\
 [KI#855 - (Provisional Pending AdvCiv natural-yield-threshold integration regression) Final improvement projection omits Financial yield](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-855)\
 [KI#856 - (Fixed AdvCiv loop-refactor regression) Cathedral reserve shortage no longer updated state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-856)\
-[KI#857 - (Provisional Pending inherited BtS panic-production domain defect) A ship can block a needed land defender](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-857)\
+[KI#857 - (Fixed inherited BtS panic-production domain defect) A ship could block a needed land defender](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-857)\
 [KI#858 - (Fixed inherited BtS future-happiness bound defect) Three recovery channels were capped at two](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-858)\
 [KI#859 - (Provisional Pending K-Mod obsolete-building valuation defect with incomplete AdvCiv repair) Retained effects are priced as lost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-859)\
 [KI#860 - (Fixed inherited BtS stacked-anger valuation defect) Only one layer per source could recover](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-860)\
@@ -16704,9 +16704,11 @@ Found as F524 during ChatGPT-5.6-Sol's C031-WIP291 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-848"></a>
 
-## KI#848 - (Provisional Pending K-Mod auto-production variable defect) One XP building is validated and another queued
+## KI#848 - (Fixed inherited K-Mod auto-production variable defect) One XP building was validated and another queued
 
-K-Mod's human auto-production governor validates one candidate experience building but queues a different retained building variable. It can therefore choose an unvalidated or unintended building. Queue the same candidate that passed the checks.
+K-Mod practical 251 introduced a human auto-production governor branch that selected and validated `eExperienceBuilding` for the intended unit, but accidentally queued the unrelated general-purpose `eBestBuilding`. K-Mod practical 365 repaired a nearby `NO_UNITCOMBAT` crash without correcting this wrong-object target; Base AdvCiv 1.14 and SAS retained it. The governor now queues the same experience building whose applicable XP effects passed its checks.
+
+The repair compiled successfully. A Debug-opt Huge Continents, Normal-speed full-UWAI autoplay with 16 independent teams completed 418 turns through a Space Race victory; no issue was observed. The exact distinct-building governor branch is RNG- and city-state-dependent, so this supplies broad regression coverage rather than direct proof that it fired.
 
 Found as F525 during ChatGPT-5.6-Sol's C031-WIP294 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -16784,9 +16786,11 @@ Found as F533 during ChatGPT-5.6-Sol's C031-WIP303 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-857"></a>
 
-## KI#857 - (Provisional Pending inherited BtS panic-production domain defect) A ship can block a needed land defender
+## KI#857 - (Fixed inherited BtS panic-production domain defect) A ship could block a needed land defender
 
-`AI_doPanic` compares land attack and defense but accepts any queued unit with positive generic combat. A coastal city can force-hurry a ship and return without selecting the land defender demanded by the panic calculation. Require a compatible land defender for this shortcut.
+BtS's `AI_doPanic` compares land attack and defense but accepts any queued unit with positive generic combat. K-Mod changed the strength implementation and AdvCiv refactored the function, but both retained that generic condition; SAS inherited it. A coastal city could therefore force-hurry a ship and return without selecting the land defender demanded by the panic calculation. The existing-production shortcut now requires a land-domain combat unit.
+
+The repair compiled successfully. The same Debug-opt Huge Continents, Normal-speed full-UWAI autoplay with 16 independent teams completed 418 turns through a Space Race victory; no issue was observed. Direct reproduction additionally requires an AI coastal city in a local land-strength deficit while it has production invested in a combat ship.
 
 Found as F534 during ChatGPT-5.6-Sol's C031-WIP304 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 

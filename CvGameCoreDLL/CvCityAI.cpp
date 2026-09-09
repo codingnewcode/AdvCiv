@@ -17876,7 +17876,8 @@ void CvCityAI::AI_doPanic() // advc: Unused return type bool removed, body refac
 
 	UnitTypes eProductionUnit = getProductionUnit();
 	if (eProductionUnit != NO_UNIT && getProduction() > 0 &&
-		GC.getInfo(eProductionUnit).getCombat() > 0)
+		// <!-- custom: This panic test compares land attack and defense, so a queued ship cannot satisfy it merely by having combat strength. See KI#857. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		GC.getInfo(eProductionUnit).getDomainType() == DOMAIN_LAND && GC.getInfo(eProductionUnit).getCombat() > 0)
 	{
 		AI_doHurry(true);
 		return;
@@ -18014,9 +18015,10 @@ void CvCityAI::AI_buildGovernorChooseProduction()
 								kBuilding.getUnitCombatFreeExperience(kUnit.getUnitCombatType()) > 0 ||
 								kBuilding.getDomainFreeExperience(kUnit.getDomainType()) > 0)
 							{
-								// This building helps the unit we want
-								// ...so do the building first.
-								pushOrder(ORDER_CONSTRUCT, eBestBuilding);
+								// This building helps the unit we want...so do the building first.
+								// <!-- custom: K-Mod validated eExperienceBuilding here but queued the unrelated general eBestBuilding.
+								// Queue the candidate whose applicable XP effects passed the checks above. See KI#848. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+								pushOrder(ORDER_CONSTRUCT, eExperienceBuilding);
 								return;
 							}
 						}
