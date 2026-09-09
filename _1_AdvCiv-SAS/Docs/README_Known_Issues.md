@@ -941,13 +941,13 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#842 - (Provisional Pending AdvCiv city-safety initialization regression) A threatened new city starts cached safe](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-842)\
 [KI#843 - (Provisional Pending AdvCiv city-safety invalidation defect) Own attacks refresh only already-unsafe cities](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-843)\
 [KI#844 - (Fixed AdvCiv blocked-resource valuation defect) Plot owner was compared with a city ID](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-844)\
-[KI#845 - (Provisional Pending AdvCiv emphasis-state regression) Special production preserves stale commerce emphasis](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-845)\
+[KI#845 - (Fixed AdvCiv emphasis-state regression) Special production preserved stale commerce emphasis](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-845)\
 [KI#846 - (Provisional Pending inherited K-Mod plot-override lifecycle defect) Former culture cities retain stolen plots](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-846)\
 [KI#847 - (Provisional Pending inherited K-Mod sacrifice-cost defect) Same-type specialists can create a negative subsidy](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-847)\
 [KI#848 - (Fixed inherited K-Mod auto-production variable defect) One XP building was validated and another queued](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-848)\
 [KI#849 - (Provisional Pending AdvCiv defender-cache key regression) Air-first calls contaminate land demand](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-849)\
 [KI#850 - (Provisional Pending inherited K-Mod culture-pressure overflow amplified by SAS limits) Maximum pressure can become negative](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-850)\
-[KI#851 - (Provisional Pending AdvCiv forced-specialist regression) Fallback removal leaves the force target active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-851)\
+[KI#851 - (Fixed AdvCiv forced-specialist regression) Fallback removal left the force target active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-851)\
 [KI#852 - (Fixed inherited BtS project-emphasis defect) The Project branch was unreachable](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-852)\
 [KI#853 - (Fixed inherited BtS anger-timing arithmetic defect) Exact cycles mapped to zero turns](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-853)\
 [KI#854 - (Fixed BtS-origin anger/growth ordering defect reintroduced by K-Mod) Equal timing counted recovery too early](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-854)\
@@ -16680,9 +16680,11 @@ Found as F521 during ChatGPT-5.6-Sol's C031-WIP288 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-845"></a>
 
-## KI#845 - (Provisional Pending AdvCiv emphasis-state regression) Special production preserves stale commerce emphasis
+## KI#845 - (Fixed AdvCiv emphasis-state regression) Special production preserved stale commerce emphasis
 
-AdvCiv practical 1675 changed high-production emphasis from clearing prior AI emphasis to freezing it. Stale commerce or research emphasis can consequently override the Worker, Settler or Wonder production governor. Re-establish the intended special-production emphasis state rather than preserving unrelated prior choices.
+AdvCiv practical 1675 mechanically changed the high-special-production path from reaching `AI_setEmphasize(..., false)` to continuing before that setter. Stale commerce or research emphasis could consequently override the newer Worker, Settler, Work Boat, World Wonder or Project production governor. The high-production path now explicitly clears each old emphasis before skipping legacy emphasis recalculation, restoring the pre-refactor state transition without weakening the special-yield system.
+
+The repair compiled successfully. A Debug-opt Huge Continents, Normal-speed full-UWAI autoplay with 16 independent teams completed 476 turns through a Space Race victory; no issue was observed. Directly reproducing the stale state would additionally require an AI city to retain a first-technology commerce/research emphasis while its special Production multiplier reaches at least 50.
 
 Found as F522 during ChatGPT-5.6-Sol's C031-WIP289 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -16730,9 +16732,11 @@ Found as F527 during ChatGPT-5.6-Sol's C031-WIP296 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-851"></a>
 
-## KI#851 - (Provisional Pending AdvCiv forced-specialist regression) Fallback removal leaves the force target active
+## KI#851 - (Fixed AdvCiv forced-specialist regression) Fallback removal left the force target active
 
-AdvCiv moved K-Mod's forced-specialist count repair onto an earlier branch that cannot cover the final fallback removal. `AI_removeWorstCitizen` can remove a fully forced specialist while leaving its force target active, so later assignment tries to restore it. Apply the repair to the specialist actually removed by the fallback.
+K-Mod practical 1141 prevented forced-specialist targets from exceeding population by lowering the force target when the final fallback removed a fully forced specialist. AdvCiv practical 1253 moved that safeguard to the ordinary branch, whose `assigned > forced` selection rule makes it unable to cover this case; Base AdvCiv 1.14 and SAS retained the regression. The safeguard is restored at the fallback exit, so later citizen assignment does not resurrect the removed specialist from an impossible stale target.
+
+The repair compiled successfully. The same Debug-opt Huge Continents, Normal-speed full-UWAI autoplay with 16 independent teams completed 476 turns through a Space Race victory; no issue was observed. A direct UI fixture would require a population-1 human city under Caste System with Citizens Automated, one forced Scientist, and a request to replace it with a forced Merchant; it was deliberately deferred while ordinary autoplay supplied broad citizen-assignment regression coverage.
 
 Found as F528 during ChatGPT-5.6-Sol's C031-WIP297 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 

@@ -13104,7 +13104,12 @@ void CvCityAI::AI_doEmphasize()
 		/*if (GC.getInfo((EmphasizeTypes)iI).getYieldChange(YIELD_PRODUCTION) > 0)
 		{}*/ // advc: Empty branches commented out
 		if (AI_specialYieldMultiplier(YIELD_PRODUCTION) >= 50)
+		{
+			// <!-- custom: AdvCiv's early continue froze old commerce/research emphasis while special production was meant to take over.
+			// Clear each stale emphasis as the pre-refactor flow did, then skip recalculating legacy emphasis. See KI#845. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+			AI_setEmphasize(eLoopEmphasize, false);
 			continue; // advc
+		}
 
 		CvEmphasizeInfo const& kLoopEmphasize = GC.getInfo(eLoopEmphasize); // advc
 		if (kLoopEmphasize.getYieldChange(YIELD_COMMERCE) > 0)
@@ -15157,6 +15162,10 @@ bool CvCityAI::AI_removeWorstCitizen(SpecialistTypes eIgnoreSpecialist)
 	if (eWorstSpecialist != NO_SPECIALIST)
 	{
 		changeSpecialistCount(eWorstSpecialist, -1);
+		// <!-- custom: AdvCiv moved K-Mod's force-target repair away from this fallback, the only branch that can remove a fully forced specialist.
+		// Lower the removed type's target so later assignment does not restore an impossible extra specialist. See KI#851. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		if (getSpecialistCount(eWorstSpecialist) < getForceSpecialistCount(eWorstSpecialist))
+			setForceSpecialistCount(eWorstSpecialist, getSpecialistCount(eWorstSpecialist));
 		return true;
 	}
 
