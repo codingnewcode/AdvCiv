@@ -2,12 +2,12 @@ AdvCiv-SAS C++ File Audit Album
 Generated from local light-source snapshot only; no web/GitHub lookup used.
 
 CURRENT PROGRESS SUMMARY
-Files complete: 84 / 169
+Files complete: 91 / 169
 Files open: 1 / 169
-Last completed file: ordinary queue 067 CvGameCoreDLL/CvInfo_Civics.cpp (553 queued/physical lines) - CLOSED AT C031-WIP566 / F659 DEDUP; F682 UNUSED
-Current open file: ordinary queue 069 CvGameCoreDLL/AdvCiv4lerts.cpp (543 queued/physical lines) - OPEN AT C031-WIP566 / F682 UNUSED
-Latest confirmed audit findings: F650-F678 and F680-F681 / KI#972-KI#1002, plus F679 reopening KI#300, across the Queue 074, Queue 082, Queue 108, Queue 129, Queue 026, Queue 028, Queue 029, Queue 033, Queue 038, Queue 043, Queue 044, Queue 048, Queue 049, Queue 050, Queue 052 and Queue 065 audits. Ordinary queue order has resumed after the completed priority reloop. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
-Next new root ID: F682 unused / provisional KI#1003 next
+Last completed file: ordinary queue 077 CvGameCoreDLL/StartPointsAsHandicap.cpp (451 queued lines) - CLOSED AT C031-WIP579 / F683-F687 CONFIRMED; F688 UNUSED
+Current open file: priority queue 124 CvGameCoreDLL/CyGlobalContextInterface4.cpp (171 queued lines) - OPEN AT C031-WIP579 / F688 UNUSED
+Latest confirmed audit findings extend through F687 / KI#1008, plus F679 reopening KI#300. C031-WIP567-WIP579 closed ordinary Queues 069-077, confirmed F682 in SelfMod.cpp and F683-F687 in StartPointsAsHandicap.cpp, then returned to the next unskipped priority file. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
+Next new root ID: F688 unused / provisional KI#1009 next
 
 The durable checkpoints and current cursor below are authoritative for finding status; the initial C010 snapshot and later WIP appends preserve their own historical source identities.
 
@@ -18,7 +18,7 @@ METHOD
 - Do not promote tuning disagreements, theoretical unsupported configurations, dead paths, or already-fixed history into new findings.
 - One root cause gets one finding even when several callers expose different symptoms.
 - False positives are recorded when useful so they are not rediscovered later.
-- The stronger-WIP priority reloop is complete through C031-WIP509. Ordinary numeric queue order has resumed; continue the currently open queue shown in the progress summary. The WIP509-WIP511 numbering bridges the retry fork by retaining the omitted ArithmeticTraits closure before the fuller CvInitCore baseline and confirmed finding.
+- The stronger-WIP priority reloop is complete through C031-WIP509. Ordinary order resumed through Queue 077; per C031-WIP579 scheduling, skip ordinary Queue 078 onward until the remaining priority entries are complete and continue priority Queue 124 shown above. The WIP509-WIP511 numbering bridges the retry fork by retaining the omitted ArithmeticTraits closure before the fuller CvInitCore baseline and confirmed finding.
 
 WIP541/WIP542 FORK RECONCILIATION
 ---------------------------------
@@ -97,19 +97,19 @@ QUEUE (current .cpp files, longest -> shortest)
 062    673 CvGameCoreDLL/MilitaryAnalyst.cpp [COMPLETE - SEE C031-WIP482 DURABLE CHECKPOINT]
 063    643 CvGameCoreDLL/CyInfoInterface1.cpp [COMPLETE - C031-WIP562 / NO NEW FINDING; F681 UNUSED]
 064    623 CvGameCoreDLL/MilitaryBranch.cpp [COMPLETE - SEE C031-WIP484 DURABLE CHECKPOINT]
-065    603 CvGameCoreDLL/CvStructs.cpp [OPEN - C031-WIP563 / F681 CONFIRMED; F682 UNUSED]
-066    580 CvGameCoreDLL/CvInfo_Command.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-067    576 CvGameCoreDLL/CvInfo_Civics.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+065    603 CvGameCoreDLL/CvStructs.cpp [COMPLETE - C031-WIP564 / F681 CONFIRMED; NO INDEPENDENT F682]
+066    580 CvGameCoreDLL/CvInfo_Command.cpp [COMPLETE - C031-WIP565 / NO NEW FINDING]
+067    576 CvGameCoreDLL/CvInfo_Civics.cpp [COMPLETE - C031-WIP566 / F659 DEDUP; NO NEW FINDING]
 068    551 CvGameCoreDLL/KmodPathFinderLegacy.cpp [COMPLETE - SEE C031-WIP485 DURABLE CHECKPOINT]
-069    543 CvGameCoreDLL/AdvCiv4lerts.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-070    494 CvGameCoreDLL/CvInfo_Base.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-071    491 CvGameCoreDLL/CyInfoInterface2.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+069    543 CvGameCoreDLL/AdvCiv4lerts.cpp [COMPLETE - C031-WIP567 / NO NEW FINDING]
+070    494 CvGameCoreDLL/CvInfo_Base.cpp [COMPLETE - C031-WIP568 / NO NEW FINDING]
+071    491 CvGameCoreDLL/CyInfoInterface2.cpp [COMPLETE - C031-WIP569 / NO NEW FINDING]
 072    482 CvGameCoreDLL/CvStatistics.cpp [COMPLETE - SEE C031-WIP489 DURABLE CHECKPOINT]
-073    476 CvGameCoreDLL/CyPlayerInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+073    476 CvGameCoreDLL/CyPlayerInterface1.cpp [COMPLETE - C031-WIP570 / NO NEW FINDING]
 074    475 CvGameCoreDLL/WarEvaluator.cpp [COMPLETE - C031-WIP491 / F650]
-075    472 CvGameCoreDLL/SelfMod.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-076    461 CvGameCoreDLL/CyCityInterface1.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-077    451 CvGameCoreDLL/StartPointsAsHandicap.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+075    472 CvGameCoreDLL/SelfMod.cpp [COMPLETE - C031-WIP572 / F682]
+076    461 CvGameCoreDLL/CyCityInterface1.cpp [COMPLETE - C031-WIP573 / NO NEW FINDING]
+077    451 CvGameCoreDLL/StartPointsAsHandicap.cpp [COMPLETE - C031-WIP579 / F683-F687]
 078    435 CvGameCoreDLL/CvVirtualWrappers.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 079    432 CvGameCoreDLL/ScaledNumTest.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 080    428 CvGameCoreDLL/CyReplayInfo.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -156,7 +156,7 @@ QUEUE (current .cpp files, longest -> shortest)
 121    177 CvGameCoreDLL/CvXMLLoadUtilityInit.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 122    175 CvGameCoreDLL/RFTotalScore.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 123    175 CvGameCoreDLL/TeamPathFinder.cpp [COMPLETE - C031-WIP502 / no new root]
-124    171 CvGameCoreDLL/CyGlobalContextInterface4.cpp [PENDING]
+124    171 CvGameCoreDLL/CyGlobalContextInterface4.cpp [OPEN - C031-WIP579 / F688 UNUSED]
 125    166 CvGameCoreDLL/UWAIReport.cpp [COMPLETE - C031-WIP503 / no new root]
 126    150 CvGameCoreDLL/CvDllTranslator.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 127    149 CvGameCoreDLL/CyMapGenerator.cpp [PENDING](skip until the "priority next wip" ones have been done first)
@@ -180533,5 +180533,1481 @@ already COMPLETE -> Queue069 AdvCiv4lerts.cpp OPEN -> provenance + alert timing/
 iterator/current-caller audit -> dedup -> promote only demonstrated live root or close cleanly ->
 freeze next physical WIP.
 
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP567 - QUEUE 069 AdvCiv4lerts.cpp CLOSED CLEAN / F682 UNUSED / QUEUE 070 OPEN
+===============================================================================
+SOURCE / PROVENANCE
+-------------------
+Current SAS `CvGameCoreDLL/AdvCiv4lerts.cpp` is 543 physical lines, matching the queue snapshot.
+Supplied Base AdvC 1.14 has the same live alert algorithms. The current executable delta is limited
+to recent SAS performance-only cache hoists: `ALERT_ON_NO_LONGER_WAR_TRADE`, `WAR_TRADE_ALERT`
+color and the two local `CITY_BLUE` lookups are cached in function-local `static const` values instead
+of being re-fetched on every alert. The corresponding values are stable global configuration/info
+state during ordinary gameplay; no semantic SAS-vs-Base regression survives.
+
+LIVE BRIDGE / LIFECYCLE
+-----------------------
+`CvPlayer::initAlerts` constructs exactly four C++ alert objects in this order:
+
+    0 WarTradeAlert
+    1 RevoltAlert
+    2 BonusThirdPartiesAlert
+    3 CityTradeAlert
+
+Current `Assets/Python/Contrib/Civ4lerts.py` returns exactly IDs 0/1/2/3 for those four classes and
+calls `activePlayer.checkAlert(id, silent)` at BeginActivePlayerTurn. Save/load and controller-change
+paths rebuild the C++ objects; Python `_reset` performs the intended silent baseline check when the
+alert is enabled. `AdvCiv4lert::check` preserves a pre-existing silent state across nested/silent
+calls (the practical-2991 repair), and the current Auto Play suppression path retains practical
+2123's corrected message-type behavior.
+
+`CvPlayer::checkAlert` itself still has an inherited `iAlertID > size()` rather than `>= size()`
+bounds typo. All shipped Python IDs are the exact fixed 0..3 values above, so ID==4 is not produced
+by current code. Keep that as extension-API hardening, not F682.
+
+WAR-TRADE ALERT
+---------------
+The current iterator domains and state transitions reconcile with the intended alert contract:
+- `FREE_MAJOR_CIV,OTHER_KNOWN_TO` supplies eligible non-vassal major teams known to the owner;
+- contact/war/open-borders and `AI_declareWarTrade` checks gate current bribability;
+- when UWAI is disabled, `DENIAL_TOO_MANY_WARS` is separately tracked through `m_tooManyWars`;
+- default-off `ALERT_ON_NO_LONGER_WAR_TRADE` suppresses the historically noisy negative transition;
+- the hireling-capital coordinates are visibility-aware through the team-capital helpers.
+
+The suspicious-looking `GET_TEAM(m_eOwner)` usage elsewhere in this file is NOT a PlayerTypes/
+TeamTypes confusion. `CoreAI.h` deliberately overloads `GET_TEAM(PlayerTypes)` through `TEAMID`.
+The album already contains/retracts this exact false-positive family from the UWAI audits; do not
+renumber it here.
+
+REVOLT ALERT
+------------
+The plot-number state sets are rebuilt from the owner's current city list on each check. Current
+revolt probability and occupation transitions are evaluated while each city pointer is live, and
+messages are emitted before the sets are replaced. The deliberate post-occupation erase causes a
+fresh revolt warning on the following turn if revolt risk remains after pacification. No stale-city
+pointer or current plot-number collision path survives under the shipped turn lifecycle.
+
+BONUS-THIRD-PARTIES ALERT
+-------------------------
+The deal census is structurally correct for ordinary state changes:
+- each resource item is encoded as `numBonusInfos * recipient + bonus`, which is injective over the
+  current player/bonus domains;
+- `std::multiset` preserves multiple same-resource exports between the same pair;
+- ended trades are suppressed when war, death or recent stop-trading memory makes the cause obvious;
+- non-spectator visibility requires the alert owner to have met both parties;
+- strategic resources are announced per resource, while non-strategic resources are intentionally
+  reduced to first/last resource-trade transitions between the two players via
+  `getNumTradeBonusImports(eFrom)`.
+
+LOW-GRADE MULTISET UX EDGE -- BELOW FINDING THRESHOLD
+-----------------------------------------------------
+`set_difference` on the multisets preserves multiplicity, but the resulting `aiNewDeals` and
+`aiMissingDeals` vectors are then iterated element-by-element while `showMessage` recomputes the same
+new/old TOTAL count for every duplicate encoded value. Therefore a legal 0->2 or 2->0 transition of
+the same bonus between the same third-party pair inside one observer interval can call the same
+message twice.
+
+Multiple copies are not impossible: `CvPlayer::canTradeItem(TRADE_RESOURCES)` permits another copy
+while the exporter still has a tradeable copy; human-human trades return NO_DENIAL, and AI duplicate
+imports can also remain legal where corporation value makes extra copies useful. Thus the data
+structure edge is real. However it requires at least two identical deal transitions between two
+checks and only duplicates an informational alert; it does not alter deal state, valuation,
+visibility or resource counts. The implementation has had this shape since the advc.210d introduction
+in practical 1287. Preserve as a low-grade alert-presentation defect / future cleanup candidate, not
+as F682 under the current consequential-root threshold.
+
+CITY-TRADE ALERT
+----------------
+The city-trade state vectors store integer city IDs only; temporary `CvCity const*` vectors are used
+solely within one non-mutating check and consumed immediately by the message helpers. At-war cession
+checks pair `canTradeItem(..., true)` with `AI_considerHypotheticalOffer` so a merely legally
+tradeable city is not announced unless the AI would actually accept the peace bundle. At peace,
+liberation is split from ordinary willingness to buy, and practical 2230's previous-owner test still
+suppresses the noisy immediate post-conquest liberation case.
+
+The earlier concern that `canTradeItem(..., true)` might test only the wrong side's willingness was
+rejected after tracing `CvPlayer::canTradeItem` / `AI_cityTrade`: a human giver is not subjected to a
+fictional AI refusal, while the AI recipient's acquisition/acceptance constraints are still applied.
+No current semantic inversion survives.
+
+HISTORY / DEDUP CONTROLS
+------------------------
+Relevant retained history reconciles with the current body:
+- practical 1287 introduced `BonusThirdPartiesAlert` and its multiset design;
+- practical 1343 reduced war-trade alert flicker; practical 1349 made negative war-trade alerts
+  configurable/default-off;
+- practical 1491 refactored the base alert class without changing alert state semantics;
+- practicals 1718/1719 introduced and adjusted CityTradeAlert;
+- practical 2123 fixed post-Auto-Play message typing;
+- practical 2230 suppressed liberation-to-previous-owner noise;
+- practical 2349 added too-much-on-our-hands transitions;
+- practical 2991 repaired nested/silent-state restoration;
+- practical 3614 only updated an already-commented peace-counter reference after the exact-counter
+  refactor.
+
+Whole-album searches found no prior owner that this queue should reopen. Existing third-party intel,
+trade, Python-ID and UWAI PlayerTypes/TeamTypes findings are independent roots, and the rejected
+`GET_TEAM(PlayerTypes)` family remains explicitly deduped.
+
+QUEUE 069 VERDICT
+-----------------
+No independent consequential current root.
+F682 / provisional KI#1003 remains UNUSED.
+Queue 069 `CvGameCoreDLL/AdvCiv4lerts.cpp` is COMPLETE.
+
+QUEUE 070 OPEN
+--------------
+Ordinary queue order advances to Queue 070 `CvGameCoreDLL/CvInfo_Base.cpp` (494 queued lines) under
+F682 / provisional KI#1003 UNUSED. Begin with current-vs-Base/K-Mod provenance, then audit XML/default
+inheritance, base-info string/key/hotkey/button/civilopedia fields, cache/read ordering, text-manager
+lifetimes, copy/default semantics and any public index/sentinel surfaces against current consumers and
+current shipped XML before whole-album dedup.
+
+Exact continuation stone:
+C031-WIP567 physical -> Queue069 CLOSED CLEAN -> F682/KI#1003 UNUSED -> Queue070 CvInfo_Base.cpp OPEN
+-> provenance + base-info XML/default/cache/string/lifetime/current-consumer audit -> whole-album
+history/dedup -> promote only a demonstrated consequential live root or close cleanly -> freeze next
+physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP568 - QUEUE 070 CvInfo_Base.cpp CLOSED CLEAN / F682 UNUSED / QUEUE 071 OPEN
+===============================================================================
+SOURCE / PROVENANCE
+-------------------
+Current SAS `CvGameCoreDLL/CvInfo_Base.cpp` is exactly 494 physical lines, matching the queued
+snapshot. Supplied Base AdvC 1.14 is 495 lines; after comments/whitespace are normalized the two
+files are executable-semantically identical. The only current SAS/Base source difference is the
+5961 signature-collapse formatting of `CvHotkeyInfo::setHotKeyDescription`.
+
+The retained path history was reconciled from the 1644 `CvInfos` split through the XML-tag-as-enum
+work, XML-default inheritance, sea-level description override, compact `CvXMLInfo` refactors,
+checked integer-cast rewrite, True Starts merge, duplicate-element diagnostics and the later SAS
+formatting mirror. Base 1.14 supplies no newer repair absent from SAS.
+
+BASE STRING / LOCALIZATION CACHE CONTRACT
+-----------------------------------------
+`CvInfoBase` stores persistent XML keys/Type/Button data and lazily caches localized descriptions,
+text/help/strategy/civilopedia strings. `CvGlobals::infosReset()` is an EXE-facing callback used when
+the display language changes and explicitly calls `reset()` for every info vector plus ArtFileMgr;
+`reset()` clears all five localized caches. Therefore runtime language changes do not leave stale
+localized text in current infos.
+
+`getDescription(uiForm)` grows the cache one grammatical form at a time and obtains each form from
+`getDescriptionInternal()` using the current cache size. The sole current override,
+`CvSeaLevelInfo::getDescriptionInternal`, deliberately substitutes Custom-Game recommendation text
+and otherwise delegates to the base form lookup; it respects that cache protocol.
+
+`getType()` and `getButton()` intentionally return NULL for an empty stored string. The inherited
+`isMatchForLink` expression `CvWString(getType())` is NULL-safe in current `CvWString::Copy`, which
+explicitly clears the destination for NULL/empty input before attempting `strlen`. The subsequent
+form loop uses the persistent text key. No current null-dereference root survives.
+
+Python exposes `getDescriptionForm(uint)`, so an arbitrary extension could request a huge form index
+and force large cache growth (and a Python -1 converted to unsigned would be especially hostile).
+Mechanical current-tree search found no shipped Python call to `getDescriptionForm`; shipped UI uses
+ordinary `getDescription()`. Keep this as public-API hardening only, not F682.
+
+XML BASE READ / DEFAULT INHERITANCE
+-----------------------------------
+`CvInfoBase::read` restores the ordinary inherited contract: skip to the next value, map children,
+then read GraphicalOnly/Type/Description/Civilopedia/Help/Strategy/Button with safe empty/false
+defaults. A failed `SkipToNextVal` returns false to normal concrete readers. `CvXMLInfo::read`
+does not itself propagate the base return value, which is brittle for malformed/empty records, but
+current `SetGlobalClassInfo` invokes it only on actual value nodes; no shipped malformed activation
+was found.
+
+The XML-default loader deserves special control because `CvInfoBase(CvInfoBase const&)` intentionally
+contains only `FErrorMsg("Copy-ctor not implemented")` and copies no base state. Current data has
+exactly one `*_DEFAULTS` record: `LEADER_DEFAULTS`. `CvLeaderHeadInfo` supplies its own dedicated
+copy constructor for the derived defaultable state; its base subobject is default-constructed and
+then overwritten by the concrete leader's ordinary `CvInfoBase::read`. This is the intended AdvC
+pattern already reconciled in the CivilizationInfo/default audits. No other current info class is
+silently copied through the non-implemented base copy constructor.
+
+SCALABLE / HOTKEY BASE CONTRACTS
+--------------------------------
+`CvScalableInfo` initializes both scales to 1.0. Its XML reader requires `fScale` and gives
+`fInterfaceScale` a 1.0 default. The art-info producer side was already audited in Queue 056; current
+scalable art records satisfy the required scale data. There is no independent Queue-070 art root.
+
+`CvHotkeyInfo` initializes all action/hotkey priorities to -1 and modifier flags false, then reads
+optional hotkey data with explicit defaults and order priority 5. A missing alternate hotkey leaves
+`m_iHotKeyValAlt` at its constructor sentinel. `setHotKeyDescription` is safe with the intentionally
+NULL alternate-description key because `CvWString::operator=(wchar const*)` clears on NULL. The
+post-load `SetGlobalActionInfo` path deliberately replaces the alternate description with the
+matching mission/command description where required; Queue 066 already reconciled the action
+subtype protocol.
+
+The `CvHotkeyInfo::IntElementTypes` declaration still says
+`NUM_INT_ELEMENT_TYPES = base_t::NUM_BOOL_ELEMENT_TYPES`, an obvious-looking inherited typo. It is
+currently inert: `CvXMLInfo` has zero base integer AND zero base boolean elements, `CvHotkeyInfo`
+adds none of either, so both counts are exactly zero before every concrete Hotkey-derived class
+begins its own contiguous element enum. It would become dangerous only if common base element counts
+diverged in a future extension; current vector indexing is unchanged.
+
+CvXMLInfo COMPACT ELEMENT STORAGE
+---------------------------------
+The generic simple-element layer builds separate integer/bool element lists, sizes its backing
+vectors to those exact counts, reads each registered `i<Name>` / `b<Name>` tag, and stores integer
+values as `short` through `safeIntCast<short>`.
+
+A complete current-source census found 38 integer registrations across Building, Trait/GameOption,
+Tech, Terrain/Improvement and TrueStarts info classes. A complete current XML numeric census found
+NO stored value outside signed-short range. Representative extremes include:
+- TrueStarts LongitudeTimes10: -991..1358;
+- TrueStarts Precipitation: 1..2270;
+- TrueStarts StartOfReign: -2650..1949;
+- TrueStarts MaxElevation: 322..8586;
+- TrueStarts TotalArea: up to 22800;
+- ordinary game/handicap/terrain/tag percentages remain far smaller.
+
+Two TrueStarts optional registrations use `MIN_INT` as their nominal absent sentinel:
+`MaxElevation` and `StartOfReign`. A signed short cannot represent `MIN_INT`; in a release build an
+actually omitted field would narrow that value (typically to 0), so the later `== MIN_INT` tests
+could not recognize absence. This is a real design/robustness defect in the compact generic storage.
+It is NOT currently activated: all 34/34 shipped `CvTruCivInfo` records explicitly provide
+MaxElevation and all 52/52 shipped `CvTruLeaderInfo` records explicitly provide StartOfReign, with
+all values inside short range. The existing F619 TrueStarts MaxElevation root is the separate
+uninitialized aggregate member and does not turn this dormant sentinel mismatch into a second live
+root. Preserve this as future-data hardening, not F682.
+
+The element-ID/count invariant also reconciles for current derived classes: registrations are
+appended in the same contiguous order as their corresponding enum values beginning at each
+`base_t::NUM_*_ELEMENT_TYPES`. Debug duplicate-ID/name checking was added in practical 3579; no
+current registration collision or mismatched live getter domain was found.
+
+XML FILE CACHE CONTROL
+----------------------
+`CvInfo_Base.h` defines `ENABLE_XML_FILE_CACHE 0`. The `CvInfoBase`, `CvXMLInfo` and `CvHotkeyInfo`
+binary cache methods are therefore compiled out in current SAS. Their incomplete generic-element
+size/version protocol and old migration history are not current runtime surfaces; prior XML-loader
+queues already established the same compile-time boundary. Do not promote dormant cache-format
+concerns here.
+
+HISTORY / DEDUP CONTROLS
+------------------------
+Meaningful retained strata reconcile as follows:
+- practical 1644 split these bodies out of `CvInfos.cpp` without semantic change;
+- practical 1732 introduced the generic simple-element mechanism;
+- 1777 folded it into `CvHotkeyInfo`; later compact/refactor work retained contiguous enum storage;
+- practicals 2222/2223/2236/2237 introduced/refined `LEADER_DEFAULTS`; current one-default-object
+  ownership/copy behavior matches the dedicated LeaderHead implementation;
+- practical 2561 split `getDescriptionInternal` to support sea-level recommendation text without
+  duplicating cache logic; current override remains the sole consumer;
+- practical 3050 repaired dormant XML-cache compilation;
+- 3147 refactored `CvXMLInfo` element descriptors/lists; 3183 replaced narrow casts with the current
+  checked `safeIntCast` family;
+- practical 3579 added True Starts data plus debug duplicate-element checks;
+- SAS 5961 is formatting only in this `.cpp`.
+
+Whole-album dedup found no independent current root belonging to this file. Existing localization,
+XML-loader/default, TrueStarts and action/hotkey findings remain separate and already-owned where
+applicable.
+
+QUEUE 070 VERDICT
+-----------------
+No independent consequential current root.
+F682 / provisional KI#1003 remains UNUSED.
+Queue 070 `CvGameCoreDLL/CvInfo_Base.cpp` is COMPLETE.
+
+QUEUE 071 OPEN
+--------------
+With the previously marked priority-WIP files already completed/reconciled, ordinary queue order now
+advances to Queue 071 `CvGameCoreDLL/CyInfoInterface2.cpp` (491 queued lines), under F682 /
+provisional KI#1003 UNUSED. Audit binding-name/native-target parity, enum/index adapters, ownership
+policies/default arguments, SAS-vs-Base additions and every suspicious wrapper against shipped
+Python callers before whole-album dedup.
+
+Exact continuation stone:
+C031-WIP568 physical -> Queue070 CLOSED CLEAN -> F682/KI#1003 UNUSED -> Queue071
+CyInfoInterface2.cpp OPEN -> provenance + mechanical binding table + ownership/index/default/live-
+Python reachability -> whole-album history/dedup -> promote only a demonstrated consequential live
+root or close cleanly -> freeze next physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP569 - QUEUE 071 CYINFOINTERFACE2.CPP CLOSED CLEAN; QUEUE 073 OPEN
+===============================================================================
+Authoritative input: reconciled local `AdvCiv-SAS_light_source_20260909T154245.zip` plus the supplied
+Base AdvC 1.14, K-Mod, Civ4CE and Taurus source archives. No web/GitHub lookup was used.
+Gameplay/XML/Python source remains untouched.
+
+QUEUE 071 PROVENANCE / SAS DELTA
+--------------------------------
+Current SAS `CvGameCoreDLL/CyInfoInterface2.cpp` is 491 physical lines versus 452 in supplied Base
+AdvC 1.14. Mechanical active-binding comparison (comments stripped before parsing) localizes the
+entire executable SAS-vs-Base delta in this file to 27 new read-only getter registrations:
+- 16 `CvHandicapInfo` getters used by the SAS Sevopedia Handicap Chart;
+- 11 `CvGameSpeedInfo` getters used by the SAS Sevopedia Game Speed Chart.
+
+The 16 Handicap additions are:
+`getAIResearchPercent`, `getBuildTimePercent`, `getBaseGrowthThresholdPercent`,
+`getGPThresholdPercent`, `getAIGPThresholdPercent`, `getCultureLevelPercent`, `getTrainPercent`,
+`getConstructPercent`, `getCreatePercent`, `getAdvancedStartPointsMod`,
+`getAIAttitudeChangePercent`, `getAIHandicapIncrementTurns`, `getForeignCultureStrength`,
+`getBarbarianCityAttackBonus`, `getSeaBarbarianBonus`, and `getSeaBarbarianExtraMoves`.
+
+The 11 GameSpeed additions are:
+`getCulturePercent`, `getAIMemoryRandPercent`, `getAIContactRandPercent`,
+`getAIContactDelayPercent`, `getFullTradeCreditPercent`, `getRevoltDivPercent`,
+`getReligionSpreadDivPercent`, `getEventRollSidesPercent`, `getVoteIntervalPercent`,
+`getUnitCostPercent`, and `getExtraFreeOutsideUnits`.
+
+All 27 additions are live in shipped SAS Python. Their chart specifications name the same XML/native
+field represented by each getter, and the C++ implementations return the corresponding member or
+registered generic element one-for-one. No wrong getter, swapped field, hidden mutation or lifetime
+change was found in the SAS delta.
+
+MECHANICAL BINDING PARITY
+-------------------------
+After stripping comments, the file contains 339 active `.def` registrations across 19 info classes.
+The audit found:
+- zero duplicate active Python method names within a class;
+- zero Python-class/native-target-class mismatches;
+- no suspicious name/target mismatch after accounting for deliberate `py_` integer adapters and
+  stable Python compatibility names.
+
+A temporary apparent duplicate/misbinding was explicitly rejected: the source still contains the
+commented historical line
+    //.def("getHappiness", &CvImprovementInfo::getDefenseModifier, ...)
+followed by the compiled correct binding
+    .def("getHappiness", &CvImprovementInfo::getHappiness, ...)
+This is documentation of the old Unofficial Patch repair. Civ4CE retains the old wrong active
+binding, while current SAS/Base/K-Mod/Taurus use the repaired getter. It is not a current root.
+
+INDEX / ENUM ADAPTER CONTRACTS
+------------------------------
+The inherited array/index bindings were cross-checked against current shipped Python producers.
+Live callers derive indexes from the matching info counts or exact enum domains: techs, features,
+terrains, bonuses, yields, routes, building/unit classes, leader IDs and civilization city-name
+counts. The one map-script feature path worth checking (`PerfectMongoose`) guards
+`FeatureTypes.NO_FEATURE` before calling the build-feature arrays. No shipped negative sentinel or
+out-of-range producer was found for these Queue-071 bindings.
+
+The major AdvC-vs-K-Mod/Civ4CE/Taurus target differences are intentional type-safety refactors:
+- practical 1922 routes BuildInfo feature access through `py_getFeatureTech`,
+  `py_getFeatureTime`, `py_getFeatureProduction` and `py_isFeatureRemove`;
+- practical 2796 routes RouteInfo prerequisite-list access through `py_getPrereqOrBonus` after the
+  native list became typed/vector-backed;
+- practicals 3052/3392 route BuildingClass victory-threshold access through
+  `py_getVictoryThreshold` after the nested XML data refactor;
+- practical 1918 renamed the native BuildingClass default-building getter while preserving the
+  stable Python name `getDefaultBuildingIndex`.
+These changes preserve the Python API while adapting it to typed native signatures; no semantic
+regression was found.
+
+REFERENCE / OWNERSHIP CONTROL
+-----------------------------
+Only two active bindings in this file use `reference_existing_object`:
+- `CvGameSpeedInfo.getGameTurnInfo`, returning an element of the globally owned GameSpeedInfo turn
+  increment array;
+- `CvBonusInfo.getArtInfo`, returning the globally owned bonus art-info object.
+Both owners persist for the relevant Python lifetime, and shipped callers do not retain them across
+info teardown/reload. `GameTurnInfo` is technically exposed as writable by the separate struct
+binding, but current shipped Python only reads its two fields; no mutation of global game-speed data
+was found. Keep hypothetical external-Python mutation as API hardening, not F682.
+
+KNOWN DORMANT API DEFECT DEDUP
+------------------------------
+`CvCivilizationInfo.getNumLeaders` is bound here, but the earlier Queue-034 audit already proved that
+its backing `m_iNumLeaders` is never populated by the current XML reader and therefore always
+reports 0. Current shipped Python has no caller; actual leader membership uses `isLeaders(...)`.
+That inherited dormant public-API defect is already recorded in the album and remains below the
+current-live finding threshold. Do not duplicate it as F682.
+
+HISTORY CONTROL
+---------------
+The retained path history reconciles without exposing another root:
+- practical 1412 made the info bindings `boost::noncopyable`;
+- practical 1499 preserved the Unofficial Patch `getHappiness` correction while simplifying its
+  comments;
+- practical 1610 corrected only the Python documentation return type of the free-tech booleans;
+- practical 1644 followed the CvInfo header split;
+- practical 1725 moved YieldInfo/TerrainInfo bindings here because Interface3 was too large;
+- practicals 1918/1922/2796/3052 supplied the typed/native adapter changes above;
+- practical 2287 removed unused RouteModel mutators from Python;
+- practical 1398 retired the obsolete `getAIPerEraModifier` exposure;
+- SAS 5292 and 5300 added the 27 chart getters audited above.
+No later Base AdvC 1.14 repair is missing from SAS in this file.
+
+QUEUE 071 VERDICT
+-----------------
+No independent consequential current root.
+F682 / provisional KI#1003 remains UNUSED.
+Queue 071 `CvGameCoreDLL/CyInfoInterface2.cpp` is COMPLETE.
+
+QUEUE 073 OPEN
+--------------
+Queue 072 `CvStatistics.cpp` was already completed at the earlier WIP489 priority pass, so ordinary
+queue order advances directly to Queue 073 `CvGameCoreDLL/CyPlayerInterface1.cpp` (476 queued lines)
+under F682 / provisional KI#1003 UNUSED. Audit Python-name/native-target parity, overload/default
+argument bindings, player/sentinel/index domains, ownership policies and current SAS additions
+against shipped Python callers and the supplied ancestry before whole-album dedup.
+
+Exact continuation stone:
+C031-WIP569 physical -> Queue071 CLOSED CLEAN -> F682/KI#1003 UNUSED -> Queue072 already COMPLETE ->
+Queue073 CyPlayerInterface1.cpp OPEN -> provenance + binding parity + live Python reachability +
+player/sentinel/ownership/default contracts -> history/dedup -> promote only a demonstrated
+consequential current root or close cleanly -> freeze next physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP570 - QUEUE 073 CYPLAYERINTERFACE1.CPP CLOSED CLEAN; QUEUE 075 OPEN
+===============================================================================
+Authoritative input: reconciled local `AdvCiv-SAS_light_source_20260909T154245.zip` plus supplied
+Base AdvC 1.14, K-Mod, Civ4CE and Taurus archives. No web/GitHub lookup used.
+Gameplay/XML/Python source remains untouched.
+
+QUEUE 073 PROVENANCE / SAS DELTA
+--------------------------------
+Current SAS `CvGameCoreDLL/CyPlayerInterface1.cpp` is 476 physical lines. Active-binding comparison
+against supplied Base AdvC 1.14 finds exactly two executable additions and no removals:
+
+    calculateUnitCostBreakdown
+    calculateUnitSupplyBreakdown
+
+These are the same two SAS wrapper additions already exhaustively reconciled during Queue 021
+`CyPlayer.cpp` at C031-WIP438. They return the exact raw native support-cost subtotals consumed by
+the SAS Military/Financial UI. Their former anarchy-display misuse is the already-owned KI#219
+Python-consumer issue and is fixed at current HEAD; the bindings themselves are not a new root.
+
+MECHANICAL REGISTRATION PARITY
+------------------------------
+After stripping comments, Queue 073 contains 384 active `.def` registrations and 384 unique Python
+method names. Every Python name targets the same-named `CyPlayer` wrapper method; there is no active
+duplicate registration, wrong-class target, or name/target swap.
+
+The earlier Queue-021 audit is a particularly strong dedup oracle here because it reconciled BOTH
+`CyPlayerInterface1.cpp` and `CyPlayerInterface2.cpp` together against current `CyPlayer.cpp/.h`:
+436 unique public bindings, zero duplicate public names, every bound non-inline method implemented,
+and all apparent bound-without-body cases accounted for by intentional inline wrappers. Queue 073
+does not reopen that already-complete facade/body proof.
+
+OWNERSHIP POLICY CHECK
+----------------------
+Queue 073 has eight active `manage_new_object` registrations:
+
+    findStartingPlot
+    initCity
+    initUnit
+    getStartingPlot
+    getCapitalCity
+    getCity
+    getUnit
+    getSelectionGroup
+
+Current wrapper bodies were rechecked. Each successful object return is an independent `new Cy*`
+wrapper (or returns NULL before allocation), so Python owns exactly the wrapper object declared by
+the Boost policy; the underlying Cv* game object remains engine-owned. No KI#480-style
+`manage_new_object` mismatch survives here.
+
+The standard Civ4 iterator tuple wrappers (`firstCity`, `nextCity`, `firstUnit`, etc.) are wrapper
+implementation behavior rather than Queue-073 return-policy registrations and were already included
+in the Queue-021 wrapper audit. No new registration-layer ownership change was introduced here.
+
+PLAYER / ENUM / POINTER CONTRACT DEDUP
+--------------------------------------
+Queue 021 already mechanically scanned the legacy CyCity/CyPlot/CyArea/CyUnit pointer arguments and
+current shipped Python callers. Live callers supply concrete engine wrappers; no supported Python
+`None` feed into an inherited unsafe dereference was established. Its 48-player/enums pass likewise
+found no narrowing/bitmask loss in these CyPlayer wrappers.
+
+The current Interface1 registration layer adds no default argument that changes those contracts and
+no overload selector capable of binding a different native signature. AdvC changes versus K-Mod/
+Civ4CE (favorite civic/religion knowledge, visibility/espionage helpers, WB-start controls,
+calculateCurrentTotalYield, etc.) all target wrapper bodies already reconciled against their native
+contracts at Queue 021.
+
+DOCUMENTATION-ONLY NOISE
+------------------------
+Several inherited `.def` docstrings are stale even though the actual member pointer is correct, e.g.
+`getProjectProductionNeeded` is documented with an obsolete bool/three-argument signature,
+`getCapitalCity` mentions an ID argument, and `changeAnarchyTurns` omits its integer argument. Boost
+binds the C++ member-function type rather than parsing these documentation strings, so this can
+mislead external API readers but does not alter Python call arity, return type or gameplay. Preserve
+as low-grade documentation debt, not F682.
+
+ANCESTRY / BASE CONTROL
+-----------------------
+Current-vs-Base active registration parity is complete apart from the two safe SAS breakdown
+bindings. K-Mod/Civ4CE/Taurus differences are the known AdvC wrapper/API evolution already covered
+by Queue 021; Base AdvC 1.14 contains no later Queue-073 repair missing from current SAS. No distinct
+current-live inherited registration root survives whole-album dedup.
+
+QUEUE 073 VERDICT
+-----------------
+No independent consequential current root.
+F682 / provisional KI#1003 remains UNUSED.
+Queue 073 `CvGameCoreDLL/CyPlayerInterface1.cpp` is COMPLETE.
+
+QUEUE 075 OPEN
+--------------
+Queue 074 `CvGameCoreDLL/WarEvaluator.cpp` was already completed at C031-WIP491 / F650, so ordinary
+queue order advances directly to Queue 075 `CvGameCoreDLL/SelfMod.cpp` (472 queued lines) under
+F682 / provisional KI#1003 UNUSED. Audit current-vs-Base/ancestry provenance first, then self-modifier
+state initialization/update/cache contracts, numeric domains and all live consumers; dedup before
+promotion.
+
+Exact continuation stone:
+C031-WIP570 physical -> Queue073 CLOSED CLEAN -> F682/KI#1003 UNUSED -> Queue074 already COMPLETE ->
+Queue075 SelfMod.cpp OPEN -> provenance + state lifecycle + numeric/cache contracts + live consumers
++ history/dedup -> promote only a demonstrated consequential current root or close cleanly -> freeze
+next physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP571 - QUEUE 075 SELFMOD.CPP - F682 / KI#1003 CONFIRMED; F683 UNUSED
+===============================================================================
+Physical parent: C031-WIP570.
+Authoritative source: reconciled `AdvCiv-SAS_light_source_20260909T154245.zip`, supplied Base AdvC
+1.14 and Taurus 1.04, plus local reachable-history diffs. Gameplay/XML/Python source untouched.
+
+PROVENANCE CONTROL
+------------------
+After comments and whitespace/signature-layout changes are removed, current SAS `SelfMod.cpp` and
+supplied Base AdvC 1.14 have identical executable token streams. K-Mod/Civ4CE predate this AdvC/Taurus
+runtime-patch subsystem. Taurus 1.04 retains the same fallback-search implementation. Therefore the
+root below is inherited rather than a SAS-only regression or a missed later Base repair.
+
+F682 / PROVISIONAL KI#1003 - FALLBACK EXE ADDRESS SEARCH LEAKS 512 KiB PER SEARCH
+--------------------------------------------------------------------------------
+`SelfMod::updateAddressOffset` falls back from a quick expected-address test to a bounded memory
+search. It allocates the copied search window as:
+
+    int const iHaystackBytes = iMaxSubtrahend + iMaxAddend;
+    byte* pHaystackBytes = new byte[iHaystackBytes];
+
+then fills it and calls `std::search`. There is no `delete[] pHaystackBytes`, smart pointer, vector,
+or other owner anywhere in the function.
+
+The allocation is lost on BOTH outcomes:
+- no match: the function sets `m_iAddressOffset = MIN_INT` and returns immediately;
+- match: it computes `std::distance(pHaystackBytes, pos)`, exits the block, stores the offset and
+  returns without freeing the array.
+
+With the default `iMaxAbsOffset = 256 * 1024`, both current search origins are farther than 256 KiB
+from the hard low/high bounds, so each fallback allocates exactly:
+
+    262,144 bytes below + 262,144 bytes above = 524,288 bytes = 512 KiB
+
+and permanently loses that allocation for the lifetime of the DLL process.
+
+SUPPORTED CURRENT ACTIVATION
+----------------------------
+This is not limited to an unrecognized executable.
+
+1. Help-text-area patch, ordinary default Steam offset
+
+`HelpTextAreaWidthMod::apply` calls `findAddressOffset` when the quick bytes are not at their original
+address. The current source explicitly documents that in the default Steam version its needle is at
+`0x0055AD2F`, corresponding to offset +4800. That is a recognized successful fallback-search path.
+Shipped `CvMainInterface.setDefaultHelpTextArea` calls `gc.getGame().setHelpTextAreaWidth(...)` before
+creating the help area. The stored-width guard prevents identical repeated work, but the first shifted-
+EXE patch still loses 512 KiB; a later different target width can invoke it again.
+
+2. Plot-indicator patch, recognized Steamless offset
+
+`PlotIndicatorSizeMod::apply` documents and accepts the Steamless/unpacked Steam BtS sequence at
++1616. Both BUG settings `MainInterface__PlotIndicatorSize` and `MainInterface__OffScreenUnitSizeMult`
+have shipped `<change module="InputUtil" function="updatePlotIndicatorSize"/>` callbacks, and that
+callback calls `cyUpdatePlotIndicatorSize()` -> `smc::BtS_EXE.patchPlotIndicatorSize()`. Whenever a
+changed setting produces a new base size on the shifted layout, the fallback search allocates and
+loses another 512 KiB. Screen-dimension changes can also call the patch entry point.
+
+The no-match/error path leaks the same buffer, so unsupported layout retries are no safer.
+
+CONSEQUENCE / CLASSIFICATION
+----------------------------
+This is persistent native heap growth rather than gameplay-state corruption. A single activation is
+modest, but the buffer is unusually large for a leaked temporary (512 KiB) and shipped UI option
+callbacks can repeat it during one process. The leak is deterministic whenever the quick-address test
+fails and fallback search is entered. It therefore clears the current-live finding threshold rather
+than being generic API robustness.
+
+LINEAGE
+-------
+Reachable-history practical 3847 / commit `a06dd7516458677ebf90bb980223ad7198fe9ee0`, titled
+"Refactor SelfMod class (based on Taurus 1.00)", introduced `updateAddressOffset` and the
+`new byte[iHaystackBytes]` fallback-search buffer in the same patch. No deletion was introduced.
+Later practicals added/adjusted supported Steam/Steamless offsets but preserved the leak. Supplied
+Base AdvC 1.14 and Taurus 1.04 still contain it unchanged.
+
+DEDUP
+-----
+Whole-album search found no prior finding owning this `SelfMod::updateAddressOffset` search-buffer
+lifetime. Earlier ownership/leak findings (e.g. map Shelf ownership, info teardown, popup records)
+are unrelated allocation roots. F682 is independent.
+
+NARROW REPAIR BOUNDARY
+----------------------
+Keep the search algorithm and address-offset semantics unchanged; only give the temporary search
+window automatic lifetime. Preferred repair is a local RAII container such as
+`std::vector<byte> aHaystack(iHaystackBytes)` and use its contiguous storage for fill/search/distance.
+A manual `delete[]` would also work only if every success/failure exit is covered; RAII is safer and
+prevents future early-return leaks.
+
+QUEUE 075 CONTINUES
+-------------------
+F682 / KI#1003 is CONFIRMED and frozen.
+F683 / provisional KI#1004 is UNUSED.
+Queue 075 remains OPEN. Continue the remaining runtime-patch logic: VirtualProtect restore ranges,
+address arithmetic/offset validation, repeated-patch caches, option/FoV/resolution numeric domains,
+help-width byte narrowing, supported executable-layout handling and whole-album/history dedup.
+
+Exact continuation stone:
+C031-WIP571 physical -> Queue075 SelfMod.cpp OPEN -> F682/KI#1003 CONFIRMED search-buffer leak ->
+F683/KI#1004 UNUSED -> finish remaining SelfMod page-protection/address/numeric/cache/live-caller
+contracts -> either promote an independent F683 or close Queue075 cleanly -> freeze next WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP572 - QUEUE 075 SELFMOD.CPP CLOSED - F682 ONLY; F683 UNUSED; QUEUE 076 OPEN
+===============================================================================
+Physical parent: C031-WIP571.
+Authoritative source: reconciled `AdvCiv-SAS_light_source_20260909T154245.zip`, supplied Base AdvC
+1.14 and Taurus 1.04, plus local reachable-history diffs. Gameplay/XML/Python source untouched.
+
+QUEUE 075 CLOSURE
+-----------------
+Queue 075 `CvGameCoreDLL/SelfMod.cpp` is COMPLETE with exactly one demonstrated current-live root:
+F682 / provisional KI#1003, the 512-KiB fallback-search temporary allocation leak recorded and frozen
+in C031-WIP571. No independent F683 survives the remaining whole-body/history pass.
+
+POST-F682 NEGATIVE CONTROLS
+---------------------------
+1. Plot-indicator page-protection restoration
+
+`PlotIndicatorSizeMod::apply` temporarily changes page protections around four float operands and then
+restores them. A generic helper that restored overlapping page-protection operations in the wrong order
+could be dangerous, but the four current patch addresses occupy distinct memory pages; the help-area
+patch has only one site. The current shipped patch set therefore does not create an overlapping-page
+restore conflict.
+
+2. Retry/cache state after patch failure
+
+`patchPlotIndicatorSize` marks its attempt state before applying the patch, and both the plot-size and
+help-width paths cache the requested value before/around application. That can suppress an identical
+retry after a failed patch. Current supported failures, however, are deterministic executable-layout
+mismatches rather than demonstrated transient conditions; `DISABLE_EXE_RUNTIME_MODS` intentionally
+permits ordinary unpatched BtS behavior. Without a supported transient activation this remains
+robustness/failure-policy behavior, not a separate gameplay defect.
+
+3. Help-text-area byte narrowing
+
+The EXE operand for help-area width is a byte and the code deliberately narrows the calculated
+multiplicand through `safeIntCast<byte>`. The shipped HUD geometry, help-font range and current SAS
+width-adjustment/scaling values keep the resulting multiplicand comfortably inside 0..255 at normal
+supported resolutions. Extreme custom theme/define configurations can exceed that representation, but
+no current shipped activation was established.
+
+4. FoV/resolution numeric domains
+
+Screen-height dependent plot scaling is entered only after a positive-height guard. Current FoV UI and
+defaults keep the square-root/division domain positive and sensible; the resulting factor is also
+clamped. Plot-indicator/off-screen option ranges are bounded by their shipped option definitions. No
+live divide-by-zero, invalid square root or overflow root survives.
+
+5. Address arithmetic and supported offsets
+
+The fallback search bounds are small relative to the current patch addresses, so current signed-offset
+arithmetic does not underflow/overflow the recognized address domain. Plot-indicator code explicitly
+accepts the known 0/+1616 layouts; help-width source documents 0/+4800. Search-end inclusivity and
+other hypothetical farther layouts are unsupported-EXE robustness rather than current defects.
+
+6. Instruction-cache flush concern
+
+The patcher does not explicitly call `FlushInstructionCache` after writing the operand bytes. On the
+actual x86 BtS target there is no demonstrated stale-instruction failure in the shipped patch paths,
+and no current fixture establishes a consequential runtime defect. Preserve as a portability/
+hardening consideration only, not F683.
+
+HISTORY / PROVENANCE CLOSURE
+----------------------------
+Current SAS and supplied Base AdvC 1.14 remain executable-semantically identical in this file once
+comments/formatting are normalized. Reachable history from the original plot-indicator patch through
+the help-area/Steam-support changes contains no later independent repair omitted by current SAS.
+Taurus 1.04 confirms the inherited SelfMod family and independently retains F682's allocation root.
+No second current-live root emerged from the retained history.
+
+QUEUE RESULT / NEXT CURSOR
+--------------------------
+Queue 075 is CLOSED at C031-WIP572.
+F682 / KI#1003 remains CONFIRMED.
+F683 / provisional KI#1004 remains UNUSED.
+Files complete: 89 / 169.
+
+Ordinary queue order now advances to Queue 076 `CvGameCoreDLL/CyCityInterface1.cpp` (461 queued lines)
+under F683 / provisional KI#1004 UNUSED. Start with current-vs-Base/ancestry registration provenance,
+then binding-name/target parity, ownership return policies, default/sentinel/index contracts and live
+Python reachability; dedup against the already-completed Queue 024 `CyCity.cpp` wrapper-body audit
+before promoting anything.
+
+Exact continuation stone:
+C031-WIP572 physical -> Queue075 CLOSED -> F682/KI#1003 CONFIRMED; no independent F683 -> Queue076
+CyCityInterface1.cpp OPEN -> F683/KI#1004 UNUSED -> provenance + binding parity + ownership/default/
+index/live-call contracts + Queue024/whole-album dedup -> promote only a distinct consequential live
+root or close cleanly -> freeze next physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP573 - QUEUE 076 CYCITYINTERFACE1.CPP CLOSED CLEAN; F683 UNUSED; QUEUE 077 OPEN
+===============================================================================
+Physical parent: C031-WIP572.
+Authoritative source: reconciled `AdvCiv-SAS_light_source_20260909T154245.zip`, supplied Base AdvC
+1.14, K-Mod and Civ4CE comparison trees, plus the already-completed Queue 024 `CyCity.cpp` audit.
+Gameplay/XML/Python source untouched.
+
+PROVENANCE CONTROL
+------------------
+Current SAS and supplied Base AdvC 1.14 `CyCityInterface1.cpp` have identical executable token streams
+across the full current 461-line file. Therefore there is no SAS-only registration delta and no missed
+later Base repair to explain a new F683 here.
+
+ACTIVE BINDING TABLE
+--------------------
+After stripping comments before parsing registrations:
+- 404 active `.def(...)` registrations;
+- 404 unique Python method names;
+- zero active duplicate Python names;
+- exactly one Python-name/native-target difference:
+
+    getGeneralProductionTurnsLeft -> CyCity::getProductionTurnsLeft
+
+This is the deliberate AdvC compatibility alias already audited in Queue 024. Native practical 1687
+removed `getGeneralProductionTurnsLeft`; the replacement differs for processes by returning MAX_INT,
+which CyCity maps to -1 instead of the legacy 0. Shipped Domestic Advisor display tests only `> 0`, so
+both sentinel values render identically. It is not a current defect.
+
+OWNERSHIP POLICIES - QUEUE 024 DEDUP ORACLE
+--------------------------------------------
+All seven `python::manage_new_object` registrations were rechecked against the Queue-024 wrapper-body
+proof:
+- `getCityIndexPlot` -> independent `new CyPlot`;
+- `plot` -> independent `new CyPlot`;
+- `area` -> independent `new CyArea`;
+- `waterArea` -> independent `new CyArea`;
+- `getRallyPlot` -> independent `new CyPlot`;
+- `getTradeCity` -> independent `new CyCity`;
+- `getOrderFromQueue` -> independent `new OrderData(copy)` after the already-owned SAS KI#480 repair.
+
+No second owning-policy mismatch survives. In particular, do not reopen KI#480 merely because its
+registration lives in this interface file.
+
+ANCESTRY / TARGET-PARITY CONTROLS
+---------------------------------
+Relative to K-Mod/Civ4CE, current AdvC has expected additions/removals from later city APIs. Only two
+shared-name target changes appear:
+- `getGeneralProductionTurnsLeft`: intentional compatibility alias described above;
+- `getProjectProductionModifier`: K-Mod/Civ4CE bind this name to generic `getProductionModifier`, while
+  current AdvC correctly binds the project-specific getter (`advc.001`). This is an inherited fix
+  already present in Base 1.14, not a current regression.
+
+The other AdvC-only registrations (hurry-overflow, production-decay/time helpers, revolt/culture-flip,
+partisans and AI floating-defender diagnostics) were already traced to their native bodies and shipped
+Python consumers during Queue 024. No registration/body semantic drift was found here.
+
+INDEX / POINTER / DESTRUCTIVE-CALL DEDUP
+-----------------------------------------
+Queue 024 explicitly reconciled the bound pointer arguments, enum/index producers, nullable trade-city
+chains, destructive `kill`/liberation lifetime shape, production/food/decay sentinels and current
+Python call sites across BOTH CyCity interface files. Repeating those native-body roots under the
+registration queue would double-count the same contracts. No new registration-layer default argument,
+return policy, overload or target changes those prior conclusions.
+
+LOW-GRADE DOCUMENTATION ONLY
+----------------------------
+Legacy docstrings retain stale wording/signatures in places, but Boost.Python binds the actual member
+function pointer rather than parsing those strings. No runtime arity/type defect follows from the
+text alone.
+
+QUEUE RESULT / NEXT CURSOR
+--------------------------
+Queue 076 `CvGameCoreDLL/CyCityInterface1.cpp` is COMPLETE with NO NEW FINDING.
+F683 / provisional KI#1004 remains UNUSED.
+Files complete: 90 / 169.
+
+Ordinary queue order advances to Queue 077 `CvGameCoreDLL/StartPointsAsHandicap.cpp` (451 queued
+lines) under F683 UNUSED. Establish current-vs-Base/ancestry provenance first, then audit rank/start-
+plot collection, normalization/order assumptions, handicap reassignment arithmetic, player/team
+sentinels, game-option activation and downstream consumers. Dedup against prior starting-position and
+TrueStarts findings before promotion.
+
+Exact continuation stone:
+C031-WIP573 physical -> Queue076 CLOSED CLEAN -> F683/KI#1004 UNUSED -> Queue077
+StartPointsAsHandicap.cpp OPEN -> provenance + activation + ranking/order/arithmetic + player/team/
+plot sentinels + downstream effects + history/whole-album dedup -> promote only a distinct current-live
+root or close cleanly -> freeze next physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP574 - QUEUE 077 STARTPOINTSASHANDICAP.CPP - F683 / KI#1004 CONFIRMED; F684 UNUSED
+===============================================================================
+Physical parent: C031-WIP573.
+Authoritative source: reconciled `AdvCiv-SAS_light_source_20260909T154245.zip`, supplied Base AdvC
+1.14, reachable pre-SAS AdvC history and current shipped Python/UI consumers. Gameplay/XML/Python
+source untouched.
+
+PROVENANCE CONTROL
+------------------
+Current SAS and supplied Base AdvC 1.14 `StartPointsAsHandicap.cpp` have identical executable token
+streams across the full 451-line file. K-Mod/Civ4CE predate this AdvC-specific subsystem. Therefore
+F683 is inherited AdvC behavior rather than a SAS-only regression or missed Base repair.
+
+F683 / PROVISIONAL KI#1004 - REBUILDING THE SPAH SETTINGS STRING LEAKS THE PREVIOUS WSTRING
+------------------------------------------------------------------------------------------
+`StartPointsAsHandicap` owns its display string through the raw member pointer
+`pointsDisplayString`. Constructor initializes it to NULL, and destructor/reset correctly delete the
+CURRENT pointer. `updatePointsDisplayString`, however, replaces that member with a fresh allocation
+without releasing the previous value:
+
+    if(civs[nCivs - 1]->startPoints_configured() <= 0) {
+        pointsDisplayString = new wstring();
+        return;
+    }
+    ...
+    pointsDisplayString = new wstring(s.str());
+
+There is no `SAFE_DELETE(pointsDisplayString)` before either assignment. Once overwritten, the old
+`std::wstring` object and its owned character buffer are unreachable; reset/destructor can free only
+the newest pointer.
+
+ORDINARY SHIPPED ACTIVATION
+---------------------------
+This is not a dormant helper.
+
+1. Initial game setup
+   `StartPointsAsHandicap::setInitialItems()` calls `updatePointsDisplayString(true)`, creating the
+   first owned string for every active SPaH game.
+
+2. Victory-screen Settings tab
+   Shipped `CvVictoryScreen.py` calls `g.SPaHPointsForSettingsScreen()` when SPaH is active.
+   `CyGame::SPaHPointsForSettingsScreen()` calls `startPointsAsHandicap().forSettingsScreen()`.
+   Since practical 1416, `forSettingsScreen` itself calls `updatePointsDisplayString(bTab)` before
+   returning the pointer. Therefore the FIRST ordinary Settings query already overwrites and leaks
+   the setup allocation; every subsequent Settings-screen rebuild/query can leak another allocation.
+
+3. Replay/settings capture
+   `CvReplayInfo` calls `forSettingsScreen(false)` when building SPaH settings text, providing an
+   independent later live query that can overwrite/leak whichever display allocation is current.
+
+The per-call leak is small compared with F682, but it is deterministic, repeatable through normal UI
+use and unbounded over repeated queries. The lost object includes both the heap-allocated `wstring`
+object and its dynamically allocated distribution-text buffer.
+
+LINEAGE
+-------
+The original SPaH implementation (practical 1253) kept `forSettingsScreen()` as a simple return of the
+cached pointer and built the string during setup. Practical 1416 / commit
+`72f41f88dca77624eaab3422f829b38b8d997b55`, titled "Changes to Worker AI and DoW confirmation
+popup", changed the method to:
+
+    updatePointsDisplayString(bTab);
+    return pointsDisplayString;
+
+so the same cached member could be formatted with tab/non-tab indentation. That patch also improved
+reset/destructor cleanup of the CURRENT pointer, but it did not add deletion before the newly repeated
+allocations in `updatePointsDisplayString`. The leak starts at this recompute-on-query change and
+survives Base AdvC 1.14/current SAS.
+
+DEDUP
+-----
+Whole-album search found no prior owner for the SPaH display-string lifetime. It is independent of
+F682's 512-KiB SelfMod search-buffer leak, F628's scenario normalization-target leak, F632's Shelf
+ownership leak and F659's info-teardown row leaks.
+
+NARROW REPAIR BOUNDARY
+----------------------
+Preserve all formatting and call semantics. Before assigning either new `wstring`, release the prior
+owned value, e.g. `SAFE_DELETE(pointsDisplayString)`. Cleaner long-term ownership would store the
+text by value (`mutable std::wstring`) and return/reference/copy that value, eliminating manual heap
+ownership entirely. Either repair must preserve the two indentation modes used by Victory/Replay.
+
+QUEUE 077 CONTINUES
+-------------------
+F683 / KI#1004 is CONFIRMED and frozen.
+F684 / provisional KI#1005 is UNUSED.
+Queue 077 remains OPEN. Continue the independent gameplay/state audit: SPaH save/read identity and
+unused-array serialization, `randPoints` state, scenario activation without `setInitialItems`,
+start-plot reassignment/order invariants, randomization bounds, Advanced-Start point arithmetic and
+final-score/display consumers. Dedup before any F684 promotion.
+
+Exact continuation stone:
+C031-WIP574 physical -> Queue077 OPEN -> F683/KI#1004 CONFIRMED repeatable settings-string leak ->
+F684/KI#1005 UNUSED -> finish save/read + scenario + randPoints + ranking/reassignment + arithmetic/
+sentinel + downstream-consumer contracts -> promote only an independent consequential root or close
+Queue077 cleanly -> freeze next physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP575 - QUEUE 077 STARTPOINTSASHANDICAP.CPP - F684 / KI#1005 CONFIRMED; F685 UNUSED
+===============================================================================
+Physical parent: C031-WIP574.
+Authoritative source: reconciled `AdvCiv-SAS_light_source_20260909T154245.zip`, supplied Base AdvC
+1.14, reachable pre-SAS AdvC history, shipped main-menu regeneration path and current XML/manual
+fixtures. Gameplay/XML/Python source untouched.
+
+F684 / PROVISIONAL KI#1005 - REGENERATE MAP CONSUMES SPAH'S ONE-SHOT SETUP VALUE, THEN REBUILDS
+WITH -1 AND COLLAPSES THE HANDICAP DISTRIBUTION
+---------------------------------------------------------------------------------------------
+`StartPointsAsHandicap::assignPoints()` treats `CvInitCore::NumAdvancedStartPoints` as the encoded
+SPaH setup value. Since practical 4067 it deliberately consumes that value immediately:
+
+    int pointsEntered = GC.getInitCore().getNumAdvancedStartPoints();
+    // (This value should not be used in a SPaH game)
+    GC.getInitCore().setNumAdvancedStartPoints(-1);
+
+That is safe only if SPaH initialization runs once. `CvGame::regenerateMap()` performs another full
+`setInitialItems()` on the same `CvInitCore` without restoring the encoded value:
+
+    m_eInitialActivePlayer = NO_PLAYER;
+    setInitialItems();
+
+The second SPaH `setInitialItems()` therefore calls `assignPoints()` with `pointsEntered == -1`.
+Release builds do not stop at `FAssert(pointsEntered > 0)`. Because `-1 < 10000`, the code takes the
+flat-distribution branch and sends `-1` to every AI's `setStartPoints_configured`. `MajorCiv::adjust`
+then clamps it to `CvInitCore::getAdvancedStartMinPoints()`.
+
+CURRENT-DATA FIXTURE
+--------------------
+`CvInitCore::getAdvancedStartMinPoints()` returns the Advanced-Start cost of the first default
+founding unit. In current SAS XML the default Settler has:
+
+    <bFound>1</bFound>
+    <iAdvancedStartCost>100</iAdvancedStartCost>
+
+so the regenerated setup deterministically assigns every AI 100 points.
+
+The shipped AdvC SPaH manual documents five/six-digit unequal distributions; e.g. `80050` means a
+strongest AI target of 800 points and a weakest target of 50 percent = 400 points, with intermediate
+AIs distributed between them. On the first setup that produces the intended unequal roughly
+400..800-point range (subject to the optional SPaH randomization preserving extrema/order). After
+Regenerate Map the same game instead rebuilds every AI at 100 points.
+
+SECOND GAMEPLAY CONSEQUENCE - STARTING-PLOT HANDICAP ALSO DISAPPEARS
+--------------------------------------------------------------------
+`setInitialItems()` stores the boolean returned by `assignPoints()`:
+
+    unequalDistrib = assignPoints();
+
+The valid `80050` first pass returns true. The corrupted `-1` second pass takes the flat branch and
+returns false. Later `rearrangeStartingPlots()` immediately does:
+
+    if(!unequalDistrib)
+        return;
+
+Thus Regenerate Map removes not only the configured Advanced-Start point distribution but also the
+SPaH spatial rule that assigns weaker AIs nearer human starts and stronger AIs farther away. This is
+a direct gameplay change to both halves of the option's handicap model.
+
+ORDINARY SHIPPED ACTIVATION
+---------------------------
+The map-regeneration path is not a debug-only helper. `CvDLLButtonPopup::launchMainMenuPopup` exposes
+"Regenerate Map" during ordinary single-player turn 0 when the game is not multiplayer, is not a WB
+map script and no teams have met. The confirmation popup's `case 3` directly calls:
+
+    kGame.regenerateMap();
+
+`CvGame::regenerateMap` rebuilds the map, resets turn state and invokes `setInitialItems()` again.
+Therefore a user can reproduce F684 through the normal main menu before playing the first turn in an
+ordinary random-map SPaH game.
+
+There is also an automated regeneration hook (`AUTO_REGEN_MAP`) for map-generation statistics, but
+its current define defaults to 0; the normal menu path is sufficient native activation.
+
+LINEAGE
+-------
+Practical 4067 / commit `3aa769419d5efe301d8cf16c05c55fd7c287f522`, titled
+"Fix unequal start point assignment (SPaH option)", added exactly the two one-shot-consumption lines
+shown above. The companion `CvPlayer::initFreeUnits` change was meant to preserve points already
+assigned by SPaH. No regeneration restoration/re-encoding was added. The defect therefore begins
+with practical 4067's consumption change. Supplied Base AdvC 1.14 and current SAS retain the same
+`StartPointsAsHandicap.cpp` behavior; K-Mod/Civ4CE predate this AdvC-specific subsystem.
+
+DEDUP
+-----
+Whole-album search found no prior owner for the consumed-SPaH-value/regeneration interaction. It is
+independent of F083/KI#405, which concerns True-Starts team-tech cache transitions during
+`CvGame::regenerateMap`, and independent of F683/KI#1004's SPaH display-string memory leak.
+
+NARROW REPAIR BOUNDARY
+----------------------
+Preserve practical 4067's rule that the encoded setup value must not be reused as ordinary global
+Advanced-Start points during normal initialization, but preserve enough canonical SPaH setup state
+to rebuild the option when `setInitialItems()` legitimately runs again. Suitable narrow designs
+include storing the decoded/configured SPaH distribution (or original encoded setup value) in the
+SPaH object and reusing that on regeneration, or explicitly restoring/reseeding the SPaH setup input
+before the regeneration `setInitialItems()` pass. Do not simply leave the global value live if doing
+so reopens practical 4067's original double-assignment issue.
+
+QUEUE 077 CONTINUES
+-------------------
+F683 / KI#1004 is CONFIRMED and frozen.
+F684 / KI#1005 is CONFIRMED and frozen.
+F685 / provisional KI#1006 is UNUSED.
+Queue 077 remains OPEN. Continue the remaining independent contracts: save/read player identity,
+unused `allPts` serialization suffix, `randPoints` state/display, reset/report state, ranking and
+randomization arithmetic, end-score/distribution consumers and final history/dedup controls. The
+previous scenario-empty-vector hypothesis is explicitly REJECTED because `CvGame::initScenario()`
+calls `initFreeState()`, which initializes SPaH when the option remains active.
+
+Exact continuation stone:
+C031-WIP575 physical -> Queue077 OPEN -> F683/KI#1004 display-string leak + F684/KI#1005
+Regenerate-Map one-shot SPaH-value loss CONFIRMED -> F685/KI#1006 UNUSED -> finish save/read identity
++ allPts/randPoints/reset + ranking/randomization + downstream score/display contracts -> promote
+only a distinct consequential live root or close Queue077 cleanly -> freeze next physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP576 - QUEUE 077 STARTPOINTSASHANDICAP.CPP - F685 / KI#1006 CONFIRMED; F686 UNUSED
+===============================================================================
+Physical parent: C031-WIP575.
+Authoritative source: reconciled `AdvCiv-SAS_light_source_20260909T154245.zip`, supplied Base AdvC
+1.14 and reachable pre-SAS AdvC history. Gameplay/XML/Python source untouched.
+
+F685 / PROVISIONAL KI#1006 - SPAH SAVES SERIALIZE THE UNINITIALIZED UNUSED TAIL OF `allPts`
+------------------------------------------------------------------------------------------
+Current `StartPointsAsHandicap` contains:
+
+    int allPts[2 * MAX_CIV_PLAYERS];
+
+The constructor initializes the pointer/string/count/flags but never initializes this array. In the
+current 48-player DLL, `MAX_CIV_PLAYERS == 48`, so `allPts` contains 96 ints = 384 bytes.
+
+On a new SPaH game, `setInitialItems()` builds the `civs` objects and assigns their point values but
+does not populate `allPts`. The first save reaches:
+
+    for(int i = 0; i < nCivs; i++) {
+        allPts[2 * i] = civs[i]->startPoints_configured();
+        allPts[2 * i + 1] = civs[i]->startPoints_actual();
+    }
+    pStream->Write(2 * MAX_CIV_PLAYERS, allPts);
+
+Only the first `2*nCivs` ints are initialized; the stream nevertheless writes all 96 ints. For an
+8-major-civ game, 16 ints are valid and the remaining 80 ints = 320 bytes are stale/uninitialized
+object-storage contents. Any game with fewer than all 48 major-civ slots used has an unused tail.
+
+CONSEQUENCE / CLASSIFICATION
+----------------------------
+`read()` reads the same full 96-int block but consumes only the first `2*nCivs` entries when
+reconstructing SPaH, so the tail does not corrupt normal gameplay state. The defect is instead a
+real serialization/information and reproducibility problem:
+
+* bytes that are not part of SPaH state are copied from previously uninitialized process storage into
+  the save stream;
+* a save file can therefore contain stale heap/object bytes unrelated to the game state represented
+  by SPaH;
+* AdvC's `FDataStreamBase::Write(int,const int[])` also passes the exact byte range through
+  `REPRO_TEST_REPORT` when reproducibility testing is enabled. `ReproTest.h` explicitly warns that
+  uninitialized bytes written to saves defeat deterministic save-data comparison; this full unused
+  array tail is the same class of problem, not merely struct padding.
+
+Loading a save initializes the entire array from that save, so the strongest native fixture is the
+first save of a newly initialized SPaH game. It requires no malformed data or unsupported DLL size.
+
+LINEAGE
+-------
+Practical 1253 / commit `f6ff6a182f5187541fff6e5bbbe12f9573b3778c` introduced SPaH and this
+serialization scheme. The original constructor allocated:
+
+    allPts = new int [2 * MAX_CIV_PLAYERS];
+
+without initializing the elements, and the original `write()` already filled only `2*nCivs` values
+before writing the full `2*MAX_CIV_PLAYERS` block. Later refactoring changed `allPts` to fixed member
+storage but retained the same incomplete initialization/full-block write. Supplied Base AdvC 1.14
+and current SAS retain the defect; K-Mod/Civ4CE predate SPaH.
+
+DEDUP
+-----
+Whole-album search found no prior owner for the SPaH `allPts` unused-tail serialization. It is
+independent of F683's settings-string heap leak and F684's Regenerate-Map loss of the encoded SPaH
+setup value.
+
+NARROW REPAIR BOUNDARY
+----------------------
+Preserve the existing save layout unless a format migration is intentionally introduced. The
+minimal compatibility-safe repair is to zero-initialize the whole `allPts` array (constructor/member
+initialization, and preferably clear the unused tail before every write) before filling the live
+prefix. Writing only `2*nCivs` entries would remove the tail too but changes the serialized layout
+and therefore needs explicit save-format compatibility handling.
+
+QUEUE 077 CONTINUES
+-------------------
+F683 / KI#1004, F684 / KI#1005 and F685 / KI#1006 are CONFIRMED and frozen.
+F686 / provisional KI#1007 is UNUSED.
+Queue 077 remains OPEN. Finish save/read identity, `randPoints` display state, reset/report state,
+ranking/randomization bounds, end-score/distribution consumers and final history/dedup. Keep the
+save/read player-ID reconstruction issue unpromoted unless a supported non-prefix player fixture and
+consequential consumer are pinned; current evidence shows live Advanced-Start points themselves are
+serialized separately by `CvPlayer`.
+
+Exact continuation stone:
+C031-WIP576 physical -> Queue077 OPEN -> F683-F685/KI#1004-KI#1006 CONFIRMED -> F686/KI#1007
+UNUSED -> finish player-identity/randPoints/reset/ranking/randomization/score-display closure ->
+promote only a distinct consequential root or close Queue077 cleanly -> freeze next physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP577 - QUEUE 077 STARTPOINTSASHANDICAP.CPP - F686 / KI#1007 CONFIRMED; F687 UNUSED
+===============================================================================
+Physical parent: C031-WIP576.
+Authoritative source: reconciled `AdvCiv-SAS_light_source_20260909T154245.zip`, supplied Base AdvC
+1.14, reachable pre-SAS AdvC history, current `CvInitCore` slot contracts and shipped SPaH manual.
+Gameplay/XML/Python source untouched.
+
+F686 / PROVISIONAL KI#1007 - SPAH SAVE DATA OMITS PLAYER IDS AND REATTACHES POINT ROWS TO THE WRONG
+PLAYERS AFTER LOAD WHEN HUMAN/AI SLOTS ARE NOT A CONTIGUOUS HUMAN-FIRST PLAYER-ID PREFIX
+-------------------------------------------------------------------------------------------------
+The live setup path explicitly records real player identity. `gatherCivs()` scans all player IDs,
+skips nonparticipants/minors and constructs:
+
+    MajorCiv* mciv = new MajorCiv(p.getID());
+
+It then sorts `civs` with all humans first and, within equal point classes, by player ID. SPaH's
+serialized state does NOT store those player IDs. `write()` emits only `nCivs` plus configured/actual
+point pairs in current `civs` vector order.
+
+`read()` reconstructs each row with a newly invented identity:
+
+    for(int i = 0; i < nCivs; i++) {
+        MajorCiv* mciv = new MajorCiv((PlayerTypes)i);
+        mciv->setStartPoints_configured(allPts[2 * i]);
+        mciv->setStartPoints_actual(allPts[2 * i + 1]);
+        ...
+    }
+
+This assumes that participating major-player IDs are exactly `0..nCivs-1` AND that this numeric ID
+order is the same as the human-first serialized vector order. Neither condition is a general
+`CvInitCore` contract.
+
+SUPPORTED MULTIPLAYER/HOTSEAT SLOT CONTRACT
+-------------------------------------------
+SPaH is disabled when Advanced Start is off or when all living civs are human; it is not disabled
+merely because the game is multiplayer. The AdvC manual explicitly discusses team-game behavior for
+SPaH. `CvInitCore` independently supports normal `SS_OPEN`, `SS_TAKEN`, `SS_COMPUTER` and
+`SS_CLOSED` states per player slot. `getAvailableSlot()` scans for `SS_OPEN` slots while leaving
+`SS_COMPUTER` slots in place, so the engine contract does not require all humans to occupy the
+lowest IDs before every AI.
+
+A simple supported slot arrangement is therefore:
+
+    Player 0 = human
+    Player 1 = AI / SS_COMPUTER
+    Player 2 = human
+    Player 3 = AI / SS_COMPUTER
+
+At initial SPaH setup, `gatherCivs()` sorts those wrappers human-first:
+
+    [P0 human, P2 human, P1 AI, P3 AI]
+
+and `write()` serializes point rows in that order. On load, `read()` instead binds those four rows to:
+
+    [P0, P1, P2, P3]
+
+so rows 1 and 2 attach to the wrong controller identities.
+
+DETERMINISTIC FLAT-400 FIXTURE
+------------------------------
+The shipped manual documents <=9999 Base Points as the ordinary flat-distribution mode. With 400
+points and the four-player arrangement above, the saved rows are conceptually:
+
+    P0 human: -1
+    P2 human: -1
+    P1 AI:    400
+    P3 AI:    400
+
+On read:
+
+* row 0 -> P0 human remains -1;
+* row 1 -> P1 AI receives the former P2-human value -1; `MajorCiv::adjust` clamps it to the current
+  founding-unit minimum, 100;
+* row 2 -> P2 human receives the former P1-AI value 400; `adjust` forces all human SPaH values to -1;
+* row 3 -> P3 AI remains 400.
+
+The reconstructed SPaH distribution is therefore 100,400 instead of the actual 400,400.
+
+DOWNSTREAM CONSEQUENCE
+----------------------
+This does NOT retroactively change each `CvPlayer`'s live Advanced-Start point state: those player
+objects serialize their gameplay state independently, and SPaH `read()` does not call
+`assignStartPoints()`. The defect corrupts SPaH's own persistent metadata, which has two native
+post-load consumers:
+
+1. Victory/Settings and replay settings call `forSettingsScreen()` and display the reconstructed
+   distribution, so the user sees 100,400 instead of 400,400.
+2. `CvGame::getDifficultyForEndScore()` calls `m_pSpah->distribution()` and uses the max plus mean of
+   those AI points in the difficulty factor. A save/load therefore changes the SPaH end-score
+   handicap input even though the actual starting handicap did not change.
+
+The same root also covers gaps caused by closed/minor/nonparticipating IDs: storing only row order
+cannot reconstruct the real `PlayerTypes` relation after load.
+
+LINEAGE
+-------
+Practical 1253 / commit `f6ff6a182f5187541fff6e5bbbe12f9573b3778c` introduced both sides of the
+contract in one patch: `gatherCivs()` created wrappers from real `p.getID()` and sorted humans first,
+while `write()` stored no IDs and `read()` recreated every row as `(PlayerTypes)i`. No later SPaH
+history repair adds identity to the stream. Supplied Base AdvC 1.14 and current SAS retain the same
+behavior; K-Mod/Civ4CE predate SPaH.
+
+DEDUP
+-----
+Whole-album search found no prior owner for SPaH save/load player-identity reconstruction. F685 is a
+separate bug in the same serialization function: it concerns uninitialized UNUSED tail bytes,
+whereas F686 concerns the semantic identity missing from the USED rows. F684 concerns regeneration,
+not save/load.
+
+NARROW REPAIR BOUNDARY
+----------------------
+Persist stable player identity for each serialized SPaH row and reconstruct `MajorCiv` with that
+stored `PlayerTypes`, rather than deriving identity from row number. Because this changes persistent
+layout, add an explicit save-format/version migration or a compatibility representation (for
+example, a fixed per-player table keyed by PlayerTypes) rather than silently inserting fields into
+legacy data. Preserve `CvPlayer`'s independent Advanced-Start serialization.
+
+QUEUE 077 CONTINUES
+-------------------
+F683-F686 / KI#1004-KI#1007 are CONFIRMED and frozen.
+F687 / provisional KI#1008 is UNUSED.
+Queue 077 remains OPEN only for final closure controls: `randPoints` is never set true and therefore
+fails to emit the intended "Not shown: randomization" note when randomized values are hidden, but
+this is currently a low-grade presentation/config edge; `report` accumulation is debug-only;
+randomization/reassignment arithmetic and score consumers otherwise remain to be closed against
+history and album controls.
+
+Exact continuation stone:
+C031-WIP577 physical -> Queue077 OPEN -> F683-F686/KI#1004-KI#1007 CONFIRMED -> F687/KI#1008
+UNUSED -> finish randPoints/reset/randomization/reassignment/score-history closure -> either promote
+one genuinely distinct consequential root or close Queue077 -> resolve next unskipped priority file
+-> freeze next physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP578 - QUEUE 077 STARTPOINTSASHANDICAP.CPP - F687 / KI#1008 CONFIRMED; F688 UNUSED
+===============================================================================
+Physical parent: C031-WIP577.
+Authoritative source: reconciled `AdvCiv-SAS_light_source_20260909T154245.zip`, supplied Base AdvC
+1.14, current multiplayer slot/takeover contracts and reachable pre-SAS AdvC history. Gameplay/XML/
+Python source untouched.
+
+F687 / PROVISIONAL KI#1008 - TAKING OVER THE LAST SPAH AI LEAVES AN EMPTY SCORE DISTRIBUTION AND
+FINAL-SCORE `stats::max` INDEXES ELEMENT ZERO
+-----------------------------------------------------------------------------------------------
+SPaH is disabled during initial setup when Advanced Start is absent or when every living civ is
+human:
+
+    if (!isOption(GAMEOPTION_ADVANCED_START) ||
+        PlayerIter<HUMAN>::count() == PlayerIter<CIV_ALIVE>::count())
+        setOption(GAMEOPTION_SPAH, false);
+
+This is a one-time initialization gate. The option is not cleared later when controller status
+changes.
+
+`StartPointsAsHandicap::distribution()` determines AI samples dynamically from CURRENT human state:
+
+    for(int i = 0; i < nCivs; i++)
+        if(!civs[i]->isHuman())
+            r.push_back(civs[i]->startPoints_actual());
+
+That is normally nonempty because a valid SPaH game starts with at least one AI. Multiplayer,
+however, explicitly supports taking over AI slots (`MPOPTION_TAKEOVER_AI`); `CvInitCore` treats
+`SS_COMPUTER` as a vacant takeover candidate when that option is enabled, and slot-status changes
+refresh `CvPlayer::isHuman()`.
+
+MINIMAL SUPPORTED ACTIVATION
+----------------------------
+1. Start a multiplayer game with Advanced Start + SPaH, one human civ and one AI civ.
+2. Because an AI exists during `initFreeState`, SPaH remains enabled and initializes normally.
+3. With the standard Take Over AI MP option enabled, a second human assumes the AI slot. The former
+   AI now reports `isHuman()==true`; no code re-runs the initial all-human SPaH disable gate.
+4. At the end of a victorious game, final score calculation calls `getDifficultyForEndScore()`.
+
+The SPaH branch performs:
+
+    std::vector<int> aiStartPointDistrib;
+    m_pSpah->distribution(aiStartPointDistrib); // now empty
+    std::vector<scaled> arDistr;
+    ...
+    stats::max(arDistr)
+    stats::mean(arDistr)
+
+`stats::max` in `ArithmeticUtils.h` contains only a debug assertion before indexing:
+
+    FAssert(!kSamples.empty());
+    T r = kSamples[0];
+
+In a release build the assertion does not provide a guard, so an empty SPaH AI distribution causes
+an invalid element-0 access. `stats::mean` independently assumes nonempty input and would divide by
+zero if reached.
+
+PLAYER-VISIBLE CONSEQUENCE
+--------------------------
+`CvGame::getScoreComponent` calls `getDifficultyForEndScore()` whenever a score component is both
+final and victory-scored. Thus this is not merely an exposed helper/API edge: the native end-game
+score path itself reaches the empty-vector contract after a supported multiplayer controller
+transition. Depending on build/runtime details, the invalid access can crash or produce undefined
+final-score behavior.
+
+LINEAGE
+-------
+Practical 1253 / commit `f6ff6a182f5187541fff6e5bbbe12f9573b3778c` introduced SPaH's
+`distribution()` and the SPaH branch of `CvGame::getDifficultyForEndScore()` together. The original
+code already assumed at least one AI sample and applied max/mean without an empty guard. Later
+refactors moved from old double helpers to `stats::max`/`stats::mean` but retained the same
+precondition. Supplied Base AdvC 1.14/current SAS still carry it; K-Mod/Civ4CE predate SPaH.
+
+The AdvC manual explicitly says multiplayer scoring was not designed in detail; that may explain the
+missing dynamic-controller case, but it does not make an invalid-access end-score path intentional.
+
+DEDUP
+-----
+Whole-album search found no prior owner for the SPaH empty-distribution/takeover score path. F686
+concerns save/load identity; F687 occurs without saving or loading and requires only a live controller
+transition after valid SPaH initialization.
+
+NARROW REPAIR BOUNDARY
+----------------------
+Make the scoring consumer robust to an empty current-AI distribution. If no AI samples remain,
+return/use the ordinary non-SPaH difficulty contribution (there is no remaining AI start-point
+handicap to average), or preserve an immutable initial-SPaH distribution specifically for scoring.
+The former is the narrow crash-safety repair; the latter may better reflect historical handicap if
+multiplayer score semantics are intentionally defined. In either case, do not call max/mean on an
+empty vector.
+
+QUEUE 077 CONTINUES FOR FINAL CLOSURE
+-------------------------------------
+F683-F687 / KI#1004-KI#1008 are CONFIRMED and frozen.
+F688 / provisional KI#1009 is UNUSED.
+Remaining checked edges are currently below threshold: `randPoints` is never set true, so hiding
+randomized values omits its intended explanatory note; `report` can accumulate across resets but its
+log call is disabled; randomization index/bound arithmetic and starting-plot reassignment remain
+valid on shipped initialized paths. Finish history/dedup and close Queue 077 if no independent F688
+survives.
+
+Exact continuation stone:
+C031-WIP578 physical -> Queue077 OPEN -> F683-F687/KI#1004-KI#1008 CONFIRMED -> F688/KI#1009
+UNUSED -> final randPoints/report/randomization/reassignment/history closure -> close Queue077 if no
+new consequential root -> resolve next unskipped priority file -> freeze next physical WIP.
+
+No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+===============================================================================
+C031-WIP579 - QUEUE 077 CLOSED; PRIORITY QUEUE 124 OPEN - F688 / KI#1009 UNUSED
+===============================================================================
+Physical parent: C031-WIP578.
+Authoritative source: reconciled `AdvCiv-SAS_light_source_20260909T154245.zip`, supplied Base AdvC
+1.14 and complete reachable history for `StartPointsAsHandicap.cpp`. Gameplay/XML/Python source
+untouched.
+
+QUEUE 077 FINAL CLOSURE
+-----------------------
+`CvGameCoreDLL/StartPointsAsHandicap.cpp` is COMPLETE with exactly five current-live roots:
+
+* F683 / KI#1004 - repeated Settings/replay string reconstruction leaks the previous owned wstring;
+* F684 / KI#1005 - Regenerate Map re-enters SPaH after practical 4067 consumed the encoded setup
+  value, collapsing AI points to the founding-unit minimum and disabling unequal plot reassignment;
+* F685 / KI#1006 - saves serialize the uninitialized unused tail of the 96-int `allPts` block;
+* F686 / KI#1007 - save rows omit PlayerTypes and are reconstructed as `0..nCivs-1`, corrupting
+  SPaH metadata after load when human/AI/participating player IDs are not a human-first prefix;
+* F687 / KI#1008 - multiplayer takeover of the last AI leaves the SPaH score distribution empty and
+  final victorious score calculation calls `stats::max`/`stats::mean` without an empty guard.
+
+F688 / provisional KI#1009 is NOT consumed by Queue 077.
+
+FINAL NEGATIVE / BELOW-THRESHOLD CONTROLS
+-----------------------------------------
+1. `randPoints` never becomes true
+   History confirms that practical 1253 introduced the serialized/display flag, practical 1395
+   merely initialized it false, and no later StartPointsAsHandicap history sets it true. Therefore
+   when `SPAH_RANDOMIZE>0` and `SPAH_SHOW_RANDOMIZED=0`, the Settings screen shows the configured
+   pre-randomization values but omits its intended `Not shown: randomization` explanatory line.
+   This is a real current optional-config presentation defect, but current defaults set
+   `SPAH_SHOW_RANDOMIZED=1` and the defect neither changes points nor reveals the hidden randomized
+   values. Preserve as a low-grade UI edge, not F688.
+
+2. `report` is not cleared by `reset()`
+   Regeneration can accumulate old diagnostic text, but the only report logger remains commented
+   out. No live gameplay/UI consumer reads `report`; below threshold.
+
+3. Scenario-empty-vector hypothesis REJECTED
+   Although the EXE scenario sequence differs from ordinary setup, `CvGame::initScenario()` calls
+   `initFreeState()`, which initializes SPaH when it remains enabled. Scenarios therefore do not
+   leave `civs` empty merely because the normal outer `setInitialItems` path is skipped.
+
+4. Randomization bounds and extrema
+   The `randomizePoints`/`bounce` index pattern was checked across supported AI counts through the
+   48-player limit. Chosen `i` entries always have a strictly lower configured-point pursuer and
+   chosen `j` entries a strictly higher pursued neighbor under the pair construction. Zero
+   `deltaMax` is accepted by the current synchronized RNG contract. No OOB/zero-range root survives.
+   The algorithm preserves ordering, extrema and total points as documented.
+
+5. Starting-plot reassignment
+   Practical 3528 correctly moved `rearrangeStartingPlots()` until after starting sites exist.
+   `minDist` therefore receives live starting plots on the supported setup path. Sorting weak AIs by
+   points and candidate plots by distance assigns weakest nearest human starts and strongest farthest,
+   matching the shipped manual. Equal-distance instability is not a synchronized gameplay defect on
+   identical builds.
+
+6. Score-vector initialization
+   Normal valid SPaH initialization guarantees at least one AI because the option is disabled when
+   all living civs are human. F687 separately owns the later dynamic-controller transition that can
+   invalidate that precondition; do not duplicate it as a generic initialization issue.
+
+7. Save/read `unequalDistrib`
+   The flag is not serialized/reconstructed, but starting-plot reassignment is an initialization-time
+   operation and is not rerun after ordinary save loading. No independent gameplay effect was found.
+
+HISTORY COMPLETION
+------------------
+All 25 reachable commits touching this file were reconciled. Apart from the roots above, semantic
+changes are initialization/refactoring, warning/RNG modernization, or the practical-3528 ordering fix.
+Current SAS and supplied Base AdvC 1.14 remain executable-semantically identical in this file, so no
+missed post-branch Base repair exists.
+
+SCHEDULING RESOLUTION
+---------------------
+Per the reconciled album rule, ordinary Queue 078 onward remains marked "skip until the priority next
+wip ones have been done first". The next still-pending unskipped priority entry is Queue 124:
+
+    CvGameCoreDLL/CyGlobalContextInterface4.cpp (171 queued lines)
+
+Queue 124 is therefore OPEN under F688 / provisional KI#1009. Start with binding-name/native-target
+parity, current-vs-Base provenance, duplicate registrations, ownership/reference policies and actual
+Python reachability; use the completed CyGlobalContext/CyInfo registration audits as dedup controls.
+
+Exact continuation stone:
+C031-WIP579 physical -> Queue077 CLOSED / F683-F687 confirmed / F688 unused -> Queue124
+CyGlobalContextInterface4.cpp OPEN -> F688/KI#1009 UNUSED -> provenance + active binding table +
+ownership/default/index/live-Python contracts -> freeze next settled WIP.
+
+Files complete: 91 / 169. Files open: 1 / 169.
 No gameplay/XML/Python source was modified by ChatGPT-5.6-Sol.
 ===============================================================================

@@ -16549,7 +16549,11 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 	if (kEvent.isGoldenAge())
 		changeGoldenAgeTurns(getGoldenAgeLength());
 	if (kEvent.getInflationModifier() != 0)
+	{
 		m_iInflationModifier += kEvent.getInflationModifier();
+		// <!-- custom: EventInfo can change effective inflation between global clock updates; refresh the inflation-neutral corporation-maintenance cache before the next expense calculation. See KI#744. (GPT-5.6-Sol) -->
+		updateMaintenance();
+	}
 	if (kEvent.getSpaceProductionModifier() != 0)
 		changeSpaceProductionModifier(kEvent.getSpaceProductionModifier());
 	if (kEvent.getFreeUnitSupport() != 0)

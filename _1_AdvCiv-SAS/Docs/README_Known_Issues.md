@@ -840,7 +840,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#741 - (Provisional Pending inherited BtS religion-help omission) Conversion blockers can go unexplained](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-741)\
 [KI#742 - (Merged duplicate of KI#712) Negative founding-preview extra health prints the wrong value](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-742)\
 [KI#743 - (Provisional Pending K-Mod integration mismatch activated by SAS) City health separates values that runtime nets](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-743)\
-[KI#744 - (Provisional Pending inherited BtS cache defect) Corporation maintenance retains an obsolete inflation rate](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-744)\
+[KI#744 - (Fixed inherited BtS cache defect) Corporation maintenance retained an obsolete inflation rate](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-744)\
 [KI#745 - (Provisional Pending inherited AdvCiv French localization typo) City anger prints its population twice](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-745)\
 [KI#746 - (Provisional Pending inherited Civ4 French localization typo) Pacifism prints F2_Religion literally](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-746)\
 [KI#747 - (Provisional Pending inherited AdvCiv localization contract defect) Espionage warnings request argument 2](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-747)\
@@ -1099,7 +1099,13 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#1000 - (Provisional Pending Base AdvCiv replay-export defect inactive in SAS) Late fallback can retain an empty mod name](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1000)\
 [KI#1001 - (Provisional Pending inherited XML-buffer defect activated by SAS) An overlong GlobalDefine exceeds 256 bytes](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1001)\
 [KI#1002 - (Provisional Pending AdvCiv initialization regression) FirstContactData can contain uninitialized plot coordinates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1002)\
-[KI#1003 - (Provisional Pending audit cursor) CvStructs.cpp remainder has not yet been classified](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1003)\
+[KI#1003 - (Provisional Pending inherited Taurus/AdvC memory leak) Fallback EXE search leaks 512 KiB](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1003)\
+[KI#1004 - (Provisional Pending AdvC memory leak) Rebuilding SPaH settings abandons the prior string](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1004)\
+[KI#1005 - (Provisional Pending Architectural AdvC regression) Regenerate Map collapses the SPaH distribution](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1005)\
+[KI#1006 - (Provisional Pending inherited AdvC serialization defect) SPaH writes an uninitialized unused array tail](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1006)\
+[KI#1007 - (Provisional Pending Architectural inherited AdvC serialization defect) SPaH reload loses player identity](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1007)\
+[KI#1008 - (Provisional Pending Architectural inherited AdvC crash defect) Last-AI takeover empties the SPaH score distribution](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1008)\
+[KI#1009 - (Provisional Pending audit cursor) CyGlobalContextInterface4.cpp has not yet been classified](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1009)\
 
 <a id="ki-1"></a>
 
@@ -15754,11 +15760,13 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP123 `CvGameT
 
 <a id="ki-744"></a>
 
-## KI#744 - (Provisional Pending inherited BtS cache defect) Corporation maintenance retains an obsolete inflation rate
+## KI#744 - (Fixed inherited BtS cache defect) Corporation maintenance retained an obsolete inflation rate
 
 Album F421 finds corporation maintenance dividing out the current inflation rate before entering cached city maintenance, but inflation changes do not invalidate that cache. Stable corporation cities can therefore retain an older, larger inverse-inflation term while fresh hover calculation uses the current rate, systematically overcharging actual expenses and understating them in the corporation breakdown. Stock BtS contains the defect, K-Mod explicitly noted it as a bug, and AdvCiv/SAS retain it.
 
-Pending preserving inflation-neutral corporation maintenance while rebuilding affected cached maintenance whenever the effective inflation rate changes. Simply deleting the inverse-inflation division would change the intended gameplay rule rather than repair its cache lifecycle.
+Inflation-neutral corporation maintenance is preserved, but affected city-maintenance caches are now rebuilt whenever the effective rounded inflation rate changes. The global turn boundary compares each living player's rate around the game-turn and elapsed-turn increments and refreshes only changed players; EventInfo inflation modifiers refresh their player immediately because those changes occur between global clock updates. Simply deleting the inverse-inflation division would instead change the intended gameplay rule.
+
+A clean Debug-opt build and the complete random-events-enabled Huge Custom Continents autoplay succeeded. `SASGameRecord_20260909T211819Z_load1.log` records `EVENT_FEDERAL_RESERVE_2` on turn 385 changing player 7's effective inflation rate from 110 to 71 with a configured -25 modifier, directly exercising the immediate EventInfo refresh; normal clock progression exercised the turn-boundary branch throughout the run. The sampled player had no corporation in its periodic city rows, so exact corporation-expense equality remains source-verified rather than directly reproduced in the UI.
 
 Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP124 `CvGameTextMgr.cpp` deep re-audit; disposition reconciled with the help of GPT-5.6-Sol, thanks.
 
@@ -18022,8 +18030,68 @@ Found as F681/provisional KI#1002 during ChatGPT-5.6-Sol's C031-WIP563 `CvStruct
 
 <a id="ki-1003"></a>
 
-## KI#1003 - (Provisional Pending audit cursor) CvStructs.cpp remainder has not yet been classified
+## KI#1003 - (Provisional Pending inherited Taurus/AdvC memory leak) Fallback EXE search leaks 512 KiB
 
-Reserved for F682 while the open C031-WIP563 `CvStructs.cpp` audit continues through the remaining serialized Event/Vote data, PB setup containers, replay messages and miscellaneous structs. No defect has been claimed or classified yet; this placeholder keeps the continuous KI ledger explicit until the next durable checkpoint either promotes a distinct finding or leaves the cursor unused.
+`SelfMod::updateAddressOffset` first tests its expected executable address and otherwise allocates a 512-KiB copied search window. The fallback returns from every success and failure branch without releasing that temporary buffer. Any executable build requiring the fallback therefore leaks 512 KiB per search, and shipped option callbacks can repeat the search during one Civ4 process.
 
-Reconciled from ChatGPT-5.6-Sol's C031-WIP563 continuation cursor with the help of GPT-5.6-Sol, thanks.
+Taurus introduced the allocation and Base AdvC adopted it through practical 3847; Taurus 1.04, Base AdvC 1.14 and SAS retain it. Pending replacing the raw temporary array with an automatic-lifetime contiguous container while preserving address matching and offset calculations exactly.
+
+Found as F682/provisional KI#1003 during ChatGPT-5.6-Sol's C031-WIP571-C031-WIP572 `SelfMod.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1004"></a>
+
+## KI#1004 - (Provisional Pending AdvC memory leak) Rebuilding SPaH settings abandons the prior string
+
+`StartPointsAsHandicap` owns `pointsDisplayString` through a raw pointer, but `updatePointsDisplayString` assigns a newly allocated string without deleting the previous one. Since AdvC practical 1416 made every Settings-screen query rebuild that text, the first ordinary query already leaks the setup allocation and repeated screen/replay queries leak another string each time.
+
+Pending preserving both indentation formats while releasing the prior allocation before replacement, or replacing the manual ownership with a value member. This is an AdvC regression retained by Base AdvC 1.14 and SAS; K-Mod and Civ4CE predate SPaH.
+
+Found as F683/provisional KI#1004 during ChatGPT-5.6-Sol's C031-WIP574 `StartPointsAsHandicap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1005"></a>
+
+## KI#1005 - (Provisional Pending Architectural AdvC regression) Regenerate Map collapses the SPaH distribution
+
+SPaH decodes its setup from `NumAdvancedStartPoints`, then AdvC practical 4067 consumes that encoded value by replacing it with `-1`. Regenerate Map legitimately re-enters initial-item setup, but SPaH consequently rebuilds from `-1`: AI points collapse to the founding-unit minimum and the unequal-distribution signal disappears, disabling its intended starting-plot reassignment.
+
+Pending retaining canonical SPaH setup state for regeneration without restoring the old double-assignment problem that practical 4067 fixed. The necessary state-lifecycle redesign makes this architectural rather than a one-line restoration. Base AdvC 1.14 and SAS retain the AdvC regression; K-Mod and Civ4CE predate SPaH.
+
+Found as F684/provisional KI#1005 during ChatGPT-5.6-Sol's C031-WIP575 `StartPointsAsHandicap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1006"></a>
+
+## KI#1006 - (Provisional Pending inherited AdvC serialization defect) SPaH writes an uninitialized unused array tail
+
+SPaH fills only the first `2*nCivs` entries of its `2*MAX_CIV_PLAYERS` point array but writes all 96 integers. The unused tail therefore serializes indeterminate process memory. Loading consumes only the live prefix, so ordinary gameplay state is not corrupted, but equivalent saves can differ nondeterministically and private stack bytes are written needlessly.
+
+Practical 1253 introduced this layout and Base AdvC 1.14/SAS retain it. Because AdvCiv-SAS supports only current-version saves, pending zero-initializing the complete array before filling and writing it; no legacy migration branch is wanted.
+
+Found as F685/provisional KI#1006 during ChatGPT-5.6-Sol's C031-WIP576 `StartPointsAsHandicap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1007"></a>
+
+## KI#1007 - (Provisional Pending Architectural inherited AdvC serialization defect) SPaH reload loses player identity
+
+SPaH serializes point rows in its human-first sorted civilization order but stores no `PlayerTypes`. Loading reconstructs those rows as player IDs `0..nCivs-1`. Supported multiplayer arrangements with interleaved human/AI slots or gaps therefore attach stored values to the wrong controller identities; a flat-400 four-player fixture can reconstruct its AI distribution as 100,400 instead of 400,400. Live `CvPlayer` Advanced-Start points are serialized independently, but Settings/replay text and final-score handicap calculations consume the corrupted SPaH metadata.
+
+Practical 1253 introduced both sides of this AdvC contract. Pending changing the current save layout to persist stable player identity and reconstruct each row by that identity; no backward-compatible read branch is wanted, but all current write/read consumers must move together.
+
+Found as F686/provisional KI#1007 during ChatGPT-5.6-Sol's C031-WIP577 `StartPointsAsHandicap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1008"></a>
+
+## KI#1008 - (Provisional Pending Architectural inherited AdvC crash defect) Last-AI takeover empties the SPaH score distribution
+
+A valid multiplayer SPaH game begins with at least one AI, but Take Over AI can later make every remaining civilization human without disabling SPaH. Its dynamically rebuilt AI distribution then becomes empty. Victorious final-score calculation nevertheless calls `stats::max` and `stats::mean`; release builds can index element zero or divide by zero after the debug-only nonempty assertion.
+
+Practical 1253 introduced this AdvC assumption and Base AdvC 1.14/SAS retain it. Pending defining whether scoring should use the ordinary non-SPaH contribution when no AI remains or preserve an immutable initial AI distribution; either design must prevent empty-vector aggregation. This semantic choice makes the repair architectural despite the narrow crash guard.
+
+Found as F687/provisional KI#1008 during ChatGPT-5.6-Sol's C031-WIP578-C031-WIP579 `StartPointsAsHandicap.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1009"></a>
+
+## KI#1009 - (Provisional Pending audit cursor) CyGlobalContextInterface4.cpp has not yet been classified
+
+Reserved for F688 while priority Queue 124 `CyGlobalContextInterface4.cpp` is open at C031-WIP579. No defect has been claimed yet; this placeholder keeps the continuous KI ledger explicit until the next durable checkpoint promotes a distinct root or leaves the cursor unused.
+
+Reconciled from ChatGPT-5.6-Sol's C031-WIP579 continuation cursor with the help of GPT-5.6-Sol, thanks.

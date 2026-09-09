@@ -6348,8 +6348,22 @@ void CvGame::doTurn()
 			reviveActivePlayer();
 	}
 
+	// <!-- custom: Corporation maintenance is cached after dividing out inflation, but AdvCiv computes inflation on demand.
+	// Preserve each effective rate across the two clock increments and rebuild only players whose rounded rate changed, preventing cached inverse-inflation terms from becoming obsolete. See KI#744. (GPT-5.6-Sol) -->
+	int aiInflationRateBefore[MAX_PLAYERS];
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		CvPlayer const& kPlayer = GET_PLAYER((PlayerTypes)i);
+		aiInflationRateBefore[i] = (kPlayer.isAlive() ? kPlayer.calculateInflationRate() : -1);
+	}
 	incrementGameTurn();
 	incrementElapsedGameTurns();
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		CvPlayer& kPlayer = GET_PLAYER((PlayerTypes)i);
+		if (kPlayer.isAlive() && aiInflationRateBefore[i] != kPlayer.calculateInflationRate())
+			kPlayer.updateMaintenance();
+	}
 	/*	advc.004: Already done in doDeals, but that's before incrementing the
 		turn counter. Want to kill peace treaties asap. */
 	verifyDeals();
