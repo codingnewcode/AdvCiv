@@ -940,7 +940,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#841 - (Provisional Pending K-Mod empire-average cache regression) Unit actions can change the same-turn city set](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-841)\
 [KI#842 - (Provisional Pending AdvCiv city-safety initialization regression) A threatened new city starts cached safe](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-842)\
 [KI#843 - (Provisional Pending AdvCiv city-safety invalidation defect) Own attacks refresh only already-unsafe cities](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-843)\
-[KI#844 - (Provisional Pending AdvCiv blocked-resource valuation defect) Plot owner is compared with a city ID](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-844)\
+[KI#844 - (Fixed AdvCiv blocked-resource valuation defect) Plot owner was compared with a city ID](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-844)\
 [KI#845 - (Provisional Pending AdvCiv emphasis-state regression) Special production preserves stale commerce emphasis](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-845)\
 [KI#846 - (Provisional Pending inherited K-Mod plot-override lifecycle defect) Former culture cities retain stolen plots](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-846)\
 [KI#847 - (Provisional Pending inherited K-Mod sacrifice-cost defect) Same-type specialists can create a negative subsidy](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-847)\
@@ -948,11 +948,11 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#849 - (Provisional Pending AdvCiv defender-cache key regression) Air-first calls contaminate land demand](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-849)\
 [KI#850 - (Provisional Pending inherited K-Mod culture-pressure overflow amplified by SAS limits) Maximum pressure can become negative](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-850)\
 [KI#851 - (Provisional Pending AdvCiv forced-specialist regression) Fallback removal leaves the force target active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-851)\
-[KI#852 - (Provisional Pending inherited BtS project-emphasis defect) The Project branch is unreachable](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-852)\
+[KI#852 - (Fixed inherited BtS project-emphasis defect) The Project branch was unreachable](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-852)\
 [KI#853 - (Provisional Pending inherited BtS anger-timing arithmetic defect) Exact cycles map to zero turns](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-853)\
 [KI#854 - (Provisional Pending inherited BtS anger/growth ordering defect) Equal timing counts recovery too early](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-854)\
 [KI#855 - (Provisional Pending AdvCiv natural-yield-threshold integration regression) Final improvement projection omits Financial yield](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-855)\
-[KI#856 - (Provisional Pending AdvCiv loop-refactor regression) Cathedral reserve shortage no longer updates state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-856)\
+[KI#856 - (Fixed AdvCiv loop-refactor regression) Cathedral reserve shortage no longer updated state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-856)\
 [KI#857 - (Provisional Pending inherited BtS panic-production domain defect) A ship can block a needed land defender](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-857)\
 [KI#858 - (Provisional Pending inherited BtS future-happiness bound defect) Three recovery channels are capped at two](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-858)\
 [KI#859 - (Provisional Pending K-Mod obsolete-building valuation defect with incomplete AdvCiv repair) Retained effects are priced as lost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-859)\
@@ -1078,6 +1078,22 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#979 - (Provisional Pending inherited AdvCiv allocator-pairing defect) XML enum-map temporaries use scalar `delete`](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-979)\
 [KI#980 - (Provisional Pending AdvCiv Python enum-binding defect) `NO_GLOBE_LAYER` exports the count sentinel](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-980)\
 [KI#981 - (Provisional Pending inherited AdvCiv info-cleanup lifetime defect) Dependency order leaks nested arrays](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-981)\
+[KI#982 - (Provisional Pending AdvCiv Rise & Fall allocator-pairing defect) Loaded leader names use scalar `delete`](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-982)\
+[KI#983 - (Provisional Pending AdvCiv Rise & Fall sentinel defect) Final-major elimination dereferences `NO_PLAYER`](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-983)\
+[KI#984 - (Provisional Pending AdvCiv Rise & Fall comparator defect) Victory-stage ordering is discarded](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-984)\
+[KI#985 - (Provisional Pending AdvCiv Rise & Fall lifecycle defect) Pre-takeover elimination is scored as defeat](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-985)\
+[KI#986 - (Provisional Pending AdvCiv Rise & Fall player-domain defect) Interlude victory can transfer control to Barbarians](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-986)\
+[KI#987 - (Provisional Pending AdvCiv Rise & Fall option-transfer defect) Chapter handoff replaces human preferences](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-987)\
+[KI#988 - (Provisional Pending AdvCiv ACO XP-cap regression) Promotion-derived XP exceeds remaining lifetime room](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-988)\
+[KI#989 - (Provisional Pending AdvCiv ACO XP-ceiling regression) Normal Barbarian victories can display 6 instead of 5](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-989)\
+[KI#990 - (Provisional Pending inherited K-Mod ACO display defect) Defender-unhurt detail can appear twice](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-990)\
+[KI#991 - (Provisional Pending inherited ACO numeric-stability defect) Extreme combat can display conditional HP from 0/0](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-991)\
+[KI#992 - (Provisional Pending inherited ACO XP-range defect) Animal and Barbarian lifetime room is ignored](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-992)\
+[KI#993 - (Provisional Pending inherited ACO withdrawal-XP display defect) A capped value is computed but not displayed](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-993)\
+[KI#994 - (Provisional Pending inherited ACO probability defect) Attacker Unharmed omits lethal-hit retreats](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-994)\
+[KI#995 - (Provisional Pending inherited K-Mod ACO localization defect) Condensed defender health duplicates the HP token](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-995)\
+[KI#996 - (Provisional Pending AdvCiv multiplayer diagnostic defect) One matching FP checksum masks later incompatible peers](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-996)\
+[KI#997 - (Provisional Pending inherited BtS network group-state defect) A stale JoinGroup target becomes an ungroup command](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-997)\
 
 <a id="ki-1"></a>
 
@@ -16654,9 +16670,11 @@ Found as F520 during ChatGPT-5.6-Sol's C031-WIP271 `CvPlayer.cpp` deep re-audit;
 
 <a id="ki-844"></a>
 
-## KI#844 - (Provisional Pending AdvCiv blocked-resource valuation defect) Plot owner is compared with a city ID
+## KI#844 - (Fixed AdvCiv blocked-resource valuation defect) Plot owner was compared with a city ID
 
-AdvCiv's early feature-clear technology bonus compares a plot's `PlayerTypes` owner with the evaluating city's object ID. The domains are unrelated, so `AI_countOvergrownBonuses` returns zero and the blocked-resource technology bonus is dead. Compare against the city owner instead.
+AdvCiv's early feature-clear technology bonus compares a plot's `PlayerTypes` owner with the evaluating city's object ID. The domains are unrelated, so `AI_countOvergrownBonuses` returns zero and the blocked-resource technology bonus is dead. The comparison now uses the city owner, restoring the blocked-resource count and its early feature-removal technology value.
+
+The repair compiled successfully and a Debug-opt Huge Continents, Normal-speed autoplay with 16 independent teams and full UWAI completed at turn 400 through a Space Race victory. No issue was observed.
 
 Found as F521 during ChatGPT-5.6-Sol's C031-WIP288 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -16718,9 +16736,11 @@ Found as F528 during ChatGPT-5.6-Sol's C031-WIP297 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-852"></a>
 
-## KI#852 - (Provisional Pending inherited BtS project-emphasis defect) The Project branch is unreachable
+## KI#852 - (Fixed inherited BtS project-emphasis defect) The Project branch was unreachable
 
-Project production emphasis is tested inside a block that first requires a production Building, but producing a Project makes `getProductionBuilding()` return `NO_BUILDING`. The explicit World Wonder-or-Project branch can therefore never apply its Project half. Test Project production independently of the Building prerequisite.
+Project production emphasis is tested inside a block that first requires a production Building, but producing a Project makes `getProductionBuilding()` return `NO_BUILDING`. The explicit World Wonder-or-Project branch can therefore never apply its Project half. The shared major-production test now runs before building-only logic, making both the World Wonder and Project branches reachable without duplicating their multiplier changes.
+
+The repair compiled successfully and the same Debug-opt Huge Continents, Normal-speed autoplay completed at turn 400 through a Space Race victory. Its SASGameRecord includes late-game Spaceship Project production, directly exercising Project production while the repaired multiplier path was live; no issue was observed.
 
 Found as F529 during ChatGPT-5.6-Sol's C031-WIP298 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -16750,9 +16770,11 @@ Found as F532 during ChatGPT-5.6-Sol's C031-WIP302 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-856"></a>
 
-## KI#856 - (Provisional Pending AdvCiv loop-refactor regression) Cathedral reserve shortage no longer updates state
+## KI#856 - (Fixed AdvCiv loop-refactor regression) Cathedral reserve shortage no longer updated state
 
-AdvCiv practical 1808 replaced K-Mod's `bHaveEnough = false` prerequisite-shortage update with `break`. The later consumer therefore treats an outside-target Cultural city as having enough Temple reserve and overvalues another Cathedral. Restore the state update while preserving the refactored loop.
+AdvCiv practical 1808 replaced K-Mod's `bHaveEnough = false` prerequisite-shortage update with `break`. The later consumer therefore treats an outside-target Cultural city as having enough Temple reserve and overvalues another Cathedral. The shortage branch now restores `bHaveEnough = false` before retaining AdvCiv's early loop exit.
+
+The repair compiled successfully and the same Debug-opt Huge Continents, Normal-speed autoplay completed at turn 400 through a Space Race victory. Its SASGameRecord includes Cathedral completion during the run; no issue was observed.
 
 Found as F533 during ChatGPT-5.6-Sol's C031-WIP303 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -17783,3 +17805,131 @@ Found as F658/provisional KI#980 during ChatGPT-5.6-Sol's C031-WIP517-WIP518 `Cy
 AdvC replaced K-Mod's explicit dependency-safe global-info destruction order with a generic enum-macro order. Current cleanup deletes RouteInfo before ImprovementInfo and ImprovementInfo before CivicInfo, but the later destructors query those already-cleared family counts to free nested rows; their loops therefore execute zero times. Current data skip 48 Improvement/Route rows plus 600 Civic/Improvement rows: 648 arrays and 7,776 bytes of raw integer payload, plus allocator overhead, per global cleanup. Pending restoring a dependency-safe destruction order without changing load-time enum-map organization.
 
 Found as F659/provisional KI#981 during ChatGPT-5.6-Sol's C031-WIP521-WIP522 `CvInfo_Terrain.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-982"></a>
+
+## KI#982 - (Provisional Pending AdvCiv Rise & Fall allocator-pairing defect) Loaded leader names use scalar `delete`
+
+AdvC Rise & Fall reads the saved original leader name through `FDataStreamBase::ReadWideString`, which allocates an array, but releases it with scalar `delete` instead of `delete[]`. Ordinary initialized Rise & Fall save loading reaches this undefined deallocation. Pending replacing it with the matching array delete.
+
+Found as F660/provisional KI#982 during ChatGPT-5.6-Sol's C031-WIP525 `RiseFall.cpp` audit and confirmed through the C031-WIP531 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-983"></a>
+
+## KI#983 - (Provisional Pending AdvCiv Rise & Fall sentinel defect) Final-major elimination dereferences `NO_PLAYER`
+
+AdvC practical 2239 made `nextCivAlive` exclude Barbarians, but `reportElimination` still feeds its result directly to `GET_PLAYER`. When the current chapter civilization is the final surviving major civilization, the search returns `NO_PLAYER` and the defeat path dereferences that sentinel. Pending guarding the result and auditing the other major-only successor-selection callers before they enter `haltForCivSelection` or `GET_PLAYER`.
+
+Found as F661/provisional KI#983 during ChatGPT-5.6-Sol's C031-WIP526 `RiseFall.cpp` audit and confirmed through the C031-WIP531 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-984"></a>
+
+## KI#984 - (Provisional Pending AdvCiv Rise & Fall comparator defect) Victory-stage ordering is discarded
+
+AdvC practical 1270's `byRecommendation` comparator returns false for both unequal victory-stage directions. The intended stage criterion is therefore discarded and the score/rank tie-breakers are skipped whenever the stages differ. Pending restoring a strict, deterministic ordering.
+
+Found as F662/provisional KI#984 during ChatGPT-5.6-Sol's C031-WIP527 `RiseFall.cpp` audit and confirmed through the C031-WIP531 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-985"></a>
+
+## KI#985 - (Provisional Pending AdvCiv Rise & Fall lifecycle defect) Pre-takeover elimination is scored as defeat
+
+A civilization selected for the next chapter can be eliminated before human control and `RFChapter::start` actually begin. The scheduled-turn path then treats the not-yet-started chapter as the player's defeat, despite having no valid chapter-start score baseline, instead of retrying civilization selection. Practical 1430 additionally made the apparent dead-selection retry unreachable by filtering through `nextCivAlive` first. Pending making selection and takeover lifecycle state explicit.
+
+Found as F663/provisional KI#985 during ChatGPT-5.6-Sol's C031-WIP528 `RiseFall.cpp` audit and confirmed through the C031-WIP531 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-986"></a>
+
+## KI#986 - (Provisional Pending AdvCiv Rise & Fall player-domain defect) Interlude victory can transfer control to Barbarians
+
+During an interlude victory, Rise & Fall uses the all-player `nextCivAlive` helper to find an alive player other than the winner. Conquest can leave only the victorious major civilization and the special Barbarian player alive; the helper then returns `BARBARIAN_PLAYER`, bypassing the fallback to the winner and passing the non-playable slot into the human-control transfer. Pending restricting this path to playable major civilizations and preserving the winner fallback.
+
+Found as F664/provisional KI#986 during ChatGPT-5.6-Sol's C031-WIP529 `RiseFall.cpp` audit and confirmed through the C031-WIP531 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-987"></a>
+
+## KI#987 - (Provisional Pending AdvCiv Rise & Fall option-transfer defect) Chapter handoff replaces human preferences
+
+The between-chapter handoff directly changes the active player and marks a temporary AI popup host as human, bypassing `CvGame::changeHumanPlayer` and its PlayerOption transfer. The later takeover can consequently retain the temporary AI slot's settings instead of the user's Quick Moves/Combat, Safe Automation, No Unit Cycling and other preferences. Pending preserving human option provenance across the entire handoff.
+
+Found as F665/provisional KI#987 during ChatGPT-5.6-Sol's C031-WIP530 `RiseFall.cpp` audit and confirmed through the C031-WIP531 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-988"></a>
+
+## KI#988 - (Provisional Pending AdvCiv ACO XP-cap regression) Promotion-derived XP exceeds remaining lifetime room
+
+AdvC practical 2204 changed K-Mod ACO's promotion-bonus cap from the remaining room after base XP to `remainingRoom + baseXP`. Leadership and the withdrawal-bonus sibling can therefore display more total XP than `CvUnit::changeExperience` can award near the Animal or Barbarian lifetime cap. Pending using the executor's remaining-room semantics for every displayed component.
+
+Found as F666/provisional KI#988 during ChatGPT-5.6-Sol's C031-WIP532 `ACOText.cpp` audit and confirmed through the C031-WIP540 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-989"></a>
+
+## KI#989 - (Provisional Pending AdvCiv ACO XP-ceiling regression) Normal Barbarian victories can display 6 instead of 5
+
+ACO uses `MAX_EXPERIENCE_PER_COMBAT - 4`, currently 6, when a non-Barbarian attacker defeats a normal Barbarian. `CvUnit::resolveCombat` instead applies AdvC's asymmetric `MAX_EXPERIENCE_PER_COMBAT / 2`, currently 5. Pending making the attacker-win tooltip use the executor's ceiling without changing the distinct defender-win rule.
+
+Found as F667/provisional KI#989 during ChatGPT-5.6-Sol's C031-WIP533 `ACOText.cpp` audit and confirmed through the C031-WIP540 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-990"></a>
+
+## KI#990 - (Provisional Pending inherited K-Mod ACO display defect) Defender-unhurt detail can appear twice
+
+When one attacker hit is lethal, the defender-detail loop can print the unhurt outcome directly and the unconditional post-loop block prints the same state again. K-Mod ACO already contains the incomplete guard and a nearby comment acknowledging the duplicate case. Pending making the unhurt row have exactly one owner.
+
+Found as F668/provisional KI#990 during ChatGPT-5.6-Sol's C031-WIP534 `ACOText.cpp` audit and confirmed through the C031-WIP540 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-991"></a>
+
+## KI#991 - (Provisional Pending inherited ACO numeric-stability defect) Extreme combat can display conditional HP from 0/0
+
+ACO stores whole-combat outcome probabilities as single-precision floats and divides weighted HP by those sums without guarding representational zero. Extreme legal matchups can underflow both numerator and denominator to `0.0f`, producing 0/0 and a non-finite conditional-HP display. Pending handling zero representational mass consistently across victory, defeat and withdrawal summaries.
+
+Found as F669/provisional KI#991 during ChatGPT-5.6-Sol's C031-WIP535 `ACOText.cpp` audit and confirmed through the C031-WIP540 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-992"></a>
+
+## KI#992 - (Provisional Pending inherited ACO XP-range defect) Animal and Barbarian lifetime room is ignored
+
+The headline XP value respects current experience and the Animal/Barbarian lifetime cap, but the optional Experience Range reconstruction uses only theoretical combat-ratio and per-combat bounds. A unit already at its lifetime cap can consequently show headline 0 XP while the same tooltip advertises positive XP in the range. Pending applying the remaining lifetime room to every range endpoint.
+
+Found as F670/provisional KI#992 during ChatGPT-5.6-Sol's C031-WIP536 `ACOText.cpp` audit and confirmed through the C031-WIP540 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-993"></a>
+
+## KI#993 - (Provisional Pending inherited ACO withdrawal-XP display defect) A capped value is computed but not displayed
+
+ACO correctly computes and lifetime-clamps withdrawal XP, but both normal Retreat and combat-limit Withdraw text reread the raw `EXPERIENCE_FROM_WITHDRAWL` define. A unit at its Animal or Barbarian lifetime cap can therefore gain 0 XP while the tooltip says 1. Pending displaying the already-computed capped value.
+
+Found as F671/provisional KI#993 during ChatGPT-5.6-Sol's C031-WIP537 `ACOText.cpp` audit and confirmed through the C031-WIP540 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-994"></a>
+
+## KI#994 - (Provisional Pending inherited ACO probability defect) Attacker Unharmed omits lethal-hit retreats
+
+ACO's defender statistic includes the zero-damage retreat state, but Attacker Unharmed omits normal retreat outcomes. When the next defender hit would be lethal, every successful withdrawal occurs before that hit and leaves the attacker at its entering HP, so the displayed probability is too low. Pending including the same supported retreat outcome in the attacker statistic.
+
+Found as F672/provisional KI#994 during ChatGPT-5.6-Sol's C031-WIP538 `ACOText.cpp` audit and confirmed through the C031-WIP540 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-995"></a>
+
+## KI#995 - (Provisional Pending inherited K-Mod ACO localization defect) Condensed defender health duplicates the HP token
+
+One condensed defender-health flush formats its first endpoint with a hardcoded `HP` suffix and then appends the localized HP token again. This produces strings such as `10HPHP-50HP` in English and mixed duplicate suffixes in other languages. Pending formatting the numeric endpoint alone before adding the localized unit, as the sibling branches already do.
+
+Found as F673/provisional KI#995 during ChatGPT-5.6-Sol's C031-WIP539 `ACOText.cpp` audit and confirmed through the C031-WIP540 closure; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-996"></a>
+
+## KI#996 - (Provisional Pending AdvCiv multiplayer diagnostic defect) One matching FP checksum masks later incompatible peers
+
+AdvC practical 1500 marks its floating-point compatibility test complete after the first received checksum, even when that checksum matches. A sender's matching self-message, or the first compatible peer in a game with three or more machines, can therefore cause every later incompatible peer to be ignored. Pending tracking the relevant senders or otherwise continuing comparisons until every participating network human has been checked.
+
+Found as F674/provisional KI#996 during ChatGPT-5.6-Sol's C031-WIP541 `CvMessageData.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-997"></a>
+
+## KI#997 - (Provisional Pending inherited BtS network group-state defect) A stale JoinGroup target becomes an ungroup command
+
+`CvNetJoinGroup` uses `FFreeList::INVALID_INDEX` to mean an intentional ungroup request, but its receiver also calls `joinGroup(NULL)` whenever a real target-head ID no longer resolves. Under simultaneous turns, a pending join whose target head dies can therefore detach the source unit from its existing group instead of becoming a harmless failed join. BtS, K-Mod, Base AdvCiv 1.14 and SAS share this behavior. Pending distinguishing the explicit sentinel from a stale real target; a missing real target should be a no-op unless stable group identity is added.
+
+Found as F675/provisional KI#997 during ChatGPT-5.6-Sol's C031-WIP542 `CvMessageData.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.

@@ -2,12 +2,12 @@ AdvCiv-SAS C++ File Audit Album
 Generated from local light-source snapshot only; no web/GitHub lookup used.
 
 CURRENT PROGRESS SUMMARY
-Files complete: 65 / 169
+Files complete: 69 / 169
 Files open: 1 / 169
-Last completed file: queue 033 CvGameCoreDLL/CvInfo_Terrain.cpp (1,672 queued lines) - CLOSED AT C031-WIP522
-Current open file: ordinary queue 034 CvGameCoreDLL/CvInfo_Civilization.cpp (1,637 queued lines) - OPEN AT C031-WIP522
-Latest confirmed audit findings: F656-F659 / KI#978-KI#981 across the Queue 026, Queue 028, Queue 029 and Queue 033 audits. The stronger-WIP priority reloop remains complete, and ordinary queue order has advanced through Queue 033. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
-Next new root ID: F660 unused / provisional KI#982 next
+Last completed file: ordinary queue 043 CvGameCoreDLL/ACOText.cpp (1,335 queued lines) - CLOSED AT C031-WIP540 / F666-F673
+Current open file: ordinary queue 044 CvGameCoreDLL/CvMessageData.cpp (1,306 queued lines) - OPEN AT C031-WIP542 / F674-F675
+Latest confirmed audit findings: F650-F675 / KI#972-KI#997 across the Queue 074, Queue 082, Queue 108, Queue 129, Queue 026, Queue 028, Queue 029, Queue 033, Queue 038, Queue 043 and Queue 044 audits. Ordinary queue order has resumed after the completed priority reloop. Exact historical ranges, duplicate reconciliations, retractions, reopened findings and unused IDs remain authoritative in the durable checkpoints below.
+Next new root ID: F676 unused / provisional KI#998 next
 
 The durable checkpoints and current cursor below are authoritative for finding status; the initial C010 snapshot and later WIP appends preserve their own historical source identities.
 
@@ -18,7 +18,19 @@ METHOD
 - Do not promote tuning disagreements, theoretical unsupported configurations, dead paths, or already-fixed history into new findings.
 - One root cause gets one finding even when several callers expose different symptoms.
 - False positives are recorded when useful so they are not rediscovered later.
-- The stronger-WIP priority reloop is complete through C031-WIP509. Continue the open ordinary Queue 034 `CvInfo_Civilization.cpp` from C031-WIP522, then resume ordinary numeric queue order. The WIP509-WIP511 numbering retains the earlier retry-fork bridge; the later durable checkpoints are authoritative for current progress.
+- The stronger-WIP priority reloop is complete through C031-WIP509. Ordinary numeric queue order has resumed; continue the currently open queue shown in the progress summary. The WIP509-WIP511 numbering bridges the retry fork by retaining the omitted ArithmeticTraits closure before the fuller CvInitCore baseline and confirmed finding.
+
+WIP541/WIP542 FORK RECONCILIATION
+---------------------------------
+An interrupted alternate WIP541 recovery branch reconstructed the missing Queue-043 continuation,
+closed Queue 044 without a finding and opened Queue 046. The intact WIP542 branch supplied the
+actual physical WIP537-WIP540 stones, then continued through WIP541-WIP542 and confirmed F674-F675
+while Queue 044 remained open. This intact chain is authoritative. Do not resume from the alternate
+Queue-044 closure or its premature Queue-046 cursor; audit Queue 046 again in ordinary order after
+the authoritative Queue-044 work closes. A later duplicate recovered-WIP541 submission expanded
+the same stale closure but supplied no new durable root; its one-reference FP interpretation and
+unsupported-timing dismissal of stale JoinGroup are superseded by WIP542's per-machine message-order
+proof and simultaneous-turn invalidation evidence.
 
 QUEUE (current .cpp files, longest -> shortest)
 001  32205 CvGameCoreDLL/CvPlayerAI.cpp [COMPLETE ORIGINAL PASS / DEEP-METHOD RE-AUDIT CLOSED - C031-WIP65 / F321-F374]
@@ -50,21 +62,21 @@ QUEUE (current .cpp files, longest -> shortest)
 027   2099 CvGameCoreDLL/CvInfo_RandomEvent.cpp [COMPLETE - C031-WIP514]
 028   2095 CvGameCoreDLL/CvXMLLoadUtilitySet.cpp [COMPLETE - C031-WIP516 / F657]
 029   2052 CvGameCoreDLL/CyEnumsInterface.cpp [COMPLETE - C031-WIP518 / F658]
-030   1919 CvGameCoreDLL/CvInfo_Misc.cpp [COMPLETE - C031-WIP519]
+030   1919 CvGameCoreDLL/CvInfo_Misc.cpp [COMPLETE - C031-WIP519 / NO NEW FINDING]
 031   1812 CvGameCoreDLL/UWAICache.cpp [COMPLETE - SEE C020 DURABLE CHECKPOINT]
-032   1704 CvGameCoreDLL/CyUnit.cpp [COMPLETE - C031-WIP520]
+032   1704 CvGameCoreDLL/CyUnit.cpp [COMPLETE - C031-WIP520 / NO NEW FINDING]
 033   1672 CvGameCoreDLL/CvInfo_Terrain.cpp [COMPLETE - C031-WIP522 / F659]
-034   1637 CvGameCoreDLL/CvInfo_Civilization.cpp [OPEN - C031-WIP522]
-035   1619 CvGameCoreDLL/CvInfo_GameOption.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+034   1637 CvGameCoreDLL/CvInfo_Civilization.cpp [COMPLETE - C031-WIP523 / NO NEW C++ FINDING]
+035   1619 CvGameCoreDLL/CvInfo_GameOption.cpp [COMPLETE - C031-WIP524 / NO NEW FINDING]
 036   1596 CvGameCoreDLL/CvMap.cpp [COMPLETE - SEE C031-WIP468 DURABLE CHECKPOINT]
 037   1576 CvGameCoreDLL/CvPythonCaller.cpp [COMPLETE - SEE C025 DURABLE CHECKPOINT]
-038   1555 CvGameCoreDLL/RiseFall.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+038   1555 CvGameCoreDLL/RiseFall.cpp [COMPLETE - C031-WIP531 / F660-F665]
 039   1461 CvGameCoreDLL/CvGameCoreUtils.cpp [COMPLETE - SEE C023 DURABLE CHECKPOINT]
 040   1454 CvGameCoreDLL/CvGlobals.cpp [COMPLETE - SEE C024 DURABLE CHECKPOINT]
 041   1454 CvGameCoreDLL/CvSelectionGroupAI.cpp [COMPLETE - SEE C019 DURABLE CHECKPOINT]
 042   1419 CvGameCoreDLL/CvDeal.cpp [COMPLETE - SEE C026 DURABLE CHECKPOINT]
-043   1335 CvGameCoreDLL/ACOText.cpp [PENDING](skip until the "priority next wip" ones have been done first)
-044   1306 CvGameCoreDLL/CvMessageData.cpp [PENDING](skip until the "priority next wip" ones have been done first)
+043   1335 CvGameCoreDLL/ACOText.cpp [COMPLETE - C031-WIP540 / F666-F673]
+044   1306 CvGameCoreDLL/CvMessageData.cpp [OPEN - C031-WIP542 / F674-F675]
 045   1281 CvGameCoreDLL/CvMapGenerator.cpp [COMPLETE - SEE C021 DURABLE CHECKPOINT]
 046   1268 CvGameCoreDLL/CyGame.cpp [PENDING](skip until the "priority next wip" ones have been done first)
 047   1214 CvGameCoreDLL/CvDllPythonEvents.cpp [COMPLETE - SEE C027 DURABLE CHECKPOINT]
@@ -172377,4 +172389,4252 @@ C031-WIP522 physical
 -> freeze the next physical WIP at the next settled boundary.
 
 No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP523 -- QUEUE 034 CvInfo_Civilization.cpp CLOSED / QUEUE 035 OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP522.
+- Queue 034 `CvGameCoreDLL/CvInfo_Civilization.cpp` (1,637 queued lines): CLOSED.
+- No independent current-live Queue-034 C++ root promoted.
+- F660 / provisional KI#982: UNUSED.
+- Files complete: 66 / 169.
+- Queue 035 `CvGameCoreDLL/CvInfo_GameOption.cpp` (1,619 queued lines): OPEN.
+- No gameplay/source/XML file was modified.
+
+QUEUE-034 BASELINE
+------------------
+Current SAS `CvInfo_Civilization.cpp` is executable-semantically identical to supplied Base
+AdvC 1.14 except for SAS's optional per-era leader-art feature (plus comments/includes/file
+representation). Therefore no missed Base-AdvC-1.14 repair exists in this queue; any other root
+would have to be inherited from AdvC/K-Mod/Firaxis.
+
+The per-era leader-art divergence itself is currently dormant:
+- `SAS_CV_LEADER_HEAD_INFO_ENABLE_XML_ERA_ART_DEFS` is 0 in current configuration;
+- current LeaderHead XML contains no configured `EraArtDefineTags`;
+- the pointer array is allocated only when the feature is enabled;
+- the SAS copy constructor correctly deep-copies its `CvString` elements rather than memcpying
+  their internal representation;
+- the known duplicate-leader/first-alive-player ambiguity remains the already-owned KI#120.
+No new root was created from this feature.
+
+CIVILIZATION DATA / MAPPING CENSUS
+----------------------------------
+Current `CIV4CivilizationInfos.xml` contains 38 civilizations.
+
+The current mapping/reference census reconciles:
+- all 38 civilizations provide exactly five `InitialCivics`;
+- positional InitialCivics order matches current CivicOption order for every civilization:
+      Government -> Legal -> Labor -> Economy -> Religion;
+- CivilizationBuildings has no duplicate BuildingClass key within a civilization;
+- CivilizationUnits has no duplicate UnitClass key within a civilization;
+- deliberate Barbarian `NONE` targets are class-disabling mappings, not unresolved references;
+- current FreeUnitClasses, FreeBuildingClasses, FreeTechs, DisableTechs and Leaders references
+  resolve;
+- current derivative-civilization, player-color, art-style and civilization-art references resolve;
+- Barbarian/Minor civilization lack of UnitArtStyleType is an explicitly supported reader case;
+- derivative-civilization cycles are used only as equality/preference data by the live split-empire
+  path and are not recursively traversed.
+
+BARBARIAN XML-COMMENT ITERATOR CONTROL
+--------------------------------------
+A late suspicion concerned current direct XML comments in the Barbarian `<Buildings>` and
+`<Units>` blocks because `CvCivilizationInfo::read` uses the inherited:
+    GetNumChildren -> SetToChild -> loop -> NextSibling
+shape without a per-sibling `SkipToNextVal()`.
+
+This is not a current skipped-mapping bug. Firaxis/Civ4CE/K-Mod use the same loop. The iteration
+contract is internally paired: `GetNumChildren` and `NextSibling` traverse the sibling nodes,
+while `GetChildXmlVal` descends into a mapping and skips to its first value. A comment sibling can
+therefore consume a loop iteration without consuming a real mapping; it does not force the final
+real mapping outside the counted loop. The old nearby wording implying that `SetToChild` itself
+always selects a non-comment child is stale/misleading, but current Barbarian comments do not
+demonstrate lost building/unit mappings.
+
+LEADER DEFAULTS / OWNERSHIP CONTROL
+-----------------------------------
+AdvC's `CvLeaderHeadInfo(CvLeaderHeadInfo const&)` default-copy constructor remains structurally
+brittle because it memcpy-copies the derived scalar/object region and then deep-copies pointer
+arrays. That copied region includes the embedded `CvString m_szArtDefineTag`.
+
+For current data this does not activate a heap-owning string alias:
+- the only defaults object copied by the XML-default mechanism is `LEADER_DEFAULTS`;
+- current `LEADER_DEFAULTS` explicitly has an empty ArtDefineTag;
+- all pointer arrays are separately deep-copied;
+- SAS's later per-era `CvString` array is separately copied element-by-element.
+A mod-mod that gave the default object a non-empty heap-owning string would deserve renewed
+lifetime testing, but current SAS does not supply that state. Keep as robustness debt, not F660.
+
+LEADER ARRAY / REFERENCE CENSUS
+-------------------------------
+Current LeaderHead keyed-array data reconciles:
+- ContactRands covers all 14 ContactTypes exactly once;
+- ContactDelays covers all 14 ContactTypes exactly once;
+- MemoryDecays covers all 37 current MemoryTypes exactly once, including AdvC-added
+  MEMORY_INDEPENDENCE and MEMORY_DECLARED_WAR_RECENT;
+- NoWarAttitudeProbs covers all five AttitudeTypes;
+- omitted MemoryAttitudePercent entries are bookkeeping/recent-memory types whose intended
+  direct attitude contribution is zero, matching the null/default getter;
+- empty UnitAIWeightModifiers represents the intentional all-zero default;
+- no duplicate keys were found in Traits, Flavors, ContactRands, ContactDelays, MemoryDecays,
+  MemoryAttitudePercents, NoWarAttitudeProbs, UnitAIWeightModifiers,
+  ImprovementWeightModifiers, or the four era-music maps;
+- favorite civic/religion, traits, improvement weights, era keys and leader art definitions
+  resolve in current data.
+
+Zero ContactRand values are intentional "never contact" values and are handled by
+`CvPlayerAI::AI_contactRoll`; they are not divisors on the ordinary call path.
+
+The only nearby assertion typo:
+    FAssert(m_piContactDelay == NULL ||
+            m_piContactRand[CONTACT_PEACE_TREATY] >= 0);
+appears to test ContactRand while discussing ContactDelay. It is debug-only and current values are
+nonnegative; no runtime behavior root was promoted.
+
+DORMANT PUBLIC-API DEFECT -- `CvCivilizationInfo::getNumLeaders()`
+------------------------------------------------------------------
+`m_iNumLeaders` is initialized to 0 and is not populated by the current XML reader. Its only
+read/write handling sits in the compiled-out XML-file-cache serialization path. Therefore
+`CvCivilizationInfo::getNumLeaders()` reports 0 for every current civilization.
+
+Mechanical current-tree search found no C++ or shipped Python consumer of this accessor. The real
+leader membership APIs use `isLeaders(...)` / the leader boolean map instead. This is a genuine
+inherited public-API defect but dormant in the current shipped game, so it does not consume F660
+under the album's current-live threshold.
+
+TRAITINFO CONTROL
+-----------------
+Current TraitInfo census contains 10 traits. It reconciles:
+- all free-promotion and UnitCombat keys resolve;
+- no duplicate keyed entries were found;
+- fixed-order yield/commerce arrays fit current XML lengths;
+- Creative's shorter CommerceChanges intentionally leaves the later commerce slot(s) at zero;
+- Financial is the only current nonzero natural-yield-threshold case and satisfies the reader's
+  nonnegative invariant;
+- current scalar/default values match the loader's zero/default semantics.
+No TraitInfo root survived.
+
+DIPLOMACY RESPONSE CONTROL
+--------------------------
+Current `CIV4DiplomacyInfos.xml` contains:
+- 110 DiplomacyInfos;
+- 560 responses;
+- every response has at least one diplomacy text.
+
+All current response Civilization/Leader/Attitude/Power restriction references resolve.
+The active `CvDiplomacyResponse` getters correctly test the pointer before indexing, unlike the
+real-but-obsolete reversed NULL check discovered in old `CvDiplomacyTextInfo` during Queue 030.
+Current `<Responses>` blocks also do not contain direct sibling comments that would stress the
+response-count traversal. No live diplomacy-response root survived.
+
+SEPARATE ACTIONABLE SAS DATA REGRESSION -- STALIN RENAISSANCE PEACE INTRO
+-------------------------------------------------------------------------
+The Queue-034 reference census exposed one current invalid leader audio reference, but its root is
+XML/data rather than `CvInfo_Civilization.cpp`, so it is deliberately NOT numbered F660 here.
+
+Current `Assets/XML/Civilizations/CIV4LeaderHeadInfos.xml` has, for LEADER_STALIN's Renaissance
+`DiplomacyIntroMusicPeace`:
+    AS2D_DIPLO_STALIN_EARLY_INTROO
+
+Current `Audio2DScripts.xml` defines:
+    AS2D_DIPLO_STALIN_EARLY_INTRO
+
+All other Stalin era entries use the correct spelling.
+
+History localizes the typo to SAS practical/commit-count 4880:
+    aa5518de413426df04a854c2e9f6436328958d79
+which introduced the individual Stalin music mappings and the correctly-spelled Audio2DScript in
+the same change, but gave the Renaissance peace-intro mapping the extra trailing `O`.
+
+Live consequence:
+- `CvLeaderHeadInfo` resolves non-empty diplomacy-audio tags through the audio-tag lookup;
+- `CvPlayer::getIntroMusicScriptId` selects the leader's era-indexed peace-intro script for
+  peaceful diplomacy;
+- when the viewing player is in the Renaissance, Stalin therefore selects the invalid/missing
+  `...INTROO` mapping instead of his intended early intro.
+The narrow repair is data-only: remove the extra trailing `O`.
+
+Whole-album search found no previous owner for this exact Stalin intro typo. Preserve it as a
+separate actionable SAS data regression for the appropriate XML/data fix or documentation pass;
+do not misattribute it to Queue 034 C++.
+
+FINAL OWNERSHIP / ARITHMETIC / INDEX SATURATION
+-----------------------------------------------
+The final whole-file pass found:
+- no live arithmetic/divisor hazard in this file;
+- no destructor that uses another info-family's mutable global count during global teardown
+  (unlike F659);
+- flat/pointer arrays are freed by their owning classes;
+- the live diplomacy response vector deletes its owned response objects;
+- current indices passed to exposed getters are bounded/asserted according to their family;
+- XML-file-cache read/write-only concerns remain disabled under current
+  `ENABLE_XML_FILE_CACHE=0`.
+
+HISTORY SATURATION
+------------------
+Functional strata checked/reconciled include at least:
+- practical 4176 misc cleanup/comments;
+- 3579/3544/3538 later LeaderHead/victory-weight/serialization work;
+- 3432 info-base typedef/refactor;
+- 3392/3220/3183 XML/enum-map reader evolution;
+- 3148 Creative commerce data;
+- 3060 Financial natural-yield threshold;
+- 3050 cache compile fixes;
+- 2998/2885/2868 leader/favorite/global-enum refactors;
+- 2545 XML-file-cache macro rename;
+- 2287/2286 recent-war-memory data;
+- 2246 LoveOfPeace;
+- 2237/2236/2223/2222 LEADER_DEFAULTS/default inheritance;
+- 2066/2047/2011 and earlier XML/refactor strata;
+- 1918/1842/1720/1644 inherited civilization/leader split and AI-threshold changes;
+- SAS 5683-5687 per-era leader-art feature and 5856 follow-up comment.
+No independent current-live F660 survived.
+
+NEXT EXACT CURSOR
+-----------------
+C031-WIP523 physical
+-> 66 / 169 files complete
+-> Queue 034 CLOSED
+-> F660 / KI#982 UNUSED
+-> separate unnumbered actionable SAS data regression preserved:
+   Stalin Renaissance `AS2D_DIPLO_STALIN_EARLY_INTROO`
+-> Queue 035 `CvInfo_GameOption.cpp` OPEN
+-> establish SAS vs Base AdvC 1.14 executable-semantic baseline
+-> compare K-Mod/Civ4CE ancestry
+-> inventory all info classes/readers and current XML cardinalities
+-> audit fixed-order arrays, numeric/divisor contracts, ownership and default/pass-2 behavior
+-> trace current gameplay/Python consumers
+-> whole-album dedup
+-> promote F660 only for an independent supported root
+-> freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP524 -- QUEUE 035 CvInfo_GameOption.cpp CLOSED / QUEUE 038 OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP523.
+- Queue 035 `CvGameCoreDLL/CvInfo_GameOption.cpp` (1,619 queued lines): CLOSED.
+- No independent current-live Queue-035 root promoted.
+- F660 / provisional KI#982: UNUSED.
+- Files complete: 67 / 169.
+- Queue 036 `CvMap.cpp` and Queue 037 `CvPythonCaller.cpp` were already completed earlier.
+- Queue 038 `CvGameCoreDLL/RiseFall.cpp` (1,555 queued lines): OPEN.
+- No gameplay/source/XML file was modified.
+
+QUEUE-035 BASELINE
+------------------
+Current SAS `CvInfo_GameOption.cpp` is executable-semantically identical to supplied Base
+AdvC 1.14 except for two SAS additions:
+1. the `CvEraInfo` soundtrack script-name mirror used by the Sevopedia Music era chart;
+2. the `CvGameSpeedInfo::m_iCulturePercent` reader/getter exposed for the Sevopedia GameSpeed
+   chart.
+The later Play Now -> Simple Game edit is comment/terminology-only in this file.
+Therefore there is no missed newer Base-AdvC repair in Queue 035.
+
+SAS ERA SOUNDTRACK-NAME MIRROR
+------------------------------
+The SAS music addition has paired ownership:
+- `m_paszSoundtracks` is initialized NULL;
+- allocated as `new CvString[m_iNumSoundtracks]` whenever the inherited soundtrack ID array is
+  allocated;
+- populated from the same `pszSoundTrackNames` source list as the inherited audio-tag lookup;
+- released with `SAFE_DELETE_ARRAY` in `CvEraInfo::~CvEraInfo`;
+- `getSoundtrackScriptName(i)` asserts the same `getNumSoundtracks()` bound and returns an empty
+  string if the optional mirror pointer is absent.
+
+Current seven-era soundtrack counts are:
+    Ancient 4
+    Classical 19
+    Medieval 20
+    Renaissance 19
+    Industrial 16
+    Modern 14
+    Future 11
+
+Every current era soundtrack `AS2D_*` script name resolves in the supplied
+`Audio2DScripts.xml`. The addition is observational/Sevopedia-facing and does not change the
+engine-selected integer audio IDs.
+
+The inherited local guard `if (m_iNumSoundtracks > 0)` assumes the string-list pointer was
+successfully produced when the count is positive. Current valid XML satisfies that contract, so
+no current failure is activated.
+
+GAMESPEED CULTURE-PERCENT MIRROR
+--------------------------------
+The SAS GameSpeed addition reads the existing `iCulturePercent` XML field into a dedicated member
+and exposes it to the Sevopedia chart. Current values are:
+    33, 50, 67, 100, 150, 200, 300, 400
+across the eight current game speeds.
+The current XML itself documents this field as ordinarily unused for gameplay because culture
+thresholds are handled by `CvCultureLevelInfo`; this addition therefore exposes data rather than
+introducing a new gameplay scaling path.
+
+GAMESPEED TIMELINE / ARRAY CONTROL
+----------------------------------
+Current `CIV4GameSpeedInfo.xml` contains eight GameSpeedInfos. Every GameTurnInfo row has:
+- positive `iMonthIncrement`;
+- positive `iTurnsPerIncrement`.
+
+The eight timelines total respectively:
+    165, 250, 330, 500, 750, 1000, 1500, 2000 turns
+and each spans the same 625,260 months from the shared start to the current designed end date.
+
+Direct XML comments inside the GameTurnInfos blocks do not create a current count/index defect.
+The inherited Firaxis XML iterator contract used here pairs `GetNumChildren`, `SetToChild` and
+`NextSibling`; the shipped timelines load and are consumed through their real GameTurnInfo count.
+This follows the same comment/sibling control reconciled in Queue 034.
+
+`m_pGameTurnInfo` has straightforward allocation/destruction ownership and indexed access is
+bounded by `getNumTurnIncrements()`.
+
+ERA / AI-AGE CONTROL
+--------------------
+Current `CIV4EraInfos.xml` contains seven eras.
+No explicit `AIEraFactor` is supplied, so `CvEraInfo::allInfosRead()` deliberately assigns:
+    0, 100, 200, 300, 400, 500, 600
+through its `100 * eraIndex` default path. This is strictly increasing and satisfies the current
+custom-era AI contract.
+
+Each AI-age marker has a single current owner:
+- AIAgeOfPestilence: Medieval
+- AIAgeOfExploration: Renaissance
+- AIAgeOfPollution: Industrial
+- AIAgeOfFertility: Industrial
+- AIAgeOfGuns: Industrial
+- AIAgeOfProduction: Industrial
+- AIAtomicAge: Modern
+
+Current Unit Victory/Defeat `AS2D_*` era references resolve in Audio2DScripts.
+The corresponding `ASSS_*` city-soundscape definitions are not present in the supplied light
+source material available to this queue, so those string-to-soundscape targets were deliberately
+left as an explicit evidence limitation rather than falsely claimed validated. Current source
+shows no symptom making that limitation a finding candidate.
+
+GAMEOPTION CONTROL
+------------------
+Current `CIV4GameOptionInfos.xml` contains 28 GameOptionInfos and matches current
+`GameOptionTypes` order, including EXE-sensitive positions.
+Current default/visibility values reconcile. Examples already important elsewhere in the album:
+- `GAMEOPTION_NO_EVENTS` defaults enabled;
+- `GAMEOPTION_NO_CHANGING_WAR_PEACE` and `GAMEOPTION_NO_ESPIONAGE` are hidden.
+Dynamic visibility mutation/reset behavior was audited in Queue 026; no duplicate root exists here.
+
+HANDICAP CONTROL
+----------------
+Current `CIV4HandicapInfo.xml` contains 11 HandicapInfos.
+Current `Goodies` lists:
+- contain only valid current GoodyInfo types;
+- intentionally repeat Goody types to weight random outcome selection; repeated list elements are
+  not keyed-map duplicates.
+
+Current `FreeTechs` and `AIFreeTechs` roots are empty for all 11 handicaps. The corresponding
+92-TechInfo bool arrays therefore remain the intended all-false state and no unresolved tech key
+exists in the current handicap data.
+
+The high-risk positive/divisor-like current fields are valid:
+- human `iResearchPercent`, build-time, base-growth-threshold, GP-threshold, culture-level,
+  train and construct percentages are positive;
+- AI research/growth/train/construct percentages are positive at every handicap;
+- current research-related values satisfy the source assertions.
+
+Current `iDifficulty` values are the deliberately non-enum-index scores already audited by the
+later SAS difficulty fixes; do not rediscover those consumer-side roots here.
+
+VICTORY / WORLD / SEA-LEVEL / OTHER INFO CONTROLS
+-------------------------------------------------
+Current data reconciles:
+- seven VictoryInfos, including culture/land/religion/delay fields and current CityCulture refs;
+- eleven WorldInfos with positive research/trade/maintenance scaling and current extended
+  SAS world sizes;
+- SeaLevel `iResearchPercent` values satisfy the positive contract;
+- the Custom Game sea-level recommendation behavior is inherited AdvC UI policy already
+  reconciled against Simple Game/slot-state handling;
+- Climate/TurnTimer/PlayerOption/GraphicOption readers have no independent current-live
+  ownership/index/divisor root.
+
+Current shipped VictoryInfo `iTotalCultureRatio` behavior was already examined under the
+CvPlayer queue and does not create a new Queue-035 root.
+
+OWNERSHIP / SERIALIZATION
+-------------------------
+`CvEraInfo`, `CvGameSpeedInfo` and `CvHandicapInfo` release the arrays they allocate.
+No destructor in this file relies on an already-cleared external info-family count, so the F659
+global-destruction-order root has no sibling here.
+
+The old `CvHandicapInfo` XML file-cache stream version machinery is compiled out under current
+`ENABLE_XML_FILE_CACHE=0`. Historical stream compatibility concerns therefore remain inactive in
+the current build and do not consume F660.
+
+HISTORY SATURATION
+------------------
+History strata touching this file were reviewed, including:
+- 1644 file split;
+- 1752 global-info accessor refactor;
+- 1967 CvWorldInfo getter inlining;
+- 2026 ground-breaking-research era XML option;
+- 2098 positive research/AI percentage assertions following city-trade work;
+- 2520/2561 sea-level recommendation display;
+- 2525 Golden-Age scaling assertion;
+- 2571 Cppcheck cleanup;
+- 2719 custom-era AI support;
+- 2998 merge replay of that custom-era work;
+- 3147 CvXMLInfo simple-element refactor;
+- 3183 enum-map/XML-cache rewrite;
+- 3299 difficulty-based foreign-culture work;
+- 4308 AI Age of Production;
+- SAS 5300 Sevopedia GameSpeed chart exposure;
+- SAS 5359 Sevopedia Music soundtrack-name mirror;
+- SAS 5439 Simple Game terminology.
+No independent current-live F660 survived.
+
+WHOLE-ALBUM DEDUP / CLOSURE
+---------------------------
+Existing album owners already cover nearby consumer-side issues involving:
+- handicap difficulty mapping;
+- GameSpeed event/trade/revolt/religion scaling;
+- `ExtraFreeOutsideUnits`;
+- world-size enum/order and 48-slot compatibility;
+- victory/team culture arithmetic;
+- sea-level/setup state where applicable.
+
+Queue 035 is therefore CLOSED with F660 unused rather than manufacturing a parser/data root.
+
+NEXT EXACT CURSOR
+-----------------
+C031-WIP524 physical
+-> 67 / 169 files complete
+-> Queue 035 CLOSED
+-> F660 / KI#982 UNUSED
+-> Queue 036 and Queue 037 already complete
+-> Queue 038 `RiseFall.cpp` OPEN
+-> establish current SAS vs Base AdvC 1.14 semantic baseline
+-> compare K-Mod/Civ4CE ancestry where the Rise/Fall subsystem has an oracle
+-> inventory chapter/state transitions, retired/civ-selection logic, score and defeat/revival
+   ownership, serialization, era/turn arithmetic, player/team identity and map visibility
+-> trace current options/config activation
+-> whole-album dedup
+-> promote F660 only for an independent supported root
+-> freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP525 -- QUEUE 038 RiseFall.cpp -- F660 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP524.
+- Queue 038 `CvGameCoreDLL/RiseFall.cpp` (1,555 queued lines): OPEN.
+- F660 / provisional KI#982: CONFIRMED.
+- F661 / provisional KI#983: UNUSED.
+- Files complete remains 67 / 169 because Queue 038 is not closed yet.
+- No gameplay/source file was modified.
+
+QUEUE-038 PROVENANCE BASELINE
+-----------------------------
+Current SAS `RiseFall.cpp` is executable-semantically identical to supplied Base AdvC 1.14
+except for already-reconciled SAS fixes:
+- `setPlayerHandicap` refreshes cached founding-unit extra costs (the fix for F448 / KI#771);
+- two autoplay-stop sites now pass explicit `SAS_AUTOPLAY_END_RISE_FALL` (KI#203-era
+  autoplay-end-cause plumbing);
+- `abandonPlans` guards a selection group's NULL plot before terrain inspection (SAS practical
+  5383 crash fix).
+Other observed differences are formatting/comments.
+
+Therefore any additional Queue-038 root must be inherited AdvC behavior rather than a missed
+Base-AdvC-1.14 repair or a fresh SAS regression.
+
+F660 / provisional KI#982 -- Rise/Fall save load frees ReadWideString array with scalar delete
+-----------------------------------------------------------------------------------------------
+
+ROOT
+----
+`RiseFall::read(FDataStreamBase* pStream)` restores the original human leader name like this:
+
+    wchar* tmp = pStream->ReadWideString();
+    originalName = new CvWString(tmp);
+    delete tmp;
+
+`FDataStreamBase.h` explicitly documents `ReadWideString()` as:
+
+    virtual wchar* ReadWideString() = 0; // allocates memory
+
+The returned value is an allocated character ARRAY, not a scalar `wchar`. The matching
+deallocation expression must therefore be `delete[] tmp`, not scalar `delete tmp`.
+
+INTERNAL FIRAXIS OWNERSHIP ORACLE
+---------------------------------
+This does not rely on guessing an EXE implementation detail. Firaxis's own
+`FVariableSystem.inl` uses the same API:
+
+    m_wszValue = pStream->ReadWideString();
+
+and `FVariable::~FVariable()` releases that storage with:
+
+    delete [] m_wszValue;
+
+The inherited stream contract therefore directly establishes array ownership for the
+`ReadWideString()` return.
+
+CURRENT NORMAL ACTIVATION
+-------------------------
+The bad branch is ordinary Rise/Fall save-load behavior, not optional malformed data.
+
+During `RiseFall::init()`:
+- `originalName` is always initialized from the first human-controlled chapter's leader name:
+      originalName = new CvWString(
+          GC.getInitCore().getLeaderName(chapters[0]->getCiv()));
+- Rise/Fall then immediately performs an initial autosave via `g.autoSave(true)`.
+
+`RiseFall::write()` writes:
+    bool origNameGiven = (originalName != NULL);
+and serializes the wide string whenever that bool is true.
+
+Because initialized Rise/Fall normally has a non-NULL `originalName`, an ordinary saved
+Rise/Fall game contains this field. Loading such a save reaches the
+`ReadWideString()` -> scalar `delete` mismatch.
+
+The copy into the separately allocated `CvWString` occurs before the wrong delete, so this finding
+is specifically invalid deallocation / allocator corruption risk rather than a dangling
+`originalName` pointer.
+
+ANCESTRY / INTRODUCTION
+-----------------------
+AdvC practical 1268 / e11525d303... ("Rise & Fall" introduction) added the subsystem and this
+exact read/write code in the same initial diff:
+
+    wchar* tmp = pStream->ReadWideString();
+    originalName = new CvWString(tmp);
+    delete tmp;
+
+Current Base AdvC 1.14 still retains the scalar delete unchanged.
+K-Mod and Civ4CE do not contain RiseFall.cpp, so their useful oracle here is the inherited
+FDataStream/FVariable ownership contract rather than a Rise/Fall implementation.
+
+SEVERITY BOUNDARY
+-----------------
+This is a C++ mismatched delete-expression and therefore undefined behavior. The exact visible
+manifestation depends on the allocator/build. It may appear harmless for a small wide string on a
+particular release CRT, but debug/custom allocators can distinguish array/scalar deallocation and
+allocator metadata can be corrupted.
+
+Do NOT overclaim a deterministic crash: the source certainty is the incorrect deallocation form
+on a normal current save-load path.
+
+DEDUP
+-----
+- F657 / KI#979 is another new[]/scalar-delete defect, but it is independently rooted in
+  `CvXMLLoadUtility::SetVariableListPerCommerce` and executes during XML startup.
+- F660 is the separate Rise/Fall save-stream ownership error introduced in practical 1268.
+- Whole-album search found no prior owner for `ReadWideString`, `originalName`, or this
+  RiseFall::read deallocation.
+
+NARROW REPAIR
+-------------
+Replace:
+    delete tmp;
+with:
+    delete[] tmp;
+
+An even cleaner modernization would read directly into a `std::wstring` / `CvWString` through a
+non-owning-buffer stream overload if the surrounding API allows it, but the surgical inherited
+repair is simply the correct array delete.
+
+QUEUE-038 CONTINUATION CURSOR
+-----------------------------
+Continue from F661 UNUSED:
+- finish `reportElimination` / `nextCivAlive` no-player and game-over ordering proof;
+- audit `mostRecentlyFinished` and `prepareForExtendedGame` unsigned reverse loops, separating
+  current preconditions from dormant API robustness;
+- audit chapter/interlude turn arithmetic, score/retirement state and save compatibility;
+- audit active-player/net-ID/human-control transitions, civ-selection popup paths and extended
+  game transfer;
+- audit off-limits/vassal state, diplomacy cooperation restrictions and message/popup gates;
+- audit trade helpers against already-owned Rise/Fall diplomacy findings;
+- compare practicals 1268-1430, 2239, 2253, 3027, 3280, 3281, 3297, 4186 and SAS fixes;
+- whole-album dedup and final mechanical pointer/index/divisor/state saturation;
+- either promote a genuinely independent F661 or close Queue 038 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP526 -- QUEUE 038 RiseFall.cpp -- F661 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP525.
+- Queue 038 `CvGameCoreDLL/RiseFall.cpp` (1,555 queued lines): OPEN.
+- F660 / provisional KI#982: CONFIRMED (Rise/Fall ReadWideString scalar delete).
+- F661 / provisional KI#983: CONFIRMED.
+- F662 / provisional KI#984: UNUSED.
+- Files complete remains 67 / 169 because Queue 038 is not closed yet.
+- No gameplay/source file was modified.
+
+F661 / provisional KI#983 -- Rise/Fall defeat path dereferences NO_PLAYER when no major civilization survives
+--------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+`RiseFall::reportElimination(PlayerTypes civId)` handles defeat of the civilization currently
+assigned to the active Rise/Fall chapter. After scoring and relinquishing player control it does:
+
+    CvPlayer& nextAlive = GET_PLAYER(nextCivAlive(BARBARIAN_PLAYER));
+
+`nextCivAlive(startExcluded)` searches cyclically for an alive player but deliberately excludes
+`startExcluded`. When called with `BARBARIAN_PLAYER`, it therefore searches only for another
+non-Barbarian alive player. If no such player exists, it returns `NO_PLAYER`.
+
+`reportElimination` does not check that result before passing it to `GET_PLAYER`.
+
+Current `GET_PLAYER` resolves to an inline `CvPlayer`/`CvPlayerAI` accessor that:
+- asserts the enum is in `[0, MAX_PLAYERS)`;
+- then indexes the player array directly with that value.
+
+`NO_PLAYER == -1` therefore violates the accessor contract and becomes an out-of-bounds player
+array access in release semantics.
+
+MINIMAL SUPPORTED CURRENT FIXTURE
+---------------------------------
+This does not require malformed setup or an unsupported zero-civilization game.
+
+`RiseFall::init()` explicitly supports exactly one living major civilization:
+
+    int civs = g.countCivPlayersAlive();
+    ...
+    maxChapters = std::min(civs, maxChapters);
+    if(maxChapters < 1) {
+        shutOff(...);
+        return;
+    }
+
+For `civs == 1`, `maxChapters` becomes 1 and initialization proceeds normally. The sole
+civilization owns the sole/final chapter.
+
+If that civilization is eliminated during play (for example its last city/unit is lost to
+Barbarians), `CvPlayer::setAlive(false)`:
+1. sets `m_bAlive = false`;
+2. performs the normal elimination cleanup;
+3. calls `RiseFall::reportElimination(getID())` immediately when the Rise/Fall option is enabled.
+
+At that instant there is no other major civilization alive. The Barbarian player is intentionally
+excluded by the `nextCivAlive(BARBARIAN_PLAYER)` search, so the search reaches its sentinel case
+and returns `NO_PLAYER`. `GET_PLAYER(NO_PLAYER)` follows immediately.
+
+The ordinary later "no human alive -> GAMESTATE_OVER" fallback is specifically disabled for
+Rise/Fall and, in any event, occurs in the game update loop after this synchronous setAlive /
+reportElimination call. It cannot protect this dereference.
+
+The same failure generalizes to any multi-civ Rise/Fall game in which the current chapter's
+civilization is the last surviving major civilization.
+
+ANCESTRY / EXACT REGRESSION POINT
+---------------------------------
+The original Rise/Fall implementation in practical 1268 used:
+
+    CvPlayer& nextAlive = GET_PLAYER(nextCivAlive(civId));
+
+When a defeated civ was the last major civilization, this search could reach the still-alive
+Barbarian player, which was itself undesirable because the code could then attempt to make the
+Barbarian slot the temporary human/defeat-popup recipient.
+
+AdvC practical 2239 / 23c40cee78... ("R&F: Fix player defeat popup") changed that line to:
+
+    CvPlayer& nextAlive = GET_PLAYER(nextCivAlive(BARBARIAN_PLAYER));
+
+The intent is sound: never choose the Barbarian player as the successor. But this introduced a
+new required outcome -- `NO_PLAYER` when no major successor exists -- without adding a guard
+before `GET_PLAYER`.
+
+Current Base AdvC 1.14 retains the practical-2239 form unchanged. Current SAS inherits it.
+
+CONSEQUENCE / BRANCHES
+----------------------
+The invalid reference is constructed before either subsequent branch:
+- non-final chapter: setActivePlayer / setIsHuman / popup delivery;
+- final chapter: setPlayerControl(nextAlive.getID(), true) then GAMESTATE_OVER.
+
+Therefore the final-chapter "end game directly when defeated" intent does not rescue the minimal
+one-civ fixture; the code must first survive construction of `nextAlive`, which it cannot do
+validly when the search returns `NO_PLAYER`.
+
+DEBUG builds should trip the bounds assertion. Release builds can index the player pointer array
+with -1 and then dereference the resulting invalid pointer; exact symptoms depend on adjacent
+memory and allocator/layout, so do not overstate a deterministic crash shape beyond invalid/OOB
+player access.
+
+NARROW REPAIR DIRECTION
+-----------------------
+Resolve the successor ID first:
+
+    PlayerTypes eNextAlive = nextCivAlive(BARBARIAN_PLAYER);
+
+and handle `eNextAlive == NO_PLAYER` before any `GET_PLAYER` call.
+
+For a final/no-successor defeat, the natural behavior is to restore any needed original setup
+state without requiring another player object and end the game cleanly.
+
+For a non-final chapter with no surviving eligible major civilization, the subsystem needs an
+explicit policy rather than fabricating a successor: most naturally end the Rise/Fall run/game
+because no civilization remains to take over, or otherwise route through a deliberately supported
+revival/extended-game mechanism if one exists. Do not fall back to the Barbarian player.
+
+DEDUP
+-----
+Whole-album search found no prior owner for:
+- `RiseFall::reportElimination` returning/using NO_PLAYER;
+- `nextCivAlive(BARBARIAN_PLAYER)` with no surviving major civ;
+- the practical-2239 defeat-popup regression.
+
+The album's earlier popup-dispatch audit only validated RF_DEFEAT/RF_CHOOSECIV/RF_RETIRE callback
+routing. It does not own this producer-side successor-selection failure.
+
+F660 is independent save-stream deallocation UB. F448 is the previously fixed cached-settler-cost
+handoff defect. F649 concerns popup suppression corrupting city-built statistics. None duplicate
+F661.
+
+QUEUE-038 CONTINUATION CURSOR
+-----------------------------
+Continue from F662 UNUSED:
+- audit the other `nextCivAlive` callers for NO_PLAYER assumptions, especially civ-selection and
+  extended-game paths;
+- settle unsigned reverse loops in `mostRecentlyFinished` and `prepareForExtendedGame`;
+- audit chapter/interlude arithmetic, retirement and score state;
+- audit active-player/net-ID/human-control transitions and popup selection paths;
+- audit serialization version/state invariants beyond F660;
+- audit off-limits/vassal state and diplomacy restriction recursion;
+- dedup trade helpers against already-owned Rise/Fall trade findings;
+- finish practical-history and mechanical pointer/index/divisor/state saturation;
+- either promote an independent F662 or close Queue 038 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP527 -- QUEUE 038 RiseFall.cpp -- F662 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP526.
+- Queue 038 `CvGameCoreDLL/RiseFall.cpp` (1,555 queued lines): OPEN.
+- F660 / KI#982: CONFIRMED.
+- F661 / KI#983: CONFIRMED.
+- F662 / provisional KI#984: CONFIRMED.
+- F663 / provisional KI#985: UNUSED.
+- Files complete remains 67 / 169 because Queue 038 is not closed yet.
+- No gameplay/source file was modified.
+
+F662 / provisional KI#984 -- Rise/Fall civ recommendation comparator discards victory-stage ordering
+-----------------------------------------------------------------------------------------------------
+
+ROOT
+----
+`RiseFall::eligibleByRecommendation()` sorts eligible civilizations through the static comparator
+`RiseFall::byRecommendation(PlayerTypes one, PlayerTypes two)`.
+
+After capitulation/vassal criteria, current code compares the candidates' victory stages:
+
+    int vs1 = victoryStage(one);
+    int vs2 = victoryStage(two);
+    if(vs1 > vs2)
+        return false;
+    if(vs2 > vs1)
+        return false;
+
+The second result has the wrong polarity. When `two` is closer to victory than `one`, `one` should
+sort before `two`, i.e. the comparator should return `true`.
+
+The intended direction is internally obvious from both the criterion meaning and the exact
+surrounding comparator pattern. Immediately below:
+
+    int sc1 = g.getPlayerScore(one);
+    int sc2 = g.getPlayerScore(two);
+    if(sc1 > sc2)
+        return false;
+    if(sc2 > sc1)
+        return true;
+
+Likewise the vassal/capitulation pairs return false when `one` is less desirable and true when
+`two` is less desirable.
+
+Therefore the narrow correction is:
+    if(vs2 > vs1)
+        return true;
+
+LIVE CONSEQUENCE
+----------------
+This is not a dormant helper:
+- `eligibleByRecommendation()` is used to build the actual Rise/Fall civilization-selection list;
+- it separately sorts never-played and repeat candidates with `std::sort(..., byRecommendation)`;
+- `launchCivSelectionPopup()` presents that resulting order to the player, numbering candidates
+  from most to least recommended;
+- `knownName(..., nameNumber=true)` independently reconstructs the same list so the unknown-civ
+  recommendation numbers remain consistent;
+- the popup/help text explicitly displays each candidate's victory stage.
+
+When two candidates have different victory stages:
+- `byRecommendation(one,two)` returns false for one direction;
+- `byRecommendation(two,one)` also returns false for the reverse direction.
+They are therefore treated as equivalent for sorting despite the explicitly added victory-stage
+criterion. The comparator never reaches score or player-rank tie-breaking for that pair.
+
+The practical order then depends on the incoming player-slot order / sort implementation rather
+than the intended preference for the civilization farther from victory. This can put a civ close
+to winning ahead of a safer takeover candidate and undermines the recommendation numbering.
+
+ANCESTRY / EXACT INTRODUCTION
+-----------------------------
+The original practical-1268 Rise/Fall comparator did not use victory stage; it ranked by:
+- capitulation;
+- vassal status;
+- score;
+- player rank.
+
+AdvC practical 1270 / beb230a3bafeecd05c7efba87b45b6bd1615e121 added:
+- `victoryStage(...)`;
+- the victory-stage line in civ-selection help;
+- the two new comparator branches.
+
+The typo (`return false` in both unequal directions) is present in the introduction diff itself.
+Current Base AdvC 1.14 retains it unchanged. Current SAS inherits it unchanged.
+
+WHY THIS IS NOT A DELIBERATE EQUIVALENCE CLASS
+----------------------------------------------
+The new criterion was inserted *before* score/rank and practical 1270 simultaneously made
+victory stage visible in the civ-selection information. A deliberate "different stages are
+equivalent" rule would make the stage comparator redundant and would also suppress the lower
+score/rank criteria whenever stages differ.
+
+The mirrored score/vassal branches immediately around it establish the intended strict direction:
+the second unequal case must return true.
+
+SEVERITY BOUNDARY
+-----------------
+This is a player-facing recommendation/order bug, not game-state corruption. The player can still
+choose any offered civilization. Its importance is strategic/UI: Rise/Fall deliberately tries to
+steer the player away from already-advantaged/victory-threatening civs, and this typo drops one of
+the explicit ranking dimensions whenever it matters.
+
+DEDUP
+-----
+Whole-album search found no prior owner for:
+- `byRecommendation`;
+- the victory-stage comparator polarity;
+- Rise/Fall civilization recommendation ordering by victory stage.
+
+Existing Rise/Fall trade/victory-stage findings concern other consumers/rules and do not own this
+sort comparator.
+
+NARROW REPAIR
+-------------
+Change only:
+    if(vs2 > vs1)
+        return false;
+to:
+    if(vs2 > vs1)
+        return true;
+
+No comparator redesign is needed.
+
+QUEUE-038 CONTINUATION CURSOR
+-----------------------------
+Continue from F663 UNUSED:
+- finish all other `nextCivAlive` callers and broaden F661 only where they share the exact
+  no-successor root;
+- settle `mostRecentlyFinished` and `prepareForExtendedGame` reverse-loop preconditions;
+- audit civ-selection empty-list/retire-all handling and selected-civ state;
+- audit chapter/interlude/retire/scoring arithmetic and serialization state;
+- audit active-player/net-ID/human-control transitions;
+- audit victory/extended-game transfer and off-limits/vassal restrictions;
+- dedup trade helper behavior against existing findings;
+- finish practical-history and mechanical pointer/index/divisor/state saturation;
+- either promote an independent F663 or close Queue 038 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP528 -- QUEUE 038 RiseFall.cpp -- F663 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP527.
+- Queue 038 `CvGameCoreDLL/RiseFall.cpp` (1,555 queued lines): OPEN.
+- F660 / KI#982: CONFIRMED.
+- F661 / KI#983: CONFIRMED.
+- F662 / KI#984: CONFIRMED.
+- F663 / provisional KI#985: CONFIRMED.
+- F664 / provisional KI#986: UNUSED.
+- Files complete remains 67 / 169 because Queue 038 is not closed yet.
+- No gameplay/source file was modified.
+
+F663 / provisional KI#985 -- selected civilization eliminated before takeover is scored as a player defeat instead of retrying selection
+-------------------------------------------------------------------------------------------------------------------------------
+
+INTENDED CONTRACT VISIBLE IN CURRENT SOURCE
+-------------------------------------------
+`RiseFall::atTurnEnd()` contains an explicit branch and comment for the case where the civilization
+selected for the next chapter dies before the player actually takes control:
+
+    else if(!currentCh.isScored()) { /* If scored, then defeat happened
+        after starting the chapter, and normal civ selection is coming up.
+        Otherwise, nextCiv has died in between selection and chapter start. */
+        retryingCivSelection = true;
+        haltForCivSelection(nextCivAlive(nextCivId));
+    }
+
+The intended distinction is therefore source-explicit:
+- elimination after chapter start -> score/defeat flow;
+- elimination after selection but before chapter start -> retry civilization selection.
+
+Current control flow does not preserve that distinction.
+
+LIVE SELECTION / TAKEOVER SEQUENCE
+----------------------------------
+At the scheduled start of a later chapter:
+1. `RiseFall::atGameTurnStart()` sees `currentCh.getCiv() == NO_PLAYER`.
+2. It calls `haltForCivSelection(...)` and temporarily makes an alive civilization human solely
+   so the RF_CHOOSECIV popup can be delivered.
+3. Clicking a civilization calls `handleCivSelection(selectedCiv)`, which immediately stores:
+       chapters[pos]->setCiv(selectedCiv);
+4. If the selected civilization is not the temporary popup-host civilization, `afterCivSelection`
+   returns that temporary host to AI control. The selected civilization remains AI-controlled
+   until normal turn order reaches it.
+5. `atTurnEnd()` is supposed to hand human control to the selected civilization immediately before
+   its turn and call `RFChapter::start()`.
+
+There is therefore a real interval after chapter-civ assignment but before `RFChapter::start()`.
+
+A selected civilization in a later player slot can be eliminated during that interval by an
+earlier-turn civilization. This requires no malformed state: the selected AI is alive when offered
+and selected, then loses its final city/unit during ordinary AI turn processing before its turn.
+
+ACTUAL ELIMINATION PATH
+-----------------------
+`CvPlayer::setAlive(false)` synchronously calls:
+    RiseFall::reportElimination(getID())
+whenever GAMEOPTION_RISE_FALL is enabled.
+
+`reportElimination()` determines the current chapter through `getCurrentChapter()`.
+But `RFChapter::isOngoing()` is only:
+    hasStarted() && !hasEnded()
+and `hasStarted()` means:
+    current game turn >= scheduled startTurn
+
+It does NOT mean that `RFChapter::start()` has actually executed.
+
+Therefore, during the pre-takeover interval on the scheduled start turn:
+- `getCurrentChapter()` returns this chapter;
+- `chapters[pos]->getCiv()` already equals the selected but still-AI civilization;
+- `reportElimination()` treats the elimination as the player's chapter defeat.
+
+It immediately calls:
+    chapters[pos]->score();
+
+Yet `RFChapter::start()` has not run. `start()` is what calls:
+    breakdown.atChapterStart(*this);
+
+Before that call, `RFChapterScore::chapter` is still NULL and its initial-rank state is zero.
+`RFChapterScore::update()` therefore returns immediately through:
+    if(chapter == NULL || initialRank <= 0)
+        return;
+
+`RFChapter::score()` nevertheless then sets:
+    scoreTimestamp = current game turn;
+
+Thus the not-yet-started chapter becomes permanently `isScored()==true` with no valid chapter-start
+score baseline. `reportElimination()` then follows the normal defeat/control-transfer popup path.
+
+Instead of being offered another civilization, the player is told that the chapter they never
+actually began was defeated, and that chapter is consumed/scored.
+
+WHY THE EXISTING RETRY BRANCH CANNOT REPAIR IT
+-----------------------------------------------
+There are two independent reasons the comment's intended branch fails.
+
+1. The initial Rise/Fall implementation already loses the `!currentCh.isScored()` condition.
+
+Practical 1268 introduced both `reportElimination()` and the retry branch in the same first
+Rise/Fall implementation. Because `reportElimination()` scores the selected chapter synchronously
+when the selected civ dies, the later turn-end retry test:
+    else if(!currentCh.isScored())
+is false in precisely the pre-takeover elimination state.
+
+So the root conceptual bug begins with practical 1268: "scheduled/current chapter" is used as a
+proxy for "chapter actually started under player control."
+
+2. Practical 1430 made the dead-civ branch structurally unreachable as well.
+
+The original practical-1268 `atTurnEnd()` computed:
+    PlayerTypes nextCivId = (PlayerTypes)((civId + 1) % MAX_PLAYERS);
+
+Practical 1430 changed this to:
+    PlayerTypes nextCivId = nextCivAlive(civId);
+
+The retry branch still sits inside:
+    if(nextCivId == currentCh.getCiv()) {
+        ...
+        if(GET_PLAYER(nextCivId).isAlive()) { ... }
+        else if(!currentCh.isScored()) { retry ... }
+    }
+
+`nextCivAlive()` only returns an alive player. If the selected current chapter civ is dead, it is
+skipped and the outer equality is false. Hence the inner `isAlive()==false` branch can no longer
+be reached for the state its comment describes.
+
+Practical 1430 is therefore an additional later control-flow regression layered on the original
+practical-1268 lifecycle mistake; the user-visible root is kept as one finding.
+
+SOURCE-PROVABLE SCORE CORRUPTION BOUNDARY
+-----------------------------------------
+Do not overstate arbitrary score mathematics. What source proves is:
+- the selected chapter's `RFChapterScore::atChapterStart` never ran;
+- `RFChapterScore::update` no-ops because `chapter==NULL` / initialRank<=0;
+- `RFChapter::score` still stamps `scoreTimestamp`;
+- the chapter is thereafter classified as scored/ended;
+- the normal defeat path is used rather than the explicit retry-selection intent.
+
+The score object's reset values are zero, so this can also leave a zero/default score breakdown
+for a chapter that the human never controlled.
+
+ANCESTRY
+--------
+- AdvC practical 1268 / e11525d303... introduced the original Rise/Fall subsystem, including:
+  * immediate `setCiv` before takeover;
+  * `reportElimination` scoring the current scheduled chapter;
+  * the explicit "died in between selection and chapter start" retry comment/branch.
+  The lifecycle contradiction is therefore present from the initial implementation.
+- AdvC practical 1430 changes the next-turn test from raw next player slot to
+  `nextCivAlive(civId)`, which makes the dead-selected-civ inner branch structurally unreachable.
+- Current Base AdvC 1.14 retains both behaviors.
+- Current SAS inherits them unchanged.
+
+DEDUP
+-----
+Whole-album search found no previous owner for:
+- selected chapter civilization dying between RF_CHOOSECIV selection and actual takeover;
+- `retryingCivSelection` being bypassed by `reportElimination`;
+- scoring an RFChapter before `RFChapter::start()` / `RFChapterScore::atChapterStart()`;
+- the practical-1430 dead-selected-civ retry branch becoming unreachable.
+
+F661 is distinct: it is the no-major-successor `NO_PLAYER` dereference after a genuine
+`reportElimination` path. F663 concerns entering that defeat path at all for a chapter the player
+has not yet started. A repair for F663 can prevent some pre-takeover cases from ever reaching
+F661, but genuine last-major defeat after actual chapter start still independently activates F661.
+
+REPAIR DIRECTION
+----------------
+The robust repair is to distinguish "scheduled/current by turn number" from "actually started."
+
+For elimination of `chapters[pos]->getCiv()` before that chapter's real `start()`:
+- do not call `score()` as a player defeat;
+- clear/reassign the dead selected civilization as appropriate;
+- set `retryingCivSelection = true`;
+- halt on an eligible alive civilization and relaunch civ selection.
+
+Avoid inferring actual chapter start solely from current game turn >= startTurn.
+A dedicated started/initialized flag, or an explicit RFChapter/RFChapterScore accessor reflecting
+that `atChapterStart` has run, is safer than reconstructing the state from player human flags.
+
+The `atTurnEnd()` logic should also not use `nextCivAlive()` in a way that makes its intended
+dead-selected-civ detection unreachable. Detect the selected chapter civ's current liveness
+directly before searching for the next alive turn participant.
+
+QUEUE-038 CONTINUATION CURSOR
+-----------------------------
+Continue from F664 UNUSED:
+- finish `prepareForExtendedGame` winner/no-winner and no-alive-player state;
+- finish empty eligible / "Retire All" civ-selection paths and broaden F661/F663 only if they
+  share the same established roots;
+- finish trade/cooperation/offLimits helper contracts and existing-finding dedup;
+- finish chapter/interlude/retirement/scoring arithmetic and save-state invariants;
+- finish net-ID/human-control transition history (especially practical 3297);
+- settle diplomacy text substitution/current-language evidence;
+- finish practical 1350/1351/1354/1363/1371/1386/1388/1407/1430/2253/3027/3280/3281/3297/4186
+  history plus final pointer/index/divisor/state saturation;
+- either promote an independent F664 or close Queue 038 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+NEGATIVE CONTROLS PRESERVED SINCE WIP527
+----------------------------------------
+- `GET_TEAM(PlayerTypes)` syntax in RiseFall is SAFE in current AdvC/SAS because CoreAI.h
+  deliberately overloads GET_TEAM for PlayerTypes and performs TEAMID(ePlayer). Do not rediscover.
+- `mostRecentlyFinished()` has a real unsigned reverse-loop underflow pattern but is currently
+  unused and has no shipped caller.
+- the equivalent reverse loops in `prepareForExtendedGame()` are protected on supported
+  initialized Rise/Fall paths because chapter 0 is always created and started, guaranteeing a
+  matching `hasStarted()` element before underflow.
+- `AI_DIPLOCOMMENT_THANKS` currently has one Response containing all thank-you text variants;
+  `findThanks()` returning the first response therefore covers current data.
+- `substituteDiploText()` replaces every text in that response and `restoreDiploText()` restores
+  them on the game-update path.
+- duplicated `if(aiVictStage < 3)` in `isCooperationRestricted()` is idempotent and has no
+  behavioral consequence.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP529 -- QUEUE 038 RiseFall.cpp -- F664 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP528.
+- Queue 038 `CvGameCoreDLL/RiseFall.cpp` (1,555 queued lines): OPEN.
+- F660 / KI#982: CONFIRMED.
+- F661 / KI#983: CONFIRMED.
+- F662 / KI#984: CONFIRMED.
+- F663 / KI#985: CONFIRMED.
+- F664 / provisional KI#986: CONFIRMED.
+- F665 / provisional KI#987: UNUSED.
+- Files complete remains 67 / 169 because Queue 038 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+F664 / provisional KI#986 -- interlude victory can transfer human control to the Barbarian player
+--------------------------------------------------------------------------------------------------
+
+ROOT
+----
+When the game ends between Rise/Fall chapters, `RiseFall::prepareForExtendedGame()` takes its
+`pos < 0` branch. To avoid handing the player the civilization that just won, it does:
+
+    TeamTypes winnerId = g.getWinner();
+    if(winnerId == NO_TEAM)
+        winnerId = (TeamTypes)0;
+
+    // Try to avoid giving the player control of the winner b/c it's confusing
+    PlayerTypes haltId = nextCivAlive(GET_TEAM(winnerId).getLeaderID());
+    if(haltId == NO_PLAYER)
+        haltId = GET_TEAM(winnerId).getLeaderID();
+
+    setPlayerControl(haltId, true);
+
+The search helper iterates all `MAX_PLAYERS`, not merely the major-civilization player domain:
+
+    int r = (startExcluded + 1) % MAX_PLAYERS;
+    while(!GET_PLAYER((PlayerTypes)r).isAlive() && r != startExcluded)
+        r = (r + 1) % MAX_PLAYERS;
+
+`BARBARIAN_PLAYER == MAX_CIV_PLAYERS` is therefore a normal candidate unless it is specifically
+used as `startExcluded`. The `pos < 0` winner branch does not exclude it.
+
+SUPPORTED NATIVE ACTIVATION
+---------------------------
+The most direct fixture is a victory during a Rise/Fall interlude in which the winning
+civilization is the only surviving major civilization.
+
+This state is supported by the normal victory rules:
+- Conquest victory checks opponents through `TeamIter<CIV_ALIVE, NOT_SAME_TEAM_AS>`.
+- The `CIV_ALIVE` domain excludes the Barbarian team.
+- Thus Barbarian survival does not prevent the sole remaining major civilization from satisfying
+  conquest victory.
+
+The special Barbarian player is not an eligible human civilization:
+- `CvInitCore::getPlayableCiv` explicitly says:
+      // Don't allow people to play the barb civ
+  and returns false for the Barbarian slot in the ordinary fallback.
+- `CvPlayer::isMajorCiv()` is explicitly `!isBarbarian() && !isMinorCiv()`.
+- Rise/Fall initialization and ordinary civ selection operate on major-civilization domains.
+- `CvPlayer::verifyAlive()` deliberately excludes Barbarians from the normal no-city/no-unit
+  elimination logic, consistent with the persistent special-player role.
+- `nextCivAlive` itself contains an assertion that explicitly permits its result to be
+  `BARBARIAN_PLAYER`, proving that this helper is not a major-civ-only search.
+
+When the winner is the only living major civ and the Barbarian player is alive, scanning after the
+winner eventually reaches `BARBARIAN_PLAYER`. The helper returns that player rather than
+`NO_PLAYER`. Therefore the intended fallback:
+    if(haltId == NO_PLAYER)
+        haltId = winnerLeader;
+never runs.
+
+LIVE CONSEQUENCE
+----------------
+`prepareForExtendedGame` immediately calls:
+    setPlayerControl(BARBARIAN_PLAYER, true);
+
+`RiseFall::setPlayerControl` has no major-civ or playable-civ guard. For `b == true`, it:
+- applies the Rise/Fall human-handicap transition to the chosen player;
+- calls `CvGame::changeHumanPlayer(civId)`;
+- unfogs the map / changes UI visibility;
+- updates human modifiers and city maintenance.
+
+`CvGame::changeHumanPlayer` likewise has no Barbarian guard. It:
+- swaps player options;
+- marks the former human nonhuman;
+- calls `GET_PLAYER(eNewHuman).setIsHuman(true, ...)`;
+- can activate the new player's turn;
+- ultimately sets the active player to the chosen slot.
+
+The extended-game/end-game path therefore temporarily converts the special Barbarian slot into the
+human/active player even though the setup layer explicitly declares that slot non-playable.
+
+`CvGame::setGameState(GAMESTATE_OVER)` calls `RiseFall::prepareForExtendedGame()` synchronously
+*before* `showEndGameSequence()` and before the Extended Game popup is queued. Thus the wrong active
+player affects the native victory/end-game sequence rather than being harmless state written after
+the UI has finished.
+
+Do not overclaim the exact EXE-side symptom. Source proves the wrong player identity and violation
+of the non-playable-Barbarian contract; the visual/UI consequences can depend on the closed-source
+end-game code.
+
+INTERLUDE REQUIREMENT
+---------------------
+This root concerns `pos < 0`, i.e. a victory while no chapter is currently ongoing. Rise/Fall
+deliberately spends time in interludes under AI Auto Play between chapters, so victory can be
+reached there by the AI-controlled civilizations. The code itself has a dedicated `pos < 0`
+extended-game branch precisely to support game end in such an interval.
+
+ANCESTRY / INTRODUCTION
+-----------------------
+AdvC practical 1268 / e11525d303... introduced:
+- `nextCivAlive`;
+- `prepareForExtendedGame`;
+- the exact "avoid giving the player control of the winner" search through
+  `nextCivAlive(winnerLeader)`;
+- the fallback to the winner only when that search returns `NO_PLAYER`.
+
+The special-player-domain mismatch is therefore present in the original Rise/Fall implementation.
+Current Base AdvC 1.14 retains it. Current SAS inherits it unchanged.
+
+Later practicals touched scoring/serialization or nearby extended-game behavior but did not make
+this search major-civ-only.
+
+WHY THIS IS DISTINCT FROM F661
+------------------------------
+F661 is a *no eligible successor* problem:
+    reportElimination -> nextCivAlive(BARBARIAN_PLAYER) -> NO_PLAYER -> GET_PLAYER(-1).
+
+F664 is the opposite failure mode:
+- `nextCivAlive(winnerLeader)` successfully finds a player;
+- the found player is the *wrong domain* (the alive Barbarian special slot);
+- because it is not NO_PLAYER, the code does not take its fallback.
+
+The repair therefore cannot be reduced to the F661 sentinel guard.
+
+NARROW REPAIR DIRECTION
+-----------------------
+Search for another *living major civilization*, not another arbitrary living player.
+
+For example:
+- iterate `PlayerIter<MAJOR_CIV>` / the `MAX_CIV_PLAYERS` domain;
+- choose an alive major other than the winner when possible;
+- if no such major exists, deliberately keep/give control to the winner as the existing fallback
+  already intends.
+
+Do not let `BARBARIAN_PLAYER` or a minor-civ slot become the extended-game human simply because it
+is alive.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album search found no previous owner for:
+- `prepareForExtendedGame` selecting the Barbarian player;
+- interlude victory transferring human/active control to BARBARIAN_PLAYER;
+- the practical-1268 winner-avoidance search using the all-player rather than major-civ domain.
+
+Existing extended-game findings elsewhere concern popup gating or dead-human UI behavior and do
+not own this Rise/Fall player-selection root.
+
+QUEUE-038 CONTINUATION CURSOR
+-----------------------------
+Continue from F665 UNUSED:
+- inspect the `afterCivSelection` "Retire All" path, especially a dead previous chapter civ and
+  empty eligible lists;
+- finish `prepareForExtendedGame` NO_TEAM / NO_PLAYER and retirement branches without duplicating
+  F661/F664;
+- finish active-player / net-ID / human-control transitions, especially practical 3297;
+- finish chapter/interlude/retirement score arithmetic and save-state invariants;
+- finish cooperation/offLimits/trade helper behavior and dedup against existing findings;
+- finish remaining Rise/Fall history (1350/1351/1354/1363/1371/1386/1388/1407/1430/2253/3027/
+  3280/3281/3297/4186 and later refactors);
+- final pointer/index/divisor/state-machine saturation and whole-album dedup;
+- either promote an independent F665 or close Queue 038 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP530 -- QUEUE 038 RiseFall.cpp -- F665 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP529.
+- Queue 038 `CvGameCoreDLL/RiseFall.cpp` (1,555 queued lines): OPEN.
+- F660 / KI#982: CONFIRMED.
+- F661 / KI#983: CONFIRMED.
+- F662 / KI#984: CONFIRMED.
+- F663 / KI#985: CONFIRMED.
+- F664 / KI#986: CONFIRMED.
+- F665 / provisional KI#987: CONFIRMED.
+- F666 / provisional KI#988: UNUSED.
+- Files complete remains 67 / 169 because Queue 038 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+F665 / provisional KI#987 -- Rise/Fall chapter-selection handoff replaces the user's PlayerOptions with temporary AI-slot options
+-------------------------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+Rise/Fall needs a human player temporarily while the next-chapter civilization-choice popup is
+open. `haltForCivSelection(PlayerTypes haltCiv)` implements that by directly doing:
+
+    CvPlayer& h = GET_PLAYER(haltCiv);
+    GET_PLAYER(getActivePlayer()).setNetID(-1);
+    g.setActivePlayer(haltCiv);
+    GET_PLAYER(haltCiv).setNetID(0);
+    h.setIsHuman(true);
+    ...
+    h.addPopup(...);
+
+This deliberately does NOT use `CvGame::changeHumanPlayer()`.
+
+That distinction matters because PlayerOptions are per-player state. The normal human-control
+transfer routine contains explicit PlayerOption preservation:
+
+    EagerEnumMap<PlayerOptionTypes,bool> aeNewHumanOldOptions;
+    ...
+    GET_PLAYER(eNewHuman).setOption(
+        eLoopPlayerOption,
+        GET_PLAYER(eCurHuman).isOption(eLoopPlayerOption));
+    ...
+    GET_PLAYER(eCurHuman).setOption(
+        eLoopPlayerOption,
+        aeNewHumanOldOptions.get(eLoopPlayerOption));
+
+and then activates the new human through `setActivePlayer(..., true)`, which sends the active
+player options through the normal handoff path.
+
+The temporary Rise/Fall popup-host transition skips this preservation step entirely.
+
+SOURCE-PROVABLE STATE LOSS
+--------------------------
+The relevant lower-level routines confirm that no hidden option copy repairs the gap:
+
+1. `CvGame::setActivePlayer(haltCiv)` in ordinary single-player:
+   - changes the active-player ID;
+   - updates visibility/UI;
+   - only enters the hotseat/PBEM option-send branch when the new player is already human and the
+     game is hotseat/PBEM or `bForceHotSeat` is true;
+   - does not copy PlayerOptions from the former active player.
+
+2. `CvPlayer::setIsHuman(true)`:
+   - updates slot status;
+   - updates team leader / alerts / AI-human state;
+   - does not copy or initialize PlayerOptions.
+
+3. `CvPlayer::reset()` initializes each player's option map independently with:
+       m_abOptions.reset();
+
+Thus an AI civilization that has never been human retains its own per-player option values rather
+than automatically inheriting the user's active-player preferences.
+
+The handoff therefore loses the provenance of the actual user's PlayerOptions as soon as the
+temporary AI popup host becomes active.
+
+HOW THE WRONG VALUES REACH THE NEXT PLAYED CIV
+----------------------------------------------
+After the popup:
+
+Case A -- the player chooses a DIFFERENT civilization from the temporary popup host.
+
+The host is returned to AI control, but remains the active player until turn order reaches the
+selected civilization. Then:
+
+    setPlayerControl(selectedCiv, true)
+      -> CvGame::changeHumanPlayer(selectedCiv)
+
+`changeHumanPlayer` treats `getActivePlayer()` -- the temporary host -- as `eCurHuman` and copies
+that host's PlayerOptions to `selectedCiv`.
+
+The actual previous chapter civilization, where the user's real option state still resides, is no
+longer consulted.
+
+Case B -- the player chooses the temporary popup host itself.
+
+`afterCivSelection` immediately calls `setPlayerControl(h.getID(), true)`. The active player and
+new human are the same temporary host. No old chapter option state is reintroduced; the host simply
+continues with its pre-existing option map.
+
+Therefore the defect is not limited to choosing a different recommendation. The first normal
+between-chapter civ-selection handoff can lose the user's option state regardless of which offered
+civilization is selected, unless that temporary slot happens already to contain the desired values
+(e.g. from having been controlled earlier).
+
+CURRENT PLAYER-FACING OPTIONS AFFECTED
+--------------------------------------
+Current `PlayerOptionTypes` includes, among others:
+- PLAYEROPTION_ADVISOR_POPUPS
+- PLAYEROPTION_ADVISOR_HELP
+- PLAYEROPTION_WAIT_END_TURN
+- PLAYEROPTION_MINIMIZE_POP_UPS
+- PLAYEROPTION_SHOW_FRIENDLY_MOVES
+- PLAYEROPTION_SHOW_ENEMY_MOVES
+- PLAYEROPTION_QUICK_MOVES
+- PLAYEROPTION_QUICK_ATTACK
+- PLAYEROPTION_QUICK_DEFENSE
+- PLAYEROPTION_STACK_ATTACK
+- PLAYEROPTION_AUTO_PROMOTION
+- PLAYEROPTION_START_AUTOMATED
+- PLAYEROPTION_SAFE_AUTOMATION
+- PLAYEROPTION_NUMPAD_HELP
+- PLAYEROPTION_NO_UNIT_CYCLING
+- PLAYEROPTION_NO_UNIT_RECOMMENDATIONS
+- PLAYEROPTION_RIGHT_CLICK_MENU
+- PLAYEROPTION_LEAVE_FORESTS
+- PLAYEROPTION_MISSIONARIES_AUTOMATED
+
+Many of these have direct live DLL/Python/UI consumers, so this is not merely hidden metadata.
+
+MINIMAL SUPPORTED FIXTURE
+-------------------------
+A simple deterministic fixture is:
+1. Start a normal single-player Rise/Fall game.
+2. During the first chapter, enable any PlayerOption whose value differs from the unplayed AI
+   popup-host slot, e.g. Wait at End of Turn, Quick Moves, Safe Automation or Leave Forests.
+3. Reach the next chapter's civ-selection popup.
+4. Complete the normal selection/takeover transition.
+
+The new chapter's controlled player receives/retains the temporary host's option map rather than
+the previous controlled civilization's map. When `changeHumanPlayer` is used, its normal option
+send then propagates those wrong values to the active-player/EXE side as well.
+
+The exact visible set of toggled options depends on the user's configuration and whether the host
+slot was controlled previously. Do not overclaim that every option always becomes false; source
+proves that the wrong player's option map is used.
+
+INTERNAL ORACLE / DESIGN INTENT
+-------------------------------
+`CvGame::changeHumanPlayer` is the strongest internal oracle. Even before AdvC's later option-swap
+refinement, the inherited control-change routine copied PlayerOptions from the old human to the new
+human. AdvC practical 3284 ("Small tweaks to code that switches control of human civ") made this
+contract even more explicit by preserving the new AI slot's old values and swapping the maps
+rather than simply overwriting them.
+
+Rise/Fall's temporary-host path bypasses that exact control-transfer contract.
+
+ANCESTRY
+--------
+AdvC practical 1268 / e11525d303... introduced the first Rise/Fall implementation with both:
+- `setPlayerControl(..., true)` using the proper `CvGame::changeHumanPlayer`;
+- `haltForCivSelection(...)` instead directly calling:
+      setActivePlayer(haltCiv);
+      h.setIsHuman(true);
+      h.updateHuman();
+
+The option-provenance break therefore exists in the initial Rise/Fall implementation.
+
+Practical 3297 later improved net-ID correctness in the temporary-host path but retained the direct
+`setActivePlayer + setIsHuman` approach and did not transfer PlayerOptions.
+
+Current Base AdvC 1.14 retains the defect. Current SAS inherits it unchanged.
+
+WHY THIS IS DISTINCT FROM F664
+------------------------------
+F664 is player-domain selection during an interlude victory: the code can choose BARBARIAN_PLAYER
+as the human.
+
+F665 occurs on the ordinary supported major-civ selection path even when every involved
+civilization is valid. The chosen player identity can be correct while the human's PlayerOptions
+come from the wrong slot.
+
+REPAIR DIRECTION
+----------------
+Preserve the real human option map across the temporary popup-host phase.
+
+Possible narrow designs:
+- before changing active player in `haltForCivSelection`, copy the current/previous human's
+  PlayerOptions to the temporary host so any later `changeHumanPlayer` forwards the correct map;
+- or store the user's option map explicitly in RiseFall across the selection phase and apply it to
+  the actual selected civ immediately before/after human takeover;
+- or redesign the popup handoff so it can use the normal `changeHumanPlayer` machinery without
+  unwanted hotseat/password UI, while retaining the net-ID behavior practical 3297 requires.
+
+Do not merely copy options from the temporary host at final takeover; that is exactly the faulty
+provenance.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album search found no prior owner for:
+- Rise/Fall chapter switching losing PlayerOptions;
+- `haltForCivSelection` bypassing the `changeHumanPlayer` option transfer;
+- a temporary AI popup host becoming the source of the next human's option map.
+
+Existing hotseat/control/net-ID findings do not own this per-player option-state root.
+
+QUEUE-038 CONTINUATION CURSOR
+-----------------------------
+Continue from F666 UNUSED:
+- finish the remaining net-ID/control history with F665 now accounted for;
+- finish empty eligible / Retire All and dead-previous-civ behavior without overclaiming supported
+  dead-human end-game handling;
+- finish `prepareForExtendedGame` NO_TEAM/NO_PLAYER branches and broaden F661/F664 only when they
+  share those exact roots;
+- finish trade/cooperation/offLimits helpers;
+- finish serialization/transient-state and chapter/interlude score arithmetic;
+- finish remaining practical history and final pointer/index/divisor/state-machine saturation;
+- whole-album dedup;
+- either promote a genuinely independent F666 or close Queue 038 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP531 -- QUEUE 038 RiseFall.cpp CLOSED / QUEUE 043 ACOText.cpp OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP530.
+- Queue 038 `CvGameCoreDLL/RiseFall.cpp` (1,555 queued lines): CLOSED.
+- Confirmed Queue-038 roots: F660-F665 / provisional KI#982-KI#987.
+- F666 / provisional KI#988: UNUSED.
+- Files complete: 68 / 169.
+- Queues 039-042 were already completed in earlier durable checkpoints.
+- Queue 043 `CvGameCoreDLL/ACOText.cpp` (1,335 queued lines): OPEN.
+- No gameplay/source/XML file was modified.
+
+QUEUE-038 PROVENANCE CLOSURE
+----------------------------
+Current SAS RiseFall.cpp is executable-semantically identical to supplied Base AdvC 1.14 except
+for already-owned/reconciled SAS changes:
+- F448/KI#771 founding-unit-extra-cost cache refresh after direct Rise/Fall handicap changes;
+- explicit SAS autoplay-end cause plumbing;
+- the SAS practical-5383 NULL group-plot guard in `abandonPlans`.
+No missed Base-AdvC-1.14 repair was found.
+
+QUEUE-038 CONFIRMED ROOT SET
+----------------------------
+F660 / KI#982
+    RiseFall::read obtains a wchar array from FDataStreamBase::ReadWideString but releases it
+    with scalar `delete` instead of `delete[]`. Normal initialized Rise/Fall saves contain the
+    original leader-name field, so ordinary save loading reaches the mismatched deallocation.
+    Introduced practical 1268.
+
+F661 / KI#983
+    `reportElimination` calls `GET_PLAYER(nextCivAlive(BARBARIAN_PLAYER))` without handling
+    `NO_PLAYER`. If the current chapter civilization is the final surviving major civilization,
+    the major-only search has no successor and GET_PLAYER(-1) is reached. Practical 2239 created
+    the sentinel possibility by excluding Barbarians without guarding it.
+    Same-root note: other major-only successor-selection sites must likewise never feed a
+    `NO_PLAYER` return directly into `haltForCivSelection`/GET_PLAYER. The demonstrated ordinary
+    last-major defeat path remains the primary activation.
+
+F662 / KI#984
+    `byRecommendation` returns false in both unequal victory-stage directions:
+        if(vs1 > vs2) return false;
+        if(vs2 > vs1) return false;
+    so the explicit victory-stage civ-selection ranking criterion is discarded and score/rank
+    tie-breaking is skipped for differing stages. Practical 1270 introduction typo.
+
+F663 / KI#985
+    A civilization selected for the next chapter can be eliminated after selection but before
+    actual human takeover / RFChapter::start(). Scheduled-turn `isOngoing` makes
+    `reportElimination` treat that not-yet-started chapter as the player's defeat, stamp it
+    scored without a valid chapter-start score baseline, and bypass the source-explicit
+    retry-selection intent. Practical 1268 contains the lifecycle contradiction; practical 1430
+    additionally made the dead-selected-civ retry branch unreachable by first filtering through
+    `nextCivAlive`.
+
+F664 / KI#986
+    On victory during an interlude (`prepareForExtendedGame`, pos<0), the attempt to choose an
+    alive player other than the winner calls the all-player `nextCivAlive(winnerLeader)`.
+    Conquest victory ignores Barbarian teams, so the winner can be the sole surviving major while
+    the special Barbarian player remains alive. The helper then returns BARBARIAN_PLAYER rather
+    than NO_PLAYER, bypassing the fallback-to-winner and feeding the explicitly non-playable
+    Barbarian slot into `setPlayerControl(...,true)` / `changeHumanPlayer` before the native
+    end-game sequence. Practical 1268 root.
+
+F665 / KI#987
+    The normal between-chapter civilization-selection handoff loses PlayerOption provenance.
+    `haltForCivSelection` directly changes active player and calls `setIsHuman(true)` on a
+    temporary AI popup host, bypassing `CvGame::changeHumanPlayer`'s explicit per-player option
+    transfer. Later takeover therefore uses/retains the temporary host's option map rather than
+    the previous controlled civilization's human preferences. Live options include Wait End
+    Turn, Quick Moves/Combat, Safe Automation, Leave Forests, No Unit Cycling, advisor options,
+    etc. Practical 1268 root; practical 3297 fixed net IDs but retained this direct handoff.
+
+FINAL NEGATIVE / BELOW-THRESHOLD CONTROLS
+-----------------------------------------
+- `mostRecentlyFinished()` has a textbook unsigned reverse-loop underflow pattern but is private,
+  marked currently unused, and has no shipped caller.
+- The similar reverse loops in `prepareForExtendedGame()` are protected on supported initialized
+  Rise/Fall paths because chapter 0 necessarily exists and has started before the subsystem can
+  reach game end.
+- `GET_TEAM(PlayerTypes)` calls in this subsystem are safe in current AdvC/SAS because CoreAI.h
+  deliberately overloads the PlayerTypes form and maps it through TEAMID.
+- `afterCivSelection` "Retire All" can restore a previous/dead chapter identity when no eligible
+  civ exists, but the surrounding end-game pipeline explicitly supports dead-human identities;
+  no independent source-proven corruption/crash survived beyond F661/F664.
+- `prepareForExtendedGame`'s `winnerId == NO_TEAM -> team 0` fallback is suspicious for hypothetical
+  game-over-in-interlude without a winner, but the ordinary supported interlude victory path has
+  a winner and no independent current activation was established.
+- `pessimisticDealVal` computes TEAMID(activePlayer) before its NO_PLAYER check. This would be
+  unsafe with NO_PLAYER, but both shipped callers are active-human AI-diplomacy evaluation paths,
+  so the precondition currently holds.
+- `isCooperationRestricted` master-team recursion follows valid vassal-master leadership on its
+  shipped callers; no cycle/NO_PLAYER root survived.
+- `allSquare` returning true for an empty list is consistent with the intended "human receives a
+  gift/non-dual concession" permissiveness and current callers.
+- current `AI_DIPLOCOMMENT_THANKS` has one response containing all relevant text alternatives;
+  `findThanks()` choosing the first response is sufficient for current data.
+- `substituteDiploText`'s wide-to-narrow conversion remains a real localization robustness concern:
+  CvString explicitly warns its std::wstring conversion breaks for non-ASCII, and current German
+  `TXT_KEY_RF_NO_THANKS` contains umlaut characters. Exact MSVC `%S` behavior is locale/code-page
+  dependent, so this is preserved as a targeted German/non-ASCII runtime test rather than promoted
+  as deterministic F666 without runtime evidence.
+- `restoreDiploText` restores all currently substituted texts on the normal game-update path.
+- `abandonPlans` research-percent stepping assumes a positive
+  COMMERCE_PERCENT_CHANGE_INCREMENTS; current game configuration satisfies the ordinary contract.
+- production-decay threshold arithmetic, research clearing, espionage weights, city production
+  automation and the current SAS NULL group-plot guard reconciled.
+- `setPlayerName`, Dawn-of-Man, war/quest replay/UI surfaces did not yield independent roots.
+- save read/write field ordering beyond F660 reconciles for current version 1; transient selection
+  flags are deliberately not persisted and saves are not expected during interludes
+  (`interludeCountdown < 0` load assertion).
+
+HISTORY SATURATION
+------------------
+The retained Rise/Fall semantic history was checked through the major practical strata, including:
+- 1268 initial subsystem;
+- 1269/1270/1271 initial scoring/recommendation refinements;
+- 1292/1307/1318;
+- 1350/1351/1354 cooperation/trade/name fixes;
+- 1363, 1368, 1371;
+- 1386/1388;
+- 1394/1395;
+- 1407;
+- 1430 turn-order / successor / retirement fixes;
+- 1493/1497 and later pointer/storage refactors;
+- 1548/1552/1564 and related mechanical refactors;
+- 1644 and later file/global refactors;
+- 1912 autosave timing;
+- 2239 defeat-popup successor change (F661);
+- 2253 city-dot-map active-owner refresh;
+- 2545/2555/2571 and serialization/refactor strata;
+- 2719/2998 custom-era merge strata;
+- 3027 No-Slavery compatibility;
+- 3218/3392 refactors;
+- 3280 production-decay reset;
+- 3281 handicap increase;
+- 3284 generic changeHumanPlayer option-map preservation oracle for F665;
+- 3297 Rise/Fall net-ID maintenance;
+- 3746/3761/3877/4104;
+- 4186 Marathon chapter-count adjustment;
+- current SAS fixes listed above.
+No independent F666 survived final history/mechanical saturation.
+
+WHOLE-ALBUM DEDUP
+-----------------
+Whole-album dedup was repeated for:
+- extended-game / dead-human popup behavior;
+- nextCivAlive and no-successor handling;
+- Rise/Fall civ recommendation sorting;
+- pre-takeover elimination;
+- Barbarian human-control transfer;
+- changeHumanPlayer / PlayerOption transfer;
+- Rise/Fall trade/cooperation helpers;
+- diplomacy-text substitution.
+F660-F665 remain distinct roots; no older finding owns them.
+
+NEXT EXACT CURSOR
+-----------------
+C031-WIP531 physical
+-> 68 / 169 files complete
+-> Queue 038 CLOSED
+-> F660-F665 / KI#982-KI#987 confirmed
+-> F666 / KI#988 UNUSED
+-> Queues 039-042 already complete
+-> Queue 043 `CvGameCoreDLL/ACOText.cpp` OPEN
+-> establish current SAS vs Base AdvC 1.14 semantic baseline
+-> compare ACO ancestry / K-Mod/Civ4CE availability
+-> inventory text-builder call graph, combat-odds inputs, first-strike/combat-limit/free-win
+   assumptions, UI option gating and string/index ownership
+-> reconcile against already-completed Queue 057 CombatOdds.cpp and existing combat findings
+-> trace current Python/UI activation
+-> whole-album dedup
+-> promote F666 only for an independent supported root
+-> freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP532 -- QUEUE 043 ACOText.cpp -- F666 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP531.
+- Queue 043 `CvGameCoreDLL/ACOText.cpp` (1,335 queued lines): OPEN.
+- F666 / provisional KI#988: CONFIRMED.
+- F667 / provisional KI#989: UNUSED.
+- Files complete remains 68 / 169 because Queue 043 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+QUEUE-043 BASELINE
+------------------
+Current SAS `ACOText.cpp` is executable-semantically identical to supplied Base AdvC 1.14 except
+for two SAS micro-performance edits that cache `ANIMAL_MAX_XP_VALUE` and
+`BARBARIAN_MAX_XP_VALUE` in local static const ints. Those edits do not change the values or
+control flow.
+
+Therefore F666 is an inherited AdvC regression, not a SAS-only defect or a missed newer Base-AdvC
+repair.
+
+F666 / provisional KI#988 -- ACO overstates Leadership XP near animal/barbarian XP caps
+---------------------------------------------------------------------------------------
+
+ROOT
+----
+`CvGameTextMgr::setACOPlotHelp` separately computes:
+- base combat XP (`iExperience` / `iWithdrawXP`);
+- promotion-derived extra XP (`iBonusAttackerXP` / `iBonusWithdrawXP`).
+
+For a human attacker fighting an Animal/Barbarian defender, current ACO first computes the
+remaining total XP room:
+
+    iMaxExtraXP = max(0, XP_CAP - kAttacker.getExperience());
+
+and clamps the base award:
+
+    iExperience = range(iExperience, 0, iMaxExtraXP);
+
+But it then clamps the bonus with:
+
+    iBonusAttackerXP =
+        range(iBonusAttackerXP, 0, iMaxExtraXP + iExperience);
+
+and likewise:
+
+    iBonusWithdrawXP =
+        range(iBonusWithdrawXP, 0, iMaxExtraXP + iWithdrawXP);
+
+The `+ iExperience` / `+ iWithdrawXP` is the wrong direction. The bonus's available room is the
+remaining cap *after* base XP, not the cap room plus base XP.
+
+LIVE EXECUTOR CONTRACT
+----------------------
+Actual combat uses `CvUnit::changeExperience`.
+
+On a normal attacker victory:
+
+    changeExperience(iExperience, pDefender->maxXPValue(), true, ...);
+
+For a Barbarian/Animal defender, `pDefender->maxXPValue()` supplies the ordinary XP cap.
+Inside `changeExperience`:
+1. `iUnitExperience` begins as the base combat award;
+2. `getExperiencePercent()` (e.g. Leadership) multiplies that total combat award;
+3. `setExperience(current + iUnitExperience, iMax)` applies the final total-XP cap.
+
+Thus promotion bonus XP does NOT sit outside the Animal/Barbarian cap. The final amount gained is:
+
+    min(currentXP + promotedCombatAward, cap) - currentXP
+
+ACO's separate display must obey the same remaining total room.
+
+CURRENT DATA ACTIVATION
+-----------------------
+The current mod contains a normal reachable promotion:
+
+    PROMOTION_LEADERSHIP
+        PromotionPrereq = PROMOTION_LEADER
+        iExperiencePercent = 100
+
+so a Leadership unit receives +100% combat XP.
+
+The supplied SAS light-source mod XML does not override the inherited BtS global defines for:
+- ANIMAL_MAX_XP_VALUE
+- BARBARIAN_MAX_XP_VALUE
+- MIN_EXPERIENCE_PER_COMBAT
+- MAX_EXPERIENCE_PER_COMBAT
+- EXPERIENCE_FROM_WITHDRAWL
+
+The supplied Civ4CE/BtS `GlobalDefines.xml` therefore provides the inherited values:
+- ANIMAL_MAX_XP_VALUE = 5
+- BARBARIAN_MAX_XP_VALUE = 10
+- MIN_EXPERIENCE_PER_COMBAT = 1
+- MAX_EXPERIENCE_PER_COMBAT = 10
+- EXPERIENCE_FROM_WITHDRAWL = 1
+
+ACO is a supported BUG option (`ACO__Enabled`). Once enabled, Victory/Withdraw/Defeat XP is part of
+the ordinary ACO combat tooltip; the base + promotion-bonus display is not hidden behind the
+optional experience-range setting.
+
+DETERMINISTIC EXAMPLE
+---------------------
+Take a Leadership (+100% XP) attacker at 9 XP fighting a normal Barbarian.
+
+Suppose the nominal pre-promotion base award is only 1 XP.
+
+Actual executor:
+    base award = 1
+    Leadership turns combat award into 2
+    final setExperience is capped at 10
+    actual gain = 10 - 9 = +1 total XP
+
+Current ACO:
+    iMaxExtraXP = 10 - 9 = 1
+    iExperience = min(1, 1) = 1
+    iBonusAttackerXP = 1
+    upper bonus clamp = iMaxExtraXP + iExperience = 2
+    displayed gain = 1 + 1 = +2 XP
+
+For a nominal base award of 2 XP, current ACO can display:
+    base 1 + bonus 2 = +3 XP
+while actual total gain is still only +1.
+
+The same root exists for:
+- Animal cap 5;
+- combat-limit withdrawal XP (`iBonusWithdrawXP`) near either cap.
+
+ANCESTRY / EXACT REGRESSION POINT
+---------------------------------
+This is especially well localized.
+
+K-Mod practical 101 / d5c68c5392 ("Added the Advanced Combat Odds mod") imported the original
+ACO cap logic with the correct expression:
+
+    iBonusAttackerXP =
+        range(iBonusAttackerXP, 0,
+              XP_CAP - (currentXP + iExperience));
+
+and the equivalent withdrawal expression.
+
+That is exactly the proper "room remaining after base XP" direction.
+
+AdvC practical 2204 / d28df2fae6785654721a1fd0f84db16b09bd76de
+("Misc. refactoring, comments") simplified the duplicated Animal/Barbarian block. During that
+refactor it changed the correct subtraction into:
+
+    iBonusAttackerXP =
+        range(iBonusAttackerXP, 0, iMaxExtraXP + iExperience);
+
+    iBonusWithdrawXP =
+        range(iBonusWithdrawXP, 0, iMaxExtraXP + iWithdrawXP);
+
+The practical title describes this as refactoring, but the sign/relationship changed semantics.
+Current Base AdvC 1.14 retains the practical-2204 expression. Current SAS inherits it.
+
+INTERNAL ORACLE
+---------------
+There are two independent internal oracles:
+1. the current `CvUnit::changeExperience` + `setExperience(..., iMax)` executor;
+2. K-Mod's original ACO implementation, which already used
+       cap - (currentXP + baseXP)
+   before AdvC practical 2204 changed it.
+
+This removes ambiguity about whether ACO intentionally displays "uncapped theoretical bonus XP":
+its original code explicitly tried to display the capped actual award.
+
+CONSEQUENCE / SEVERITY
+----------------------
+This is player-facing combat-tooltip misinformation. It does not change actual combat XP.
+A Leadership unit close to the Animal/Barbarian XP limit can be told it will gain more XP than the
+executor can award.
+
+The discrepancy is strategically relevant because the entire purpose of ACO's XP display is to
+forecast the combat result before committing to the attack.
+
+NARROW REPAIR DIRECTION
+-----------------------
+The simplest display repair is to cap the displayed bonus by the room that remains after the
+already-capped displayed base award:
+
+    int iBonusRoom = max(0, iMaxExtraXP - iExperience);
+    iBonusAttackerXP = range(iBonusAttackerXP, 0, iBonusRoom);
+
+and equivalently:
+
+    int iBonusWithdrawRoom = max(0, iMaxExtraXP - iWithdrawXP);
+    iBonusWithdrawXP = range(iBonusWithdrawXP, 0, iBonusWithdrawRoom);
+
+More robustly, derive the displayed *total actual XP gain* through the same ordering as
+`CvUnit::changeExperience` and split base/bonus only for presentation afterward. That avoids future
+drift if experience-modifier/cap ordering changes again.
+
+DEDUP
+-----
+Whole-album search found no prior owner for:
+- ACO Leadership XP exceeding Animal/Barbarian caps;
+- `iBonusAttackerXP` / `iBonusWithdrawXP` cap arithmetic;
+- AdvC practical 2204's ACO refactor sign error.
+
+This is independent from:
+- F602/KI#925: executor/predictor disagreement from SAS Janissary combatLimit 110;
+- F637/KI#959: calculateCombatOdds failing to forward bHideFreeWins;
+- F638/KI#960: `getCombatOddsSpecific` bilateral chance-first-strike probability bug.
+
+ACO correctly calls `initCombatants(..., bHideFreeWins)` and therefore does not duplicate F637.
+ACO displays driven by `getCombatOddsSpecific` can inherit F638's wrong probabilities, but those
+symptoms remain owned by F638 unless ACO adds an independent summation/display error.
+
+QUEUE-043 CONTINUATION CURSOR
+-----------------------------
+Continue from F667 UNUSED:
+- finish exact expected-HP normalization and underflow/zero-probability boundaries;
+- finish survival bar arithmetic and 0/100/extreme probability pixel bounds;
+- finish XP-range thresholds and compare all XP displays with current executor ordering/caps;
+- finish attacker/defender detailed-health condensation and minimum-HP outcome accounting;
+- finish average-health/unharmed/basic-info outputs;
+- audit `setACOModifiersPlotHelp`, including total-defense modifier zero/rounding boundaries;
+- compare all probability paths against already-owned F602/F637/F638;
+- inspect ACO BUG-option activation/defaults and current XML/data bounds;
+- finish ACO/K-Mod/AdvC history (including 2963/2971/2985/3392/3903 and SAS formatting/perf edits);
+- whole-album dedup and final pointer/index/divisor/numeric saturation;
+- either promote an independent F667 or close Queue 043 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP533 -- QUEUE 043 ACOText.cpp -- F667 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP532.
+- Queue 043 `CvGameCoreDLL/ACOText.cpp` (1,335 queued lines): OPEN.
+- F666 / KI#988: CONFIRMED.
+- F667 / provisional KI#989: CONFIRMED.
+- F668 / provisional KI#990: UNUSED.
+- Files complete remains 68 / 169 because Queue 043 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+F667 / provisional KI#989 -- ACO uses the wrong per-combat XP ceiling when a non-Barbarian attacker defeats a normal Barbarian
+-------------------------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+At the start of `CvGameTextMgr::setACOPlotHelp`, current ACO derives separate per-combat XP caps:
+
+    int iMaxXPAtt = MAX_EXPERIENCE_PER_COMBAT;
+    int iMaxXPDef = iMaxXPAtt;
+    if (kAttacker.isBarbarian())
+        iMaxXPDef -= 4;
+    if (kDefender.isBarbarian())
+        iMaxXPAtt -= 4;
+
+For a normal non-Animal Barbarian defender and current MAX_EXPERIENCE_PER_COMBAT=10, ACO therefore
+uses an attacker victory cap of:
+
+    iMaxXPAtt = 10 - 4 = 6
+
+and calculates:
+
+    iExperience =
+        (kDefender.attackXPValue() * def.strength()) / att.strength();
+    iExperience = range(iExperience, MIN_EXPERIENCE_PER_COMBAT, iMaxXPAtt);
+
+The real combat executor uses a different rule for exactly this direction:
+
+    int iExperience = pDefender->attackXPValue();
+    iExperience = ((iExperience * iDefenderStrength) / iAttackerStrength);
+    iExperience = range(iExperience,
+        MIN_EXPERIENCE_PER_COMBAT,
+        MAX_EXPERIENCE_PER_COMBAT /
+            (pDefender->isBarbarian() && !pDefender->isAnimal() ? 2 : 1));
+
+For an ordinary Barbarian defender the actual ceiling is therefore:
+
+    10 / 2 = 5
+
+not 6.
+
+This is direction-specific. When the attacker is a normal Barbarian and the defender wins, the
+executor uses:
+    MAX_EXPERIENCE_PER_COMBAT - 4
+and ACO's `iMaxXPDef -= 4` matches it.
+
+CURRENT SHIPPED DATA / DETERMINISTIC FIXTURE
+--------------------------------------------
+Current `CIV4UnitInfos.xml` gives:
+- UNIT_WARRIOR: iCombat=3, iXPValueAttack=4;
+- UNIT_SWORDSMAN: iCombat=6, iXPValueAttack=4.
+
+`CvUnit::attackXPValue()` applies advc.312's normal-Barbarian reduction:
+
+    UnitInfo.iXPValueAttack
+        - (isBarbarian() && !isAnimal() ? 1 : 0)
+
+so a Barbarian Swordsman has:
+    attackXPValue() = 4 - 1 = 3.
+
+The Barbarian civilization has no special replacement/disable mapping for UNITCLASS_SWORDSMAN,
+so the ordinary Swordsman class remains available to that civilization under the normal Barbarian
+unit system.
+
+Take a full-health, unmodified human Warrior (strength 3) defeating a full-health, unmodified
+Barbarian Swordsman (strength 6) on a context with no additional strength modifiers.
+
+Both paths begin with:
+    raw XP = (3 * 6) / 3 = 6.
+
+Actual executor:
+    range(6, 1, 10/2) = 5
+    -> awards at most 5 base combat XP, subject also to the separate total Barbarian-XP cap.
+
+Current ACO:
+    iMaxXPAtt = 10 - 4 = 6
+    range(6, 1, 6) = 6
+    -> displays 6 XP.
+
+Choose an attacker at 0 XP and without an ExperiencePercent promotion to isolate this root:
+BARBARIAN_MAX_XP_VALUE=10 does not further reduce the executor's +5 award, and F666's
+Leadership/remaining-total-cap bug is not involved.
+
+The matchup is low-odds but wholly legal; ACO exists precisely to preview such attacks before the
+player commits.
+
+XP-RANGE DISPLAY IS WRONG UNDER THE SAME ROOT
+----------------------------------------------
+The optional ACO experience-range display also uses `iMaxXPAtt` as its upper bound and builds its
+CombatRatioThresholds from that value.
+
+Against a normal Barbarian defender it therefore constructs a 1..6 attacker-XP range when the
+executor's advc.312 attacker-victory ceiling is 1..5. The root is not only the headline Victory XP
+number; the detailed ratio-to-XP thresholds are shifted at the top end as well.
+
+ANCESTRY / EXACT INTRODUCTION
+-----------------------------
+AdvC practical 1253 / f6ff6a182f... introduced advc.312 ("barbarian experience" changes).
+
+The SAME practical changes the real executor asymmetrically:
+
+Attacker is killed; defender earns XP from a normal Barbarian attacker:
+    MAX_EXPERIENCE_PER_COMBAT - 4
+
+Defender is killed; attacker earns XP from a normal Barbarian defender:
+    MAX_EXPERIENCE_PER_COMBAT / 2
+
+It also changes `CvUnit::attackXPValue()` for a normal Barbarian:
+    base attack XP - 1.
+
+In the ACO adaptation in that same practical, however, both directions were represented by
+subtracting 4:
+
+    if(pAttacker->isBarbarian()) maxXPDef -= 4;
+    if(pDefender->isBarbarian()) maxXPAtt -= 4;
+
+Thus practical 1253 itself introduces the display/executor disagreement. The ACO code appears to
+have mirrored the defender-wins `-4` rule onto the attacker-wins direction instead of mirroring
+the executor's `/2` rule.
+
+Before advc.312, both K-Mod's ACO and combat executor used the common
+MAX_EXPERIENCE_PER_COMBAT ceiling, so there was no such asymmetry to model.
+
+Current Base AdvC 1.14 retains the mismatch. Current SAS inherits it unchanged.
+
+INTERNAL ORACLE
+---------------
+The live `CvUnit::resolveCombat` XP formula is the primary oracle: it is the code that actually
+awards the combat XP.
+
+The practical-1253 diff is an unusually strong history oracle because it introduces both:
+- the actual `/2` attacker-win rule;
+- the ACO `-4` attacker display rule;
+in the same semantic feature change.
+
+This eliminates the possibility that ACO merely failed to follow some much later executor
+redesign.
+
+CONSEQUENCE / SEVERITY
+----------------------
+This is player-facing ACO misinformation. A non-Barbarian attacker can be told it will receive
+6 base XP for defeating a sufficiently stronger normal Barbarian when the executor caps that
+single combat at 5.
+
+It does not change combat or awarded XP.
+
+The optional XP-range/ratio guidance inherits the same one-XP upper-bound error, potentially
+telling the player that a combat-ratio region yields 6 XP when 5 is the true maximum.
+
+NARROW REPAIR
+-------------
+Mirror the executor rule exactly when deriving ACO's attacker per-combat maximum.
+
+Conceptually:
+
+    int iMaxXPAtt = MAX_EXPERIENCE_PER_COMBAT;
+    if (kDefender.isBarbarian() && !kDefender.isAnimal())
+        iMaxXPAtt /= 2;
+
+while retaining the defender-side:
+    if (kAttacker.isBarbarian() && !kAttacker.isAnimal())
+        iMaxXPDef -= 4;
+
+The `!isAnimal()` condition should match the current executor too; current ACO's broad
+`isBarbarian()` test also applies its `-4` pre-cap to Animals before the later total-XP adjustment,
+whereas the executor's advc.312 per-combat reductions explicitly exclude Animals.
+
+A stronger future-proof repair would centralize the per-combat XP formula/cap so ACO and
+`resolveCombat` cannot drift independently.
+
+RELATION TO F666
+----------------
+F666 and F667 both affect ACO XP display but have different roots and activation.
+
+F667:
+- introduced practical 1253;
+- wrong *per-combat base XP ceiling* for attacker defeating a normal Barbarian;
+- activates at low/current total XP without Leadership;
+- deterministic 6-displayed vs 5-awarded example.
+
+F666:
+- introduced practical 2204;
+- wrong *remaining total cap for promotion-derived bonus XP* through `+ baseXP` instead of
+  remaining-room subtraction;
+- most visible with Leadership/ExperiencePercent near Animal/Barbarian lifetime XP caps;
+- also affects withdrawal bonus XP.
+
+Fixing either one does not fix the other.
+
+DEDUP
+-----
+Whole-album search through WIP532 found no prior owner for:
+- ACO `iMaxXPAtt` using `MAX_XP-4` against Barbarian defenders;
+- the executor's corresponding `MAX_XP/2` rule;
+- ACO's 6-vs-5 Barbarian per-combat XP forecast;
+- the XP-range thresholds inheriting that wrong top cap.
+
+Nearby owners remain distinct:
+- F666: promotion bonus / remaining lifetime XP cap;
+- F602/KI#925: SAS combatLimit=110 executor/predictor discrepancy;
+- F637/KI#959: ignored bHideFreeWins argument in calculateCombatOdds;
+- F638/KI#960: bilateral chance-first-strike probability error in getCombatOddsSpecific.
+
+QUEUE-043 CONTINUATION CURSOR
+-----------------------------
+Continue from F668 UNUSED:
+- finish expected-HP normalization and exact zero/extreme-probability divisions;
+- finish survival-bar pixel math and 0/100% boundaries;
+- finish all remaining XP display paths after F666/F667, including defender-side promotion XP
+  and Animal-specific per-combat handling;
+- finish attacker/defender detailed-health condensation, duplicate/unharmed outcome checks and
+  minimum-HP combat-limit accounting;
+- finish average-health/basic-info outputs;
+- audit `setACOModifiersPlotHelp` total-defense/rounding/index assumptions;
+- reconcile all probabilities against F602/F637/F638;
+- finish current BUG-option activation and ACO history (2963/2971/2985/3392/3903 plus SAS edits);
+- whole-album dedup and final numeric/pointer/index saturation;
+- either promote an independent F668 or close Queue 043 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP534 -- QUEUE 043 ACOText.cpp -- F668 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP533.
+- Queue 043 `CvGameCoreDLL/ACOText.cpp` (1,335 queued lines): OPEN.
+- F666 / KI#988: CONFIRMED.
+- F667 / KI#989: CONFIRMED.
+- F668 / provisional KI#990: CONFIRMED.
+- F669 / provisional KI#991: UNUSED.
+- Files complete remains 68 / 169 because Queue 043 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+F668 / provisional KI#990 -- ACO prints the defender's unhurt detailed-HP outcome twice when one attacker hit is lethal
+------------------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+The defender detailed-health section iterates attacker-hit counts backwards:
+
+    for (int iHitsByAtt = att.hitsToWin(); iHitsByAtt >= 1; iHitsByAtt--)
+
+For a kill-capable attacker:
+
+    if (kAttacker.combatLimit() >= kDefender.maxHitPoints())
+    {
+        if (iHitsByAtt == att.hitsToWin())
+            iHitsByAtt--; // we don't need to do HP for when the unit is dead
+    }
+
+When `att.hitsToWin() == 1`, the first iteration therefore changes `iHitsByAtt` from 1 to 0.
+
+The loop then computes the probability that the defender exits combat having suffered zero
+attacker hits:
+
+    prob += 100 * (
+        getCombatOddsSpecific(..., def.hitsToWin(),     0) +
+        getCombatOddsSpecific(..., def.hitsToWin() - 1, 0));
+
+and sets:
+    def_HP = kDefender.currHitPoints().
+
+If that probability exceeds the detailed-health cutoff (normally 0.5%), the ordinary/direct branch
+immediately prints an unhurt-defender bar.
+
+After the loop, current ACO then unconditionally does:
+
+    // print the unhurt value...always
+    prob = 100 * (
+        getCombatOddsSpecific(..., def.hitsToWin(),     0) +
+        getCombatOddsSpecific(..., def.hitsToWin() - 1, 0));
+
+and prints the same current-HP outcome again.
+
+Thus a one-hit-to-kill defender whose unhurt-survival probability is above the detail cutoff gets
+two identical detailed-health rows.
+
+THE EXISTING "DON'T PRINT TWICE" GUARD DOES NOT COVER THIS
+----------------------------------------------------------
+Immediately before the unconditional final unhurt row, ACO contains:
+
+    if (bCondensed && att.hitsToWin() > 1)
+
+with the comment:
+
+    "the reason we need att.hitsToWin() to be greater than 1 is
+     that if it's equal to 1 then we end up with the
+     defender detailed HP bar show up twice
+     because it will also get printed below"
+
+This guard prevents only a *condensed low-probability batch* from being flushed when
+`hitsToWin()==1`.
+
+It does not suppress the direct row already emitted inside the loop when `prob >
+HP_percent_cutoff`. The nearby comment therefore identifies the exact duplication state but
+applies its prevention only to one of the two loop-output modes.
+
+CURRENT SHIPPED DETERMINISTIC FIXTURE
+-------------------------------------
+Current unit data provides a simple no-first-strike/no-withdrawal fixture:
+- UNIT_SWORDSMAN:
+    iCombat = 6
+    iFirstStrikes = 0
+    iChanceFirstStrikes = 0
+    iWithdrawalProb = 0
+- UNIT_TANK:
+    iCombat = 30
+    iFirstStrikes = 0
+    iChanceFirstStrikes = 0
+    iWithdrawalProb = 0
+
+Take a full-health Swordsman attacking a Tank currently at 10 HP, with no external strength
+modifiers.
+
+Current combat-strength/firepower math gives:
+- Swordsman current strength = 6;
+- injured Tank current strength = 30 * 10/100 = 3;
+- defender per-round win probability = 3 / (6 + 3) = 1/3;
+- Swordsman damage to Tank = 12 HP per winning round;
+- Tank damage to Swordsman = 32 HP per winning round.
+
+Therefore:
+- attacker needs 1 hit to kill the 10-HP Tank:
+      att.hitsToWin() = 1;
+- defender needs 4 hits to kill the 100-HP Swordsman:
+      def.hitsToWin() = 4.
+
+With no first strikes or withdrawal, the probability that the Tank survives unhurt is the
+probability it wins four rounds before the Swordsman wins even one:
+
+    (1/3)^4 = 1/81 ~= 1.2345679%
+
+This exceeds the default merged-bar cutoff:
+    HP_percent_cutoff = 0.5%.
+
+The first loop therefore directly prints approximately:
+    Tank 10 HP -- 1.23%
+
+Then the unconditional "print the unhurt value...always" block computes and prints the exact same
+10-HP / ~1.23% outcome again.
+
+A Tank reaching 10 HP is ordinary valid unit state; the finding does not rely on malformed XML,
+a special promotion or undefined combat parameters.
+
+CURRENT UI ACTIVATION
+---------------------
+The detailed defender-health section is a supported ACO display controlled by
+`ACO__ShowDefenderHealthBars`. Current BUG configuration contains that option (default list value
+2). `ACO__MergeShortBars` defaults true, which gives the 0.5% cutoff used in the fixture above.
+
+The duplication is therefore user-facing whenever the corresponding ACO view is displayed for a
+one-hit lethal matchup whose unhurt-defender outcome exceeds the cutoff.
+
+ANCESTRY
+--------
+The bug is inherited from the original ACO integration rather than introduced by AdvC.
+
+K-Mod practical 101 / d5c68c5392 ("Added the Advanced Combat Odds mod") introduces:
+- the backward defender-HP loop;
+- the `n_D--` dead-state skip;
+- the direct output branch;
+- the later unconditional unhurt output;
+- and the comment explicitly discussing the one-hit "show up twice" case.
+
+The original code already restricts only the condensed flush with:
+    if (bIsCondensed && iNeededRoundsAttacker > 1)
+
+while leaving the direct above-cutoff output unsuppressed.
+
+Later K-Mod/AdvC refactors preserve the same control flow. Current Base AdvC 1.14 retains it.
+Current SAS inherits it unchanged.
+
+CONSEQUENCE / SEVERITY
+----------------------
+This is a low-severity but source-certain player-facing ACO presentation bug:
+- the same surviving-defender HP state and probability are listed twice;
+- users can interpret the duplicated rows as two separate outcomes or simply see needless clutter;
+- probabilities are not doubled in actual combat and game state is unaffected.
+
+The finding is numbered because it has:
+- a current supported UI path;
+- a deterministic shipped-unit fixture;
+- explicit source evidence;
+- and an independent root from the probability/XP bugs already owned elsewhere.
+
+NARROW REPAIR DIRECTION
+-----------------------
+Ensure the unhurt-defender state is emitted exactly once.
+
+A simple structural repair is to exclude `iHitsByAtt==0` from the loop for kill-capable
+`att.hitsToWin()==1` and leave the unconditional final unhurt block as the single owner.
+
+Alternatively, track whether the loop has already emitted/condensed the zero-hit state and skip the
+final unhurt output when it has. The former is cleaner because the final block is already designed
+as the canonical "unhurt value...always" output.
+
+Do not merely retain the existing `bCondensed && hitsToWin()>1` condition; that is the incomplete
+guard that leaves the direct-output duplication live.
+
+DEDUP
+-----
+Whole-album search through WIP533 found no prior owner for:
+- ACO defender detailed-health bar duplication;
+- `att.hitsToWin()==1` / one-hit defender detailed HP;
+- the acknowledged "show up twice" comment.
+
+F638 can make the probabilities themselves wrong for bilateral chance-first-strike matchups, but
+F668 is independent: the simple Swordsman/Tank fixture uses no first strikes and duplicates a
+correctly computed probability.
+
+F666/F667 concern XP display and do not overlap.
+
+QUEUE-043 CONTINUATION CURSOR
+-----------------------------
+Continue from F669 UNUSED:
+- finish expected-HP conditional divisions at exact/extreme odds and combat limits;
+- finish survival overview bar pixel arithmetic and negative/overflow boundaries;
+- finish Animal-specific per-combat XP path and defender-side ExperiencePercent cap behavior;
+- finish attacker detailed-health lowest-state accounting and condensed-range ordering;
+- finish defender detail beyond F668, including combat-limit PullOut aggregation;
+- finish average-health/unharmed/basic-info outputs;
+- audit `setACOModifiersPlotHelp`, especially total-defense modifier arithmetic;
+- reconcile all probability symptoms against F602/F637/F638;
+- finish ACO BUG-option/current-data activation and later history 2963/2971/2985/3392/3903;
+- whole-album dedup and final numeric/pointer/index saturation;
+- either promote an independent F669 or close Queue 043 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP535 -- QUEUE 043 ACOText.cpp -- F669 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP534.
+- Queue 043 `CvGameCoreDLL/ACOText.cpp` (1,335 queued lines): OPEN.
+- F666 / KI#988: CONFIRMED.
+- F667 / KI#989: CONFIRMED.
+- F668 / KI#990: CONFIRMED.
+- F669 / provisional KI#991: CONFIRMED.
+- F670 / provisional KI#992: UNUSED.
+- Files complete remains 68 / 169 because Queue 043 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+F669 / provisional KI#991 -- ACO float underflow can turn legal extreme-combat conditional expected HP into 0/0
+---------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+ACO computes outcome probabilities through `combat_odds::getCombatOddsSpecific`, whose return type
+and internal accumulators are `float`.
+
+It then displays conditional expected hit points by dividing accumulated weighted HP by the
+corresponding outcome-probability sum.
+
+For an attacker victory:
+    E_HP_Att_Victory / AttackerKillOdds
+
+For a combat-limit pullout:
+    E_HP_Att_Withdraw / PullOutOdds
+
+For defender victory/attacker retreat:
+    E_HP_Def_Defeat / (RetreatOdds + DefenderKillOdds)
+
+The first two have no zero-denominator guard at all. The defender line uses:
+    def.odds() != 0 ? E_HP_Def_Defeat /
+        (RetreatOdds + DefenderKillOdds) : 0.0
+
+but `def.odds()` is the integer *per-round* chance, not a guarantee that the accumulated
+single-precision whole-combat outcome probability remains representable.
+
+A legal combat can therefore have nonzero mathematical victory odds while
+`getCombatOddsSpecific` underflows every relevant outcome to 0.0f. The weighted expected-HP
+numerator underflows to zero along with it. ACO then evaluates 0.0f / 0.0f.
+
+CURRENT SHIPPED DETERMINISTIC FIXTURE -- ATTACKER VICTORY
+---------------------------------------------------------
+Current `CIV4UnitInfos.xml`:
+- UNIT_SCOUT:
+    iCombat = 1
+    iFirstStrikes = 0
+    iChanceFirstStrikes = 0
+    iWithdrawalProb = 0
+    bOnlyDefensive = 0
+    bOnlyAttackAnimals = 0
+- UNIT_MODERN_TANK:
+    iCombat = 40
+    iFirstStrikes = 0
+    iChanceFirstStrikes = 0
+    iWithdrawalProb = 0
+
+A 1-HP Scout is a legal living land unit and can attack the Modern Tank.
+
+With no external modifiers:
+- Scout max combat strength is 100 internal, but at 1/100 HP its current combat strength is 1;
+- full Modern Tank current combat strength is 4000.
+
+`CvUnit::getDefenderCombatValues` therefore derives defender round odds:
+
+    floor(1000 * 4000 / (4000 + 1)) = 999
+
+so attacker round odds are exactly:
+    1 / 1000 = 0.001.
+
+Current firepower/damage arithmetic gives:
+- Scout firepower = (100 + 1 + 1)/2 = 51;
+- Tank firepower = 4000;
+- mean/strength factor = (51 + 4000 + 1)/2 = 2026;
+- Scout damage to Tank:
+      floor(20 * (51 + 2026) / (4000 + 2026)) = 6 HP.
+
+The full-health Tank therefore requires:
+    ceil(100 / 6) = 17
+Scout hits to defeat.
+
+Any Tank hit kills the 1-HP Scout, so the only attacker-victory sequence is 17 consecutive Scout
+round wins. With no first strikes or withdrawal:
+
+    P(victory) = (0.001)^17 = 10^-51.
+
+Single-precision float's smallest positive subnormal is about 1.4 * 10^-45. `10^-51` therefore
+rounds/underflows to exactly `0.0f`.
+
+For this no-first-strike state, `getCombatOddsSpecific(kScout,kTank,0,17)` is precisely that
+17-round probability and all other attacker-victory hit-count states are impossible because the
+Scout has only 1 HP.
+
+Thus:
+    AttackerKillOdds = 0.0f
+and:
+    E_HP_Att_Victory = 1 HP * 0.0f = 0.0f.
+
+Current ACO unconditionally formats:
+    E_HP_Att_Victory / AttackerKillOdds
+i.e.:
+    0.0f / 0.0f.
+
+The mathematical victory odds are nonzero; only the single-precision representation has collapsed.
+
+REVERSE FIXTURE / DEFENDER LINE
+-------------------------------
+The same representational problem exists in the opposite direction.
+
+Take a full-health Modern Tank attacking a 1-HP Scout, again with no external modifiers.
+The Scout's per-round chance is nonzero (the integer Combatant odds remain 1), but defeating the
+Tank before one Tank hit removes the Scout requires an extremely long sequence of the minimum
+per-round success probability. The accumulated `DefenderKillOdds` can underflow to 0.0f while:
+
+    def.odds() != 0
+
+remains true.
+
+The defender expected-HP expression then reaches:
+    0.0f / (0.0f + 0.0f).
+
+Hence its current `def.odds()!=0` guard is not a sufficient underflow guard.
+
+The combat-limit pullout expression has the same root if all pullout-state probabilities
+underflow.
+
+TARGET-BUILD CONSEQUENCE BOUNDARY
+---------------------------------
+0.0f/0.0f is a non-finite floating-point operation. On the normal IEEE-style target runtime it
+produces a NaN value, which is then passed to `CvWString::Format("%.1f", ...)`.
+
+Do not overclaim an exact rendered token such as "nan" or "1.#QNAN"; formatting of a non-finite
+float is CRT-specific. Source proves that ACO supplies a non-finite conditional-HP value instead
+of a meaningful finite HP forecast on the supported matchup.
+
+The headline combat probability may simultaneously format as 0.00% because the single-precision
+outcome sum has underflowed, even though the true probability is merely fantastically small.
+
+ANCESTRY
+--------
+K-Mod practical 101 / d5c68c5392 ("Added the Advanced Combat Odds mod") introduced the original
+ACO implementation with the same unguarded expressions:
+
+    E_HP_Att_Victory / AttackerKillOdds
+    E_HP_Att_Withdraw / PullOutOdds
+
+and the corresponding defender expected-HP normalization.
+
+AdvC later moved/refactored the code but did not add representational zero guards. Current Base
+AdvC 1.14 retains the behavior. Current SAS inherits it unchanged.
+
+This is therefore an original ACO numeric-stability defect, not an AdvC-only regression.
+
+WHY POSITIVE PER-ROUND ODDS DO NOT SAVE IT
+------------------------------------------
+Current combat initialization ensures ordinary positive-strength opponents have nonzero integer
+per-round odds (at least one side out of COMBAT_DIE_SIDES). That protects against a logically
+impossible outcome caused by a literal 0% round probability.
+
+It does not protect a product/sum of many nonzero round probabilities stored in `float`.
+The Scout/Tank fixture turns seventeen `0.001` factors into an unrepresentable whole-combat
+probability while every individual round chance remains valid and nonzero.
+
+REPAIR DIRECTION
+----------------
+At minimum, never normalize conditional expected HP by a non-positive/non-finite accumulated
+probability.
+
+For each conditional output:
+- if the accumulated outcome probability is representably > 0, divide normally;
+- otherwise omit the conditional HP, display an explicit "effectively 0%"/unavailable state, or
+  compute it through a numerically stable method.
+
+A better repair is to calculate ACO probability distributions in `double` (or a stable scaled/log
+representation) rather than float. Double can represent `10^-51` easily and would also reduce
+rounding loss throughout the detailed health distributions.
+
+Even with double, defensive denominator checks remain appropriate.
+
+DEDUP
+-----
+Whole-album search through WIP534 found no prior owner for:
+- ACO conditional expected-HP 0/0;
+- float underflow in extreme whole-combat probabilities;
+- AttackerKillOdds/PullOutOdds zero normalization;
+- nonzero `def.odds()` paired with zero representable DefenderKillOdds.
+
+This is distinct from:
+- F638/KI#960: algebraically wrong bilateral chance-first-strike probabilities;
+- F668/KI#990: duplicate defender-health row;
+- F666/F667: XP display drift;
+- F602/KI#925: combatLimit executor/predictor mismatch.
+
+The F669 Scout/Tank fixture uses no first strikes, so F638 does not contribute.
+
+QUEUE-043 CONTINUATION CURSOR
+-----------------------------
+Continue from F670 UNUSED:
+- finish remaining survival-overview bar arithmetic after treating underflow as F669;
+- finish Animal lifetime/per-combat XP-range behavior and defender-side XP display;
+- finish attacker lowest-HP / retreat bar accounting;
+- finish defender combat-limit PullOut aggregation beyond F668/F669;
+- finish average/unharmed/basic-info outputs;
+- audit `setACOModifiersPlotHelp` total-defense modifier arithmetic and zero-strength invariants;
+- reconcile all remaining probability symptoms against F602/F637/F638;
+- finish ACO BUG-option/current-data activation and later history 2963/2971/2985/3392/3903;
+- whole-album dedup and final numeric/pointer/index saturation;
+- either promote an independent F670 or close Queue 043 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP536 -- QUEUE 043 ACOText.cpp -- F670 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP535.
+- Queue 043 `CvGameCoreDLL/ACOText.cpp` (1,335 queued lines): OPEN.
+- F666 / KI#988: CONFIRMED.
+- F667 / KI#989: CONFIRMED.
+- F668 / KI#990: CONFIRMED.
+- F669 / KI#991: CONFIRMED.
+- F670 / provisional KI#992: CONFIRMED.
+- F671 / provisional KI#993: UNUSED.
+- Files complete remains 68 / 169 because Queue 043 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+F670 / provisional KI#992 -- ACO Experience Range ignores remaining Animal/Barbarian lifetime XP room
+------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+ACO correctly performs a current-experience-aware lifetime-cap adjustment for the main Victory /
+Withdraw XP fields when the defender is an Animal or Barbarian:
+
+    iMaxExtraXP = max(0, XP_CAP - kAttacker.getExperience());
+    iExperience = range(iExperience, 0, iMaxExtraXP);
+    iWithdrawXP = range(iWithdrawXP, 0, iMaxExtraXP);
+
+(The promotion-bonus part of this same block has the separate F666 sign bug.)
+
+Later, however, the optional `ACO__ShowExperienceRange` section independently reconstructs the XP
+ratio thresholds from only:
+
+    iMaxXPAtt
+    MIN_EXPERIENCE_PER_COMBAT
+    kDefender.attackXPValue()
+    CombatRatio
+
+It does not consult:
+- `kAttacker.getExperience()`;
+- `ANIMAL_MAX_XP_VALUE`;
+- `BARBARIAN_MAX_XP_VALUE`;
+- `iMaxExtraXP`;
+- or, except for one special lowest-XP branch, the already lifetime-capped `iExperience`.
+
+In the ordinary middle-range branch it explicitly prints:
+
+    current-ratio XP = iMaxXPAtt - (i + 1)
+
+instead of `iExperience`.
+
+Thus the headline Victory line can correctly say that an at-cap unit will gain 0 XP while the
+immediately following Experience Range says that the same current combat ratio yields several XP.
+
+CURRENT DETERMINISTIC BARBARIAN FIXTURE
+---------------------------------------
+Use:
+- a full-health human UNIT_SWORDSMAN;
+- current experience exactly 10 XP;
+- a full-health Barbarian UNIT_SWORDSMAN;
+- no external strength modifiers and no ExperiencePercent promotion.
+
+Current data:
+- Swordsman base strength = 6;
+- Swordsman base `iXPValueAttack = 4`;
+- a normal Barbarian's `CvUnit::attackXPValue()` is 4 - 1 = 3 (advc.312);
+- BARBARIAN_MAX_XP_VALUE = 10.
+
+Actual executor:
+- the attacker is already at the Barbarian lifetime XP cap;
+- `changeExperience(..., iMax=10, ...)` cannot raise its total XP;
+- actual gain = 0.
+
+Current ACO main Victory XP:
+    iMaxExtraXP = max(0, 10 - 10) = 0;
+    iExperience = range(rawXP, 0, 0) = 0;
+so the main line also correctly displays 0 XP.
+
+Current ACO Experience Range:
+- equal strengths give `CombatRatio = 1.00`;
+- current code has `iMaxXPAtt = 6` because of F667's separate per-combat-cap bug;
+- threshold array from attackXPValue 3 is:
+      3/6 = 0.50
+      3/5 = 0.60
+      3/4 = 0.75
+      3/3 = 1.00
+      3/2 = 1.50
+- strict `CombatRatio > threshold` selects the 0.75..1.00 interval branch;
+- that branch prints the current ratio from:
+      iMaxXPAtt - (i+1) = 6 - 3 = 3 XP.
+
+So the tooltip can show, for the same attack:
+    Victory: ... 0 XP
+followed by an XP-range line whose `R=1.00` entry says:
+    3 XP.
+
+INDEPENDENT OF F667
+-------------------
+Fixing F667 does not repair this fixture.
+
+If `iMaxXPAtt` is corrected to the real normal-Barbarian per-combat maximum of 5:
+- thresholds become 3/5, 3/4, 3/3, 3/2;
+- at CombatRatio=1.00 the strict comparison again selects the interval below the 1.00 threshold;
+- the reconstructed current-ratio value is:
+      5 - (1+1) = 3 XP.
+
+The detailed range still says 3 XP while actual/main-line gain remains 0.
+
+Therefore F670 is not merely an additional symptom of F667's 6-vs-5 ceiling.
+
+AT 9 XP THE SAME ROOT MISSTATES 1 AS 3
+--------------------------------------
+The discrepancy is not limited to an exactly capped unit.
+
+At 9 current XP against the same Barbarian:
+- lifetime room is 1;
+- executor gain is at most 1;
+- main ACO `iExperience` becomes 1;
+- Experience Range still reconstructs 3 XP at R=1.00.
+
+ANIMALS SHARE THE ROOT
+----------------------
+The original/current range code likewise ignores:
+    ANIMAL_MAX_XP_VALUE - currentXP.
+
+The Animal lifetime cap is 5, so a unit at/near 5 XP can receive 0/1 XP from an Animal while the
+ratio-range display continues to advertise theoretical per-combat values from `iMaxXPAtt`.
+
+Current ACO's broad `if(kDefender.isBarbarian()) iMaxXPAtt -= 4` also gives Animals a nominal
+pre-range ceiling that does not mirror the executor; however the lifetime-room omission survives
+regardless of how that separate per-combat ceiling is repaired.
+
+UI ACTIVATION
+-------------
+`ACO__ShowExperienceRange` is a supported BUG ACO option in current `ACO_config.xml`.
+Its default list value is 0, so this detailed line is opt-in rather than always shown.
+
+Once enabled for the corresponding ACO view, it is ordinary combat-tooltip output; no debug mode
+or malformed data is required.
+
+ANCESTRY
+--------
+This root predates AdvC.
+
+K-Mod practical 101 / d5c68c5392, the original ACO import, already contains both:
+1. the Animal/Barbarian current-XP lifetime-cap block for the main displayed award, including the
+   originally correct bonus remaining-room subtraction;
+2. a later independent Experience Range block whose threshold and labels use only
+   MAX_EXPERIENCE_PER_COMBAT / MIN_EXPERIENCE_PER_COMBAT and attackXPValue.
+
+Thus the initial ACO implementation already lets the detailed range ignore the lifetime cap that
+the main XP line honors.
+
+AdvC practical 1253 later changes the theoretical `iMaxXPAtt` used by the range for advc.312,
+creating F667's separate normal-Barbarian per-combat discrepancy, but it does not add the missing
+current-XP/lifetime-room dimension.
+
+Current Base AdvC 1.14 and SAS retain the root.
+
+CONSEQUENCE / SEVERITY
+----------------------
+This is opt-in but direct player-facing misinformation:
+- the headline XP field and detailed Experience Range can contradict one another;
+- the range can advertise XP outcomes that are impossible because the unit has already exhausted
+  its Animal/Barbarian lifetime XP allowance;
+- the error is strategically relevant precisely when a player uses the optional ratio guidance to
+  choose an XP-farming combat.
+
+No actual XP award or game state is changed.
+
+REPAIR DIRECTION
+----------------
+The range display needs to describe *actual awardable XP*, not only the theoretical raw
+ratio-to-base-XP function.
+
+At minimum:
+- derive each ratio bucket's raw base XP;
+- pass it through the same per-combat rule;
+- then clamp it by:
+      max(0, defender.maxXPValue() - attacker.currentXP)
+  for the current defender/attacker context;
+- if ExperiencePercent bonuses are intended to be shown in the range, apply the same ordering as
+  `CvUnit::changeExperience` and then the final total cap.
+
+When remaining lifetime room is zero, the entire displayed XP range should collapse to 0 rather
+than retaining impossible positive neighboring labels.
+
+Best long-term repair: share one executor-aligned XP-award helper between combat resolution and
+ACO rather than reconstructing independent formulas in multiple display sections.
+
+RELATION TO F666/F667
+---------------------
+F666:
+- promotion-derived bonus XP remaining-room sign error;
+- main Victory/Withdraw XP display;
+- practical 2204 regression.
+
+F667:
+- wrong normal-Barbarian *per-combat base ceiling* (6 vs real 5);
+- main XP and detailed range;
+- practical 1253 regression.
+
+F670:
+- detailed Experience Range ignores the attacker's *remaining lifetime Animal/Barbarian XP room*;
+- persists even when F667's per-combat maximum is corrected;
+- present since original K-Mod ACO import.
+
+The three need separate repairs.
+
+DEDUP
+-----
+Whole-album search through WIP535 found no prior owner for:
+- ACO ShowExperienceRange ignoring Animal/Barbarian current-XP caps;
+- a main Victory 0/1 XP line contradicted by a 3-XP current-ratio range;
+- range thresholds not using remaining lifetime XP room.
+
+F667's WIP note records only the separate 1..6 vs executor 1..5 upper-bound error and does not own
+this current-experience dimension.
+
+QUEUE-043 CONTINUATION CURSOR
+-----------------------------
+Continue from F671 UNUSED:
+- finish survival-overview bar 0/100% visual boundaries;
+- finish defender-side XP/ExperiencePercent behavior under normal player-facing ACO preconditions;
+- finish attacker low-HP/retreat detail accounting;
+- finish defender combat-limit PullOut aggregation beyond F668/F669;
+- finish average/unharmed/basic-info outputs;
+- audit `setACOModifiersPlotHelp`, especially total-defense modifier arithmetic;
+- reconcile all remaining probability symptoms against F602/F637/F638;
+- finish current BUG-option activation and later ACO history 2963/2971/2985/3392/3903;
+- whole-album dedup and final numeric/pointer/index saturation;
+- either promote an independent F671 or close Queue 043 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP537 -- QUEUE 043 ACOText.cpp -- F671 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP536.
+- Queue 043 `CvGameCoreDLL/ACOText.cpp` (1,335 queued lines): OPEN.
+- F666 / KI#988: CONFIRMED.
+- F667 / KI#989: CONFIRMED.
+- F668 / KI#990: CONFIRMED.
+- F669 / KI#991: CONFIRMED.
+- F670 / KI#992: CONFIRMED.
+- F671 / provisional KI#993: CONFIRMED.
+- F672 / provisional KI#994: UNUSED.
+- Files complete remains 68 / 169 because Queue 043 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+F671 / provisional KI#993 -- ACO computes capped Animal/Barbarian withdrawal XP but displays the uncapped raw define
+----------------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+ACO creates a dedicated base withdrawal-XP value:
+
+    int iWithdrawXP = GC.getDefineINT(CvGlobals::EXPERIENCE_FROM_WITHDRAWL);
+
+and, for an Animal or Barbarian defender, correctly clamps that value to the attacker's remaining
+lifetime XP room:
+
+    iMaxExtraXP = max(0, XP_CAP - kAttacker.getExperience());
+    iWithdrawXP = range(iWithdrawXP, 0, iMaxExtraXP);
+
+Thus a human attacker already at the Animal/Barbarian lifetime XP cap obtains:
+
+    iWithdrawXP = 0
+
+inside ACO itself.
+
+However, neither visible base withdrawal-XP field uses `iWithdrawXP`.
+
+Combat-limit pullout line:
+    szTempBuffer.Format(...,
+        100.0f * PullOutOdds,
+        GC.getDefineINT(CvGlobals::EXPERIENCE_FROM_WITHDRAWL));
+
+Normal retreat line:
+    szTempBuffer.Format(...,
+        100.0f * RetreatOdds,
+        ...,
+        GC.getDefineINT(CvGlobals::EXPERIENCE_FROM_WITHDRAWL));
+
+The correctly lifetime-capped `iWithdrawXP` is therefore calculated and then ignored at display
+time. It is used only indirectly when ACO computes the promotion-derived bonus cap.
+
+LIVE EXECUTOR CONTRACT
+----------------------
+Both actual withdrawal forms award experience through the same capped executor.
+
+Normal combat retreat:
+    changeExperience(
+        EXPERIENCE_FROM_WITHDRAWL,
+        pDefender->maxXPValue(),
+        true, ...);
+
+Combat-limit pullout:
+    changeExperience(
+        EXPERIENCE_FROM_WITHDRAWL,
+        pDefender->maxXPValue(),
+        true, ...);
+
+`CvUnit::maxXPValue()` returns:
+- ANIMAL_MAX_XP_VALUE for Animals;
+- BARBARIAN_MAX_XP_VALUE for Barbarians.
+
+`changeExperience` ultimately calls `setExperience(current + award, iMax)`, so when the attacker
+already has XP equal to that defender-derived maximum, actual gain is zero.
+
+Current inherited values are:
+- EXPERIENCE_FROM_WITHDRAWL = 1
+- ANIMAL_MAX_XP_VALUE = 5
+- BARBARIAN_MAX_XP_VALUE = 10
+
+CURRENT SHIPPED ACTIVATION
+--------------------------
+The current unit roster supplies many ordinary human-controllable retreat cases. Examples:
+- UNIT_WARRIOR: iWithdrawalProb = 5
+- UNIT_HORSE_ARCHER: iWithdrawalProb = 20
+- UNIT_ARCHER / Longbow family: nonzero withdrawal in current SAS
+- numerous mounted/ranged later units also have withdrawal probabilities.
+
+The combat-limit branch is likewise ordinary:
+- UNIT_CATAPULT: iCombatLimit = 75
+- UNIT_TREBUCHET: iCombatLimit = 75
+- UNIT_CANNON: iCombatLimit = 80
+- later artillery families use sub-100 combat limits.
+
+ACO itself is a supported BUG option (`ACO__Enabled`); once enabled, the headline
+Victory/Withdraw/Retreat/Defeat section is ordinary ACO output and is not dependent on
+`ACO__ShowExperienceRange`.
+
+DETERMINISTIC NORMAL-RETREAT FIXTURE
+------------------------------------
+Take a human Horse Archer at exactly 10 XP attacking an ordinary Barbarian combat unit.
+
+Current Horse Archer:
+    iWithdrawalProb = 20.
+
+Because the defender is a normal Barbarian:
+    pDefender->maxXPValue() = 10.
+
+Actual retreat award:
+    changeExperience(1, 10, ...)
+with current attacker XP already 10
+    -> actual XP gain = 0.
+
+ACO's own cap block:
+    iMaxExtraXP = max(0, 10 - 10) = 0;
+    iWithdrawXP = range(1, 0, 0) = 0.
+
+But the visible Retreat line formats:
+    EXPERIENCE_FROM_WITHDRAWL = 1
+
+and therefore tells the player a successful retreat earns 1 XP.
+
+A current Warrior can provide the same root with its 5% withdrawal probability.
+
+DETERMINISTIC COMBAT-LIMIT FIXTURE
+----------------------------------
+Take a human Catapult at exactly 10 XP attacking an ordinary Barbarian defender.
+
+Current Catapult:
+    iCombatLimit = 75.
+
+If it reaches the combat-limit pullout:
+- executor uses `changeExperience(1, defender.maxXPValue()==10, ...)`;
+- actual gain is 0;
+- ACO computes `iWithdrawXP=0`;
+- but the visible Withdraw line still prints raw `1 XP`.
+
+Thus both withdrawal mechanisms independently expose the same formatting root.
+
+ANIMALS SHARE THE ROOT
+----------------------
+At 5 XP against an Animal:
+- actual retreat/pullout XP gain is capped to 0;
+- ACO computes `iWithdrawXP=0`;
+- the visible field still prints 1 XP.
+
+The discrepancy therefore applies to both lifetime-cap families the original cap block was
+specifically written to support.
+
+ANCESTRY
+--------
+This is inherited from the original K-Mod ACO import.
+
+K-Mod practical 101 / d5c68c5392 contains:
+- explicit current-XP caps for `iWithdrawXP` against Animals and Barbarians;
+- the correct original remaining-room treatment for bonus withdrawal XP;
+- but later formats both PullOut and Retreat base XP directly from
+  `GC.getDefineINT("EXPERIENCE_FROM_WITHDRAWL")`.
+
+So the original implementation already computes the corrected variable and then fails to use it
+for presentation.
+
+AdvC refactors preserved that disconnect. Current Base AdvC 1.14 retains it. Current SAS inherits
+it unchanged.
+
+RELATION TO F666 / F670
+-----------------------
+F671 is independent.
+
+F666:
+- promotion-derived *bonus* withdrawal/victory XP uses the wrong remaining-room expression;
+- practical 2204 AdvC regression.
+Even with no ExperiencePercent promotion at all, F671 still displays 1 base XP when actual gain
+is 0.
+
+F670:
+- optional ShowExperienceRange ignores lifetime Animal/Barbarian XP room for kill-capable combat;
+- original ACO root.
+F671 affects the always-visible headline withdrawal/retreat XP field and does not depend on the
+optional range.
+
+Fixing F666 and F670 therefore leaves F671 fully active.
+
+CONSEQUENCE / SEVERITY
+----------------------
+This is direct player-facing combat-tooltip misinformation:
+- A unit that cannot legally gain any more XP from an Animal/Barbarian can still be told that
+  retreating or pulling out will grant 1 XP.
+- The source has already computed the correct zero value, making the display contradiction
+  especially clear.
+
+Actual combat XP is unaffected.
+
+NARROW REPAIR
+-------------
+Use the already-computed `iWithdrawXP` in both visible fields instead of rereading the raw define:
+
+Combat-limit PullOut:
+    ... PullOutOdds, iWithdrawXP
+
+Normal Retreat:
+    ... RetreatOdds, ..., iWithdrawXP
+
+Then repair F666 separately for the promotion-derived `iBonusWithdrawXP` remaining-room
+calculation.
+
+A stronger future-proof cleanup would calculate a single executor-aligned withdrawal award
+structure and reuse it for both base and bonus display.
+
+DEDUP
+-----
+Whole-album search through WIP536 found no prior owner for:
+- ACO computing `iWithdrawXP` and then formatting the raw withdrawal define;
+- at-cap Barbarian/Animal retreat displaying 1 XP but awarding 0;
+- combat-limit PullOut sharing that same base-XP display mismatch.
+
+F666/F667/F670 are adjacent ACO XP findings but have different formulas and activation, as
+documented above.
+
+QUEUE-043 CONTINUATION CURSOR
+-----------------------------
+Continue from F672 UNUSED:
+- finish survival overview and individual bar visual arithmetic;
+- finish attacker lowest-HP / retreat probability grouping after F668;
+- finish defender combat-limit PullOut grouping and one-hit/multi-hit edge cases;
+- finish Average Health / Unharmed and basic info probability accounting;
+- finish `setACOModifiersPlotHelp` and total-defense modifier inversions/rounding;
+- reconcile all remaining probability symptoms with F602/F637/F638/F669;
+- finish current BUG-option activation and later history 2963/2971/2985/3392/3903;
+- whole-album dedup and final numeric/pointer/index saturation;
+- either promote an independent F672 or close Queue 043 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP538 -- QUEUE 043 ACOText.cpp -- F672 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP537.
+- Queue 043 `CvGameCoreDLL/ACOText.cpp` (1,335 queued lines): OPEN.
+- F666-F672 / provisional KI#988-KI#994: CONFIRMED.
+- F673 / provisional KI#995: UNUSED.
+- Files complete remains 68 / 169 because Queue 043 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+F672 / provisional KI#994 -- ACO Attacker Unharmed odds omit retreat outcomes when the next defender hit would be lethal
+--------------------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+ACO initializes the two "Unharmed" probabilities asymmetrically:
+
+    float AttackerUnharmed = getCombatOddsSpecific(
+        kAttacker, kDefender, 0, att.hitsToWin());
+
+    float DefenderUnharmed = getCombatOddsSpecific(
+        kAttacker, kDefender, def.hitsToWin(), 0);
+
+    DefenderUnharmed += getCombatOddsSpecific(
+        kAttacker, kDefender, def.hitsToWin() - 1, 0);
+        // attacker withdraws or retreats
+
+The defender statistic explicitly includes a retreat state that leaves the defender at its
+current HP.
+
+The attacker statistic includes only attacker victory/combat-limit-pullout terminal states with
+zero defender hits. It never includes a normal retreat state.
+
+Ordinarily that omission is harmless because normal retreat occurs after the attacker has already
+survived `def.hitsToWin()-1` applied defender hits and is therefore damaged.
+
+But when:
+    def.hitsToWin() == 1
+
+then:
+    def.hitsToWin() - 1 == 0.
+
+Every successful normal retreat therefore occurs before *any* defender damage has been applied.
+The attacker exits combat at exactly its entering HP and is genuinely unharmed by the combat.
+
+LIVE EXECUTOR ORDER
+-------------------
+`CvUnit::resolveCombat()` handles a potentially lethal defender hit in this order:
+
+    if (getDamage() + iAttackerDamage >= maxHitPoints() &&
+        SyncRandSuccess100(withdrawalProbability()))
+    {
+        ...
+        changeExperience(...);
+        break;
+    }
+    changeDamage(iAttackerDamage, ...);
+
+So on successful withdrawal the lethal hit is NOT applied. The unit leaves combat with whatever
+damage it already had before that round.
+
+If `def.hitsToWin()==1`, there were zero prior successful defender hits. Therefore its final HP is
+exactly its initial HP.
+
+ACO itself agrees about the HP state. It defines:
+
+    E_HP_Att_Retreat =
+        kAttacker.currHitPoints()
+        - (def.hitsToWin() - 1) * def.damagePerRound();
+
+For `def.hitsToWin()==1` this becomes:
+
+    E_HP_Att_Retreat = kAttacker.currHitPoints();
+
+Thus the same function explicitly knows that one-hit-to-die retreat is an unchanged-HP outcome,
+but does not add its probability to `AttackerUnharmed`.
+
+PROBABILITY IDENTITY
+--------------------
+Normal retreat outcomes are represented by:
+
+    getCombatOddsSpecific(
+        kAttacker, kDefender,
+        def.hitsToWin() - 1,
+        iHitsByAtt)
+
+for all:
+    0 <= iHitsByAtt < att.hitsToWin().
+
+ACO later sums exactly those states into:
+    RetreatOdds.
+
+When `def.hitsToWin()==1`, every one of those states has:
+    iHitsByDef = 0
+
+and therefore leaves the attacker at its starting HP.
+
+The correct attacker-unharmed probability in this case is consequently:
+
+    AttackerUnharmed + RetreatOdds
+
+not merely the current `AttackerUnharmed`.
+
+CURRENT SHIPPED DETERMINISTIC FIXTURE
+-------------------------------------
+Current UNIT_HORSE_ARCHER:
+- iCombat = 6
+- iWithdrawalProb = 20
+- iFirstStrikes = 0
+- iChanceFirstStrikes = 0
+- iCombatLimit = 100
+
+Take a human Horse Archer at 1 HP attacking any legal defender that can damage it, e.g. a
+full-health ordinary Swordsman.
+
+`Combatant::damagePerRound` is clamped to at least 1 HP, so with current attacker HP=1:
+    def.hitsToWin() = ceil(1 / damagePerRound) = 1.
+
+The Horse Archer has a live 20% withdrawal chance.
+
+Any defender-success round that would kill it therefore:
+- triggers the withdrawal roll;
+- on successful withdrawal, applies no damage;
+- leaves the Horse Archer at the same 1 HP.
+
+Those retreat outcomes have positive probability and belong in the attacker "Unharmed" total.
+Current ACO omits all of them.
+
+Current UNIT_WARRIOR also supplies the root with its SAS 5% withdrawal probability; Horse Archer
+is simply a larger/easier visible fixture.
+
+UI ACTIVATION
+-------------
+`ACO__ShowUnharmedOdds` is a supported ACO BUG option. Its current list default is 0 (off), so
+the statistic is opt-in rather than part of every ACO view.
+
+Once enabled, it is ordinary player-facing combat-tooltip output. No debug mode, malformed XML,
+Barbarian control or unsupported unit ownership is required.
+
+ANCESTRY
+--------
+This defect is present in the original K-Mod ACO import.
+
+K-Mod practical 101 / d5c68c5392 introduces:
+
+    AttackerUnharmed =
+        getCombatOddsSpecific(attacker, defender, 0, neededAttackerHits);
+
+    DefenderUnharmed =
+        getCombatOddsSpecific(attacker, defender, neededDefenderHits, 0);
+
+    DefenderUnharmed +=
+        getCombatOddsSpecific(attacker, defender, neededDefenderHits - 1, 0);
+        // attacker withdraws or retreats
+
+The attacker-side retreat counterpart is absent from the initial implementation and remains
+absent through later AdvC refactors.
+
+Current Base AdvC 1.14 retains it. Current SAS inherits it unchanged.
+
+WHY THIS IS NOT A SEMANTIC "WAS HIT" INTERPRETATION
+----------------------------------------------------
+The ACO statistic is implemented from *final HP states*, not from animation/event semantics:
+- the defender is counted unharmed when the attacker retreats before landing a damaging hit;
+- attacker/defender detailed bars and expected HP treat successful withdrawal as avoiding the
+  would-be lethal damage;
+- `E_HP_Att_Retreat` explicitly gives the attacker's unchanged current HP when one defender hit
+  would kill it.
+
+So omitting a retreat that leaves final HP unchanged is inconsistent with ACO's own surrounding
+definition of the metric.
+
+CONSEQUENCE / SEVERITY
+----------------------
+This is opt-in, low-severity but direct player-facing probability misinformation.
+
+For sufficiently injured withdrawal-capable attackers, the tooltip understates the chance of
+leaving combat at exactly the same HP because it reports only no-hit victory/pullout paths and
+drops every successful normal retreat.
+
+The game executor and actual combat are unaffected.
+
+NARROW REPAIR
+-------------
+After `RetreatOdds` has been calculated, add it to AttackerUnharmed only when a normal retreat
+leaves the unit at its entering HP:
+
+    if (def.hitsToWin() == 1)
+        AttackerUnharmed += RetreatOdds;
+
+A more structural implementation could derive "Unharmed" from the same final-HP distribution used
+by the detailed bars, eliminating special-case drift.
+
+DEDUP
+-----
+Whole-album search through WIP537 found no prior owner for:
+- attacker unharmed odds omitting retreat;
+- the `def.hitsToWin()==1` unchanged-HP withdrawal state;
+- asymmetry between `AttackerUnharmed` and `DefenderUnharmed`.
+
+F668 concerns duplicate defender detailed-health output and uses a no-withdrawal fixture.
+F669 concerns floating-point underflow.
+F666/F667/F670/F671 concern XP display.
+F672 is independent.
+
+QUEUE-043 CONTINUATION CURSOR
+-----------------------------
+Continue from F673 UNUSED:
+- finish attacker lowest-HP and survival-bar visual accounting after F672;
+- finish defender combat-limit PullOut distribution and one-hit/multi-hit edge cases;
+- finish unconditional Average Health and confirm all terminal probability mass is represented;
+- finish remaining Unharmed/BasicInfo semantics;
+- audit `setACOModifiersPlotHelp` total-defense inverse formula, strength-zero preconditions and
+  formatting/rounding;
+- reconcile remaining probability symptoms against F602/F637/F638/F669;
+- finish current BUG-option activation and later ACO history 2963/2971/2985/3392/3903;
+- whole-album dedup and final numeric/pointer/index saturation;
+- either promote an independent F673 or close Queue 043 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP539 -- QUEUE 043 ACOText.cpp -- F673 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP538.
+- Queue 043 `CvGameCoreDLL/ACOText.cpp` (1,335 queued lines): OPEN.
+- F666-F673 / provisional KI#988-KI#995: CONFIRMED.
+- F674 / provisional KI#996: UNUSED.
+- Files complete remains 68 / 169 because Queue 043 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+F673 / provisional KI#995 -- condensed defender-health flush hardcodes "HP" and then appends the localized HP token again
+---------------------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+Inside the defender detailed-health loop, low-probability adjacent HP outcomes can be merged into a
+condensed range. When that accumulated range is flushed *before* a later individually displayed
+outcome, current code formats the first endpoint as:
+
+    szTempBuffer.Format(L"%dHP", first_combined_HP_Def);
+    szString.append(szTempBuffer.GetCString());
+    szString.append(gDLL->getText("TXT_ACO_HP"));
+
+The literal format already contains `HP`, then the localized HP token is appended again.
+
+If the range has a second endpoint, that endpoint is correctly formatted as only the number before
+appending `TXT_ACO_HP`:
+
+    szTempBuffer.Format(L"%d", last_combined_HP);
+    ...
+    szString.append(gDLL->getText("TXT_ACO_HP"));
+
+The later/end-of-loop condensed flush also correctly formats the first endpoint as `%d` without
+the hardcoded suffix.
+
+So this is an isolated typo in the mid-loop condensed defender-health flush.
+
+LOCALIZATION ORACLE
+-------------------
+The original/current ACO text key was introduced as:
+
+    TXT_ACO_HP
+        English: HP
+        French:  PV
+        German:  TP
+        Italian: PV
+        Spanish: PG
+
+No later supplied history changes that key.
+
+Consequently the defect is not merely an English duplicate:
+- English first endpoint becomes e.g. `10HPHP`;
+- French becomes `10HPPV`;
+- German becomes `10HPTP`;
+while the range's second endpoint uses the proper localized unit alone.
+
+CURRENT SHIPPED DETERMINISTIC FIXTURE
+-------------------------------------
+Use a full-health current UNIT_SCOUT attacking a full-health current UNIT_EXPLORER on a neutral
+context without external strength modifiers.
+
+Current XML:
+Scout:
+    iCombat = 1
+    iWithdrawalProb = 0
+    iFirstStrikes = 0
+    iChanceFirstStrikes = 0
+    iCombatLimit = 100
+    bOnlyDefensive = 0
+    bOnlyAttackAnimals = 0
+
+Explorer:
+    iCombat = 4
+    iWithdrawalProb = 0
+    iFirstStrikes = 0
+    iChanceFirstStrikes = 0
+    iCombatLimit = 100
+    bOnlyDefensive = 0
+    bOnlyAttackAnimals = 0
+
+With no external modifiers:
+- attacker strength = 100 internal;
+- defender strength = 400 internal;
+- defender per-round odds =
+      floor(1000 * 400 / 500) / 1000 = 0.8;
+- attacker per-round odds = 0.2;
+- mean firepower = 250;
+- Scout damage to Explorer =
+      floor(20 * (100 + 250) / (400 + 250)) = 10 HP;
+- Explorer damage to Scout =
+      floor(20 * (400 + 250) / (100 + 250)) = 37 HP.
+
+Therefore:
+- Scout needs 10 successful hits to win;
+- Explorer needs 3 successful hits to win.
+
+With no first strikes/withdrawal, the probability that the Explorer wins after exactly k Scout
+hits is the ordinary negative-binomial terminal probability:
+    C(3+k-1,k) * 0.8^3 * 0.2^k.
+
+The defender-health loop walks k downward from 9. The current probabilities are approximately:
+
+    k=9 -> 0.00144%
+    k=8 -> 0.00590%
+    k=7 -> 0.02359%
+    k=6 -> 0.09175%
+    k=5 -> 0.34406%
+    k=4 -> 1.22880%
+
+Current `ACO__MergeShortBars` defaults true, giving:
+    HP_percent_cutoff = 0.5%.
+
+Thus:
+- k=9..5 are accumulated into `bCondensed`;
+- their defender HP values are 10,20,30,40,50;
+- k=4 exceeds the cutoff and forces the exact mid-loop `if(bCondensed)` flush.
+
+At that moment:
+    first_combined_HP_Def = 10
+    last_combined_HP = 50.
+
+English output for the range is therefore effectively:
+    `10HPHP-50HP`
+
+before the probability percentage.
+
+French is effectively:
+    `10HPPV-50PV`.
+
+This uses ordinary current units and the default merge-short-bars behavior once the defender
+detailed-health ACO view is enabled.
+
+UI ACTIVATION
+-------------
+`ACO__ShowDefenderHealthBars` is a supported ACO list option (current default list value 2).
+`ACO__MergeShortBars` defaults true.
+
+So the malformed label is reachable through ordinary ACO detailed-health output; no debug mode or
+malformed XML is required.
+
+ANCESTRY
+--------
+The typo is present in the original K-Mod ACO import.
+
+K-Mod practical 101 / d5c68c5392 contains the same sequence in the mid-loop condensed defender
+flush:
+
+    Format(L"%dHP", first_combined_HP_Def);
+    append(...);
+    append(getText("TXT_ACO_HP"));
+
+The sibling/end-of-loop implementations already use the correct `%d` form, so the original source
+contains its own direct oracle.
+
+AdvC later moved/refactored the ACO code but retained the typo. Current Base AdvC 1.14 retains it.
+Current SAS inherits it unchanged.
+
+CONSEQUENCE / SEVERITY
+----------------------
+This is low-severity but deterministic player-facing presentation corruption:
+- duplicated HP suffix in English;
+- mixed hardcoded-English + localized unit in non-English languages;
+- only the first endpoint of a mid-loop condensed defender range is malformed.
+
+Combat probabilities and gameplay state are unaffected.
+
+NARROW REPAIR
+-------------
+Replace:
+
+    szTempBuffer.Format(L"%dHP", first_combined_HP_Def);
+
+with:
+
+    szTempBuffer.Format(L"%d", first_combined_HP_Def);
+
+and continue using the existing localized:
+    TXT_ACO_HP
+
+exactly as the sibling branches already do.
+
+DEDUP
+-----
+Whole-album search through WIP538 found no prior owner for:
+- `%dHP` followed by `TXT_ACO_HP`;
+- `HPHP`, `HPPV`, `HPTP` condensed ACO labels;
+- the mid-loop defender condensed-health first-endpoint typo.
+
+F668 concerns duplicate *rows* for a one-hit-to-kill defender; F673 concerns a malformed HP suffix
+inside a different condensed-range branch. Their fixtures and repairs are independent.
+
+QUEUE-043 CONTINUATION CURSOR
+-----------------------------
+Continue from F674 UNUSED:
+- finish survival-overview bar visual arithmetic and exact endpoint lengths;
+- finish attacker lowest-HP and defender PullOut grouping after F668/F672/F673;
+- finish unconditional Average Health and terminal-mass accounting;
+- finish remaining BasicInfo/UnroundedExperience semantics;
+- finish `setACOModifiersPlotHelp` inverse total-defense modifier and strength preconditions;
+- reconcile remaining probability symptoms against F602/F637/F638/F669;
+- finish current ACO option activation and later history 2963/2971/2985/3392/3903;
+- whole-album dedup and final numeric/pointer/index saturation;
+- either promote an independent F674 or close Queue 043 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP540 -- QUEUE 043 ACOText.cpp CLOSED / QUEUE 044 CvMessageData.cpp OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP539.
+- Queue 043 `CvGameCoreDLL/ACOText.cpp` (1,335 queued lines): CLOSED.
+- Confirmed Queue-043 roots: F666-F673 / provisional KI#988-KI#995.
+- F674 / provisional KI#996: UNUSED.
+- Files complete: 69 / 169.
+- Queue 044 `CvGameCoreDLL/CvMessageData.cpp` (1,306 queued lines): OPEN.
+- Queue 045 was already completed in an earlier durable checkpoint.
+- No gameplay/source/XML file was modified.
+
+QUEUE-043 PROVENANCE CLOSURE
+----------------------------
+Current SAS `ACOText.cpp` is executable-semantically identical to supplied Base AdvC 1.14 except
+for two SAS micro-performance edits caching the Animal and Barbarian maximum-XP global defines in
+local `static const int`s. The values and control flow are unchanged. Consequently all Queue-043
+roots are inherited ACO/AdvC behavior rather than SAS-only regressions or missed Base-AdvC-1.14
+repairs.
+
+ACO correctly calls `combat_odds::initCombatants(..., bHideFreeWins)`, so it does not reproduce
+F637's ignored-parameter root. Any ACO probability display fed by the bilateral
+chance-first-strike error in `getCombatOddsSpecific` remains owned by F638 unless ACO adds an
+independent display/math defect.
+
+QUEUE-043 CONFIRMED ROOT SET
+----------------------------
+F666 / KI#988 -- promotion-derived XP exceeds remaining Animal/Barbarian lifetime room in display
+    AdvC practical 2204 refactored K-Mod's correct:
+        cap - (currentXP + baseXP)
+    into the wrong:
+        remainingRoom + baseXP
+    for ACO's promotion bonus XP. Leadership (+100% XP) near the 5/10 lifetime cap can therefore
+    be shown gaining more total XP than `CvUnit::changeExperience` can award. The withdrawal bonus
+    sibling shares the same root.
+
+F667 / KI#989 -- wrong normal-Barbarian attacker-win per-combat XP ceiling
+    ACO uses `MAX_EXPERIENCE_PER_COMBAT - 4` (6 with current MAX=10) when the defender is a normal
+    Barbarian, while `CvUnit::resolveCombat` uses `MAX/2` (5). A current Warrior vs Barbarian
+    Swordsman can therefore display 6 base XP where the executor awards at most 5. AdvC practical
+    1253 introduced the executor's asymmetric advc.312 rule and incorrectly mirrored the
+    defender-win `-4` form onto ACO's attacker-win direction.
+
+F668 / KI#990 -- duplicate defender-unhurt detailed-health row for one-hit lethal attacks
+    When `att.hitsToWin()==1`, the defender detail loop decrements the dead-state count to zero and
+    can directly print the unhurt defender outcome. The post-loop block then unconditionally
+    prints that same unhurt state again. Full Swordsman vs 10-HP Tank gives a deterministic
+    ~1.23% duplicated row. The original K-Mod ACO already contains an incomplete guard and a
+    comment acknowledging the "show up twice" case.
+
+F669 / KI#991 -- single-precision underflow causes conditional expected-HP 0/0
+    ACO's whole-combat outcome probabilities are floats, then conditional HP lines divide weighted
+    HP by those sums without representational-zero protection. A current 1-HP Scout vs full
+    Modern Tank has attacker round chance 0.001 and requires 17 consecutive hits:
+        0.001^17 = 1e-51
+    which underflows below float's smallest positive subnormal. Both victory probability and its
+    weighted HP numerator become 0.0f, so ACO evaluates 0/0 and formats a non-finite conditional
+    HP value. Reverse/withdrawal conditional lines share the numeric-stability root.
+
+F670 / KI#992 -- optional Experience Range ignores remaining Animal/Barbarian lifetime XP room
+    The headline XP value clamps by currentXP against the 5/10 lifetime cap, but the independent
+    ShowExperienceRange reconstruction uses only theoretical combat ratio/per-combat bounds.
+    A 10-XP Swordsman vs an equal Barbarian Swordsman can therefore show headline 0 XP while the
+    same tooltip's R=1.00 range entry advertises 3 XP. The mismatch remains after F667 is repaired.
+
+F671 / KI#993 -- capped withdrawal XP is computed but the raw define is displayed
+    ACO correctly computes and lifetime-clamps `iWithdrawXP`, yet both normal Retreat and
+    combat-limit Withdraw formatting reread raw `EXPERIENCE_FROM_WITHDRAWL` (1). A 10-XP Horse
+    Archer retreating from a normal Barbarian, or a 10-XP Catapult pulling out at combat limit,
+    gains 0 actual XP but is told it will gain 1. Animals at the 5-XP cap share the root.
+
+F672 / KI#994 -- Attacker Unharmed omits normal retreat when one defender hit is lethal
+    The defender statistic explicitly includes the zero-damage retreat state, but the attacker
+    statistic never adds normal retreat outcomes. When `def.hitsToWin()==1`, successful withdrawal
+    happens before the would-be lethal hit is applied, so every retreat leaves the attacker at its
+    entering HP. A current 1-HP Horse Archer provides a deterministic supported fixture. ACO's own
+    `E_HP_Att_Retreat` formula confirms that the final HP equals current HP in this state.
+
+F673 / KI#995 -- condensed defender-health first endpoint becomes HPHP / HPPV / HPTP
+    One mid-loop condensed-range flush does:
+        Format(L"%dHP", first_combined_HP_Def);
+        append(TXT_ACO_HP);
+    while all sibling branches correctly format only `%d` before appending the localized unit.
+    Current Scout vs Explorer yields a deterministic default-merge range of 10-50 HP and reaches
+    this branch, producing English `10HPHP-50HP`, French `10HPPV-50PV`, etc. Original K-Mod ACO
+    contains the typo.
+
+FINAL PROBABILITY-MASS / HEALTH CONTROLS
+----------------------------------------
+The remaining expected-health accounting was reconciled after the numbered roots:
+- unconditional attacker average HP includes all attacker-victory/combat-limit-pullout states plus
+  every normal-retreat terminal state; attacker death contributes zero as intended;
+- unconditional defender average HP includes defender-kill/attacker-retreat states and
+  combat-limit pullout states; defender death contributes zero;
+- for a fixed final attacker HP, the bottom detailed bar correctly groups the final
+  victory/pullout state with all normal-retreat outcomes occurring after
+  `def.hitsToWin()-1` applied defender hits;
+- combat-limit defender HP is clamped/aggregated at `iDefenderHitLimit`, matching the executor's
+  pullout health floor;
+- the compiled-out "abnormal" zero-damage-last-hit branch is unreachable under the current
+  `Combatant::hitsToWin` arithmetic and remains guarded by an assertion in the live branch.
+
+F672 remains the sole independent Unharmed-mass omission found beyond the already-owned F638
+probability source error.
+
+SURVIVAL OVERVIEW BAR CONTROL
+-----------------------------
+The inherited overview-bar `pixels` reuse is unusual but algebraically bounded.
+
+Let:
+    r1 = round(prob1)
+    r2 = round(prob2)
+with:
+    prob2 >= prob1.
+
+The first green interior count is:
+    2*r1 - 1
+(the left/right cap convention accounts for the offset).
+
+The yellow count becomes:
+    2*r2 - ((2*r1 - 1) + 1)
+  = 2*(r2-r1)
+which is never negative.
+
+The first section decrements the fixed 199-pixel interior by exactly the emitted green interior;
+the yellow section can only consume the nonnegative probability increment, and the remaining red
+section fills the balance. Endpoint cases at 0% and 100% retain nonnegative interior counts. The
+code is awkward and its old comment expresses understandable doubt, but no current F674 visual
+length corruption survives the arithmetic proof.
+
+The lowest-attacker-HP green/yellow bar likewise reserves left/right end pixels explicitly; the
+zero-probability and no-retreat branches do not generate a negative drawable interior.
+
+MODIFIER-HELP CONTROL
+---------------------
+`setACOModifiersPlotHelp` is called only after `setCombatPlotHelp` has resolved a defender and
+required:
+    pDefender->canDefend(pPlot)
+for the actual combat-help path. Thus the defender's base combat strength is positive.
+
+Current `CvUnit::maxCombatStr`:
+- returns 0 only when baseCombatStr==0;
+- otherwise computes positive/negative modifiers and returns at least 1.
+
+Therefore the total-defense calculations:
+positive:
+    maxCombatStr / baseCombatStr - 100
+negative:
+    100 - baseCombatStr*10000 / maxCombatStr
+have nonzero denominators on the supported call path.
+
+The negative expression is not a sign bug: it is the algebraic inverse of AdvC/BtS's negative
+strength formula:
+    maxCombatStr = baseCombatStr*10000 / (100 - modifier).
+The display therefore reconstructs the intended negative modifier.
+
+Air attackers can reach the modifier-help routine, but the total-defense calculation is still
+about the positive-strength defender. The attacker strength display explicitly uses
+`airCurrCombatStrFloat` for DOMAIN_AIR.
+
+CURRENT OPTION / DATA CONTROLS
+------------------------------
+Current `ACO_config.xml` confirms ACO remains a supported opt-in BUG feature:
+- `ACO__Enabled` default false;
+- view selection controls remain active once ACO is enabled;
+- `ACO__MergeShortBars` defaults true;
+- detailed Health/XP/Unharmed options have their current list defaults documented in the finding
+  fixtures.
+An option being disabled by default was not treated as "dead" when it is a supported player
+setting with ordinary native UI activation.
+
+Current promotion data has one nonzero `iExperiencePercent` case:
+    PROMOTION_LEADERSHIP = +100%.
+No negative ExperiencePercent promotion exists in current data, so no separate negative-XP display
+root was manufactured.
+
+`ACO__ShowUnroundedExperience` deliberately presents the raw continuous combat-ratio quantity;
+unlike the labelled Victory/Withdraw XP forecast and Experience Range, it is not claimed to be the
+post-cap awarded integer XP and was not treated as another lifetime-cap defect.
+
+LATER HISTORY SATURATION
+------------------------
+Later ACOText history was rechecked after the original/practical roots:
+- practical 2854 split the ACO code into ACOText.cpp without changing the audited behavior;
+- practical 2963 adds scopes around the bar-pixel locals (no semantic arithmetic change);
+- practical 2971 consolidates ACO and BtS combat-modifier text through shared helper functions;
+- practical 2985 adjusts unit-help arguments and modifier/first-strike presentation order;
+- practical 2998 / later merge/replay strata preserve those changes;
+- practical 3392 is the corresponding broad info/refactor history without a new ACO arithmetic
+  root;
+- practical 3903 correctly changes the normal withdrawal label from Withdraw to Retreat; it does
+  not repair or introduce the XP/probability arithmetic findings;
+- current SAS edits in this file only cache the two XP-cap global defines.
+
+No independent F674 survived these later semantic strata.
+
+WHOLE-ALBUM DEDUP / CLOSURE
+---------------------------
+Final dedup was repeated against:
+- F602/KI#925 combatLimit executor/predictor mismatch;
+- F637/KI#959 ignored bHideFreeWins forwarding;
+- F638/KI#960 bilateral chance-first-strike probability bug;
+- previous combat, XP, tooltip, localization and bar-display findings.
+
+F666-F673 remain distinct roots with distinct activation/repair boundaries. Queue 043 is therefore
+CLOSED with F674 unused rather than forcing another finding.
+
+NEXT EXACT CURSOR
+-----------------
+C031-WIP540 physical
+-> 69 / 169 files complete
+-> Queue 043 CLOSED
+-> F666-F673 / KI#988-KI#995 confirmed
+-> F674 / KI#996 UNUSED
+-> Queue 044 `CvGameCoreDLL/CvMessageData.cpp` OPEN
+-> establish current SAS vs Base AdvC 1.14 executable-semantic baseline
+-> compare K-Mod/Civ4CE message/net-command ancestry
+-> inventory all message classes, read/write symmetry, enum/player/unit/city identifiers and
+   `Execute` validation
+-> focus on network/replay desync risk, stale IDs, authorization/ownership, null lookup handling,
+   signed/unsigned serialization, and command-state preconditions
+-> trace current EXE/Python/native producers where local source permits
+-> whole-album dedup against earlier network/game-action findings
+-> promote F674 only for an independent supported root
+-> freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP541 -- QUEUE 044 CvMessageData.cpp -- F674 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP540.
+- Queue 044 `CvGameCoreDLL/CvMessageData.cpp` (1,306 queued lines): OPEN.
+- F674 / provisional KI#996: CONFIRMED.
+- F675 / provisional KI#997: UNUSED.
+- Files complete remains 69 / 169 because Queue 044 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+QUEUE-044 BASELINE SO FAR
+-------------------------
+Current SAS `CvMessageData.cpp` is executable-semantically identical to supplied Base AdvC 1.14
+except for SAS research-observer/acquisition metadata:
+- inclusion of SASGameRecordLog;
+- player-research-command logging before clear/push;
+- explicit TECH_ACQUISITION_FREE_CHOICE metadata on the free-choice setHasTech path.
+No SAS serialization-order drift has been found.
+
+Mechanical PutInBuffer / SetFromBuffer reconciliation across the current DLL message classes found
+matching active field order and representation, including:
+- K-Mod PushOrder fields;
+- AdvC CivicMap serialization;
+- MovementFlags and `m_bModified` in CvNetPushMission;
+- FP test result/player order;
+- the two global random-civ/random-leader enum maps.
+The old `GAMEMESSAGE_PUSH_MODIFIED_MISSION` enumerator remains vestigial after practical 1448 folded
+the modifier bit into GAMEMESSAGE_PUSH_MISSION; current source has no producer/user for the old
+message type, so its absent `createMessage` case is retained as dead compatibility residue rather
+than a current finding.
+
+F674 / provisional KI#996 -- one-shot FP compatibility flag can let the sender/first matching peer mask incompatible multiplayer machines
+----------------------------------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+AdvC's multiplayer floating-point compatibility test sends:
+
+    CvMessageControl::getInstance().sendFPTest(FPChecksum());
+
+while:
+    !m_bFPTestDone
+
+Each received `CvNetFPTest` calls:
+
+    GC.getGame().doFPCheck(m_iResult, m_ePlayer);
+
+Current `CvGame::doFPCheck` is:
+
+    if (m_bFPTestDone)
+        return;
+    m_bFPTestDone = true;
+    if (iChecksum == FPChecksum())
+        return;
+
+    // warn about mismatch ...
+
+Thus the local game examines exactly ONE delivered FP-test message. A matching first checksum
+permanently marks the entire compatibility test complete and every later sender is ignored.
+
+SELF-MESSAGE ACTIVATION
+-----------------------
+The generic `sendMessageData` transport is also the sole mutation path for ordinary local gameplay
+commands. For example, changing a commerce percentage sends CvNetPercentChange; the local
+CvPlayer state is changed only when CvNetPercentChange::Execute runs. The sender's machine must
+therefore execute its own normal game-net messages as part of this transport.
+
+AdvC's own practical-1399 source history states the network contract explicitly while implementing
+the then-two-stage modified mission command:
+
+    "All machines receive the push-mission message.
+     Everyone except the group owner discards the message.
+     The group owner checks the CTRL key and sends a new message around ..."
+
+The group owner is precisely the originating player's machine. This is direct inherited-source
+evidence that DLL game messages sent through this channel return to/execute on the sender as well
+as the other machines.
+
+`sendFPTest` uses that same `gDLL->sendMessageData` channel and does not exclude the sender.
+
+Therefore a client's own FP-test message has:
+    iChecksum == that client's FPChecksum()
+
+and, whenever it is the first FP message processed locally:
+1. `m_bFPTestDone` becomes true;
+2. the checksum matches;
+3. doFPCheck returns silently;
+4. every later peer checksum is discarded before comparison.
+
+The exact network ordering of self versus remote messages is EXE-controlled, so do not claim that
+self always arrives first. The defect is that a normal supported self-first order causes a false
+negative.
+
+MULTI-PEER FALSE NEGATIVE EXISTS EVEN WITHOUT RELYING ON SELF-FIRST ORDER
+-------------------------------------------------------------------------
+The single bool is insufficient for games with three or more machines even if one chooses not to
+assume any particular self-delivery ordering.
+
+Let local machine A compute checksum X.
+Let another compatible machine B also compute X.
+Let machine C compute incompatible checksum Y.
+
+If A processes B's message first:
+    X == X
+so `m_bFPTestDone` becomes true and A ignores C's later Y checksum.
+
+The implementation has no per-sender bitset/count and no "keep listening until all other active
+network humans have been checked" state. Hence it cannot guarantee that every local client
+compares itself with every participating FP behavior.
+
+The displayed warning text is explicitly local:
+    "Your machine's FP test computation has yielded a different result than that of %s."
+That reinforces that each receiver is intended to detect a mismatch against the sender it is
+checking, not merely establish that some arbitrary first pair somewhere matched.
+
+CURRENT ACTIVATION / LIFECYCLE
+------------------------------
+`m_bFPTestDone` is set to false for network multiplayer:
+- at game initialization (`initDiplomacy`);
+- after loading a network save.
+
+`CvGame::updateTestEndTurn()` runs during the active player's normal UI-turn update and, while the
+flag is false, sends `FPChecksum()` through CvMessageControl.
+
+`CvNetFPTest` serializes both:
+- checksum;
+- originating PlayerTypes;
+and `doFPCheck` uses the sender identity in its mismatch message.
+
+Thus this is ordinary network-multiplayer diagnostic behavior, not a malformed packet or debug-only
+entry point.
+
+ANCESTRY / EXACT INTRODUCTION
+-----------------------------
+AdvC practical 1500 /
+    4196f0aed1dbb1fdd93a8165c9d1a6be7f6e5d46
+("Floating point compatibility test for multiplayer")
+introduced in one change:
+- `m_bFPTestDone`;
+- `FPChecksum`;
+- `doFPCheck`;
+- `updateTestEndTurn` sending the checksum while the bool is false;
+- CvNetFPTest and its serialization.
+
+The initial implementation already:
+    if (b_mFPTestDone) return;
+    b_mFPTestDone = true;
+    if (iChecksum == FPChecksum()) return;
+
+so the first-message masking is present from introduction rather than caused by a later refactor.
+
+Current Base AdvC 1.14 retains the same one-shot logic.
+Current SAS inherits it unchanged apart from unrelated surrounding safety/formatting work.
+K-Mod and Civ4CE do not contain AdvC's FP-test addition and therefore serve only as pre-feature
+ancestry, not as an implementation oracle.
+
+CONSEQUENCE / SEVERITY
+----------------------
+This does not cause an out-of-sync by itself. It weakens the diagnostic intended to warn users
+before incompatible floating-point behavior produces later desynchronization.
+
+Supported false-negative outcomes include:
+- self message is processed first -> the local client only verifies itself;
+- 3+ player game -> a compatible first peer masks a later incompatible peer.
+
+A different client may still happen to detect the mismatch depending on message order. Therefore
+do not overclaim that every mixed-platform game suppresses every warning. Source proves that the
+algorithm is not exhaustive and can silently declare the local test done before an incompatible
+participant is examined.
+
+REPAIR DIRECTION
+----------------
+Track which participating network players/checksums have actually been examined instead of using
+one global "first message arrived" bool.
+
+Possible narrow design:
+- ignore the active player's own FP message for compatibility completion;
+- maintain an EnumMap/bitset of peer PlayerTypes already checked;
+- compare every distinct relevant network human's checksum with local FPChecksum;
+- keep the send/receive phase active until all required peers are accounted for (or until a
+  mismatch has already been reported, if one warning is intentionally sufficient).
+
+If the intent is only to detect whether ANY platform class differs, an alternative is to
+synchronize/collect all checksum values centrally and warn when more than one distinct value
+exists. Either design must not let a first matching/self checksum terminate the test globally.
+
+DEDUP
+-----
+Whole-album search through WIP540 found no previous owner for:
+- `m_bFPTestDone`;
+- `CvNetFPTest`;
+- `doFPCheck`;
+- first-message/self-message masking of the floating-point compatibility test.
+
+This is independent from ordinary game-state OOS/checksum findings and from the current Queue-044
+stale-popup receiver findings already owned elsewhere.
+
+QUEUE-044 NEGATIVE / DEDUP CONTROLS ESTABLISHED BEFORE F674
+------------------------------------------------------------
+- `CvPlayer::splitEmpire(int)` resolves the current area and re-runs both `canSplitEmpire()` and
+  `canSplitArea()`; stale Free Colony area state is not blindly applied by CvNetEmpireSplit.
+- `CvPlayer::revolution` rechecks `canRevolution`; stale civic commands are rejected.
+- `CvPlayer::convert` rechecks `canConvert`.
+- `CvPlayer::launch` rechecks team `canLaunch`.
+- `CvPlayer::setCommercePercent` rechecks flexible-commerce permission and clamps 0..100.
+- `CvCity::hurry` and `CvCity::conscript` re-run `canHurry` / `canConscript`.
+- `CvPlayer::raze` re-runs `canRaze`; the earlier popup audit already owns the distinct
+  Return/Liberate stale-target problems.
+- CvNetResearch free-choice staleness is already owned by the earlier free-tech entitlement
+  finding.
+- CvNetChooseElection, CvNetDiploVote, CvNetChangeWar, CvNetEventTriggered and
+  CvNetExtendedGame have known stale-popup/consumer roots elsewhere in the album; do not renumber
+  those receiver symptoms in Queue 044.
+- `CvNetCivLeaderSetup::m_ePlayer` is currently unused/not serialized, but the payload itself is
+  deliberately global (two full per-player random-choice maps). Host/non-host emission semantics
+  remain under review; no defect is claimed from the unused field alone.
+- Missing enum/bounds authentication for forged or corrupt packets is generic network hardening,
+  below the current-supported-input finding threshold unless a normal producer can generate the
+  bad state.
+
+QUEUE-044 CONTINUATION CURSOR
+-----------------------------
+Continue from F675 UNUSED:
+- finish CvNetCivLeaderSetup host/non-host lifecycle and practical-2532/3579 history;
+- finish current `foundReligion` receiver dedup against religion-slot findings;
+- finish city DoTask/Gift/Disband and production Pop/Push current-state semantics;
+- finish unit JoinGroup/PushMission/AutoMission/DoCommand identity/group-rebinding semantics;
+- finish EspionageChange, ChangeVassal and player/team-transition behavior;
+- finish Advanced Start and ModNetMessage ownership/contracts;
+- audit all Execute methods for supported stale object-generation IDs rather than forged packets;
+- complete practical history 1399/1448/1461/1499/1500/2416/2551/2779/3183/3218/3579;
+- whole-album dedup and final serialization/pointer/index/state saturation;
+- either promote an independent F675 or close Queue 044 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
+===============================================================================
+
+
+===============================================================================
+C031-WIP542 -- QUEUE 044 CvMessageData.cpp -- F675 CONFIRMED / QUEUE STILL OPEN
+===============================================================================
+
+AUTHORITATIVE HANDOFF
+---------------------
+- Parent physical stone: C031-WIP541.
+- Queue 044 `CvGameCoreDLL/CvMessageData.cpp` (1,306 queued lines): OPEN.
+- F674 / KI#996: CONFIRMED.
+- F675 / provisional KI#997: CONFIRMED.
+- F676 / provisional KI#998: UNUSED.
+- Files complete remains 69 / 169 because Queue 044 is not closed yet.
+- No gameplay/source/XML file was modified.
+
+F675 / provisional KI#997 -- delayed JoinGroup conflates a dead/missing target head with the explicit "ungroup" sentinel
+------------------------------------------------------------------------------------------------------------------------
+
+ROOT
+----
+`CvNetJoinGroup` serializes:
+- the acting PlayerTypes;
+- the unit to regroup;
+- the numeric player-local unit ID of the intended target group's head.
+
+The ordinary grouping producer deliberately uses:
+    FFreeList::INVALID_INDEX
+as a semantic command value meaning "remove this unit from its current group / make it separate."
+
+Examples in current `CvGame::selectionListGameNetMessage` and `CvGame::selectUnit` call:
+
+    sendJoinGroup(pUnit->getID(), FFreeList::INVALID_INDEX);
+
+for explicit degrouping.
+
+For an actual join request they instead send:
+    sendJoinGroup(pUnit->getID(), pHeadSelectedUnit->getID());
+
+`CvNetJoinGroup::Execute` does not preserve that distinction:
+
+    CvUnit* pUnit = GET_PLAYER(m_ePlayer).getUnit(m_iUnitID);
+    if (pUnit != NULL)
+    {
+        CvUnit* pHeadUnit = GET_PLAYER(m_ePlayer).getUnit(m_iHeadID);
+        if (pHeadUnit != NULL)
+            pUnit->joinGroup(pHeadUnit->getGroup());
+        else
+            pUnit->joinGroup(NULL);
+    }
+
+Therefore two semantically different receive states collapse to the same action:
+
+A. `m_iHeadID == FFreeList::INVALID_INDEX`
+   -> intentional "ungroup" request
+   -> `getUnit(INVALID_INDEX)==NULL`
+   -> `joinGroup(NULL)` as intended.
+
+B. `m_iHeadID` was a real target unit ID when sent, but that unit no longer exists when executed
+   -> stale failed JOIN request
+   -> generation-safe `getUnit(oldRealID)==NULL`
+   -> the exact same `joinGroup(NULL)` is executed.
+
+The receiver never asks whether the serialized ID itself was the intentional sentinel.
+
+CURRENT STABLE-ID BEHAVIOR MAKES THE BUG PRECISE
+-------------------------------------------------
+Current player unit IDs are generation-bearing FFreeListTrashArray IDs. If the original target
+head dies and its physical slot is later reused, the old full ID does not resolve to the new unit.
+`CvPlayer::getUnit/getAt` returns NULL for the stale generation.
+
+Thus this is not a "stale ID may accidentally hit another unit" claim. The normal generation
+protection works correctly. The defect is what CvNetJoinGroup decides NULL means afterward:
+"the JOIN target disappeared" is interpreted as "the user requested UNGROUP."
+
+SUPPORTED SIMULTANEOUS-TURN ACTIVATION
+--------------------------------------
+No malformed packet or private API is required.
+
+Use human player A with:
+- a target selection group containing head H plus surviving member T;
+- another unit U, optionally already grouped with some other friendly unit V.
+
+A's UI issues an ordinary command to add U to H's selected group. Current grouping code sends:
+
+    CvNetJoinGroup(A, U.id, H.id)
+
+Before that message executes in synchronized game order, an enemy player in simultaneous
+multiplayer kills H. T survives.
+
+This kind of in-flight unit invalidation is explicitly part of the current engine model.
+`CvUnit::kill()` contains K-Mod's source comment:
+
+    "With simultaneous turns, a unit can be captured while
+     trying to execute an attack order. (eg. a bomber)"
+
+and the surrounding code is written to tolerate the unit disappearing while a command/state
+transition is underway. Queue 044's generic message transport is also the normal synchronized
+path for local and remote gameplay commands; F674's transport proof independently establishes
+that these game-net messages are delivered/executed through that shared channel rather than
+mutating only at the producer.
+
+When H dies:
+- H's `kill()` calls `joinGroup(NULL, false, false)`;
+- that removes H from its old selection group;
+- T remains in the group and becomes its surviving head/member;
+- H's generation-bearing unit ID no longer resolves.
+
+When A's pending CvNetJoinGroup then executes:
+- U still resolves normally;
+- H does not resolve;
+- receiver executes `U.joinGroup(NULL)`.
+
+Instead of joining the still-existing target group represented by T -- or at minimum abandoning
+the failed join without changing U -- the command DETACHES U from its current group.
+
+If U was grouped with V, the stale failed join therefore actively mutates an unrelated existing
+group relationship: U leaves V even though the user never asked to ungroup it.
+
+If U was already alone, the bug can be less visible, but the command still changes meaning from
+"join target group" to "remain/create ungrouped state."
+
+TARGET GROUP SURVIVAL
+---------------------
+`CvSelectionGroup::removeUnit` removes only the dying H node. With T still present the target
+selection group remains valid; there is no need for the entire intended destination group to have
+disappeared.
+
+The receiver nevertheless stores only H's unit ID, not a stable group identity or fallback member.
+Once H is gone it cannot recover T's group.
+
+The finding therefore has two layers:
+1. representation weakness: a group is named solely by one member/head whose lifetime can end;
+2. definite receiver bug: failure to resolve a real non-sentinel target is treated as an explicit
+   user degroup command rather than a failed/stale join.
+
+The second layer has a clear narrow repair even without redesigning group identity.
+
+CURRENT PRODUCERS
+-----------------
+Current supported grouping paths send real head IDs, including:
+- `CvGame::selectionListGameNetMessage(GAMEMESSAGE_JOIN_GROUP)`;
+- `CvGame::selectUnit` when explicitly adding/toggling a unit into the currently selected group;
+- healthy-unit selection/grouping;
+- other K-Mod selection-list grouping helpers.
+
+The explicit degroup paths in the same code use `FFreeList::INVALID_INDEX`, proving that the
+serialized integer already contains enough information to distinguish "intentional no target"
+from "real target was lost."
+
+ANCESTRY
+--------
+The same `CvNetJoinGroup::Execute` shape is present in:
+- supplied Civ4CE/BtS;
+- supplied K-Mod 1.46;
+- supplied Base AdvC 1.14;
+- current SAS.
+
+All four resolve `m_iHeadID` and call `joinGroup(NULL)` whenever that resolution returns NULL,
+without checking whether `m_iHeadID` itself was the explicit invalid-index sentinel.
+
+This is therefore inherited Firaxis/BtS-era message semantics, not a SAS regression and not a
+missed Base-AdvC-1.14 repair.
+
+CONSEQUENCE / SEVERITY BOUNDARY
+-------------------------------
+This is a synchronized gameplay-command semantic error, not memory corruption:
+- a supported JOIN command can become an UNGROUP command because its target head died before
+  execution;
+- the joining unit can be detached from a valid previous group;
+- the intended surviving target group is not joined.
+
+Exact frequency depends on simultaneous-move/network ordering and combat timing. Do not claim that
+every head death races every join request. Source establishes an ordinary supported ordering in
+which the stale real target is possible and that the receiver gives that state the wrong semantic
+meaning.
+
+NARROW REPAIR
+-------------
+Preserve the existing explicit-sentinel contract:
+
+    if (m_iHeadID == FFreeList::INVALID_INDEX)
+        pUnit->joinGroup(NULL);       // intentional degroup
+    else
+    {
+        CvUnit* pHeadUnit = GET_PLAYER(m_ePlayer).getUnit(m_iHeadID);
+        if (pHeadUnit != NULL)
+            pUnit->joinGroup(pHeadUnit->getGroup());
+        // else stale real JOIN target: no-op rather than degroup
+    }
+
+That surgical fix prevents a failed join from becoming an unrelated destructive operation.
+
+A stronger redesign could serialize a stable selection-group identity in addition to/instead of
+the head unit, allowing the join to find the surviving group after head death. Such a group-ID
+solution would need the same generation/lifetime scrutiny used elsewhere in the album. The safe
+minimal behavior when the real target cannot be recovered is simply no-op.
+
+DEDUP
+-----
+Whole-album search through WIP541 found no prior owner for:
+- CvNetJoinGroup treating a missing real target head as the ungroup sentinel;
+- a head dying between grouping command send and Execute;
+- a failed JOIN detaching the source unit from another group.
+
+Nearby findings are distinct:
+- F154 concerns automation cancellation leaking across cargo carried by separate transport groups;
+- F315 concerns a Delete confirmation later operating on a replacement current UI selection;
+- existing generational-ID controls establish that stale unit IDs resolve NULL rather than aliasing
+  new objects, which is a premise of F675 rather than its root.
+
+QUEUE-044 ADDITIONAL CLOSURE CONTROLS SINCE WIP541
+---------------------------------------------------
+CvNetCivLeaderSetup:
+- `m_ePlayer` is indeed unused and not serialized;
+- practical 3579 proves the actual message is intentionally GLOBAL and HOST-ONLY:
+  `CvInitCore::reRandomizeCivsAndLeaders` is documented "Only executed by the host";
+  `CvGame::setInitialItems` sends one full random-civ/random-leader bitmap only when local InitCore
+  contains the host-known randomized-choice markers;
+- the EXE syncs most setup data but not the was-randomly-chosen metadata, which is exactly why the
+  later host message exists.
+No competing non-host empty-map producer is established; unused `m_ePlayer` stays dead payload
+metadata, not a finding.
+
+CvNetChangeVassal:
+- current tree contains the send wrapper but no current in-tree C++/Python caller;
+- Execute does not perform a full current legality test, but without a normal current producer this
+  remains legacy/API hardening below threshold.
+
+CvNetEspionageChange:
+- current Python producer sends a current target TeamTypes from the Espionage Advisor;
+- setter clamps weight to [0,99];
+- Permanent Alliance can leave stale per-TeamTypes weight slots, but the previously-audited live
+  espionage allocator iterates only alive OTHER teams, excluding both absorbed dead team slots and
+  the player's own surviving team;
+- no independent gameplay-allocation root was established from a delayed weight message.
+
+City/unit object identity:
+- current city/unit IDs are generation-safe FFreeListTrashArray IDs; destruction/reuse does not
+  silently rebind a pending message to a newly allocated object in the same physical slot.
+- Queue 044 therefore focuses on receiver semantics after NULL/current-object resolution, not a
+  nonexistent raw-slot alias.
+
+QUEUE-044 CONTINUATION CURSOR
+-----------------------------
+Continue from F676 UNUSED:
+- finish DoTask Gift/Cede/Disband/working-state classification and dedup against popup/deal roots;
+- finish PushOrder/PopOrder stale ordinal/current-queue semantics;
+- finish PushMission/AutoMission/DoCommand group-state rebinding after F675;
+- finish FoundReligion receiver only for independent roots beyond existing religion-slot owners;
+- finish AdvancedStart / ModNetMessage / Ping special-domain paths;
+- finish all 28 Execute methods mechanically for supported stale state;
+- finish practical-history saturation (1399/1448/1461/1499/1500/2416/2551/2779/3183/3218/3579);
+- whole-album dedup and final serialization/pointer/index/state saturation;
+- either promote an independent F676 or close Queue 044 cleanly;
+- freeze the next physical WIP at the next settled boundary.
+
+No SAS/Base AdvC/K-Mod/Civ4CE gameplay/XML source was modified by ChatGPT-5.6-Sol.
 ===============================================================================

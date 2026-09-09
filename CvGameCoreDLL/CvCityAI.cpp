@@ -9097,6 +9097,9 @@ int CvCityAI::AI_buildingValue(BuildingTypes eBuilding, int iFocusFlags, int iTh
 								if (kOwner.getBuildingClassCount(eLoopBuildingClass) <
 									iPrereqBuildings)
 								{
+									// <!-- custom: AdvCiv's loop-style refactor retained the early break but lost K-Mod's shortage-state update, so later code treated an extra Cathedral as adequately supported.
+									// Restore the state before leaving the loop. See KI#856. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+									bHaveEnough = false;
 									break;
 								} // K-Mod end
 							}
@@ -12612,7 +12615,9 @@ int CvCityAI::AI_countOvergrownBonuses(FeatureTypes eFeature) const
 	for (CityPlotIter it(*this, false); it.hasNext(); ++it)
 	{
 		CvPlot const& p = *it;
-		if (p.getOwner() == getID() && p.getFeatureType() == eFeature && !p.isImproved())
+		// <!-- custom: AdvCiv compared the PlayerTypes plot owner with this city's object ID, making the blocked-resource count effectively dead.
+		// Compare with the city owner instead. See KI#844. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		if (p.getOwner() == getOwner() && p.getFeatureType() == eFeature && !p.isImproved())
 		{
 			BonusTypes eBonus = p.getNonObsoleteBonusType(getTeam());
 			if (eBonus == NO_BONUS)
@@ -18749,13 +18754,16 @@ void CvCityAI::AI_updateSpecialYieldMultiplier()
 	} // </advc.300>
 
 	BuildingTypes eProductionBuilding = getProductionBuilding();
+	// <!-- custom: BtS's Project test was nested under a non-NO production Building and therefore unreachable.
+	// Determine the shared World Wonder/Project emphasis before entering building-only logic. See KI#852. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool const bProductionWonderOrProject = (isProductionProject() || (eProductionBuilding != NO_BUILDING && GC.getInfo(eProductionBuilding).isWorldWonder()));
+	if (bProductionWonderOrProject)
+	{
+		m_aiSpecialYieldMultiplier[YIELD_PRODUCTION] += 50;
+		m_aiSpecialYieldMultiplier[YIELD_COMMERCE] -= 25;
+	}
 	if (eProductionBuilding != NO_BUILDING)
 	{
-		if (GC.getInfo(eProductionBuilding).isWorldWonder() || isProductionProject())
-		{
-			m_aiSpecialYieldMultiplier[YIELD_PRODUCTION] += 50;
-			m_aiSpecialYieldMultiplier[YIELD_COMMERCE] -= 25;
-		}
 		m_aiSpecialYieldMultiplier[YIELD_PRODUCTION] += std::max(-25,
 				//GC.getInfo(eProductionBuilding).getFoodKept()
 				GET_PLAYER(getOwner()).getFoodKept(eProductionBuilding)); // advc.912d
