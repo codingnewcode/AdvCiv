@@ -16618,8 +16618,10 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 		if (kEvent.getMaxPillage() > 0)
 		{
 			FAssert(kEvent.getMaxPillage() >= kEvent.getMinPillage());
+			// <!-- custom: BtS treated the XML maximum as exclusive although event help advertises both endpoints as inclusive.
+			// Include the maximum for empire-scoped pillage outcomes. See KI#736. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 			int const iPillage = kEvent.getMinPillage() +
-					SyncRandNum(kEvent.getMaxPillage() - kEvent.getMinPillage());
+					SyncRandNum(kEvent.getMaxPillage() - kEvent.getMinPillage() + 1);
 			int iDone = 0;
 
 			// <!-- custom: make these static const for performance optimization as advised by chatgpt 5 too. -->

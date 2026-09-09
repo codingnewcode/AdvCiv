@@ -12966,8 +12966,10 @@ void CvCity::applyEvent(EventTypes eEvent, EventTriggeredData const& kTriggeredD
 		if (kEvent.getMaxPillage() > 0)
 		{
 			FAssert(kEvent.getMaxPillage() >= kEvent.getMinPillage());
+			// <!-- custom: BtS treated the XML maximum as exclusive although event help advertises both endpoints as inclusive.
+			// Include the maximum for city-scoped pillage outcomes. See KI#736. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 			int iNumPillage = kEvent.getMinPillage() +
-					SyncRandNum(kEvent.getMaxPillage() - kEvent.getMinPillage());
+					SyncRandNum(kEvent.getMaxPillage() - kEvent.getMinPillage() + 1);
 
 			// <!-- custom: make these static const for performance optimization as advised by chatgpt 5 too. -->
 			static const ColorTypes eColorRed = (ColorTypes)GC.getColorType("RED");

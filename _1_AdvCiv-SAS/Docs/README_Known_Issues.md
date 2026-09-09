@@ -832,7 +832,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#733 - (Provisional Pending inherited K-Mod/AdvCiv Actual Effects defect) Great Person hover can bypass disorder's zero rate](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-733)\
 [KI#734 - (Provisional Pending inherited BtS city-hover defect) Corporation hover ignores disorder](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-734)\
 [KI#735 - (Provisional Pending inherited K-Mod/BUG Finance Advisor defect) Unit-cost and supply hovers ignore anarchy](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-735)\
-[KI#736 - (Provisional Pending inherited BtS random-event off-by-one) Pillage maximum is unreachable](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-736)\
+[KI#736 - (Fixed inherited BtS random-event off-by-one) Pillage maximum was unreachable](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-736)\
 [KI#737 - (Provisional Pending inherited BtS event-help omission) Unit-experience events hide their full heal](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-737)\
 [KI#738 - (Provisional Pending inherited BtS event-help mismatch) Empire population loss silently exempts small cities](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-738)\
 [KI#739 - (Provisional Pending inherited AdvCiv trade-help omission) Foreign anarchy blocks trade without explanation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-739)\
@@ -15664,11 +15664,11 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP114 `CvGameT
 
 <a id="ki-736"></a>
 
-## KI#736 - (Provisional Pending inherited BtS random-event off-by-one) Pillage maximum is unreachable
+## KI#736 - (Fixed inherited BtS random-event off-by-one) Pillage maximum was unreachable
 
-Album F413 finds both city and empire random-event execution choosing `MinPillage + Rand(MaxPillage - MinPillage)`, although the XML fields and help text describe an inclusive minimum-to-maximum range. Consequently an unequal maximum can never occur: for example, the current Looters 2 tooltip advertises 2-4 destroyed improvements while runtime can choose only 2 or 3. The off-by-one originates in stock BtS and survives K-Mod, AdvCiv and SAS.
+Album F413 found both city and empire random-event execution choosing `MinPillage + Rand(MaxPillage - MinPillage)`, although the XML fields and help text describe an inclusive minimum-to-maximum range. Consequently an unequal maximum could never occur: for example, the current Looters 2 tooltip advertised 2-4 destroyed improvements while runtime could choose only 2 or 3. The off-by-one originates in stock BtS and survived K-Mod, AdvCiv and SAS.
 
-Pending adding 1 to the random range in both `CvCity::applyEvent` and `CvPlayer::applyEvent`, making runtime honor the advertised inclusive maximum and naturally using `Rand(1)` when both endpoints match.
+Both city- and empire-scoped execution now add 1 to the random range, making runtime honor the advertised inclusive maximum and naturally using `Rand(1)` when both endpoints match. The repair compiled successfully and a Debug-opt Huge Continents/Normal autoplay with random events enabled, full UWAI and the standard Aggressive AI option completed 397 turns with a Space victory. The rare maximum endpoint was not forced directly; its inclusive range is source verified.
 
 Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP115 `CvGameTextMgr.cpp` deep re-audit; disposition reconciled with the help of GPT-5.6-Sol, thanks.
 
