@@ -16406,17 +16406,40 @@ Found as F485/provisional KI#808 during ChatGPT-5.6-Sol's C031-WIP212 `CvPlayer.
 
 ## KI#809 - (Fixed inherited BtS event target-validation defect) A vanished required unit was treated as legal
 
+Screenshots/files for this issue: [google drive folder link](https://drive.google.com/drive/folders/1ED3Y2_G6Ga8LleM-dTLxvXQo-MhL2Bve?usp=sharing).
+
 Reply-time random-event validation rejected an existing unit that could not receive an event, but treated a missing stored unit as valid. Event bookkeeping and non-unit effects could consequently proceed while the required unit-local payload silently did nothing. Current At the Sword data gives a direct simultaneous-multiplayer example: its damaged Swordsman could vanish while the human popup waited, yet the global non-recurring event was recorded and consumed without healing, experience or renaming. BtS, K-Mod, Base AdvCiv and SAS shared the defect.
 
 Reply-time validation now derives whether a concrete unit is required from all five payload fields consumed by `CvUnit::applyEvent`: disbanding, experience, immobility, promotion and naming. Such an outcome rejects a vanished target; an outcome that merely retains a unit as trigger context remains legal without it. Existing live units retain the prior `CvUnit::canApplyEvent` eligibility check. A clean Debug-opt compile and random-events-enabled Huge Custom Continents autoplay completed through turn 469 and a Space victory; its SASGameRecord captured 343 accepted primary/direct applications and 7 accepted immediate follow-ups without a trigger-commit inconsistency. The simultaneous-multiplayer disappearance race is source verified rather than reproduced directly.
 
 As a useful side demonstration of SASGameRecord rather than a KI#809 symptom, the same run's initial geography layer preserved an unusually cross-like Custom Continents landmass: visually a double sabre or four inward-pointing pyramids, almost a `BTG_Cross`-style shuriken. This is the kind of memorable generated-map context that would otherwise be lost after an unattended autoplay.
 
+The subsequently added 25%-per-dimension overview renders that same 108x74 source map in only 40x14 characters while retaining the recognizable four-armed shape (`#` is ice; punctuation distinguishes resampled land/water mixtures):
+
+```text
+|####  ,,################################|
+|  ,,  ,,,,::;;....;;..;;;;......;;::,,  |
+|  ::,,    ::::::;;;;..;;..;;;;::::,,    |
+|,,;;;;,,,,      ,,;;....::,,      ,,::  |
+|,,;;;;,,;;        ;;;;..,,        ::;;  |
+|,,;;;;;;;;;;::      ,,;;      ;;;;::..,,|
+|,,;;..........::::  ,,,,,,::::;;......::|
+|,,;;........;;::,,            ;;;;....::|
+|  ;;......::::,,      ;;::,,  ,,,,::..,,|
+|  ;;;;::,,          ::..;;,,,,    ,,;;,,|
+|  ;;::,,      ,,::::......;;::::,,,,,,  |
+|,,            ::............;;;;,,      |
+|        ::;;::::;;;;....;;;;;;..;;;;;;,,|
+|##  ####################################|
+```
+
 Found as F486/provisional KI#809 during ChatGPT-5.6-Sol's C031-WIP213 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-810"></a>
 
 ## KI#810 - (Fixed inherited BtS event transaction-ordering defect) A rejected stale choice could consume a global trigger
+
+Screenshots/files for this issue: same google drive folder link as KI#809.
 
 `applyEvent` durably marked and globally propagated a trigger as fired before its authoritative reply-time `canDoEvent` check. If a human event popup became stale in simultaneous multiplayer—for example, another player captured the selected Horticulture city—the validation correctly rejected the choice and applied no event, but the global non-recurring trigger remained permanently consumed. This ordering was inherited unchanged from BtS through K-Mod and Base AdvCiv; AdvCiv's launcher already states that unavailable events must not count as triggered.
 

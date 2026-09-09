@@ -1772,6 +1772,20 @@ Created as part of AdvCiv-SAS improvements
 		<DefineName>SAS_GAME_RECORD_MAP_ASCII_HORIZONTAL_CHARS_PER_CELL</DefineName>
 		<iDefineIntVal>2</iDefineIntVal>
 	</Define>
+	<!-- custom: Initial-context-only geography overviews provide quick small and medium impressions before the authoritative full text-map layers. Values are percentages of the bounded full preview in each dimension, rounded to at least one cell and resampled directly from the original plot grid; the default 25 and 50 therefore cost only 6.25% and 25% of one full geography layer's cells. SASGameRecordLog.cpp clamps each to 0..100; 0 disables that overview, and duplicate percentages emit only the first picture. (GPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_GAME_RECORD_MAP_ASCII_OVERVIEW_1_SCALE_PERCENT</DefineName>
+		<iDefineIntVal>25</iDefineIntVal>
+	</Define>
+	<Define>
+		<DefineName>SAS_GAME_RECORD_MAP_ASCII_OVERVIEW_2_SCALE_PERCENT</DefineName>
+		<iDefineIntVal>50</iDefineIntVal>
+	</Define>
+	<!-- custom: Record initial geography at native source-plot resolution when the bounded full preview had to resample it. This deliberately may exceed the ordinary preview bounds: every logical cell is one real plot, while the horizontal repetition above still corrects its displayed aspect ratio. Set to 0 to omit the native picture; maps already fitting the full preview omit it automatically as a duplicate. (GPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_GAME_RECORD_MAP_ASCII_NATIVE_GEOGRAPHY_ENABLE</DefineName>
+		<iDefineIntVal>1</iDefineIntVal>
+	</Define>
 	<!-- custom: Geography-map symbols in this order: open water, lake, flat land, hills, peaks, mostly-water mixed land, balanced water/land, mostly-land mixed water, ice. The three mixed symbols describe resampled shoreline cells, not TERRAIN_COAST; Geography intentionally shows broad land/water and plot shape rather than shallow-water terrain. Use comma-separated single printable characters; because literal whitespace and delimiter punctuation are fragile in XML, SPACE, COMMA, COLON, and SEMICOLON are recognized names. Symbols must be unique within this layer, and pipe is reserved for the picture frame. Invalid palettes produce a clear game-record configuration-error row and omit the map instead of silently changing symbols. (GPT-5.6-Sol) -->
 	<Define>
 		<DefineName>SAS_GAME_RECORD_MAP_ASCII_GEOGRAPHY_SYMBOLS</DefineName>

@@ -128,6 +128,25 @@ static int getSASGameRecordMapAsciiHorizontalCharsPerCell()
 	return iChars;
 }
 
+// <!-- custom: Two initial geography overviews provide quick small/medium impressions before the authoritative full text maps. Clamp each percentage to 0..100 so malformed values cannot create oversized drawings; 0 disables that overview. (GPT-5.6-Sol) -->
+static int getSASGameRecordMapAsciiOverview1ScalePercent()
+{
+	static const int iPercent = std::min(100, std::max(0, GC.getDefineINT("SAS_GAME_RECORD_MAP_ASCII_OVERVIEW_1_SCALE_PERCENT")));
+	return iPercent;
+}
+
+static int getSASGameRecordMapAsciiOverview2ScalePercent()
+{
+	static const int iPercent = std::min(100, std::max(0, GC.getDefineINT("SAS_GAME_RECORD_MAP_ASCII_OVERVIEW_2_SCALE_PERCENT")));
+	return iPercent;
+}
+
+static bool isSASGameRecordMapAsciiNativeGeographyEnabled()
+{
+	static const bool bEnabled = (GC.getDefineINT("SAS_GAME_RECORD_MAP_ASCII_NATIVE_GEOGRAPHY_ENABLE") > 0);
+	return bEnabled;
+}
+
 // <!-- custom: Each text-map layer can be disabled independently to reduce SASGameRecord size while retaining the layers useful for a particular analysis. Cache these XML switches like the other recorder settings; width or height 0 remains a convenient master switch for all ASCII maps. (ChatGPT-5.6-Sol) -->
 static bool isSASGameRecordMapAsciiGeographyEnabled()
 {
@@ -558,8 +577,9 @@ static void logSASGameRecordGameState(const char* szRowType)
 static void logSASGameRecordLogSettings()
 {
 	// <!-- custom: Read the popup define directly because this settings row is emitted only once per log; unlike repeatedly queried map settings, caching it would add state without avoiding repeat work. (GPT-5.6-Sol) -->
-	logSASGameRecord("GAME_RECORD_LOG_SETTINGS SAS_GAME_RECORD_LOG_LEVEL=%d SAS_GAME_RECORD_INTERVAL_TURNS_UNSCALED_GAMESPEED=%d SAS_GAME_RECORD_LOG_USE_TIMESTAMPED_FILENAME=%d SAS_AIAUTOPLAY_AUTO_DISMISS_INFORMATIONAL_POPUPS_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_MAX_WIDTH=%d SAS_GAME_RECORD_MAP_ASCII_MAX_HEIGHT=%d SAS_GAME_RECORD_MAP_ASCII_HORIZONTAL_CHARS_PER_CELL=%d SAS_GAME_RECORD_MAP_ASCII_GEOGRAPHY_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_TERRAIN_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_RIVER_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_BONUS_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_FEATURE_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_POLITICAL_ENABLE=%d SAS_GAME_RECORD_TRADE_MARKET_ENABLE=%d SAS_GAME_RECORD_TRADE_MARKET_BONUS_GPT_QUOTES_ENABLE=%d SAS_GAME_RECORD_TRADE_MARKET_AI_TECH_VALUES_ENABLE=%d SAS_GAME_RECORD_PERFORMANCE_METRICS_ENABLE=%d SAS_GAME_RECORD_SYSTEM_CONTEXT_LEVEL=%d",
+	logSASGameRecord("GAME_RECORD_LOG_SETTINGS SAS_GAME_RECORD_LOG_LEVEL=%d SAS_GAME_RECORD_INTERVAL_TURNS_UNSCALED_GAMESPEED=%d SAS_GAME_RECORD_LOG_USE_TIMESTAMPED_FILENAME=%d SAS_AIAUTOPLAY_AUTO_DISMISS_INFORMATIONAL_POPUPS_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_MAX_WIDTH=%d SAS_GAME_RECORD_MAP_ASCII_MAX_HEIGHT=%d SAS_GAME_RECORD_MAP_ASCII_HORIZONTAL_CHARS_PER_CELL=%d SAS_GAME_RECORD_MAP_ASCII_OVERVIEW_1_SCALE_PERCENT=%d SAS_GAME_RECORD_MAP_ASCII_OVERVIEW_2_SCALE_PERCENT=%d SAS_GAME_RECORD_MAP_ASCII_NATIVE_GEOGRAPHY_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_GEOGRAPHY_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_TERRAIN_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_RIVER_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_BONUS_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_FEATURE_ENABLE=%d SAS_GAME_RECORD_MAP_ASCII_POLITICAL_ENABLE=%d SAS_GAME_RECORD_TRADE_MARKET_ENABLE=%d SAS_GAME_RECORD_TRADE_MARKET_BONUS_GPT_QUOTES_ENABLE=%d SAS_GAME_RECORD_TRADE_MARKET_AI_TECH_VALUES_ENABLE=%d SAS_GAME_RECORD_PERFORMANCE_METRICS_ENABLE=%d SAS_GAME_RECORD_SYSTEM_CONTEXT_LEVEL=%d",
 			getSASGameRecordLogLevel(), getSASGameRecordTurnInterval(), isSASGameRecordTimestampedFilenameEnabled(), GC.getDefineINT("SAS_AIAUTOPLAY_AUTO_DISMISS_INFORMATIONAL_POPUPS_ENABLE"), getSASGameRecordMapAsciiMaxWidth(), getSASGameRecordMapAsciiMaxHeight(), getSASGameRecordMapAsciiHorizontalCharsPerCell(),
+			getSASGameRecordMapAsciiOverview1ScalePercent(), getSASGameRecordMapAsciiOverview2ScalePercent(), isSASGameRecordMapAsciiNativeGeographyEnabled(),
 			isSASGameRecordMapAsciiGeographyEnabled(), isSASGameRecordMapAsciiTerrainEnabled(), isSASGameRecordMapAsciiRiversEnabled(), isSASGameRecordMapAsciiBonusesEnabled(), isSASGameRecordMapAsciiFeaturesEnabled(), isSASGameRecordMapAsciiPoliticalEnabled(), isSASGameRecordTradeMarketEnabled(), isSASGameRecordTradeMarketBonusGPTQuotesEnabled(), isSASGameRecordTradeMarketAITechValuesEnabled(), isSASGameRecordPerformanceMetricsEnabled(), getSASGameRecordSystemContextLevel());
 }
 
@@ -3768,6 +3788,64 @@ static void logSASGameRecordRiverEdgeCoordinates()
 		logSASGameRecord("GAME_RECORD_MAP_RIVER_EDGES turn=%d edgePlots=%d riverEdges=%d part=%d parts=%d edgeFormat=(x,y):D directionCodes=S/E/SE edges=%s", GC.getGame().getGameTurn(), iEdgePlots, iRiverEdges, (int)iPart + 1, (int)aszChunks.size(), aszChunks[iPart].GetCString());
 }
 
+// <!-- custom: Render all extra geography pictures through one direct source-grid path so overview and native symbols have identical semantics. The caller owns framing metadata and zero-initialized counts. (GPT-5.6-Sol) -->
+static void logSASGameRecordMapAsciiGeographyRows(CvMap const& kMap, SASGameRecordMapAsciiPalette const& kPalette, int iPictureWidth, int iPictureHeight, int iHorizontalCharsPerCell, int* aiSymbolCounts)
+{
+	int const iSourceWidth = kMap.getGridWidth();
+	int const iSourceHeight = kMap.getGridHeight();
+	for (int iRow = 0; iRow < iPictureHeight; iRow++)
+	{
+		int const iPictureY = iPictureHeight - iRow - 1;
+		int const iMinY = (iPictureY * iSourceHeight) / iPictureHeight;
+		int const iMaxY = ((iPictureY + 1) * iSourceHeight) / iPictureHeight;
+		CvString szPlots = "|";
+		for (int iPictureX = 0; iPictureX < iPictureWidth; iPictureX++)
+		{
+			int const iMinX = (iPictureX * iSourceWidth) / iPictureWidth;
+			int const iMaxX = ((iPictureX + 1) * iSourceWidth) / iPictureWidth;
+			char const cSymbol = getSASGameRecordMapAsciiGeographySymbol(kMap, kPalette, iMinX, iMaxX, iMinY, iMaxY);
+			aiSymbolCounts[(unsigned char)cSymbol]++;
+			for (int iRepeat = 0; iRepeat < iHorizontalCharsPerCell; iRepeat++)
+				appendSASGameRecordMapAsciiSymbol(szPlots, cSymbol);
+		}
+		szPlots += "|";
+		logSASGameRecord("%s", szPlots.GetCString());
+	}
+}
+
+// <!-- custom: The full multi-layer text map remains authoritative, but its geography picture is too large for a quick first impression. Add tunable initial overviews using the same aspect correction and geography palette.
+// Derive only each overview's dimensions from the bounded full preview, then resample its cells directly from the original plot grid so the compact picture does not compound the full preview's aggregation loss. (GPT-5.6-Sol) -->
+static void logSASGameRecordMapAsciiGeographyOverview(CvMap const& kMap, SASGameRecordMapAsciiPalette const& kPalette, int iFullPreviewWidth, int iFullPreviewHeight, int iHorizontalCharsPerCell, int iOverview, int iScalePercent, char const* szReason)
+{
+	int const iOverviewWidth = std::max(1, (iFullPreviewWidth * iScalePercent + 50) / 100);
+	int const iOverviewHeight = std::max(1, (iFullPreviewHeight * iScalePercent + 50) / 100);
+	int const iOutputWidth = iOverviewWidth * iHorizontalCharsPerCell;
+	int aiSymbolCounts[127] = { 0 };
+	logSASGameRecord("GAME_RECORD_MAP_ASCII_OVERVIEW_BEGIN turn=%d reason=%s overview=%d layer=GEOGRAPHY source=%dx%d fullPreviewCells=%dx%d overviewCells=%dx%d outputCharacters=%dx%d scalePercent=%d scaleBasis=bounded_full_preview resampledDirectlyFromSource=1 horizontalCharactersPerCell=%d aspectRatioPreserved=1 topRowFirst=1 rowFrame=PIPE informationScope=omniscient_actual_map",
+			GC.getGame().getGameTurn(), szReason, iOverview, kMap.getGridWidth(), kMap.getGridHeight(), iFullPreviewWidth, iFullPreviewHeight, iOverviewWidth, iOverviewHeight, iOutputWidth, iOverviewHeight, iScalePercent, iHorizontalCharsPerCell);
+	logSASGameRecordMapAsciiGeographyRows(kMap, kPalette, iOverviewWidth, iOverviewHeight, iHorizontalCharsPerCell, aiSymbolCounts);
+	int const iOverviewCells = iOverviewWidth * iOverviewHeight;
+	int const iDrawingCharacters = (iOutputWidth + 2) * iOverviewHeight;
+	logSASGameRecord("GAME_RECORD_MAP_ASCII_OVERVIEW_END turn=%d reason=%s overview=%d layer=GEOGRAPHY overviewCells=%d drawingCharacters=%d overviewCellCounts=%s",
+			GC.getGame().getGameTurn(), szReason, iOverview, iOverviewCells, iDrawingCharacters, getSASDiagnosticQuoted(getSASGameRecordMapAsciiSymbolCounts(aiSymbolCounts).GetCString()).GetCString());
+}
+
+// <!-- custom: Bounded previews can hide exact narrow passages and source-plot distances. Emit one initial native geography picture when requested, with one logical cell per source plot and explicit coordinate extents; omit it when the ordinary full preview is already native. (GPT-5.6-Sol) -->
+static void logSASGameRecordMapAsciiNativeGeography(CvMap const& kMap, SASGameRecordMapAsciiPalette const& kPalette, int iHorizontalCharsPerCell, char const* szReason)
+{
+	int const iSourceWidth = kMap.getGridWidth();
+	int const iSourceHeight = kMap.getGridHeight();
+	int const iOutputWidth = iSourceWidth * iHorizontalCharsPerCell;
+	int aiSymbolCounts[127] = { 0 };
+	logSASGameRecord("GAME_RECORD_MAP_ASCII_NATIVE_BEGIN turn=%d reason=%s layer=GEOGRAPHY source=%dx%d nativeCells=%dx%d outputCharacters=%dx%d sourcePlotsPerCell=1 horizontalCharactersPerCell=%d aspectRatioPreserved=1 sourceXLeft=0 sourceXRight=%d sourceYTop=%d sourceYBottom=0 topRowFirst=1 rowFrame=PIPE informationScope=omniscient_actual_map",
+			GC.getGame().getGameTurn(), szReason, iSourceWidth, iSourceHeight, iSourceWidth, iSourceHeight, iOutputWidth, iSourceHeight, iHorizontalCharsPerCell, iSourceWidth - 1, iSourceHeight - 1);
+	logSASGameRecordMapAsciiGeographyRows(kMap, kPalette, iSourceWidth, iSourceHeight, iHorizontalCharsPerCell, aiSymbolCounts);
+	int const iSourceCells = iSourceWidth * iSourceHeight;
+	int const iDrawingCharacters = (iOutputWidth + 2) * iSourceHeight;
+	logSASGameRecord("GAME_RECORD_MAP_ASCII_NATIVE_END turn=%d reason=%s layer=GEOGRAPHY nativeCells=%d drawingCharacters=%d nativeCellCounts=%s",
+			GC.getGame().getGameTurn(), szReason, iSourceCells, iDrawingCharacters, getSASDiagnosticQuoted(getSASGameRecordMapAsciiSymbolCounts(aiSymbolCounts).GetCString()).GetCString());
+}
+
 // <!-- custom: A bounded text map gives external LLMs and text-only reviewers the broad spatial relationships that aggregate landmass statistics cannot show. Fit the generated map, rather than the selected XML world size, into the tunable box with one scale so Tiny maps remain exact while horizontal SAS_Longworld and possible vertical/tower maps preserve their shapes.
 // Monospace characters are usually much taller than wide, so repeat each map cell horizontally by a tunable amount. Keep metadata outside the pipe-framed drawing rows so humans and LLMs can parse each layer as one uninterrupted picture.
 // Geography, terrain, directional river edges, and bonuses are normally stable enough to record once at setup/load; structured map-change rows preserve later exceptions. Record features initially because jungle, forest, flood plains, oases, and ice affect settling, movement, health, and yields; repeat features and political borders at level-3 snapshots to show Forest/Jungle clearing and regrowth, fallout, expansion, conquest, and collapse. (GPT-5.6-Sol + ChatGPT-5.6-Sol) -->
@@ -3877,6 +3955,18 @@ static void logSASGameRecordMapAscii(bool bIncludeStaticLayers, char const* szRe
 	if (abLayerEnabled[5])
 		logSASGameRecord("GAME_RECORD_MAP_ASCII_LEGEND layer=POLITICAL palette=%s order=unowned_water,unowned_land,mixed_unowned_water_land,civilization_city,Barbarian_city,civilization_and_Barbarian_cities,multiple_starting_players,Barbarian_territory playerSymbolFormat=SYMBOL=PLAYER_ID playerSymbols=%s playerDetailsRows=GAME_RECORD_PLAYER_SETUP startingPlotsMarked=%d",
 				getSASDiagnosticQuoted(kPalette.szPoliticalDefine.GetCString()).GetCString(), szPlayerSymbolsQuoted.GetCString(), bMarkStartingPlots);
+	if (abLayerEnabled[0])
+	{
+		int const iOverview1ScalePercent = getSASGameRecordMapAsciiOverview1ScalePercent();
+		int const iOverview2ScalePercent = getSASGameRecordMapAsciiOverview2ScalePercent();
+		if (iOverview1ScalePercent > 0)
+			logSASGameRecordMapAsciiGeographyOverview(kMap, kPalette, iPreviewWidth, iPreviewHeight, iHorizontalCharsPerCell, 1, iOverview1ScalePercent, szReason);
+		// <!-- custom: Equal configured percentages would produce identical pictures, so keep the first and omit the duplicate second overview. (GPT-5.6-Sol) -->
+		if (iOverview2ScalePercent > 0 && iOverview2ScalePercent != iOverview1ScalePercent)
+			logSASGameRecordMapAsciiGeographyOverview(kMap, kPalette, iPreviewWidth, iPreviewHeight, iHorizontalCharsPerCell, 2, iOverview2ScalePercent, szReason);
+		if (isSASGameRecordMapAsciiNativeGeographyEnabled() && (iPreviewWidth != iSourceWidth || iPreviewHeight != iSourceHeight))
+			logSASGameRecordMapAsciiNativeGeography(kMap, kPalette, iHorizontalCharsPerCell, szReason);
+	}
 	for (int iLayer = 0; iLayer < 6; iLayer++)
 	{
 		if (!abLayerEnabled[iLayer]) continue;
