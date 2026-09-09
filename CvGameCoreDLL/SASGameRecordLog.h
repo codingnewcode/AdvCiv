@@ -16,11 +16,15 @@ void logSASGameRecordNewGameStarted();
 void startSASGameRecordLogForLoadedSave();
 
 class CvCity;
+// <!-- custom: Required by random-event APIs using CvPlayer references; this lightweight declaration fixed the resulting AgentIterator/CvPlayer compile errors. (GPT-5.6-Sol) -->
+class CvPlayer;
 class CvPlot;
 class CvUnit;
 // <!-- custom: Forward-declare the vote payload because SASGameRecord only passes it by pointer.
 // This keeps the lightweight recorder header from needing CvStructs.h solely for diplomatic vote-source history hooks. (ChatGPT-5.6-Sol) -->
 struct VoteTriggeredData;
+// <!-- custom: Random-event lifecycle diagnostics pass the existing player-local trigger payload by const pointer/reference without exposing its save-layout definition through this lightweight recorder header. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+struct EventTriggeredData;
 // <!-- custom: Observe one AI_chooseProduction call as a scope so every early return is handled without teaching the AI decision tree about recorder schema.
 // When level 2+ is pre-enabled by the caller, the destructor compares the final head order with the entry state and records only meaningful switches, clears, or resumptions of stored production.
 // Earlier versions put the whole constructor/destructor in SASGameRecordLog.cpp. In ordinary Release builds that hides the disabled fast path across the translation-unit boundary.
@@ -112,6 +116,18 @@ void logSASGameRecordBarbarianSpawn(CvUnit const* pUnit, char const* szCause);
 // <!-- custom: Level-2 goody rows preserve each realized hut outcome; level 3 keeps the existing exact Barbarian-spawn rows as complementary tactical detail. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordGoodyReceived(PlayerTypes ePlayer, CvPlot const* pPlot, CvUnit const* pTriggerUnit, GoodyTypes eGoody, SASGameRecordGoodyResult const& kResult);
 void logSASGameRecordGoodyNoOutcome(PlayerTypes ePlayer, CvPlot const* pPlot, CvUnit const* pTriggerUnit, GoodyTypes eTaboo, int iAttempts);
+// <!-- custom: Civ4 EventInfo/random-event history is deliberately separate from generic GAME_RECORD_ACTION rows.
+// Calls are level-2 pre-gated at authoritative gameplay boundaries so disabled/level-1 runs do not collect target validity or construct diagnostic strings. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+void logSASGameRecordRandomEventTriggered(CvPlayer const& kPlayer, EventTriggeredData const& kTriggeredData, char const* szDeliveryPath);
+void logSASGameRecordRandomEventNoSelection(CvPlayer const& kPlayer, EventTriggeredData const& kTriggeredData, char const* szResolution);
+void logSASGameRecordRandomEventApply(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, EventTriggeredData const* pTriggeredData, bool bUpdateTrigger, char const* szDisposition, int iCanDoEvent, int iTriggerFiredBefore, int iEventOccurredBefore);
+void logSASGameRecordRandomEventGoldResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, int iRangeLow, int iRangeHigh, int iPlayerGoldDelta, PlayerTypes eOtherPlayer, bool bGoldToPlayer);
+void logSASGameRecordRandomEventTechResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, TechTypes eTech, int iTechPercent, int iResearchBefore, int iBeakersApplied, int iResearchAfter, int iTechCost, int iCompleted);
+void logSASGameRecordRandomEventFreeUnitsResult(PlayerTypes ePlayer, PlayerTypes eAffectedPlayer, EventTypes eEvent, int iTriggeredId, UnitClassTypes eUnitClass, UnitTypes eUnit, int iRequestedCount, int iCreatedCount, CvCity const* pSpawnCity);
+void logSASGameRecordRandomEventOccurrenceCleared(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eClearedEvent, int iTriggeredId, int iClearChance, char const* szScope, TeamTypes eScopeTeam, int iScopePlayerSlots, int iScopeEverAlivePlayers, int iClearedOccurrences);
+void logSASGameRecordRandomEventExpired(CvPlayer const& kPlayer, EventTypes eEvent, EventTriggeredData const& kTriggeredData, char const* szReason);
+void logSASGameRecordRandomEventPillageResult(char const* szScope, PlayerTypes ePlayer, PlayerTypes eAffectedPlayer, int iCityId, int iTriggeredId, EventTypes eEvent, int iMinPillage, int iMaxPillage, int iAttempts, int iDestroyed);
+void logSASGameRecordRandomEventCountdownScheduled(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eFollowupEvent, int iTriggeredId, int iRequestedDueTurn, int iPreviousDueTurn, int iScheduledDueTurn);
 void logSASGameRecordUnitCompleted(CvCity const* pCity, CvUnit const* pUnit, bool bConscripted, int iRawModifiedOverflow = 0, int iUnmodifiedOverflow = 0, int iKeptOverflow = 0, int iLostProduction = 0, int iUnusedOverflowCapacity = 0, int iOverflowGold = 0);
 // <!-- custom: Research completion has its own accounting row because generic TECH_ACQUIRED also covers trades, free technologies, espionage and other sources where research overflow fields would be meaningless.
 // Call only for actual TECH_ACQUISITION_RESEARCH threshold crossings at level 2+. (ChatGPT-5.6-Sol) -->

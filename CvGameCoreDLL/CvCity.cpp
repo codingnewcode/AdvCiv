@@ -13008,6 +13008,10 @@ void CvCity::applyEvent(EventTypes eEvent, EventTriggeredData const& kTriggeredD
 				}
 			}
 
+			// <!-- custom: Preserve the realized city-scoped EventInfo pillage transaction after the existing inclusive KI#736 roll/destruction loop.
+			// Exact destroyed plots remain canonical GAME_RECORD_PLOT_CHANGE history; this row records advertised range, rolled attempts, and failed attempts compactly. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+			if (gGameRecordLogLevel >= 2) logSASGameRecordRandomEventPillageResult("CITY", kTriggeredData.m_ePlayer, getOwner(), getID(), kTriggeredData.m_iId, eEvent, kEvent.getMinPillage(), kEvent.getMaxPillage(), iNumPillage, iNumPillaged);
+
 			PlayerTypes eOtherPlayer = kTriggeredData.m_eOtherPlayer;
 			if (!kEvent.isCityEffect() && kEvent.isOtherPlayerCityEffect())
 				eOtherPlayer = kTriggeredData.m_ePlayer;
@@ -13039,10 +13043,16 @@ void CvCity::applyEvent(EventTypes eEvent, EventTriggeredData const& kTriggeredD
 			UnitTypes eUnit = getCivilization().getUnit(eUnitClass);
 			if (eUnit != NO_UNIT)
 			{
+				bool const bLogRandomEvent = (gGameRecordLogLevel >= 2);
+				int iUnitsCreated = 0;
 				for (int i = 0; i < kEvent.getNumUnits(); i++)
 				{
-					GET_PLAYER(getOwner()).initUnit(eUnit, getX(), getY());
+					CvUnit* pCreatedUnit = GET_PLAYER(getOwner()).initUnit(eUnit, getX(), getY());
+					if (bLogRandomEvent && pCreatedUnit != NULL) iUnitsCreated++;
 				}
+				// <!-- custom: City-scoped EventInfos can create units directly, bypassing ordinary production history.
+				// Reuse the already resolved civilization-specific unit type and initUnit results for one compact realized row. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+				if (bLogRandomEvent && kEvent.getNumUnits() > 0) logSASGameRecordRandomEventFreeUnitsResult(kTriggeredData.m_ePlayer, getOwner(), eEvent, kTriggeredData.m_iId, eUnitClass, eUnit, kEvent.getNumUnits(), iUnitsCreated, this);
 			}
 		}
 	}

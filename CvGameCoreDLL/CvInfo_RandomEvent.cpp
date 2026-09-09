@@ -128,6 +128,15 @@ bool CvEventInfo::isDisbandUnit() const
 	return m_bDisbandUnit;
 }
 
+// <!-- custom: CvUnit::applyEvent consumes exactly these five unit-local EventInfo fields.
+// Centralize that semantic on CvEventInfo so SASGameRecord can diagnose missing required targets (e.g. KI#809) without maintaining a recorder-only approximation.
+// This helper is observational and does not alter canDoEvent/applyEvent behavior. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+bool CvEventInfo::hasUnitLocalEffect() const
+{
+	wchar const* szUnitNameKey = getUnitNameKey();
+	return (isDisbandUnit() || getUnitExperience() != 0 || getUnitImmobileTurns() > 0 || getUnitPromotion() != NO_PROMOTION || (szUnitNameKey != NULL && szUnitNameKey[0] != L'\0'));
+}
+
 int CvEventInfo::getGold() const
 {
 	return m_iGold;

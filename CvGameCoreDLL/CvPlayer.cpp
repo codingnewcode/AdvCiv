@@ -16404,27 +16404,36 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 {
 	FAssert(eEvent != NO_EVENT);
 
+	bool const bLogRandomEvent = (gGameRecordLogLevel >= 2);
 	EventTriggeredData* pTriggeredData = getEventTriggered(iEventTriggeredId);
+	int const iEventOccurredBefore = (bLogRandomEvent ? (getEventOccured(eEvent) != NULL) : -1);
 
 	if (pTriggeredData == NULL)
 	{
+		if (bLogRandomEvent) logSASGameRecordRandomEventApply(*this, eEvent, iEventTriggeredId, NULL, bUpdateTrigger, "REJECTED_MISSING_TRIGGER_DATA", -1, -1, iEventOccurredBefore);
 		deleteEventTriggered(iEventTriggeredId);
 		return;
 	}
 
+	int const iTriggerFiredBefore = (bLogRandomEvent ? isTriggerFired(pTriggeredData->m_eTrigger) : -1);
 	if (bUpdateTrigger)
 	{
 		setTriggerFired(*pTriggeredData, true);
 	}
 
-	if (!canDoEvent(eEvent, *pTriggeredData))
+	// <!-- custom: Preserve the inherited reply transaction exactly: canDoEvent still executes once, after the existing trigger-fired update.
+	// Storing its result only lets SASGameRecord expose KI#809/KI#810 without repairing either behavior in this diagnostics commit. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool const bCanDoEvent = canDoEvent(eEvent, *pTriggeredData);
+	if (!bCanDoEvent)
 	{
+		if (bLogRandomEvent) logSASGameRecordRandomEventApply(*this, eEvent, iEventTriggeredId, pTriggeredData, bUpdateTrigger, "REJECTED_CAN_DO", 0, iTriggerFiredBefore, iEventOccurredBefore);
 		if (bUpdateTrigger)
 			deleteEventTriggered(iEventTriggeredId);
 		return;
 	}
 
 	setEventOccured(eEvent, *pTriggeredData);
+	if (bLogRandomEvent) logSASGameRecordRandomEventApply(*this, eEvent, iEventTriggeredId, pTriggeredData, bUpdateTrigger, "ACCEPTED", 1, iTriggerFiredBefore, iEventOccurredBefore);
 
 	CvEventInfo& kEvent = GC.getInfo(eEvent);
 	CvCity* pCity =	getCity(pTriggeredData->m_iCityId);
@@ -16442,7 +16451,12 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 	// advc (note): This computation of iGold seems overcomplicated - but correct.
 	int const iRandomGold = getEventCost(eEvent, pTriggeredData->m_eOtherPlayer, true);
 	int iGold = getEventCost(eEvent, pTriggeredData->m_eOtherPlayer, false);
+	int const iGoldBase = iGold;
 	iGold += SyncRandNum(iRandomGold - iGold + 1);
+
+	// <!-- custom: getEventCost can be nonzero solely through iTechCostPercent even when iGold/iRandomGold are both zero.
+	// Gate on the already-computed endpoints/result so every realized EventInfo treasury transaction is visible without repeating tech selection or cost calculation. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (bLogRandomEvent && (iGoldBase != 0 || iRandomGold != 0 || iGold != 0)) logSASGameRecordRandomEventGoldResult(*this, eEvent, iEventTriggeredId, std::min(iGoldBase, iRandomGold), std::max(iGoldBase, iRandomGold), iGold, pTriggeredData->m_eOtherPlayer, kEvent.isGoldToPlayer());
 
 	if (iGold != 0)
 	{
@@ -16466,10 +16480,25 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 	{
 		TechTypes const eBestTech = getBestEventTech(eEvent,
 				pTriggeredData->m_eOtherPlayer);
+		int iResearchBefore = -1;
+		int iResearchAfter = -1;
+		int iTechCost = -1;
+		int iBeakers = 0;
+		int iCompleted = -1;
 		if (eBestTech != NO_TECH)
 		{
-			int const iBeakers = GET_TEAM(getTeam()).changeResearchProgressPercent(
+			if (bLogRandomEvent)
+			{
+				iResearchBefore = GET_TEAM(getTeam()).getResearchProgress(eBestTech);
+				iTechCost = GET_TEAM(getTeam()).getResearchCost(eBestTech);
+			}
+			iBeakers = GET_TEAM(getTeam()).changeResearchProgressPercent(
 					eBestTech, kEvent.getTechPercent(), getID(), TECH_ACQUISITION_RANDOM_EVENT);
+			if (bLogRandomEvent)
+			{
+				iResearchAfter = GET_TEAM(getTeam()).getResearchProgress(eBestTech);
+				iCompleted = GET_TEAM(getTeam()).isHasTech(eBestTech);
+			}
 			if (iBeakers > 0)
 			{	
 				// <!-- custom: make these static const for performance optimization as advised by chatgpt 5 too. -->
@@ -16486,6 +16515,9 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				}
 			}
 		}
+		// <!-- custom: Record the actual dynamically selected research target/result without a second getBestEventTech call.
+		// A configured event with no valid target is kept as tech=NO_TECH and zero applied beakers. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		if (bLogRandomEvent) logSASGameRecordRandomEventTechResult(*this, eEvent, iEventTriggeredId, eBestTech, kEvent.getTechPercent(), iResearchBefore, iBeakers, iResearchAfter, iTechCost, iCompleted);
 	}
 
 	if (kEvent.isGoldenAge())
@@ -16531,22 +16563,59 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 		bClear = (SyncRandNum(100) < kEvent.getClearEventChance(eLoopEvent));
 		if (!bClear)
 			continue;
+		int iClearScopePlayerSlots = (bLogRandomEvent ? 0 : -1);
+		int iClearScopeEverAlivePlayers = (bLogRandomEvent ? 0 : -1);
+		int iClearedOccurrences = (bLogRandomEvent ? 0 : -1);
+		char const* szClearScope = (bLogRandomEvent ? "PLAYER" : NULL);
+		TeamTypes eClearScopeTeam = NO_TEAM;
 		if (kEvent.isGlobal())
 		{
+			if (bLogRandomEvent) szClearScope = "GLOBAL";
 			for (PlayerIter<> itPlayer; itPlayer.hasNext(); ++itPlayer)
 			{
 				if (!itPlayer->isBarbarian())
+				{
+					if (bLogRandomEvent)
+					{
+						iClearScopePlayerSlots++;
+						if (itPlayer->isEverAlive()) iClearScopeEverAlivePlayers++;
+						if (itPlayer->getEventOccured(eLoopEvent) != NULL) iClearedOccurrences++;
+					}
 					itPlayer->resetEventOccured(eLoopEvent, itPlayer->getID() != getID());
+				}
 			}
 		}
 		else if (kEvent.isTeam())
 		{
+			if (bLogRandomEvent)
+			{
+				szClearScope = "TEAM";
+				eClearScopeTeam = getTeam();
+			}
 			for (MemberIter itMember(getTeam()); itMember.hasNext(); ++itMember)
 			{
+				if (bLogRandomEvent)
+				{
+					iClearScopePlayerSlots++;
+					if (itMember->isEverAlive()) iClearScopeEverAlivePlayers++;
+					if (itMember->getEventOccured(eLoopEvent) != NULL) iClearedOccurrences++;
+				}
 				itMember->resetEventOccured(eLoopEvent, itMember->getID() != getID());
 			}
 		}
-		else resetEventOccured(eLoopEvent, false);
+		else
+		{
+			if (bLogRandomEvent)
+			{
+				iClearScopePlayerSlots = 1;
+				iClearScopeEverAlivePlayers = (isEverAlive() ? 1 : 0);
+				iClearedOccurrences = (getEventOccured(eLoopEvent) != NULL ? 1 : 0);
+			}
+			resetEventOccured(eLoopEvent, false);
+		}
+		// <!-- custom: Log only a successful existing ClearEventChance roll, after the original reset scope has completed.
+		// Keep the actual reset-loop slot breadth separate from ever-alive civilizations so global scope is not misleading on 48-player DLLs; failed candidate rolls remain intentionally absent. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		if (bLogRandomEvent) logSASGameRecordRandomEventOccurrenceCleared(*this, eEvent, eLoopEvent, iEventTriggeredId, kEvent.getClearEventChance(eLoopEvent), szClearScope, eClearScopeTeam, iClearScopePlayerSlots, iClearScopeEverAlivePlayers, iClearedOccurrences);
 	}
 
 	if (pCity != NULL && kEvent.isCityEffect())
@@ -16656,6 +16725,8 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				}
 			}
 
+			if (bLogRandomEvent) logSASGameRecordRandomEventPillageResult("EMPIRE", getID(), getID(), -1, iEventTriggeredId, eEvent, kEvent.getMinPillage(), kEvent.getMaxPillage(), iPillage, iDone);
+
 			if (NO_PLAYER != pTriggeredData->m_eOtherPlayer)
 			{
 				CvWString szBuffer = gDLL->getText("TXT_KEY_EVENT_NUM_CITY_IMPROVEMENTS_DESTROYED",
@@ -16706,8 +16777,14 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 						pUnitCity = getCapital();
 					if (pUnitCity != NULL)
 					{
+						int iUnitsCreated = 0;
 						for (int i = 0; i < kEvent.getNumUnits(); i++)
-							initUnit(eUnit, pUnitCity->getX(), pUnitCity->getY());
+						{
+							CvUnit* pCreatedUnit = initUnit(eUnit, pUnitCity->getX(), pUnitCity->getY());
+							if (bLogRandomEvent && pCreatedUnit != NULL) iUnitsCreated++;
+						}
+						// <!-- custom: Event-created free units bypass ordinary city production, so preserve the realized resolved unit type/count and spawn location without adding another unit creation scan or changing initUnit order. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+						if (bLogRandomEvent && kEvent.getNumUnits() > 0) logSASGameRecordRandomEventFreeUnitsResult(getID(), getID(), eEvent, iEventTriggeredId, eUnitClass, eUnit, kEvent.getNumUnits(), iUnitsCreated, pUnitCity);
 					}
 				}
 			}
@@ -17018,13 +17095,16 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				kTriggered.m_iTurn = (GC.getGame().getSpeedPercent() *
 						kEvent.getAdditionalEventTime(eLoopEvent)) / 100 +
 						GC.getGame().getGameTurn();
+				int const iRequestedDueTurn = (bLogRandomEvent ? kTriggered.m_iTurn : -1);
 				EventTriggeredData const* pExistingTriggered = getEventCountdown(eLoopEvent);
+				int const iPreviousDueTurn = (!bLogRandomEvent || pExistingTriggered == NULL ? -1 : pExistingTriggered->m_iTurn);
 				if (pExistingTriggered != NULL)
 				{
 					kTriggered.m_iTurn = std::min(kTriggered.m_iTurn,
 							pExistingTriggered->m_iTurn);
 				}
 				setEventCountdown(eLoopEvent, kTriggered);
+				if (bLogRandomEvent) logSASGameRecordRandomEventCountdownScheduled(*this, eEvent, eLoopEvent, iEventTriggeredId, iRequestedDueTurn, iPreviousDueTurn, kTriggered.m_iTurn);
 				bDeleteTrigger = false;
 			}
 		}
@@ -17144,14 +17224,32 @@ void CvPlayer::doEvents()
 	if (isBarbarian() || isMinorCiv())
 		return;
 
+	bool const bLogRandomEventExpiry = (gGameRecordLogLevel >= 2);
 	{ // advc: scope for iterator
 		CvEventMap::iterator it = m_mapEventsOccured.begin();
 		while (it != m_mapEventsOccured.end())
 		{
-			if (checkExpireEvent(it->first, it->second))
+			char const* szExpireReason = NULL;
+			if (checkExpireEvent(it->first, it->second, bLogRandomEventExpiry ? &szExpireReason : NULL))
 			{
-				expireEvent(it->first, it->second, true);
-				it = m_mapEventsOccured.erase(it);
+				if (bLogRandomEventExpiry)
+				{
+					// <!-- custom: Keep a logging-only copy so the lifecycle row is emitted after the durable occurrence has actually been erased, without changing expireEvent/checkExpireEvent semantics.
+					// The optional reason is filled by the same branch that returned true, not by re-running expiry logic. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+					EventTypes const eExpiredEvent = it->first;
+					EventTriggeredData const kExpiredData = it->second;
+					expireEvent(eExpiredEvent, it->second, true);
+					it = m_mapEventsOccured.erase(it);
+					// <!-- custom: Ordinary non-quest occurrences age out after a few turns as housekeeping; do not duplicate virtually every normal event with a low-information timeout row.
+					// Quests and exceptional Python/target/rules expiry reasons remain narrated. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+					if (szExpireReason == NULL || strcmp(szExpireReason, "NON_QUEST_TIMEOUT") != 0)
+						logSASGameRecordRandomEventExpired(*this, eExpiredEvent, kExpiredData, szExpireReason == NULL ? "UNKNOWN" : szExpireReason);
+				}
+				else
+				{
+					expireEvent(it->first, it->second, true);
+					it = m_mapEventsOccured.erase(it);
+				}
 			}
 			else
 			{
@@ -17316,15 +17414,25 @@ void CvPlayer::expireEvent(EventTypes eEvent, EventTriggeredData const& kTrigger
 	}
 }
 
-bool CvPlayer::checkExpireEvent(EventTypes eEvent, EventTriggeredData const& kTriggeredData) const
+// <!-- custom: Add an optional diagnostics-only reason output while preserving the original Boolean result and branch order.
+// Ordinary gameplay callers use the NULL default, so only SASGameRecord's gated caller writes reason labels. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+bool CvPlayer::checkExpireEvent(EventTypes eEvent, EventTriggeredData const& kTriggeredData, char const** ppszReason) const
 {
+	if (ppszReason != NULL) *ppszReason = "NOT_EXPIRED";
 	if (GC.getPythonCaller()->checkExpireEvent(eEvent, kTriggeredData))
+	{
+		if (ppszReason != NULL) *ppszReason = "PYTHON_EXPIRE_CHECK";
 		return true;
+	}
 
 	CvEventInfo& kEvent = GC.getInfo(eEvent);
 
 	if (!kEvent.isQuest())
-		return (GC.getGame().getGameTurn() - kTriggeredData.m_iTurn > 2);
+	{
+		bool const bExpired = (GC.getGame().getGameTurn() - kTriggeredData.m_iTurn > 2);
+		if (bExpired && ppszReason != NULL) *ppszReason = "NON_QUEST_TIMEOUT";
+		return bExpired;
+	}
 
 	CvEventTriggerInfo& kTrigger = GC.getInfo(kTriggeredData.m_eTrigger);
 	FAssert(kTriggeredData.m_ePlayer != NO_PLAYER);
@@ -17333,31 +17441,41 @@ bool CvPlayer::checkExpireEvent(EventTypes eEvent, EventTriggeredData const& kTr
 	if (kTrigger.isStateReligion() & kTrigger.isPickReligion() &&
 		kPlayer.getStateReligion() != kTriggeredData.m_eReligion)
 	{
+		if (ppszReason != NULL) *ppszReason = "STATE_RELIGION_CHANGED";
 		return true;
 	}
 	if (kTrigger.getCivic() != NO_CIVIC &&
 		!kPlayer.isCivic((CivicTypes)kTrigger.getCivic()))
 	{
+		if (ppszReason != NULL) *ppszReason = "CIVIC_CHANGED";
 		return true;
 	}
 	if (kTriggeredData.m_iCityId != -1 &&
-			kPlayer.getCity(kTriggeredData.m_iCityId) == NULL)
+		kPlayer.getCity(kTriggeredData.m_iCityId) == NULL)
+	{
+		if (ppszReason != NULL) *ppszReason = "CITY_MISSING";
 		return true;
+	}
 
 	if (kTriggeredData.m_iUnitId != -1 &&
 		kPlayer.getUnit(kTriggeredData.m_iUnitId) == NULL)
 	{
+		if (ppszReason != NULL) *ppszReason = "UNIT_MISSING";
 		return true;
 	}
 	if (kTriggeredData.m_eOtherPlayer != NO_PLAYER)
 	{
 		if (!GET_PLAYER(kTriggeredData.m_eOtherPlayer).isAlive())
+		{
+			if (ppszReason != NULL) *ppszReason = "OTHER_PLAYER_DEAD";
 			return true;
+		}
 
 		if (kTriggeredData.m_iOtherPlayerCityId != -1 &&
 			GET_PLAYER(kTriggeredData.m_eOtherPlayer).
 			getCity(kTriggeredData.m_iOtherPlayerCityId) == NULL)
 		{
+			if (ppszReason != NULL) *ppszReason = "OTHER_CITY_MISSING";
 			return true;
 		}
 	}
@@ -17367,13 +17485,15 @@ bool CvPlayer::checkExpireEvent(EventTypes eEvent, EventTriggeredData const& kTr
 		for (int i = 0; i < kTrigger.getNumObsoleteTechs(); i++)
 		{
 			if (GET_TEAM(getTeam()).isHasTech((TechTypes)kTrigger.getObsoleteTech(i)))
+			{
+				if (ppszReason != NULL) *ppszReason = "OBSOLETE_TECH";
 				return true;
+			}
 		}
 	}
 
 	return false;
 }
-
 
 void CvPlayer::trigger(EventTriggerTypes eTrigger)
 {
@@ -17382,6 +17502,9 @@ void CvPlayer::trigger(EventTriggerTypes eTrigger)
 
 void CvPlayer::trigger(const EventTriggeredData& kData)
 {
+	// <!-- custom: This is the first actual-delivery boundary after random-event candidate construction/selection.
+	// Keep speculative trigger weights/candidates out of SASGameRecord and pre-gate all target-validity work at level 2+. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordRandomEventTriggered(*this, kData, isHuman() ? "HUMAN_POPUP" : "AI_IMMEDIATE");
 	if (isHuman())
 	{
 		CvPopupInfo* pInfo = new CvPopupInfo(BUTTONPOPUP_EVENT, kData.getID());
@@ -17392,6 +17515,7 @@ void CvPlayer::trigger(const EventTriggeredData& kData)
 		EventTypes eEvent = AI().AI_chooseEvent(kData.getID());
 		if (eEvent != NO_EVENT)
 			applyEvent(eEvent, kData.getID());
+		else if (gGameRecordLogLevel >= 2) logSASGameRecordRandomEventNoSelection(*this, kData, "AI_NO_EVENT_SELECTED");
 	}
 }
 

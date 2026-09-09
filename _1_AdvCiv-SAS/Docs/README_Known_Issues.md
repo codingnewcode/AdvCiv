@@ -15668,7 +15668,9 @@ Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP114 `CvGameT
 
 Album F413 found both city and empire random-event execution choosing `MinPillage + Rand(MaxPillage - MinPillage)`, although the XML fields and help text describe an inclusive minimum-to-maximum range. Consequently an unequal maximum could never occur: for example, the current Looters 2 tooltip advertised 2-4 destroyed improvements while runtime could choose only 2 or 3. The off-by-one originates in stock BtS and survived K-Mod, AdvCiv and SAS.
 
-Both city- and empire-scoped execution now add 1 to the random range, making runtime honor the advertised inclusive maximum and naturally using `Rand(1)` when both endpoints match. The repair compiled successfully and a Debug-opt Huge Continents/Normal autoplay with random events enabled, full UWAI and the standard Aggressive AI option completed 397 turns with a Space victory. The rare maximum endpoint was not forced directly; its inclusive range is source verified.
+Both city- and empire-scoped execution now add 1 to the random range, making runtime honor the advertised inclusive maximum and naturally using `Rand(1)` when both endpoints match. The repair compiled successfully and a Debug-opt Huge Continents/Normal autoplay with random events enabled, full UWAI and the standard Aggressive AI option completed 397 turns with a Space victory.
+
+A later full level-3 autoplay directly confirmed the formerly unreachable endpoint: at turn 320, `EVENT_LOOTERS_2` advertised 2-4 pillage attempts and rolled all 4; its result also reconciled exactly with the nearby canonical `GAME_RECORD_PLOT_CHANGE cause=RANDOM_EVENT` rows in `SASGameRecord_20260909T102530Z_new1.log`.
 
 Found and documented provisionally during ChatGPT-5.6-Sol's C031-WIP115 `CvGameTextMgr.cpp` deep re-audit; disposition reconciled with the help of GPT-5.6-Sol, thanks.
 

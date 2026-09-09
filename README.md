@@ -1044,9 +1044,13 @@ BBAI_GAME_RNG mapRandState=3666828707 syncRandState=256979939
 
 ### SASGameRecord log
 
-`SASGameRecord_*.log` is a separate compact game record for autoplay, AI-strength, and cheap wall-clock performance review.
+`SASGameRecord_*.log` is a separate compact game record for autoplay, AI-strength, and cheap wall-clock performance review. It records broadly, yet in a detailed but also compact/efficient format most of what happens in a game.
 
-It gives high-level context, notably initial map/landmass geography and bonus/yield context, economy, expansion, city and battle history, synthetic whole-war outcomes, autoplay start/end, player appearance/elimination, run status, worked plots, unit composition including `UnitCombat` shares, Barbarian cities and pressure, diplomacy, exploration, environmental and map changes, project-victory progress, compact air/missile/nuclear posture, per-city air-base capacity and city-defense state, synthetic city-bombard sequences, and detailed Barbarian positions/combat and air-strike/interception/plot-bomb actions at level 3.
+Many fields or information are shown, see [README_Main_Changes_Guide.md (SASGameRecord log)](/_1_AdvCiv-SAS/Docs/README_Main_Changes_Guide.md#sasgamerecord-log).
+
+Among them, `SASGameRecord` notably gives high-level context, notably initial map/landmass geography and bonus/yield context, economy, expansion, city and battle history, synthetic whole-war outcomes, autoplay start/end, player appearance/elimination, run status, worked plots, unit composition including `UnitCombat` shares, Barbarian cities and pressure, diplomacy, exploration, environmental and map changes, project-victory progress, compact air/missile/nuclear posture, per-city air-base capacity and city-defense state, synthetic city-bombard sequences, and detailed Barbarian positions/combat and air-strike/interception/plot-bomb actions at level 3.
+
+SASGameRecord notably also records the realized Civ4 random-event (`EventTrigger` / `EventInfo`) lifecycle: delivered triggers, the EventInfo actually selected by an AI or human, concrete target validity, accepted/rejected replies, meaningful quest/event expiry, and variable realized results such as gold, technology progress, pillaging, free units and follow-up events.
 
 Level 3 can notably also preserve the active player's current Foreign-Advisor-style trade market: pairwise resource/technology offerability, refusal/mechanical reasons, extra gold/GPT capacity, optional resource GPT quotes, and optional recipient-side AI technology trade values. This is useful on its own and also helps an LLM interpret detailed BBAI decision traces.
 
@@ -1063,8 +1067,6 @@ Maps are recorded as text art which should help LLM visualization and reasoning/
 <img src="./_1_AdvCiv-SAS/Images/SASGameRecord_map_text/text_art_map (5).PNG" alt="text_art_map (5)" width="250"></img>
 <img src="./_1_AdvCiv-SAS/Images/SASGameRecord_map_text/text_art_map (6).PNG" alt="text_art_map (6)" width="250"></img>
 <img src="./_1_AdvCiv-SAS/Images/SASGameRecord_map_text/text_art_map (7).PNG" alt="text_art_map (7)" width="250"></img>
-
-Many other fields or information are also shown, see [README_Main_Changes_Guide.md (SASGameRecord log)](/_1_AdvCiv-SAS/Docs/README_Main_Changes_Guide.md#sasgamerecord-log).
 
 See also the full raw [SASGameRecord example log](/_1_AdvCiv-SAS/SASGameRecord_log/SASGameRecord_example.log). It can be given to an external to the repo LLM (e.g. ChatGPT instead of Codex) to get an as of now token-cheap or free review of the `SASGameRecord` example sample.
 

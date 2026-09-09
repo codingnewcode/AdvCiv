@@ -1476,7 +1476,9 @@ protected:  // <advc.210>
 	bool canSeeIntel(PlayerTypes ePlayer, bool bDemographics, bool bCheckPoints = true) const; // advc.085
 	// advc.120f:
 	void announceEspionageToThirdParties(EspionageMissionTypes eMission, PlayerTypes eTarget);
-	bool checkExpireEvent(EventTypes eEvent, const EventTriggeredData& kTriggeredData) const;
+	// <!-- custom: Optional diagnostics-only reason preserves the existing Boolean expiry semantics/order while letting SASGameRecord narrate the actual lifecycle cause.
+	// Keep this one-producer/one-recorder-consumer vocabulary as const strings; a shared enum would couple this general gameplay header to recorder-specific labels without the reuse that justifies our cross-subsystem cause enums. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool checkExpireEvent(EventTypes eEvent, const EventTriggeredData& kTriggeredData, char const** ppszReason = NULL) const;
 	void expireEvent(EventTypes eEvent, const EventTriggeredData& kTriggeredData, bool bFail);
 	bool isValidTriggerReligion(const CvEventTriggerInfo& kTrigger, CvCity const* pCity, ReligionTypes eReligion) const;
 	bool isValidTriggerCorporation(const CvEventTriggerInfo& kTrigger, CvCity const* pCity, CorporationTypes eCorporation) const;
