@@ -16456,6 +16456,16 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				getCity(pTriggeredData->m_iOtherPlayerCityId);
 	}
 
+	// <!-- custom: Capture only native player-level EventInfo state that lacks another exact canonical result row.
+	// City-local happiness/health stays in the city result path; disabled/level-1 logging performs no extra player/team queries. (ChatGPT-5.6-Sol) -->
+	bool const bLogRandomEventPlayerResult = (bLogRandomEvent &&
+			(kEvent.getFreeUnitSupport() != 0 || kEvent.getInflationModifier() != 0 || kEvent.getSpaceProductionModifier() != 0 ||
+			(kEvent.getEspionagePoints() != 0 && pTriggeredData->m_eOtherPlayer != NO_PLAYER) || kEvent.getBonusRevealed() != NO_BONUS ||
+			(!kEvent.isCityEffect() && !kEvent.isOtherPlayerCityEffect() && (kEvent.getHappy() != 0 || kEvent.getHealth() != 0))));
+	SASGameRecordRandomEventPlayerState kSASRandomEventPlayerBefore;
+	if (bLogRandomEventPlayerResult)
+		kSASRandomEventPlayerBefore = SASGameRecordRandomEventPlayerState(*this, eEvent, pTriggeredData->m_eOtherPlayer);
+
 	// advc (note): This computation of iGold seems overcomplicated - but correct.
 	int const iRandomGold = getEventCost(eEvent, pTriggeredData->m_eOtherPlayer, true);
 	int iGold = getEventCost(eEvent, pTriggeredData->m_eOtherPlayer, false);
@@ -16633,6 +16643,22 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 
 	if (!kEvent.isCityEffect() && !kEvent.isOtherPlayerCityEffect())
 	{
+		// <!-- custom: Empire-scoped EventInfos can mutate every city without an individual city applyEvent call.
+		// Snapshot only when this EventInfo actually contains a city-relevant deterministic effect; ordinary gold/war/promotion/etc. events avoid the extra city scans. (ChatGPT-5.6-Sol) -->
+		bool const bLogRandomEventBuildingModifierResult = (bLogRandomEvent &&
+				(kEvent.getBuildingYieldChange().isAnyNonDefault() || kEvent.getBuildingCommerceChange().isAnyNonDefault() ||
+				kEvent.getBuildingHappyChange().isAnyNonDefault() || kEvent.getBuildingHealthChange().isAnyNonDefault()));
+		bool const bLogRandomEventEmpireCityResult = (bLogRandomEvent &&
+				(kEvent.getHappy() != 0 || kEvent.getHealth() != 0 || kEvent.getHurryAnger() != 0 || kEvent.getHappyTurns() != 0 ||
+				kEvent.getFood() != 0 || kEvent.getFoodPercent() != 0 || kEvent.getPopulationChange() != 0 || kEvent.getCulture() != 0 ||
+				bLogRandomEventBuildingModifierResult));
+		std::vector<std::pair<int, SASGameRecordRandomEventCityState> > aSASRandomEventCityBefore;
+		if (bLogRandomEventEmpireCityResult)
+		{
+			FOR_EACH_CITY(pSASCity, *this)
+				aSASRandomEventCityBefore.push_back(std::make_pair(pSASCity->getID(), SASGameRecordRandomEventCityState(*pSASCity, eEvent)));
+		}
+
 		if (kEvent.getHappy() != 0)
 			changeExtraHappiness(kEvent.getHappy());
 		if (kEvent.getHealth() != 0)
@@ -16797,6 +16823,19 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				}
 			}
 		}
+
+		if (bLogRandomEventEmpireCityResult)
+		{
+			for (size_t i = 0; i < aSASRandomEventCityBefore.size(); i++)
+			{
+				CvCity const* pSASCity = getCity(aSASRandomEventCityBefore[i].first);
+				if (pSASCity == NULL)
+					continue;
+				SASGameRecordRandomEventCityState const kSASAfter(*pSASCity, eEvent);
+				logSASGameRecordRandomEventCityResult(getID(), getID(), iEventTriggeredId, eEvent, "EMPIRE", *pSASCity, aSASRandomEventCityBefore[i].second, kSASAfter);
+			}
+		}
+		if (bLogRandomEventBuildingModifierResult) logSASGameRecordRandomEventBuildingModifierResults(*this, eEvent, iEventTriggeredId, "EMPIRE", NULL);
 	}
 
 	CvPlot* pPlot = GC.getMap().plot(
@@ -16815,7 +16854,18 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 		if (pUnit != NULL)
 		{
 			FAssert(pUnit->canApplyEvent(eEvent));
+			bool const bLogRandomEventUnitResult = (bLogRandomEvent && kEvent.hasUnitLocalEffect());
+			int const iSASUnitId = (bLogRandomEventUnitResult ? pUnit->getID() : -1);
+			SASGameRecordRandomEventUnitState kSASUnitBefore;
+			if (bLogRandomEventUnitResult) kSASUnitBefore = SASGameRecordRandomEventUnitState(*pUnit, eEvent);
 			pUnit->applyEvent(eEvent); // might kill the unit
+			if (bLogRandomEventUnitResult)
+			{
+				CvUnit const* pSASUnitAfter = getUnit(iSASUnitId);
+				SASGameRecordRandomEventUnitState kSASUnitAfter;
+				if (pSASUnitAfter != NULL) kSASUnitAfter = SASGameRecordRandomEventUnitState(*pSASUnitAfter, eEvent);
+				logSASGameRecordRandomEventUnitResult(getID(), iEventTriggeredId, eEvent, kSASUnitBefore, kSASUnitAfter);
+			}
 		}
 	}
 	FOR_EACH_ENUM(UnitCombat)
@@ -16824,12 +16874,24 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				kEvent.getUnitCombatPromotion(eLoopUnitCombat);
 		if (eEventPromo == NO_PROMOTION)
 			continue;
+		int const iSASFreePromotionBefore = (bLogRandomEvent ? isFreePromotion(eLoopUnitCombat, eEventPromo) : -1);
+		int iSASExistingUnitsNewlyPromoted = 0;
 		FOR_EACH_UNIT_VAR(pLoopUnit, *this)
 		{
 			if (pLoopUnit->getUnitCombatType() == eLoopUnitCombat)
+			{
+				bool const bSASHadPromotion = (bLogRandomEvent ? pLoopUnit->isHasPromotion(eEventPromo) : false);
 				pLoopUnit->setHasPromotion(eEventPromo, true);
+				if (bLogRandomEvent && !bSASHadPromotion && pLoopUnit->isHasPromotion(eEventPromo)) iSASExistingUnitsNewlyPromoted++;
+			}
 		}
 		setFreePromotion(eLoopUnitCombat, eEventPromo, true);
+		if (bLogRandomEvent)
+		{
+			int const iSASFreePromotionAfter = isFreePromotion(eLoopUnitCombat, eEventPromo);
+			if (iSASExistingUnitsNewlyPromoted > 0 || iSASFreePromotionBefore != iSASFreePromotionAfter)
+				logSASGameRecordRandomEventFreePromotionResult(*this, eEvent, iEventTriggeredId, "UNIT_COMBAT", eLoopUnitCombat, eEventPromo, iSASExistingUnitsNewlyPromoted, iSASFreePromotionBefore, iSASFreePromotionAfter);
+		}
 	}
 	FOR_EACH_ENUM(UnitClass)
 	{
@@ -16837,17 +16899,34 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				kEvent.getUnitClassPromotion(eLoopUnitClass);
 		if (eEventPromo == NO_PROMOTION)
 			continue;
+		int const iSASFreePromotionBefore = (bLogRandomEvent ? isFreePromotion(eLoopUnitClass, eEventPromo) : -1);
+		int iSASExistingUnitsNewlyPromoted = 0;
 		FOR_EACH_UNIT_VAR(pLoopUnit, *this)
 		{
 			if (pLoopUnit->getUnitClassType() == eLoopUnitClass)
+			{
+				bool const bSASHadPromotion = (bLogRandomEvent ? pLoopUnit->isHasPromotion(eEventPromo) : false);
 				pLoopUnit->setHasPromotion(eEventPromo, true);
+				if (bLogRandomEvent && !bSASHadPromotion && pLoopUnit->isHasPromotion(eEventPromo)) iSASExistingUnitsNewlyPromoted++;
+			}
 		}
 		setFreePromotion(eLoopUnitClass, eEventPromo, true);
+		if (bLogRandomEvent)
+		{
+			int const iSASFreePromotionAfter = isFreePromotion(eLoopUnitClass, eEventPromo);
+			if (iSASExistingUnitsNewlyPromoted > 0 || iSASFreePromotionBefore != iSASFreePromotionAfter)
+				logSASGameRecordRandomEventFreePromotionResult(*this, eEvent, iEventTriggeredId, "UNIT_CLASS", eLoopUnitClass, eEventPromo, iSASExistingUnitsNewlyPromoted, iSASFreePromotionBefore, iSASFreePromotionAfter);
+		}
 	}
 	if (kEvent.getBonusRevealed() != NO_BONUS)
 	{
 		GET_TEAM(getTeam()).setForceRevealedBonus((BonusTypes)
 				kEvent.getBonusRevealed(), true);
+	}
+	if (bLogRandomEventPlayerResult)
+	{
+		SASGameRecordRandomEventPlayerState const kSASRandomEventPlayerAfter(*this, eEvent, pTriggeredData->m_eOtherPlayer);
+		logSASGameRecordRandomEventPlayerResult(*this, eEvent, iEventTriggeredId, pTriggeredData->m_eOtherPlayer, kSASRandomEventPlayerBefore, kSASRandomEventPlayerAfter);
 	}
 	{
 		std::vector<CvCity*> apSpreadReligionCities;

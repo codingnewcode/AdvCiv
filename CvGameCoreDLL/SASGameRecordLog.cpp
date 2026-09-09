@@ -20,6 +20,7 @@
 #include "CvInfo_City.h" // <!-- custom: Needed for specialist and process type names in game-record city rows. (ChatGPT-5.5) -->
 #include "CvInfo_Civics.h" // <!-- custom: Needed for policy/civic names in game-record advisor rows. (ChatGPT-5.5) -->
 #include "CvInfo_Civilization.h" // <!-- custom: Needed to attribute player-wide extra happiness/health to traits instead of leaving effects from loaded-mod rules under an opaque `extra` label. (GPT-5.6-Sol) -->
+#include "CvCivilization.h" // <!-- custom: Needed to resolve civilization-specific BuildingClass types in realized random-event building/city result rows; CvPlayer/CvCity only forward-declare the runtime CvCivilization wrapper. This is a compile-time dependency only. (ChatGPT-5.6-Sol) -->
 #include "CvInfo_GameOption.h" // <!-- custom: Needed to log enabled game-option type names; CvGlobals only forward-declares CvGameOptionInfo. (GPT-5.5) -->
 #include "CvInfo_Misc.h" // <!-- custom: Needed to log enabled graphics-option type names; CvGlobals only forward-declares CvGraphicOptionInfo. (GPT-5.6-Sol) -->
 #include "CvInfo_Symbol.h" // <!-- custom: Needed to log actual assigned player-color and primary-color context; CvGlobals only forward-declares their info classes. (GPT-5.6-Sol) -->
@@ -7626,6 +7627,263 @@ void logSASGameRecordRandomEventTechResult(CvPlayer const& kPlayer, EventTypes e
 			GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), getSASGameRecordTechType(eTech), iTechPercent, iResearchBefore, iBeakersApplied, iResearchAfter, iTechCost, iCompleted);
 }
 
+SASGameRecordRandomEventCityState::SASGameRecordRandomEventCityState() :
+		iPopulation(-1), iFood(-1), iFoodYield(-1), iProductionYield(-1), iCommerceYield(-1),
+		iGoldRate(-1), iResearchRate(-1), iCultureRate(-1), iEspionageRate(-1), iOwnerCultureTimes100(-1),
+		iOccupationTurns(-1), iCultureUpdateTurns(-1), iExtraHappiness(-1), iExtraHealth(-1),
+		iHurryAngerTurns(-1), iHappinessTurns(-1), iAngryPopulation(-1), iHappyLevel(-1), iUnhappyLevel(-1),
+		iGoodHealth(-1), iBadHealth(-1), iSpaceProductionModifier(-1), iFreeSpecialistInstances(-1),
+		eBuilding(NO_BUILDING), iRealBuildingCount(-1)
+{}
+
+SASGameRecordRandomEventCityState::SASGameRecordRandomEventCityState(CvCity const& kCity, EventTypes eEvent) :
+		iPopulation(kCity.getPopulation()), iFood(kCity.getFood()), iFoodYield(kCity.getYieldRate(YIELD_FOOD)),
+		iProductionYield(kCity.getYieldRate(YIELD_PRODUCTION)), iCommerceYield(kCity.getYieldRate(YIELD_COMMERCE)),
+		iGoldRate(kCity.getCommerceRate(COMMERCE_GOLD)), iResearchRate(kCity.getCommerceRate(COMMERCE_RESEARCH)),
+		iCultureRate(kCity.getCommerceRate(COMMERCE_CULTURE)), iEspionageRate(kCity.getCommerceRate(COMMERCE_ESPIONAGE)),
+		iOwnerCultureTimes100(kCity.getCultureTimes100(kCity.getOwner())), iOccupationTurns(kCity.getOccupationTimer()),
+		iCultureUpdateTurns(kCity.getCultureUpdateTimer()), iExtraHappiness(kCity.getExtraHappiness()),
+		iExtraHealth(kCity.getExtraHealth()), iHurryAngerTurns(kCity.getHurryAngerTimer()),
+		iHappinessTurns(kCity.getHappinessTimer()), iAngryPopulation(kCity.angryPopulation()), iHappyLevel(kCity.happyLevel()),
+		iUnhappyLevel(kCity.unhappyLevel()), iGoodHealth(kCity.goodHealth()), iBadHealth(kCity.badHealth()),
+		iSpaceProductionModifier(kCity.getSpaceProductionModifier()), iFreeSpecialistInstances(kCity.getNumGreatPeople()),
+		eBuilding(NO_BUILDING), iRealBuildingCount(-1)
+{
+	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	BuildingClassTypes const eBuildingClass = (BuildingClassTypes)kEvent.getBuildingClass();
+	if (eBuildingClass != NO_BUILDINGCLASS)
+	{
+		eBuilding = kCity.getCivilization().getBuilding(eBuildingClass);
+		if (eBuilding != NO_BUILDING)
+			iRealBuildingCount = kCity.getNumRealBuilding(eBuilding);
+	}
+}
+
+// <!-- custom: Keep deterministic EventInfo city consequences compact and realized: record before/after state only when something actually changed.
+// Include immediate yield/commerce output so building modifiers do not disappear until a later periodic snapshot; plot pillage, free units, gold and tech retain their specialized result rows. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventCityResult(PlayerTypes ePlayer, PlayerTypes eAffectedPlayer, int iTriggeredId, EventTypes eEvent, char const* szScope, CvCity const& kCity, SASGameRecordRandomEventCityState const& kBefore, SASGameRecordRandomEventCityState const& kAfter)
+{
+	bool const bChanged = (kBefore.iPopulation != kAfter.iPopulation || kBefore.iFood != kAfter.iFood ||
+			kBefore.iFoodYield != kAfter.iFoodYield || kBefore.iProductionYield != kAfter.iProductionYield ||
+			kBefore.iCommerceYield != kAfter.iCommerceYield || kBefore.iGoldRate != kAfter.iGoldRate ||
+			kBefore.iResearchRate != kAfter.iResearchRate || kBefore.iCultureRate != kAfter.iCultureRate ||
+			kBefore.iEspionageRate != kAfter.iEspionageRate || kBefore.iOwnerCultureTimes100 != kAfter.iOwnerCultureTimes100 ||
+			kBefore.iOccupationTurns != kAfter.iOccupationTurns || kBefore.iCultureUpdateTurns != kAfter.iCultureUpdateTurns ||
+			kBefore.iExtraHappiness != kAfter.iExtraHappiness || kBefore.iExtraHealth != kAfter.iExtraHealth ||
+			kBefore.iHurryAngerTurns != kAfter.iHurryAngerTurns || kBefore.iHappinessTurns != kAfter.iHappinessTurns ||
+			kBefore.iAngryPopulation != kAfter.iAngryPopulation || kBefore.iHappyLevel != kAfter.iHappyLevel ||
+			kBefore.iUnhappyLevel != kAfter.iUnhappyLevel || kBefore.iGoodHealth != kAfter.iGoodHealth ||
+			kBefore.iBadHealth != kAfter.iBadHealth || kBefore.iSpaceProductionModifier != kAfter.iSpaceProductionModifier ||
+			kBefore.iFreeSpecialistInstances != kAfter.iFreeSpecialistInstances || kBefore.eBuilding != kAfter.eBuilding ||
+			kBefore.iRealBuildingCount != kAfter.iRealBuildingCount);
+	if (!bChanged)
+		return;
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_CITY_RESULT turn=%d player=%d team=%d affectedPlayer=%d affectedTeam=%d triggeredId=%d event=%s scope=%s cityId=%d city=%S x=%d y=%d populationBefore=%d populationAfter=%d populationDelta=%+d foodBefore=%d foodAfter=%d foodDelta=%+d foodYieldBefore=%d foodYieldAfter=%d productionYieldBefore=%d productionYieldAfter=%d commerceYieldBefore=%d commerceYieldAfter=%d goldRateBefore=%d goldRateAfter=%d researchRateBefore=%d researchRateAfter=%d cultureRateBefore=%d cultureRateAfter=%d espionageRateBefore=%d espionageRateAfter=%d ownerCultureTimes100Before=%d ownerCultureTimes100After=%d ownerCultureTimes100Delta=%+d occupationTurnsBefore=%d occupationTurnsAfter=%d cultureUpdateTurnsBefore=%d cultureUpdateTurnsAfter=%d extraHappinessBefore=%d extraHappinessAfter=%d extraHealthBefore=%d extraHealthAfter=%d hurryAngerTurnsBefore=%d hurryAngerTurnsAfter=%d happinessTurnsBefore=%d happinessTurnsAfter=%d angryPopulationBefore=%d angryPopulationAfter=%d happyLevelBefore=%d happyLevelAfter=%d unhappyLevelBefore=%d unhappyLevelAfter=%d goodHealthBefore=%d goodHealthAfter=%d badHealthBefore=%d badHealthAfter=%d spaceProductionModifierBefore=%d spaceProductionModifierAfter=%d freeSpecialistInstancesBefore=%d freeSpecialistInstancesAfter=%d building=%s realBuildingCountBefore=%d realBuildingCountAfter=%d",
+			GC.getGame().getGameTurn(), ePlayer, (ePlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(ePlayer).getTeam()), eAffectedPlayer,
+			(eAffectedPlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(eAffectedPlayer).getTeam()), iTriggeredId, getSASGameRecordEventType(eEvent), szScope,
+			kCity.getID(), getSASGameRecordQuotedCityName(&kCity).GetCString(), kCity.getX(), kCity.getY(),
+			kBefore.iPopulation, kAfter.iPopulation, kAfter.iPopulation - kBefore.iPopulation, kBefore.iFood, kAfter.iFood, kAfter.iFood - kBefore.iFood,
+			kBefore.iFoodYield, kAfter.iFoodYield, kBefore.iProductionYield, kAfter.iProductionYield, kBefore.iCommerceYield, kAfter.iCommerceYield,
+			kBefore.iGoldRate, kAfter.iGoldRate, kBefore.iResearchRate, kAfter.iResearchRate, kBefore.iCultureRate, kAfter.iCultureRate, kBefore.iEspionageRate, kAfter.iEspionageRate,
+			kBefore.iOwnerCultureTimes100, kAfter.iOwnerCultureTimes100, kAfter.iOwnerCultureTimes100 - kBefore.iOwnerCultureTimes100,
+			kBefore.iOccupationTurns, kAfter.iOccupationTurns, kBefore.iCultureUpdateTurns, kAfter.iCultureUpdateTurns,
+			kBefore.iExtraHappiness, kAfter.iExtraHappiness, kBefore.iExtraHealth, kAfter.iExtraHealth, kBefore.iHurryAngerTurns, kAfter.iHurryAngerTurns,
+			kBefore.iHappinessTurns, kAfter.iHappinessTurns, kBefore.iAngryPopulation, kAfter.iAngryPopulation, kBefore.iHappyLevel, kAfter.iHappyLevel,
+			kBefore.iUnhappyLevel, kAfter.iUnhappyLevel, kBefore.iGoodHealth, kAfter.iGoodHealth, kBefore.iBadHealth, kAfter.iBadHealth,
+			kBefore.iSpaceProductionModifier, kAfter.iSpaceProductionModifier, kBefore.iFreeSpecialistInstances, kAfter.iFreeSpecialistInstances,
+			getSASGameRecordBuildingType(kAfter.eBuilding != NO_BUILDING ? kAfter.eBuilding : kBefore.eBuilding), kBefore.iRealBuildingCount, kAfter.iRealBuildingCount);
+}
+
+
+// <!-- custom: Building-modifier EventInfos can create durable latent state even when no current building/output changes.
+// Keep one compact realized operation row per configured modifier: selected-city modifiers retain their stored after value, empire yield/commerce modifiers name the current-city scope, and empire happiness/health modifiers retain the resolved player-level building modifier before/after. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventBuildingModifierResults(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, char const* szScope, CvCity const* pCity)
+{
+	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	bool const bCityScope = (pCity != NULL);
+	PlayerTypes const eAffectedPlayer = (bCityScope ? pCity->getOwner() : kPlayer.getID());
+	int const iCityId = (bCityScope ? pCity->getID() : -1);
+	int const iAffectedCityCount = (bCityScope ? 1 : kPlayer.getNumCities());
+
+	FOR_EACH_NON_DEFAULT_PAIR(kEvent.getBuildingYieldChange(), BuildingClass, YieldChangeMap)
+	{
+		FOR_EACH_NON_DEFAULT_PAIR(perBuildingClassVal.second, Yield, int)
+		{
+			BuildingTypes const eBuilding = (bCityScope ? pCity->getCivilization().getBuilding(perBuildingClassVal.first) :
+					kPlayer.getCivilization().getBuilding(perBuildingClassVal.first));
+			int iBefore = -1;
+			int iAfter = -1;
+			if (bCityScope)
+			{
+				iAfter = pCity->getBuildingYieldChange(perBuildingClassVal.first, perYieldVal.first);
+				iBefore = iAfter - perYieldVal.second;
+			}
+			logSASGameRecord("GAME_RECORD_RANDOM_EVENT_BUILDING_MODIFIER_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s scope=%s target=%s affectedPlayer=%d affectedTeam=%d cityId=%d affectedCityCount=%d modifier=YIELD buildingClass=%s building=%s subType=%s operation=ADD configuredValue=%+d valueBefore=%d valueAfter=%d",
+					GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), szScope,
+					bCityScope ? "CITY_STORED_MODIFIER" : "CURRENT_CITIES_STORED_MODIFIER", eAffectedPlayer,
+					GET_PLAYER(eAffectedPlayer).getTeam(), iCityId, iAffectedCityCount,
+					GC.getInfo(perBuildingClassVal.first).getType(), getSASGameRecordBuildingType(eBuilding), GC.getInfo(perYieldVal.first).getType(),
+					perYieldVal.second, iBefore, iAfter);
+		}
+	}
+	FOR_EACH_NON_DEFAULT_PAIR(kEvent.getBuildingCommerceChange(), BuildingClass, CommerceChangeMap)
+	{
+		FOR_EACH_NON_DEFAULT_PAIR(perBuildingClassVal.second, Commerce, int)
+		{
+			BuildingTypes const eBuilding = (bCityScope ? pCity->getCivilization().getBuilding(perBuildingClassVal.first) :
+					kPlayer.getCivilization().getBuilding(perBuildingClassVal.first));
+			int iBefore = -1;
+			int iAfter = -1;
+			if (bCityScope)
+			{
+				iAfter = pCity->getBuildingCommerceChange(perBuildingClassVal.first, perCommerceVal.first);
+				iBefore = iAfter - perCommerceVal.second;
+			}
+			logSASGameRecord("GAME_RECORD_RANDOM_EVENT_BUILDING_MODIFIER_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s scope=%s target=%s affectedPlayer=%d affectedTeam=%d cityId=%d affectedCityCount=%d modifier=COMMERCE buildingClass=%s building=%s subType=%s operation=ADD configuredValue=%+d valueBefore=%d valueAfter=%d",
+					GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), szScope,
+					bCityScope ? "CITY_STORED_MODIFIER" : "CURRENT_CITIES_STORED_MODIFIER", eAffectedPlayer,
+					GET_PLAYER(eAffectedPlayer).getTeam(), iCityId, iAffectedCityCount,
+					GC.getInfo(perBuildingClassVal.first).getType(), getSASGameRecordBuildingType(eBuilding), getSASGameRecordCommerceType(perCommerceVal.first),
+					perCommerceVal.second, iBefore, iAfter);
+		}
+	}
+	FOR_EACH_NON_DEFAULT_PAIR(kEvent.getBuildingHappyChange(), BuildingClass, int)
+	{
+		BuildingTypes const eBuilding = (bCityScope ? pCity->getCivilization().getBuilding(perBuildingClassVal.first) :
+				kPlayer.getCivilization().getBuilding(perBuildingClassVal.first));
+		int iBefore = -1;
+		int iAfter = -1;
+		char const* szTarget = "CITY_STORED_MODIFIER";
+		char const* szOperation = "SET";
+		if (bCityScope)
+			iAfter = pCity->getBuildingHappyChange(perBuildingClassVal.first);
+		else
+		{
+			szTarget = "PLAYER_BUILDING_MODIFIER";
+			szOperation = "ADD";
+			if (eBuilding != NO_BUILDING)
+			{
+				iAfter = kPlayer.getExtraBuildingHappiness(eBuilding);
+				iBefore = iAfter - perBuildingClassVal.second;
+			}
+		}
+		logSASGameRecord("GAME_RECORD_RANDOM_EVENT_BUILDING_MODIFIER_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s scope=%s target=%s affectedPlayer=%d affectedTeam=%d cityId=%d affectedCityCount=%d modifier=HAPPINESS buildingClass=%s building=%s subType=- operation=%s configuredValue=%+d valueBefore=%d valueAfter=%d",
+				GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), szScope, szTarget,
+				eAffectedPlayer, GET_PLAYER(eAffectedPlayer).getTeam(), iCityId, bCityScope ? 1 : -1, GC.getInfo(perBuildingClassVal.first).getType(), getSASGameRecordBuildingType(eBuilding),
+				szOperation, perBuildingClassVal.second, iBefore, iAfter);
+	}
+	FOR_EACH_NON_DEFAULT_PAIR(kEvent.getBuildingHealthChange(), BuildingClass, int)
+	{
+		BuildingTypes const eBuilding = (bCityScope ? pCity->getCivilization().getBuilding(perBuildingClassVal.first) :
+				kPlayer.getCivilization().getBuilding(perBuildingClassVal.first));
+		int iBefore = -1;
+		int iAfter = -1;
+		char const* szTarget = "CITY_STORED_MODIFIER";
+		char const* szOperation = "SET";
+		if (bCityScope)
+			iAfter = pCity->getBuildingHealthChange(perBuildingClassVal.first);
+		else
+		{
+			szTarget = "PLAYER_BUILDING_MODIFIER";
+			szOperation = "ADD";
+			if (eBuilding != NO_BUILDING)
+			{
+				iAfter = kPlayer.getExtraBuildingHealth(eBuilding);
+				iBefore = iAfter - perBuildingClassVal.second;
+			}
+		}
+		logSASGameRecord("GAME_RECORD_RANDOM_EVENT_BUILDING_MODIFIER_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s scope=%s target=%s affectedPlayer=%d affectedTeam=%d cityId=%d affectedCityCount=%d modifier=HEALTH buildingClass=%s building=%s subType=- operation=%s configuredValue=%+d valueBefore=%d valueAfter=%d",
+				GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), szScope, szTarget,
+				eAffectedPlayer, GET_PLAYER(eAffectedPlayer).getTeam(), iCityId, bCityScope ? 1 : -1, GC.getInfo(perBuildingClassVal.first).getType(), getSASGameRecordBuildingType(eBuilding),
+				szOperation, perBuildingClassVal.second, iBefore, iAfter);
+	}
+}
+
+SASGameRecordRandomEventUnitState::SASGameRecordRandomEventUnitState() :
+		iExists(0), iUnitId(-1), eUnit(NO_UNIT), eUnitAI(NO_UNITAI), iX(INVALID_PLOT_COORD), iY(INVALID_PLOT_COORD),
+		iDamage(-1), iExperience(-1), iImmobileTurns(-1), ePromotion(NO_PROMOTION), iHasPromotion(-1)
+{}
+
+SASGameRecordRandomEventUnitState::SASGameRecordRandomEventUnitState(CvUnit const& kUnit, EventTypes eEvent) :
+		iExists(1), iUnitId(kUnit.getID()), eUnit(kUnit.getUnitType()), eUnitAI(kUnit.AI_getUnitAIType()), iX(kUnit.getX()), iY(kUnit.getY()),
+		iDamage(kUnit.getDamage()), iExperience(kUnit.getExperience()), iImmobileTurns(kUnit.getImmobileTimer()),
+		ePromotion((PromotionTypes)GC.getInfo(eEvent).getUnitPromotion()),
+		iHasPromotion(ePromotion == NO_PROMOTION ? -1 : kUnit.isHasPromotion(ePromotion))
+{}
+
+// <!-- custom: Preserve the concrete stored-unit result after CvUnit::applyEvent rather than only the EventInfo's UNIT_LOCAL label.
+// A disbanded unit is represented by existsAfter=0 and sentinel after-state values; no dead object is dereferenced after the original kill. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventUnitResult(PlayerTypes ePlayer, int iTriggeredId, EventTypes eEvent, SASGameRecordRandomEventUnitState const& kBefore, SASGameRecordRandomEventUnitState const& kAfter)
+{
+	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	if (!kBefore.iExists)
+		return;
+	CvWString const szUnitNameKey(kEvent.getUnitNameKey());
+	bool const bRenameApplied = !szUnitNameKey.empty();
+	bool const bChanged = (!kAfter.iExists || kBefore.iDamage != kAfter.iDamage || kBefore.iExperience != kAfter.iExperience ||
+			kBefore.iImmobileTurns != kAfter.iImmobileTurns || kBefore.iHasPromotion != kAfter.iHasPromotion ||
+			kEvent.isDisbandUnit() || bRenameApplied);
+	if (!bChanged)
+		return;
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_UNIT_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s unitId=%d unit=%s unitAI=%s x=%d y=%d existsBefore=%d existsAfter=%d damageBefore=%d damageAfter=%d damageDelta=%+d experienceBefore=%d experienceAfter=%d experienceDelta=%+d immobileTurnsBefore=%d immobileTurnsAfter=%d immobileTurnsDelta=%+d promotion=%s hadPromotionBefore=%d hasPromotionAfter=%d unitNameKey=%S renameApplied=%d disbanded=%d",
+			GC.getGame().getGameTurn(), ePlayer, ePlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(ePlayer).getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent),
+			kBefore.iUnitId, getSASGameRecordUnitType(kBefore.eUnit), getSASGameRecordUnitAIType(kBefore.eUnitAI), kBefore.iX, kBefore.iY,
+			kBefore.iExists, kAfter.iExists, kBefore.iDamage, kAfter.iDamage,
+			(kAfter.iDamage < 0 ? -1 : kAfter.iDamage - kBefore.iDamage), kBefore.iExperience, kAfter.iExperience,
+			(kAfter.iExperience < 0 ? -1 : kAfter.iExperience - kBefore.iExperience), kBefore.iImmobileTurns, kAfter.iImmobileTurns,
+			(kAfter.iImmobileTurns < 0 ? -1 : kAfter.iImmobileTurns - kBefore.iImmobileTurns), getSASGameRecordPromotionType(kBefore.ePromotion),
+			kBefore.iHasPromotion, kAfter.iHasPromotion, bRenameApplied ? kEvent.getUnitNameKey() : L"-",
+			bRenameApplied, (kEvent.isDisbandUnit() && !kAfter.iExists));
+}
+
+SASGameRecordRandomEventPlayerState::SASGameRecordRandomEventPlayerState() :
+		iExtraHappiness(-1), iExtraHealth(-1), iBaseFreeUnits(-1), iSpaceProductionModifier(-1), iInflationRate(-1),
+		iEspionagePointsAgainstOther(-1), eBonusRevealed(NO_BONUS), iForceRevealedBonus(-1)
+{}
+
+SASGameRecordRandomEventPlayerState::SASGameRecordRandomEventPlayerState(CvPlayer const& kPlayer, EventTypes eEvent, PlayerTypes eOtherPlayer) :
+		iExtraHappiness(kPlayer.getExtraHappiness()), iExtraHealth(kPlayer.getExtraHealth()), iBaseFreeUnits(kPlayer.getBaseFreeUnits()),
+		iSpaceProductionModifier(kPlayer.getSpaceProductionModifier()), iInflationRate(kPlayer.calculateInflationRate()),
+		iEspionagePointsAgainstOther(eOtherPlayer == NO_PLAYER ? -1 : GET_TEAM(kPlayer.getTeam()).getEspionagePointsAgainstTeam(GET_PLAYER(eOtherPlayer).getTeam())),
+		eBonusRevealed((BonusTypes)GC.getInfo(eEvent).getBonusRevealed()),
+		iForceRevealedBonus(eBonusRevealed == NO_BONUS ? -1 : GET_TEAM(kPlayer.getTeam()).isForceRevealedBonus(eBonusRevealed))
+{}
+
+// <!-- custom: Keep native player-level EventInfo consequences tied to the selected event without duplicating gold, tech, Golden Age or war rows.
+// `inflationRate` is the public realized rate rather than the private raw modifier; configured modifier deltas are included only for the three direct player-modifier XML fields. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventPlayerResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, PlayerTypes eOtherPlayer, SASGameRecordRandomEventPlayerState const& kBefore, SASGameRecordRandomEventPlayerState const& kAfter)
+{
+	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	bool const bChanged = (kBefore.iExtraHappiness != kAfter.iExtraHappiness || kBefore.iExtraHealth != kAfter.iExtraHealth ||
+			kBefore.iBaseFreeUnits != kAfter.iBaseFreeUnits || kBefore.iSpaceProductionModifier != kAfter.iSpaceProductionModifier ||
+			kBefore.iInflationRate != kAfter.iInflationRate || kBefore.iEspionagePointsAgainstOther != kAfter.iEspionagePointsAgainstOther ||
+			kBefore.iForceRevealedBonus != kAfter.iForceRevealedBonus || kEvent.getInflationModifier() != 0);
+	if (!bChanged)
+		return;
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_PLAYER_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s otherPlayer=%d otherTeam=%d playerExtraHappinessBefore=%d playerExtraHappinessAfter=%d playerExtraHealthBefore=%d playerExtraHealthAfter=%d baseFreeUnitsBefore=%d baseFreeUnitsAfter=%d configuredFreeUnitSupport=%+d spaceProductionModifierBefore=%d spaceProductionModifierAfter=%d configuredSpaceProductionModifier=%+d inflationRateBefore=%d inflationRateAfter=%d configuredInflationModifier=%+d espionagePointsAgainstOtherBefore=%d espionagePointsAgainstOtherAfter=%d espionagePointsDelta=%+d bonusRevealed=%s forceRevealedBefore=%d forceRevealedAfter=%d",
+			GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), eOtherPlayer,
+			eOtherPlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(eOtherPlayer).getTeam(), kBefore.iExtraHappiness, kAfter.iExtraHappiness,
+			kBefore.iExtraHealth, kAfter.iExtraHealth, kBefore.iBaseFreeUnits, kAfter.iBaseFreeUnits, kEvent.getFreeUnitSupport(),
+			kBefore.iSpaceProductionModifier, kAfter.iSpaceProductionModifier, kEvent.getSpaceProductionModifier(), kBefore.iInflationRate, kAfter.iInflationRate,
+			kEvent.getInflationModifier(), kBefore.iEspionagePointsAgainstOther, kAfter.iEspionagePointsAgainstOther,
+			(kBefore.iEspionagePointsAgainstOther < 0 || kAfter.iEspionagePointsAgainstOther < 0 ? -1 : kAfter.iEspionagePointsAgainstOther - kBefore.iEspionagePointsAgainstOther),
+			getSASGameRecordBonusType(kAfter.eBonusRevealed != NO_BONUS ? kAfter.eBonusRevealed : kBefore.eBonusRevealed), kBefore.iForceRevealedBonus, kAfter.iForceRevealedBonus);
+}
+
+// <!-- custom: EventInfos can grant a persistent free promotion to a whole UnitCombat or UnitClass while also updating existing matching units immediately.
+// Record one realized scope row with the newly promoted existing-unit count instead of one row per unit. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventFreePromotionResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, char const* szScope, int iScopeId, PromotionTypes ePromotion, int iExistingUnitsNewlyPromoted, int iFreePromotionBefore, int iFreePromotionAfter)
+{
+	char const* szScopeType = "-";
+	if (strcmp(szScope, "UNIT_COMBAT") == 0 && iScopeId >= 0 && iScopeId < GC.getNumUnitCombatInfos())
+		szScopeType = getSASGameRecordUnitCombatType((UnitCombatTypes)iScopeId);
+	else if (strcmp(szScope, "UNIT_CLASS") == 0 && iScopeId >= 0 && iScopeId < GC.getNumUnitClassInfos())
+		szScopeType = GC.getInfo((UnitClassTypes)iScopeId).getType();
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_FREE_PROMOTION_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s scope=%s scopeType=%s promotion=%s existingUnitsNewlyPromoted=%d freePromotionBefore=%d freePromotionAfter=%d",
+			GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), szScope, szScopeType,
+			getSASGameRecordPromotionType(ePromotion), iExistingUnitsNewlyPromoted, iFreePromotionBefore, iFreePromotionAfter);
+}
+
 // <!-- custom: EventInfos can create civilization-specific free units directly rather than through city production.
 // Record the already resolved unit class/type, requested versus successfully created count, and actual spawn city/location; no extra unit construction or scan is performed. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 void logSASGameRecordRandomEventFreeUnitsResult(PlayerTypes ePlayer, PlayerTypes eAffectedPlayer, EventTypes eEvent, int iTriggeredId, UnitClassTypes eUnitClass, UnitTypes eUnit, int iRequestedCount, int iCreatedCount, CvCity const* pSpawnCity)
@@ -9486,6 +9744,39 @@ void logSASGameRecordNukeEffects(CvUnit const* pUnit, CvPlot const* pTargetPlot,
 			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getTeam(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), pTargetPlot->getX(), pTargetPlot->getY(),
 			pTargetCity == NULL ? -1 : pTargetCity->getID(), getSASGameRecordQuotedCityName(pTargetCity).GetCString(), pTargetCity == NULL ? NO_PLAYER : pTargetCity->getOwner(), pTargetCity == NULL ? NO_TEAM : pTargetCity->getTeam(), pTargetCity == NULL ? -1 : pTargetCity->getPopulation(),
 			iFalloutPlotsCreated, iImprovementsDestroyed, iFeaturesDestroyed, iUnitsDamaged, iUnitsKilled, iBuildingsDestroyed, iCitiesAffected, iPopulationKilled, GC.getGame().getNukesExploded());
+}
+
+
+// <!-- custom: Preserve each city caught in an actual unit-launched blast, including cases where defenses reduce realized losses to zero.
+// The building list is assembled only from buildings the existing destruction loop actually removed; no city/building rescan or RNG is added. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordNukeCityEffect(CvUnit const* pNukeUnit, CvCity const* pCity, int iPopulationBefore, int iNukeModifier, std::vector<BuildingTypes> const& aeBuildingsDestroyed)
+{
+	if (pNukeUnit == NULL || pCity == NULL)
+		return;
+	CvString szBuildingsDestroyed;
+	for (size_t i = 0; i < aeBuildingsDestroyed.size(); i++)
+		appendSASGameRecordType(szBuildingsDestroyed, getSASGameRecordBuildingType(aeBuildingsDestroyed[i]));
+	int const iPopulationAfter = pCity->getPopulation();
+	logSASGameRecord("GAME_RECORD_NUKE_CITY_EFFECT turn=%d player=%d team=%d nukeUnitId=%d nukeUnit=%s affectedPlayer=%d affectedTeam=%d cityId=%d city=%S x=%d y=%d nukeModifier=%d populationBefore=%d populationAfter=%d populationKilled=%d buildingsDestroyedCount=%d buildingsDestroyed=%s",
+			GC.getGame().getGameTurn(), pNukeUnit->getOwner(), pNukeUnit->getTeam(), pNukeUnit->getID(), getSASGameRecordUnitType(pNukeUnit->getUnitType()),
+			pCity->getOwner(), pCity->getTeam(), pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(), iNukeModifier,
+			iPopulationBefore, iPopulationAfter, std::max(0, iPopulationBefore - iPopulationAfter), (int)aeBuildingsDestroyed.size(),
+			getSASDiagnosticOrDash(szBuildingsDestroyed).GetCString());
+}
+
+// <!-- custom: Level-3 nuke unit rows retain tactical identity before the existing damage/kill operation can remove the object.
+// Direct combat damage records exact before/after damage; indirect cargo and noncombat death use damageAfter=-1 rather than inventing a damage value that gameplay never assigned. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordNukeUnitEffect(CvUnit const* pNukeUnit, CvUnit const* pAffectedUnit, CvPlot const* pPlot, int iDamageBefore, int iDamageAfter, bool bKilled, char const* szCause)
+{
+	if (pNukeUnit == NULL || pAffectedUnit == NULL || pPlot == NULL)
+		return;
+	CvUnit const* pTransport = pAffectedUnit->getTransportUnit();
+	int const iDamageDelta = (iDamageBefore >= 0 && iDamageAfter >= 0 ? iDamageAfter - iDamageBefore : -1);
+	logSASGameRecord("GAME_RECORD_NUKE_UNIT_EFFECT turn=%d player=%d team=%d nukeUnitId=%d nukeUnit=%s affectedPlayer=%d affectedTeam=%d unitId=%d unit=%s unitAI=%s x=%d y=%d damageBefore=%d damageAfter=%d damageDelta=%d killed=%d cause=%s cargo=%d transportPlayer=%d transportId=%d",
+			GC.getGame().getGameTurn(), pNukeUnit->getOwner(), pNukeUnit->getTeam(), pNukeUnit->getID(), getSASGameRecordUnitType(pNukeUnit->getUnitType()),
+			pAffectedUnit->getOwner(), pAffectedUnit->getTeam(), pAffectedUnit->getID(), getSASGameRecordUnitType(pAffectedUnit->getUnitType()), getSASGameRecordUnitAIType(pAffectedUnit->AI_getUnitAIType()),
+			pPlot->getX(), pPlot->getY(), iDamageBefore, iDamageAfter, iDamageDelta, bKilled, szCause, pAffectedUnit->isCargo(),
+			pTransport == NULL ? NO_PLAYER : pTransport->getOwner(), pTransport == NULL ? -1 : pTransport->getID());
 }
 
 // <!-- custom: Only ordinary civilization-vs-civilization battles with no attacker withdrawal chance and a lethal combat limit form a true binary win/loss sample.

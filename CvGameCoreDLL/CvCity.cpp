@@ -12932,8 +12932,16 @@ void CvCity::applyEvent(EventTypes eEvent, EventTriggeredData const& kTriggeredD
 	if (!canApplyEvent(eEvent, kTriggeredData))
 		return;
 
-	setEventOccured(eEvent, true);
 	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	// <!-- custom: Capture deterministic EventInfo city consequences only after the authoritative canApplyEvent gate; disabled/level-1 logging performs none of these city-state queries. (ChatGPT-5.6-Sol) -->
+	bool const bLogRandomEventCityResult = (gGameRecordLogLevel >= 2);
+	bool const bLogRandomEventBuildingModifierResult = (bLogRandomEventCityResult &&
+			(kEvent.getBuildingYieldChange().isAnyNonDefault() || kEvent.getBuildingCommerceChange().isAnyNonDefault() ||
+			kEvent.getBuildingHappyChange().isAnyNonDefault() || kEvent.getBuildingHealthChange().isAnyNonDefault()));
+	SASGameRecordRandomEventCityState kSASRandomEventCityBefore;
+	if (bLogRandomEventCityResult) kSASRandomEventCityBefore = SASGameRecordRandomEventCityState(*this, eEvent);
+
+	setEventOccured(eEvent, true);
 	if (kEvent.isCityEffect() || kEvent.isOtherPlayerCityEffect())
 	{
 		if (kEvent.getHappy() != 0)
@@ -13097,6 +13105,13 @@ void CvCity::applyEvent(EventTypes eEvent, EventTriggeredData const& kTriggeredD
 	{
 		setBuildingHealthChange(perBuildingClassVal.first, perBuildingClassVal.second);
 	}
+
+	if (bLogRandomEventCityResult)
+	{
+		SASGameRecordRandomEventCityState const kSASRandomEventCityAfter(*this, eEvent);
+		logSASGameRecordRandomEventCityResult(kTriggeredData.m_ePlayer, getOwner(), kTriggeredData.m_iId, eEvent, kEvent.isCityEffect() ? "CITY" : "OTHER_PLAYER_CITY", *this, kSASRandomEventCityBefore, kSASRandomEventCityAfter);
+	}
+	if (bLogRandomEventBuildingModifierResult) logSASGameRecordRandomEventBuildingModifierResults(GET_PLAYER(kTriggeredData.m_ePlayer), eEvent, kTriggeredData.m_iId, kEvent.isCityEffect() ? "CITY" : "OTHER_PLAYER_CITY", this);
 
 	if (bClear)
 	{

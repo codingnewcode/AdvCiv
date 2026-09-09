@@ -881,9 +881,10 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 	std::vector<NukeEffect> aBuildingDestroyed;
 	std::vector<NukeEffect> aCitizensKilled;
 	// <!-- custom: Reuse this existing single explosion pass for compact SASGameRecord effect totals; no diagnostic-only second scan is needed.
-	// Cache the level-2 plot-history gate once for the whole explosion rather than re-reading it for every affected plot; keep the extra effect counters inert unless a unit-launched detonation is actually being recorded. (ChatGPT-5.6-Sol) -->
+	// Cache the level-2 plot-history gate once for the whole explosion rather than re-reading it for every affected plot. Per-city consequences use level 2; exact affected-unit identities/damage use level 3. Keep both inert unless a unit-launched detonation is actually being recorded. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 	bool const bLogPlotChange = (gGameRecordLogLevel >= 2);
 	bool const bLogSASNukeEffects = (bBomb && pNukeUnit != NULL && bLogPlotChange);
+	bool const bLogSASNukeUnitEffects = (bLogSASNukeEffects && gGameRecordLogLevel >= 3);
 	int iSASFalloutPlots = 0;
 	int iSASPopulationKilled = 0;
 	// </advc.650>
@@ -980,13 +981,20 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 				{	// <advc.650>
 					bool const bLethal = pLoopUnit->isLethalDamage(iNukeDamage);
 					(bLethal ? aUnitKilled : aUnitDamaged).push_back(NukeUnitEffect(&p, *pLoopUnit));
+					int const iSASDamageBefore = (bLogSASNukeUnitEffects ? pLoopUnit->getDamage() : -1);
+					int const iSASDamageAfter = (bLogSASNukeUnitEffects ? std::min(pLoopUnit->maxHitPoints(), iSASDamageBefore + iNukeDamage) : -1);
 					if (bLethal && pLoopUnit->hasCargo())
 					{
 						std::vector<CvUnit*> apCargo;
 						pLoopUnit->getCargoUnits(apCargo);
 						for (size_t i = 0; i < apCargo.size(); i++)
+						{
 							aUnitKilled.push_back(NukeUnitEffect(&p, *apCargo[i]));
+							if (bLogSASNukeUnitEffects) logSASGameRecordNukeUnitEffect(pNukeUnit, apCargo[i], &p, apCargo[i]->getDamage(), -1, true, "CARGO_WITH_TRANSPORT");
+						}
 					}
+					// <!-- custom: Preserve exact realized tactical damage before the existing changeDamage call can kill/remove the unit; no second damage roll is performed. (ChatGPT-5.6-Sol) -->
+					if (bLogSASNukeUnitEffects) logSASGameRecordNukeUnitEffect(pNukeUnit, pLoopUnit, &p, iSASDamageBefore, iSASDamageAfter, bLethal, "DIRECT_DAMAGE");
 					// </advc.650>
 					pLoopUnit->changeDamage(iNukeDamage, pNukeUnit != NULL ?
 							pNukeUnit->getOwner() : NO_PLAYER);
@@ -1000,12 +1008,19 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 				{
 					// <advc.650>
 					aUnitKilled.push_back(NukeUnitEffect(&p, *pLoopUnit)); // </advc.650>
+					// <!-- custom: Noncombat nuke deaths are direct kill operations rather than damage assignments, so retain the pre-death damage and use an explicit unknown post-damage sentinel. (ChatGPT-5.6-Sol) -->
+					if (bLogSASNukeUnitEffects) logSASGameRecordNukeUnitEffect(pNukeUnit, pLoopUnit, &p, pLoopUnit->getDamage(), -1, true, "NONCOMBAT_KILLED");
 					pLoopUnit->kill(false, pNukeUnit != NULL ? pNukeUnit->getOwner() : NO_PLAYER);
 				}
 			}
 		}
 		if (pCity == NULL)
 			continue;
+
+		// <!-- custom: Capture strategic per-city nuke consequences from the same destruction pass; build stable XML-type lists only while level-2 recording is enabled. (ChatGPT-5.6-Sol) -->
+		int const iSASPopulationBefore = (bLogSASNukeEffects ? pCity->getPopulation() : -1);
+		int const iSASNukeModifier = (bLogSASNukeEffects ? pCity->getNukeModifier() : 0);
+		std::vector<BuildingTypes> aeSASBuildingsDestroyed;
 
 		FOR_EACH_ENUM2(Building, eBuilding)
 		{
@@ -1016,6 +1031,7 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 				// <advc.650>
 				aBuildingDestroyed.push_back(NukeEffect(&p,
 						GC.getInfo(eBuilding).getDescription())); // </advc.650>
+				if (bLogSASNukeEffects) aeSASBuildingsDestroyed.push_back(eBuilding);
 				pCity->setNumRealBuilding(eBuilding,
 						pCity->getNumRealBuilding(eBuilding) - 1);
 			}
@@ -1032,6 +1048,7 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 		aCitizensKilled.push_back(NukeEffect(&p, CvWString::format(L"%d", -iPopChange)));
 		if (bLogSASNukeEffects) iSASPopulationKilled += -iPopChange;
 		pCity->changePopulation(iPopChange);
+		if (bLogSASNukeEffects) logSASGameRecordNukeCityEffect(pNukeUnit, pCity, iSASPopulationBefore, iSASNukeModifier, aeSASBuildingsDestroyed);
 	}
 	if (bBomb) // K-Mod
 	{

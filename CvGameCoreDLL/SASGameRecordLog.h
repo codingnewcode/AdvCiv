@@ -25,6 +25,71 @@ class CvUnit;
 struct VoteTriggeredData;
 // <!-- custom: Random-event lifecycle diagnostics pass the existing player-local trigger payload by const pointer/reference without exposing its save-layout definition through this lightweight recorder header. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 struct EventTriggeredData;
+// <!-- custom: Random-event city-result logging snapshots only realized city state that can otherwise disappear between periodic rows. The caller captures before/after only at level 2+, so disabled logging pays no city-query cost. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordRandomEventCityState
+{
+	SASGameRecordRandomEventCityState();
+	explicit SASGameRecordRandomEventCityState(CvCity const& kCity, EventTypes eEvent);
+	int iPopulation;
+	int iFood;
+	int iFoodYield;
+	int iProductionYield;
+	int iCommerceYield;
+	int iGoldRate;
+	int iResearchRate;
+	int iCultureRate;
+	int iEspionageRate;
+	int iOwnerCultureTimes100;
+	int iOccupationTurns;
+	int iCultureUpdateTurns;
+	int iExtraHappiness;
+	int iExtraHealth;
+	int iHurryAngerTurns;
+	int iHappinessTurns;
+	int iAngryPopulation;
+	int iHappyLevel;
+	int iUnhappyLevel;
+	int iGoodHealth;
+	int iBadHealth;
+	int iSpaceProductionModifier;
+	int iFreeSpecialistInstances;
+	BuildingTypes eBuilding;
+	int iRealBuildingCount;
+};
+// <!-- custom: Unit-local EventInfo effects are rare but can heal/award XP, immobilize, rename, promote or disband the selected stored unit.
+// Snapshot only the fields consumed by CvUnit::applyEvent so the result row remains compact and gameplay-owned semantics stay authoritative. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordRandomEventUnitState
+{
+	SASGameRecordRandomEventUnitState();
+	explicit SASGameRecordRandomEventUnitState(CvUnit const& kUnit, EventTypes eEvent);
+	int iExists;
+	int iUnitId;
+	UnitTypes eUnit;
+	UnitAITypes eUnitAI;
+	int iX;
+	int iY;
+	int iDamage;
+	int iExperience;
+	int iImmobileTurns;
+	PromotionTypes ePromotion;
+	int iHasPromotion;
+};
+
+// <!-- custom: Player-level EventInfo consequences can otherwise be visible only indirectly at a later snapshot.
+// Keep this to durable native values not already covered by dedicated gold/tech/Golden-Age/war rows. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordRandomEventPlayerState
+{
+	SASGameRecordRandomEventPlayerState();
+	SASGameRecordRandomEventPlayerState(CvPlayer const& kPlayer, EventTypes eEvent, PlayerTypes eOtherPlayer);
+	int iExtraHappiness;
+	int iExtraHealth;
+	int iBaseFreeUnits;
+	int iSpaceProductionModifier;
+	int iInflationRate;
+	int iEspionagePointsAgainstOther;
+	BonusTypes eBonusRevealed;
+	int iForceRevealedBonus;
+};
 // <!-- custom: Observe one AI_chooseProduction call as a scope so every early return is handled without teaching the AI decision tree about recorder schema.
 // When level 2+ is pre-enabled by the caller, the destructor compares the final head order with the entry state and records only meaningful switches, clears, or resumptions of stored production.
 // Earlier versions put the whole constructor/destructor in SASGameRecordLog.cpp. In ordinary Release builds that hides the disabled fast path across the translation-unit boundary.
@@ -123,6 +188,14 @@ void logSASGameRecordRandomEventNoSelection(CvPlayer const& kPlayer, EventTrigge
 void logSASGameRecordRandomEventApply(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, EventTriggeredData const* pTriggeredData, bool bUpdateTrigger, char const* szDisposition, int iCanDoEvent, int iTriggerFiredBefore, int iEventOccurredBefore);
 void logSASGameRecordRandomEventGoldResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, int iRangeLow, int iRangeHigh, int iPlayerGoldDelta, PlayerTypes eOtherPlayer, bool bGoldToPlayer);
 void logSASGameRecordRandomEventTechResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, TechTypes eTech, int iTechPercent, int iResearchBefore, int iBeakersApplied, int iResearchAfter, int iTechCost, int iCompleted);
+// <!-- custom: Preserve realized deterministic city consequences separately from EventInfo selection. This complements canonical war/plot/tech rows without dumping static XML magnitudes into RANDOM_EVENT_APPLY. Call only at level 2+ with caller-captured before/after state. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventCityResult(PlayerTypes ePlayer, PlayerTypes eAffectedPlayer, int iTriggeredId, EventTypes eEvent, char const* szScope, CvCity const& kCity, SASGameRecordRandomEventCityState const& kBefore, SASGameRecordRandomEventCityState const& kAfter);
+// <!-- custom: Building modifier EventInfos can create durable latent state even when current yields do not change (e.g. before the affected building exists). Record realized modifier operations separately rather than bloating every city-result row. Call only at level 2+. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventBuildingModifierResults(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, char const* szScope, CvCity const* pCity);
+// <!-- custom: Complete the EventInfo result layer with concrete stored-unit, player-wide and persistent free-promotion consequences. Call only at level 2+ with state already captured around the authoritative gameplay operation. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+void logSASGameRecordRandomEventUnitResult(PlayerTypes ePlayer, int iTriggeredId, EventTypes eEvent, SASGameRecordRandomEventUnitState const& kBefore, SASGameRecordRandomEventUnitState const& kAfter);
+void logSASGameRecordRandomEventPlayerResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, PlayerTypes eOtherPlayer, SASGameRecordRandomEventPlayerState const& kBefore, SASGameRecordRandomEventPlayerState const& kAfter);
+void logSASGameRecordRandomEventFreePromotionResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, char const* szScope, int iScopeId, PromotionTypes ePromotion, int iExistingUnitsNewlyPromoted, int iFreePromotionBefore, int iFreePromotionAfter);
 void logSASGameRecordRandomEventFreeUnitsResult(PlayerTypes ePlayer, PlayerTypes eAffectedPlayer, EventTypes eEvent, int iTriggeredId, UnitClassTypes eUnitClass, UnitTypes eUnit, int iRequestedCount, int iCreatedCount, CvCity const* pSpawnCity);
 void logSASGameRecordRandomEventOccurrenceCleared(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eClearedEvent, int iTriggeredId, int iClearChance, char const* szScope, TeamTypes eScopeTeam, int iScopePlayerSlots, int iScopeEverAlivePlayers, int iClearedOccurrences);
 void logSASGameRecordRandomEventExpired(CvPlayer const& kPlayer, EventTypes eEvent, EventTriggeredData const& kTriggeredData, char const* szReason);
@@ -256,6 +329,9 @@ void logSASGameRecordAirBombPlot(CvUnit const* pUnit, CvPlot const* pTargetPlot,
 void logSASGameRecordNukeLaunched(CvUnit const* pUnit, CvPlot const* pTargetPlot, bool const* pabAffectedTeams, bool bIntercepted, TeamTypes eBestInterceptorTeam, int iInterceptionChance);
 // <!-- custom: Record realized post-detonation damage totals already gathered by CvPlot::nukeExplosion. Call only at level 2+. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordNukeEffects(CvUnit const* pUnit, CvPlot const* pTargetPlot, int iFalloutPlotsCreated, int iImprovementsDestroyed, int iFeaturesDestroyed, int iUnitsDamaged, int iUnitsKilled, int iBuildingsDestroyed, int iCitiesAffected, int iPopulationKilled);
+// <!-- custom: Strategic per-city nuke consequences are level 2; exact affected-unit identities/damage are level 3 tactical detail. Callers emit them from the existing explosion pass before destroyed objects disappear. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordNukeCityEffect(CvUnit const* pNukeUnit, CvCity const* pCity, int iPopulationBefore, int iNukeModifier, std::vector<BuildingTypes> const& aeBuildingsDestroyed);
+void logSASGameRecordNukeUnitEffect(CvUnit const* pNukeUnit, CvUnit const* pAffectedUnit, CvPlot const* pPlot, int iDamageBefore, int iDamageAfter, bool bKilled, char const* szCause);
 // <!-- custom: pBattlePlot is the actual target supplied by CvUnit; deriving it from pLoser is wrong when the attacker loses. See KI#377. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 void logSASGameRecordCombatResult(CvUnit const* pWinner, CvUnit const* pLoser, CvPlot const* pBattlePlot);
 void logSASGameRecordBonusChanged(CvPlot const* pPlot, BonusTypes eOldBonus, BonusTypes eNewBonus);
