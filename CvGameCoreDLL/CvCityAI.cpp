@@ -11003,8 +11003,11 @@ int CvCityAI::AI_culturePressureFactor() const
 	// dull the effects in the late-game.
 	/*iAnswer *= GC.getNumEraInfos();
 	iAnswer /= GET_PLAYER(eOwner).getCurrentEra() + GC.getNumEraInfos();*/
-	iAnswer *= kGame.getEstimateEndTurn();
-	iAnswer /= kGame.getGameTurn() + kGame.getEstimateEndTurn();
+	// <!-- custom: K-Mod multiplied accumulated multi-rival culture pressure by the game horizon in 32-bit int before applying the cap.
+	// Widen the intermediate so large/long SAS games cannot wrap maximum pressure negative. See KI#850. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	__int64 iDulledAnswer = (__int64)iAnswer * kGame.getEstimateEndTurn();
+	iDulledAnswer /= kGame.getGameTurn() + kGame.getEstimateEndTurn();
+	iAnswer = (int)iDulledAnswer;
 	// capped to avoid overly distorting the value of buildings and great people points.
 	return std::min(500, 100 + iAnswer / iDivisor);
 }
@@ -15698,25 +15701,27 @@ int CvCityAI::AI_citizenSacrificeCost(int iCitLoss, int iHappyLevel, int iNewAng
 	{
 		FOR_EACH_ENUM(Specialist)
 		{
-			if (getSpecialistCount(eLoopSpecialist) <= 0)
+			int const iSpecialistCount = getSpecialistCount(eLoopSpecialist);
+			if (iSpecialistCount <= 0)
 				continue; // advc
+			// <!-- custom: K-Mod multiplied the job count and score by assigned specialists but accumulated this type's yields only once.
+			// Apply the same multiplicity to aggregate yields so repeated same-type specialists cannot become a negative sacrifice subsidy. See KI#847. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 			// very rough..
 			int iSpecScore = 0;
 			for (int j = 0; j < NUM_YIELD_TYPES; j++)
 			{
 				int y = kOwner.specialistYield(eLoopSpecialist, (YieldTypes)j)*3/2;
-				iYields[j] += y;
+				iYields[j] += y * iSpecialistCount;
 				iSpecScore += y * iYieldWeights[j];
 			}
 			FOR_EACH_ENUM(Commerce)
 			{
 				int c = kOwner.specialistCommerce(eLoopSpecialist, eLoopCommerce)*3/2;
-				iYields[YIELD_COMMERCE] += c;
+				iYields[YIELD_COMMERCE] += c * iSpecialistCount;
 				iSpecScore += c * iYieldWeights[YIELD_COMMERCE];
 			}
-			iTotalScore += iSpecScore * getSpecialistCount(eLoopSpecialist);
-			job_scores.resize(job_scores.size() +
-					getSpecialistCount(eLoopSpecialist), iSpecScore);
+			iTotalScore += iSpecScore * iSpecialistCount;
+			job_scores.resize(job_scores.size() + iSpecialistCount, iSpecScore);
 		}
 	}
 

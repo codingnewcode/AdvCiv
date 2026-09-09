@@ -943,10 +943,10 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#844 - (Fixed AdvCiv blocked-resource valuation defect) Plot owner was compared with a city ID](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-844)\
 [KI#845 - (Fixed AdvCiv emphasis-state regression) Special production preserved stale commerce emphasis](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-845)\
 [KI#846 - (Provisional Pending inherited K-Mod plot-override lifecycle defect) Former culture cities retain stolen plots](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-846)\
-[KI#847 - (Provisional Pending inherited K-Mod sacrifice-cost defect) Same-type specialists can create a negative subsidy](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-847)\
+[KI#847 - (Fixed inherited K-Mod sacrifice-cost defect) Same-type specialists could create a negative subsidy](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-847)\
 [KI#848 - (Fixed inherited K-Mod auto-production variable defect) One XP building was validated and another queued](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-848)\
 [KI#849 - (Provisional Pending AdvCiv defender-cache key regression) Air-first calls contaminate land demand](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-849)\
-[KI#850 - (Provisional Pending inherited K-Mod culture-pressure overflow amplified by SAS limits) Maximum pressure can become negative](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-850)\
+[KI#850 - (Fixed inherited K-Mod culture-pressure overflow amplified by SAS limits) Maximum pressure could become negative](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-850)\
 [KI#851 - (Fixed AdvCiv forced-specialist regression) Fallback removal left the force target active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-851)\
 [KI#852 - (Fixed inherited BtS project-emphasis defect) The Project branch was unreachable](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-852)\
 [KI#853 - (Fixed inherited BtS anger-timing arithmetic defect) Exact cycles mapped to zero turns](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-853)\
@@ -16698,9 +16698,11 @@ Found as F523 during ChatGPT-5.6-Sol's C031-WIP290 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-847"></a>
 
-## KI#847 - (Provisional Pending inherited K-Mod sacrifice-cost defect) Same-type specialists can create a negative subsidy
+## KI#847 - (Fixed inherited K-Mod sacrifice-cost defect) Same-type specialists could create a negative subsidy
 
-`AI_citizenSacrificeCost` counts each specialist type's yields once while counting every assigned specialist in its job-loss denominator. Multiple specialists of one type can therefore turn a real population-sacrifice cost into a negative subsidy. Accumulate yields with the same multiplicity as the represented jobs.
+K-Mod practical 485 introduced `AI_citizenSacrificeCost` with aggregate yields counted once per specialist type while its job-loss denominator and scores counted every assigned specialist; practical 517 and later AdvCiv work retained the asymmetry. Multiple specialists of one type could consequently turn a real population-sacrifice cost into a negative subsidy. Aggregate specialist yields now use the same assigned-count multiplicity as the represented jobs while each job entry retains one specialist's score.
+
+The repair compiled successfully. A Debug-opt Huge Continents, Normal-speed full-UWAI autoplay with 16 independent teams completed all 500 turns through a Time victory; no issue was observed. A deterministic direct fixture would require a specialist-heavy city with a carefully bounded legal population hurry, so the source-verified repair instead received broad hurry-decision regression coverage.
 
 Found as F524 during ChatGPT-5.6-Sol's C031-WIP291 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -16724,9 +16726,11 @@ Found as F526 during ChatGPT-5.6-Sol's C031-WIP295 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-850"></a>
 
-## KI#850 - (Provisional Pending inherited K-Mod culture-pressure overflow amplified by SAS limits) Maximum pressure can become negative
+## KI#850 - (Fixed inherited K-Mod culture-pressure overflow amplified by SAS limits) Maximum pressure could become negative
 
-K-Mod multiplies an already multi-rival culture-pressure sum by the estimated end turn in 32-bit `int`. Supported high-pressure games can overflow and turn maximum pressure into a large negative value; SAS's 48-player and longer-speed support expands reachability but did not introduce the unsafe arithmetic. Widen before multiplication and clamp only afterward.
+K-Mod practical 730 changed culture pressure to multiply an already multi-rival sum by the estimated end turn in 32-bit `int`; Base AdvCiv retained that arithmetic. High-pressure games could overflow and turn maximum pressure into a large negative value before the existing cap, while SAS's 48-player and longer-speed support substantially expanded reachability without introducing the root. The product and division now use a 64-bit intermediate before safely returning to the bounded `int` result.
+
+The repair compiled successfully. The same Debug-opt Huge Continents, Normal-speed full-UWAI autoplay with 16 independent teams completed all 500 turns through a Time victory; no issue was observed. Direct overflow reproduction would require an artificial old, heavily contested cultural intersection with several rival cultures across the full BFC, especially on a long game speed.
 
 Found as F527 during ChatGPT-5.6-Sol's C031-WIP296 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
