@@ -385,7 +385,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#298 - (Fixed AdvCiv-SAS bug) Highlands Arena could lack legal sites for 48 civilizations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-298)\
 [KI#298.2 - (Fixed AdvCiv-SAS bug) Highlands was undersized beyond the Arena capacity case](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-298.2)\
 [KI#299 - (Fixed AdvCiv-SAS bug) Movie-to-Music left the user's No Movies option disabled](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-299)\
-[KI#300 - (Fixed AdvCiv-SAS bug) Timeline could reveal a razed hidden holy city's name](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-300)\
+[KI#300 - (Reopened Pending AdvCiv-SAS bug) Timeline can reveal a razed hidden holy city's name](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-300)\
 [KI#301 - (Fixed AdvCiv-SAS compatibility bug) Non-Sevopedia Build links opened unrelated Improvements](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-301)\
 [KI#302 - (Fixed AdvCiv-SAS bug) Terrain Units (Any Build) omitted Hill and water builders](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-302)\
 [KI#303 - (Fixed AdvCiv-SAS issue) Specialist Extra Yields omitted building-wide specialist commerce](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-303)\
@@ -1094,6 +1094,10 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#995 - (Provisional Pending inherited K-Mod ACO localization defect) Condensed defender health duplicates the HP token](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-995)\
 [KI#996 - (Provisional Pending AdvCiv multiplayer diagnostic defect) One matching FP checksum masks later incompatible peers](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-996)\
 [KI#997 - (Provisional Pending inherited BtS network group-state defect) A stale JoinGroup target becomes an ungroup command](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-997)\
+[KI#998 - (Provisional Pending AdvCiv XML-loader regression partly masked by SAS) Great Wall conditional abilities never switch](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-998)\
+[KI#999 - (Provisional Pending inherited AdvCiv replay-compatibility defect) Taurus version 132 is parsed as AdvC format](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-999)\
+[KI#1000 - (Provisional Pending Base AdvCiv replay-export defect inactive in SAS) Late fallback can retain an empty mod name](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1000)\
+[KI#1001 - (Provisional Pending inherited XML-buffer defect activated by SAS) An overlong GlobalDefine exceeds 256 bytes](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1001)\
 
 <a id="ki-1"></a>
 
@@ -10750,7 +10754,7 @@ This is an AdvCiv-SAS Sevopedia media-state regression introduced when the Movie
 
 <a id="ki-300"></a>
 
-## KI#300 - (Fixed AdvCiv-SAS bug) Timeline could reveal a razed hidden holy city's name
+## KI#300 - (Reopened Pending AdvCiv-SAS bug) Timeline can reveal a razed hidden holy city's name
 
 Religion founding writes the real holy-city name into its replay message, while the live notification correctly uses the localized faraway-land text for observers who cannot see the city. The AdvCiv-SAS Info Screen Timeline deliberately keeps this globally known event visible, then formerly tried to hide the city name by replacing the current city object's current name. If the holy city had been razed before the observer revealed its plot, no current city object remained and the historical replay name was shown verbatim. Renaming could similarly make the current name differ from the historical replay text.
 
@@ -10758,7 +10762,9 @@ The fix recognizes the localized religion-founding replay template with a sentin
 
 Runtime screenshot 0216 confirms that the ordinary known-city path remains intact: the active Ethiopian player correctly sees `Paganism has been founded in Aksum!`. The exact razed-before-reveal spoiler state was not reproduced; its corrected hidden/no-current-city branch is established by source review.
 
-This is an AdvCiv-SAS Timeline spoiler introduced with its hidden-event filtering. Found and investigated through the systematic archaeology with the help of ChatGPT-5.6-Sol and fixed with the help of GPT-5.6-Sol, thanks.
+C031-WIP552 review reopened the issue. `CyPlot.getPlotCity()` returns a managed `CyCity` wrapper even when the underlying city pointer is null, so Python `is None` tests do not recognize the empty-city state. If the razed holy-city plot is revealed later, `bPlotHidden` is false and the null wrapper passes the current-city branch; its empty name cannot replace the historical replay name, which remains visible. The earlier repair therefore works while the plot is still hidden but misses the later-revealed state it was intended to cover. Pending obtaining the wrapper once and testing `pCity is None or pCity.isNone()` before reading its owner or name.
+
+This is an AdvCiv-SAS Timeline spoiler introduced with its hidden-event filtering. Found and investigated through the systematic archaeology with the help of ChatGPT-5.6-Sol and partially fixed with the help of GPT-5.6-Sol; reopened as F679 during ChatGPT-5.6-Sol's C031-WIP552 `CyPlot.cpp` audit and reconciled with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-301"></a>
 
@@ -17955,3 +17961,43 @@ Found as F674/provisional KI#996 during ChatGPT-5.6-Sol's C031-WIP541 `CvMessage
 `CvNetJoinGroup` uses `FFreeList::INVALID_INDEX` to mean an intentional ungroup request, but its receiver also calls `joinGroup(NULL)` whenever a real target-head ID no longer resolves. Under simultaneous turns, a pending join whose target head dies can therefore detach the source unit from its existing group instead of becoming a harmless failed join. BtS, K-Mod, Base AdvCiv 1.14 and SAS share this behavior. Pending distinguishing the explicit sentinel from a stale real target; a missing real target should be a no-op unless stable group identity is added.
 
 Found as F675/provisional KI#997 during ChatGPT-5.6-Sol's C031-WIP542 `CvMessageData.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-998"></a>
+
+## KI#998 - (Provisional Pending AdvCiv XML-loader regression partly masked by SAS) Great Wall conditional abilities never switch
+
+AdvC practical 2320 introduced the Great Wall's `bConditionalAbilities` XML/schema tag and the corresponding `m_bConditional` member, but the loader requests the nonexistent `bConditional` tag. The optional lookup therefore always leaves the member false, bypassing `CvGame::applyOptionEffects` suppression for all three dynamic abilities. Base AdvC 1.14 consequently exposes every configured effect under ordinary, Raging Barbarians and No Barbarians rules instead of switching them as intended.
+
+SAS later set the conditional area-trade-route and domestic-Great-General modifiers to zero, partly masking the inherited balance error, but retains the border obstacle. Under No Barbarians, `CvCityAI::AI_buildingValue` can therefore value the Great Wall's useless anti-Barbarian border effect because that evaluator explicitly relies on the info-layer suppression. Pending changing the loader lookup to the shipped/schema name `bConditionalAbilities`; XML cache is disabled, so no cache migration is required.
+
+Found as F676/provisional KI#998 during ChatGPT-5.6-Sol's C031-WIP547 `CvInfo_Building.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-999"></a>
+
+## KI#999 - (Provisional Pending inherited AdvCiv replay-compatibility defect) Taurus version 132 is parsed as AdvC format
+
+AdvC practical 3844 accepts Taurus replays by ignoring their bit-7 format marker only in the initial version-range comparison. Taurus 1.04 stores replay version `4 | 128 = 132` while retaining the ordinary BtS-v4 field layout, but AdvC leaves the live version as 132. Its later `iVersion >= 6` branch consequently interprets Taurus's sea-level field as the final score, so an accepted replay can display and sort by a tiny sea-level enum rather than its real score. When Taurus's configurable replay mod name is empty, the same incomplete recognition also tests the file against `HOF_DISPLAY_BTS_REPLAYS` instead of the intended `HOF_DISPLAY_OTHER_MOD_REPLAYS` switch.
+
+K-Mod and Civ4CE do not contain this exception; Base AdvCiv 1.14 and SAS retain the AdvCiv regression. Current SAS separately declares broad foreign replay compatibility unsupported through KI#166, so the supported player-facing activation belongs primarily to Base AdvCiv. Pending retaining explicit Taurus identity, clearing bit 7 before every subsequent format branch and using that identity for the empty-mod-name filter without accepting arbitrary marked future versions.
+
+Found as F677/provisional KI#999 during ChatGPT-5.6-Sol's C031-WIP549 `CvReplayInfo.cpp` audit using the supplied Taurus 1.04 source as the writer oracle; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1000"></a>
+
+## KI#1000 - (Provisional Pending Base AdvCiv replay-export defect inactive in SAS) Late fallback can retain an empty mod name
+
+AdvC practical 3883 replaced a conservative global BtS-replay compatibility decision with a per-replay predicate, but `CvReplayInfo::createInfo` first calls that predicate before populating the replay fields it examines. The writer calls it again after population. A Base AdvCiv XXL replay with the BUG `Mod Name In Replays` option unchecked can therefore initially qualify and retain an empty mod name, then correctly fail the late BtS-compatibility check and use the AdvCiv payload without restoring its AdvCiv identity. The resulting file is internally AdvCiv-format while its empty mod name still exposes it as an unmodded replay.
+
+This is a Base AdvCiv 1.14 defect in its optional supported replay-export feature. Current SAS is not activated because KI#166 makes `isStoringReplaysAsBtS()` unconditionally false and always records the SAS mod identity. Pending Base AdvCiv repair by finalizing the mod name only after the real replay fields exist, while retaining the late safety check; no SAS gameplay repair is required unless BtS-compatible export is deliberately re-enabled.
+
+Found as F678/provisional KI#1000 during ChatGPT-5.6-Sol's C031-WIP550 `CvReplayInfo.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1001"></a>
+
+## KI#1001 - (Provisional Pending inherited XML-buffer defect activated by SAS) An overlong GlobalDefine exceeds 256 bytes
+
+The inherited GlobalDefines text/string loader reads through the capacity-less closed FXML `GetLastNodeValue(char*)` interface into `char szVal[256]`. Current `SAS_MAP_SCRIPT_NAMES_LAND_HEAVY` contains 297 ASCII bytes and needs 298 bytes including its terminator. It therefore cannot be represented safely and losslessly by that destination: a full copy overruns it by 42 bytes, while any undocumented 255-character cap truncates `SAS_Spiky_Avenues` and removes the later `Tectonics`, `Terra`, `Water` and `Wheel` names consumed by SAS map-heaviness logic.
+
+Base AdvCiv 1.14, K-Mod and Civ4CE retain the raw fixed-buffer weakness, but their supplied data does not activate it; SAS practical 5457 first expanded this define beyond the safe limit. Pending using the existing size-safe `CvString` XML overload in both GlobalDefines text branches rather than merely enlarging the fixed buffer. Current DefineName and node-type lengths remain below their separate 256-byte buffers and are preventive hardening surfaces, not part of this finding.
+
+Found as F680/provisional KI#1001 during ChatGPT-5.6-Sol's C031-WIP555 `CvXMLLoadUtilityGet.cpp` cross-file audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
