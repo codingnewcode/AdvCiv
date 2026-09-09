@@ -905,8 +905,8 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#806 - (Provisional Pending inherited Warlords/BtS vassal-score defect) A surviving master team loses score when one teammate dies](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-806)\
 [KI#807 - (Provisional Pending AdvCiv espionage-cost integration regression) Generic Steal Technology can hide an affordable target](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-807)\
 [KI#808 - (Provisional Pending inherited BtS Advanced Start destructive-fallback defect with incomplete AdvCiv hardening) Foreign units and routes can be removed](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-808)\
-[KI#809 - (Provisional Pending inherited BtS event target-validation defect) A vanished required unit is treated as legal](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-809)\
-[KI#810 - (Provisional Pending inherited BtS event transaction-ordering defect) A rejected stale choice can consume a global trigger](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-810)\
+[KI#809 - (Fixed inherited BtS event target-validation defect) A vanished required unit was treated as legal](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-809)\
+[KI#810 - (Fixed inherited BtS event transaction-ordering defect) A rejected stale choice could consume a global trigger](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-810)\
 [KI#811 - (Provisional Pending AdvCiv technology-brokering integration regression) Significant non-trade discoveries bypass restrictions](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-811)\
 [KI#812 - (Rejected duplicate of KI#811) Post-acquisition significant-discovery checks](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-812)\
 [KI#813 - (Provisional Pending AdvCiv HotSeat message-ownership defect) A major event can be deleted twice](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-813)\
@@ -1098,6 +1098,8 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#999 - (Provisional Pending inherited AdvCiv replay-compatibility defect) Taurus version 132 is parsed as AdvC format](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-999)\
 [KI#1000 - (Provisional Pending Base AdvCiv replay-export defect inactive in SAS) Late fallback can retain an empty mod name](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1000)\
 [KI#1001 - (Provisional Pending inherited XML-buffer defect activated by SAS) An overlong GlobalDefine exceeds 256 bytes](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1001)\
+[KI#1002 - (Provisional Pending AdvCiv initialization regression) FirstContactData can contain uninitialized plot coordinates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1002)\
+[KI#1003 - (Provisional Pending audit cursor) CvStructs.cpp remainder has not yet been classified](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1003)\
 
 <a id="ki-1"></a>
 
@@ -16394,17 +16396,23 @@ Found as F485/provisional KI#808 during ChatGPT-5.6-Sol's C031-WIP212 `CvPlayer.
 
 <a id="ki-809"></a>
 
-## KI#809 - (Provisional Pending inherited BtS event target-validation defect) A vanished required unit is treated as legal
+## KI#809 - (Fixed inherited BtS event target-validation defect) A vanished required unit was treated as legal
 
-Reply-time random-event validation rejects an existing unit that cannot receive an event, but treats a missing stored unit as valid. Event bookkeeping and non-unit effects can consequently proceed while the required unit-local payload silently does nothing. Current At the Sword data gives a direct simultaneous-multiplayer example: its damaged Swordsman can vanish while the human popup waits, yet the global non-recurring event is recorded and consumed without healing, experience or renaming. BtS, K-Mod, Base AdvCiv and SAS share the defect. Events with concrete unit-local effects must require the stored unit to exist and remain eligible at the synchronized validation boundary.
+Reply-time random-event validation rejected an existing unit that could not receive an event, but treated a missing stored unit as valid. Event bookkeeping and non-unit effects could consequently proceed while the required unit-local payload silently did nothing. Current At the Sword data gives a direct simultaneous-multiplayer example: its damaged Swordsman could vanish while the human popup waited, yet the global non-recurring event was recorded and consumed without healing, experience or renaming. BtS, K-Mod, Base AdvCiv and SAS shared the defect.
+
+Reply-time validation now derives whether a concrete unit is required from all five payload fields consumed by `CvUnit::applyEvent`: disbanding, experience, immobility, promotion and naming. Such an outcome rejects a vanished target; an outcome that merely retains a unit as trigger context remains legal without it. Existing live units retain the prior `CvUnit::canApplyEvent` eligibility check. A clean Debug-opt compile and random-events-enabled Huge Custom Continents autoplay completed through turn 469 and a Space victory; its SASGameRecord captured 343 accepted primary/direct applications and 7 accepted immediate follow-ups without a trigger-commit inconsistency. The simultaneous-multiplayer disappearance race is source verified rather than reproduced directly.
+
+As a useful side demonstration of SASGameRecord rather than a KI#809 symptom, the same run's initial geography layer preserved an unusually cross-like Custom Continents landmass: visually a double sabre or four inward-pointing pyramids, almost a `BTG_Cross`-style shuriken. This is the kind of memorable generated-map context that would otherwise be lost after an unattended autoplay.
 
 Found as F486/provisional KI#809 during ChatGPT-5.6-Sol's C031-WIP213 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-810"></a>
 
-## KI#810 - (Provisional Pending inherited BtS event transaction-ordering defect) A rejected stale choice can consume a global trigger
+## KI#810 - (Fixed inherited BtS event transaction-ordering defect) A rejected stale choice could consume a global trigger
 
-`applyEvent` durably marks and globally propagates a trigger as fired before its authoritative reply-time `canDoEvent` check. If a human event popup becomes stale in simultaneous multiplayer—for example, another player captures the selected Horticulture city—the validation correctly rejects the choice and applies no event, but the global non-recurring trigger remains permanently consumed. This ordering is inherited unchanged from BtS through K-Mod and Base AdvCiv; AdvCiv's launcher already states that unavailable events must not count as triggered. The synchronized transaction must validate first and commit trigger-fired state only for a legal event.
+`applyEvent` durably marked and globally propagated a trigger as fired before its authoritative reply-time `canDoEvent` check. If a human event popup became stale in simultaneous multiplayer—for example, another player captured the selected Horticulture city—the validation correctly rejected the choice and applied no event, but the global non-recurring trigger remained permanently consumed. This ordering was inherited unchanged from BtS through K-Mod and Base AdvCiv; AdvCiv's launcher already states that unavailable events must not count as triggered.
+
+The synchronized transaction now performs `canDoEvent` first and commits trigger-fired state only for a legal event. This preserves valid replies while making stale cancellation agree with AdvCiv's explicit popup-launch contract. A clean Debug-opt compile and random-events-enabled Huge Custom Continents autoplay completed through turn 469 and a Space victory; all 350 accepted applications retained valid fired-state transitions in `SASGameRecord_20260909T171145Z_new1.log`. The simultaneous-multiplayer city-capture race is source verified rather than reproduced directly.
 
 Found as F487/provisional KI#810 during ChatGPT-5.6-Sol's C031-WIP214 `CvPlayer.cpp` deep re-audit; disposition reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -18001,3 +18009,21 @@ The inherited GlobalDefines text/string loader reads through the capacity-less c
 Base AdvCiv 1.14, K-Mod and Civ4CE retain the raw fixed-buffer weakness, but their supplied data does not activate it; SAS practical 5457 first expanded this define beyond the safe limit. Pending using the existing size-safe `CvString` XML overload in both GlobalDefines text branches rather than merely enlarging the fixed buffer. Current DefineName and node-type lengths remain below their separate 256-byte buffers and are preventive hardening surfaces, not part of this finding.
 
 Found as F680/provisional KI#1001 during ChatGPT-5.6-Sol's C031-WIP555 `CvXMLLoadUtilityGet.cpp` cross-file audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1002"></a>
+
+## KI#1002 - (Provisional Pending AdvCiv initialization regression) FirstContactData can contain uninitialized plot coordinates
+
+`FirstContactData` safely initializes both optional plot-coordinate pairs to `-1,-1` in its default constructor, but the parameterized convenience constructor assigns a pair only when the corresponding plot pointer is non-null. Its four built-in integers otherwise remain indeterminate. Ordinary shipped callers intentionally supply only one plot, after which `CvTeam::makeHasMet` reads both coordinate pairs unconditionally. Most garbage values resolve to no plot, but accidentally in-range values can be interpreted as an unrelated contact plot and affect the met-player/contact location used by first-contact and espionage-reminder messages.
+
+This is an AdvCiv regression introduced by practical 1499 when the earlier helper's conditional assignments moved into the convenience constructor without retaining the default constructor's sentinel initialization. Base AdvCiv 1.14 and SAS retain it; K-Mod and Civ4CE predate `FirstContactData`. The current SASGameRecord example independently confirms the live invalid reads: 9 of 119 `TEAM_MET` rows contained malformed second-coordinate pairs such as `0,1114128` and `1701972,100295445`. Pending initializing both `IDInfo` members and all four coordinates in the parameterized constructor before overwriting the supplied plot pairs.
+
+Found as F681/provisional KI#1002 during ChatGPT-5.6-Sol's C031-WIP563 `CvStructs.cpp` audit and confirmed through current SASGameRecord runtime evidence; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1003"></a>
+
+## KI#1003 - (Provisional Pending audit cursor) CvStructs.cpp remainder has not yet been classified
+
+Reserved for F682 while the open C031-WIP563 `CvStructs.cpp` audit continues through the remaining serialized Event/Vote data, PB setup containers, replay messages and miscellaneous structs. No defect has been claimed or classified yet; this placeholder keeps the continuous KI ledger explicit until the next durable checkpoint either promotes a distinct finding or leaves the cursor unused.
+
+Reconciled from ChatGPT-5.6-Sol's C031-WIP563 continuation cursor with the help of GPT-5.6-Sol, thanks.

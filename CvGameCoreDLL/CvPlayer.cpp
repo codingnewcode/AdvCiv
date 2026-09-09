@@ -16281,8 +16281,17 @@ bool CvPlayer::canDoEvent(EventTypes eEvent, const EventTriggeredData& kTriggere
 	}
 
 	CvUnit* pUnit = getUnit(kTriggeredData.m_iUnitId);
-	if (pUnit != NULL && !pUnit->canApplyEvent(eEvent))
+	// <!-- custom: BtS accepted a vanished target even when this EventInfo still had a concrete unit-local payload.
+	// Derive that requirement from every field consumed by CvUnit::applyEvent; contextual unit IDs remain optional for outcomes without such effects. See KI#809. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool const bRequiresUnit = (kEvent.isDisbandUnit() ||
+			kEvent.getUnitExperience() != 0 || kEvent.getUnitImmobileTurns() > 0 ||
+			kEvent.getUnitPromotion() != NO_PROMOTION ||
+			!CvWString(kEvent.getUnitNameKey()).empty());
+	if ((bRequiresUnit && pUnit == NULL) ||
+		(pUnit != NULL && !pUnit->canApplyEvent(eEvent)))
+	{
 		return false;
+	}
 
 	if (kEvent.getBonusRevealed() != NO_BONUS)
 	{
@@ -16424,13 +16433,7 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 	}
 
 	int const iTriggerFiredBefore = (bLogRandomEvent ? isTriggerFired(pTriggeredData->m_eTrigger) : -1);
-	if (bUpdateTrigger)
-	{
-		setTriggerFired(*pTriggeredData, true);
-	}
-
-	// <!-- custom: Preserve the inherited reply transaction exactly: canDoEvent still executes once, after the existing trigger-fired update.
-	// Storing its result only lets SASGameRecord expose KI#809/KI#810 without repairing either behavior in this diagnostics commit. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	// <!-- custom: Store the authoritative reply-time validation result so SASGameRecord records the same decision used by the repaired transaction below. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 	bool const bCanDoEvent = canDoEvent(eEvent, *pTriggeredData);
 	if (!bCanDoEvent)
 	{
@@ -16439,6 +16442,11 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 			deleteEventTriggered(iEventTriggeredId);
 		return;
 	}
+
+	// <!-- custom: BtS committed and globally propagated the trigger before authoritative reply-time validation.
+	// Mark it fired only after a stale choice has passed canDoEvent, matching AdvCiv's launchEventPopup cancellation contract. See KI#810. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (bUpdateTrigger)
+		setTriggerFired(*pTriggeredData, true);
 
 	setEventOccured(eEvent, *pTriggeredData);
 	if (bLogRandomEvent) logSASGameRecordRandomEventApply(*this, eEvent, iEventTriggeredId, pTriggeredData, bUpdateTrigger, "ACCEPTED", 1, iTriggerFiredBefore, iEventOccurredBefore);
