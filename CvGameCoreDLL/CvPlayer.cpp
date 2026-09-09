@@ -12158,8 +12158,14 @@ void CvPlayer::doGold()
 
 	changeGold(iGoldChange);
 	bool bStrike = false;
+	bool bLogFinancialStrike = false;
+	int iGoldBefore = 0;
 	if (getGold() < 0)
 	{
+		// <!-- custom: Only inspect SASGameRecord level once the already-resolved treasury is negative, so ordinary doGold turns retain the original hot path.
+		// Reconstruct the pre-change treasury from the existing gold delta before the clamp; no extra gold calculation is performed. (ChatGPT-5.6-Sol) -->
+		bLogFinancialStrike = (gGameRecordLogLevel >= 2);
+		if (bLogFinancialStrike) iGoldBefore = getGold() - iGoldChange;
 		setGold(0);
 		if (!isBarbarian() && getNumCities() > 0)
 			bStrike = true;
@@ -12167,6 +12173,7 @@ void CvPlayer::doGold()
 
 	if (bStrike)
 	{
+		int const iUnitsBeforeDisband = (bLogFinancialStrike ? getNumUnits() : 0);
 		setStrike(true);
 		changeStrikeTurns(1);
 
@@ -12182,6 +12189,7 @@ void CvPlayer::doGold()
 					break;
 			}
 		}
+		if (bLogFinancialStrike) logSASGameRecordFinancialStrikeTurn(getID(), iGoldBefore, iGoldChange, getGold(), getStrikeTurns(), iUnitsBeforeDisband, getNumUnits());
 	}
 	else setStrike(false);
 }

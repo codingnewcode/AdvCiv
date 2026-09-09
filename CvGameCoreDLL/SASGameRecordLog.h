@@ -188,6 +188,8 @@ void logSASGameRecordReligionSpreadAttempt(CvUnit const* pUnit, ReligionTypes eR
 void logSASGameRecordCorporationChanged(CorporationTypes eCorporation, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded);
 void logSASGameRecordCorporationSpreadAttempt(CvUnit const* pUnit, CorporationTypes eCorporation, CvCity const* pCity, int iSpreadChance, int iGoldCost, int iGoldBefore, bool bSuccess);
 void logSASGameRecordCircumnavigated(TeamTypes eTeam, int iFreeSeaMoves, bool bBonusApplied, int iSeaExtraMovesBefore, int iSeaExtraMovesAfter);
+// <!-- custom: Financial strike is a rare player-wide economic crisis; periodic player rows preserve current/cumulative state while this level-2 action records each realized strike turn and any resulting forced unit loss. Callers pre-gate before collecting logging-only unit counts. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordFinancialStrikeTurn(PlayerTypes ePlayer, int iGoldBefore, int iCalculatedGoldRate, int iGoldAfterClamp, int iCumulativeStrikeTurns, int iUnitsBeforeDisband, int iUnitsAfterDisband);
 void logSASGameRecordGoldenAge(PlayerTypes ePlayer, bool bStart);
 void logSASGameRecordGoldenAgeTurnsChanged(PlayerTypes ePlayer, int iChange, int iOldGoldenAgeTurns, int iNewGoldenAgeTurns);
 void logSASGameRecordAnarchy(PlayerTypes ePlayer, bool bStart);

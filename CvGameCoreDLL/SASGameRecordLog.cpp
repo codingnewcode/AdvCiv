@@ -1179,8 +1179,11 @@ struct SASGameRecordPlayerPrevious
 	int iCityCommerce;
 	int iCityTradeRoutes;
 	int iCityTradeCommerce;
-	int iCitySpecialists;
-	int iCityFreeSpecialists;
+	int iCityAngryPopulation;
+	int iCityWorkingPopulation;
+	int iCityAssignedSpecialists;
+	int iCityFreeSpecialistInstances;
+	int iCityFreeSpecialistAllowance;
 	int iCityGarrison;
 };
 
@@ -6464,12 +6467,18 @@ static void logSASGameRecordCityDetail(CvCity const& kCity, int iGameTurn)
 	// Stored food/granary state, occupation/culture/maintenance and commerce-type output are cheap current-state getters; religion/corporation lists are small loaded-XML scans already used by city-removal provenance. (ChatGPT-5.6-Sol) -->
 	CultureLevelTypes const eCultureLevel = kCity.getCultureLevel();
 	PlayerTypes const eHighestCulturePlayer = kCity.findHighestCulture();
+	// <!-- custom: Keep citizen accounting explicit for post-game city-management analysis.
+	// Civ4's inherited specialist API names are unusually misleading: getSpecialistPopulation() is assigned population specialists; getNumGreatPeople() does not count born/present Great People here, but is the cached total changed by setFreeSpecialistCount() for actual typed free-specialist instances; totalFreeSpecialists() is instead the separate generic allowance that lets some assigned specialists be worked without consuming ordinary population.
+	// Keep the recorder names explicit so these three mechanics are not conflated by future code/documentation cleanup.
+	// Population changes only mark citizen assignment dirty, so a snapshot taken immediately after a severe population loss can temporarily retain more working/assigned citizens than the new population; these fields report observed state rather than promise an immediate arithmetic identity.
+	// The by-type lists below use the same explicit naming. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 	// <!-- custom: City-level commerce output/modifiers make each city's contribution to player-level gold/research/culture/espionage measurable; espionage defense remains a separate defensive modifier. (ChatGPT-5.6-Sol) -->
 	// <!-- custom: Air-unit occupancy/capacity on the existing city row makes poor basing or saturated airbases visible without adding a separate late-game row. Cargo aircraft are intentionally excluded by CvPlot::countNumAirUnits, matching actual base-capacity use. (GPT-5.6) -->
 	// <!-- custom: City defense snapshots expose both the current post-bombard defense modifier and its undamaged ceiling. DefenseDamage/MAX_CITY_DEFENSE_DAMAGE preserves the underlying bombardment state, while bombarded shows whether the city has already been hit this turn. This lets broad game records be paired with the level-3 tactical bombardment actions below. (GPT-5.6) -->
-	logSASGameRecord("GAME_RECORD_CITY turn=%d player=%d cityId=%d city=%S x=%d y=%d originalOwner=%d capital=%d foundedTurn=%d acquiredTurn=%d pop=%d highestPop=%d foodStored=%d foodKept=%d growthThreshold=%d maxFoodKeptPercent=%d avoidGrowth=%d foodSurplus=%d happySurplus=%d healthSurplus=%d food=%d prod=%d commerce=%d maintenanceTimes100=%d maintenanceModifier=%d occupationTurns=%d disorder=%d ownerCultureTimes100=%d cultureLevel=%s cultureLevelId=%d nextCultureThreshold=%d cultureUpdateTurns=%d ownerCulturePercent=%d highestCulturePlayer=%d highestCulturePercent=%d religions=%s holyReligions=%s corporations=%s headquarters=%s goldRate=%d researchRate=%d cultureRate=%d espionageRate=%d goldRateModifier=%d researchRateModifier=%d cultureRateModifier=%d espionageRateModifier=%d espionageDefenseModifier=%d defenseModifier=%d totalDefense=%d defenseDamage=%d defenseDamageMax=%d bombarded=%d airUnits=%d airCapacity=%d airSpaceAvailable=%d worked=%d workedImproved=%d workedUnimproved=%d workedFood=%d workedProd=%d workedCommerce=%d garrison=%d cityUnits=%d militaryUnits=%d civilianUnits=%d defenders=%d healthyDefenders=%d woundedDefenders=%d settlers=%d workers=%d attackers=%d connectedToCapital=%d plotGroupId=%d tradeRoutes=%d domesticTradeRoutes=%d foreignTradeRoutes=%d tradeFood=%d tradeProd=%d tradeCommerce=%d productionKind=%s production=%s productionUsesFood=%d productionTurns=%d productionStored=%d productionNeeded=%d overflowProduction=%d featureProduction=%d productionConversionX100=%s specialists=%s freeSpecialists=%s gpProgress=%d gpThreshold=%d gpRate=%d gpTurnsLeft=%d gpOdds=%s",
+	logSASGameRecord("GAME_RECORD_CITY turn=%d player=%d cityId=%d city=%S x=%d y=%d originalOwner=%d capital=%d foundedTurn=%d acquiredTurn=%d pop=%d highestPop=%d angryPopulation=%d workingPopulation=%d assignedSpecialists=%d freeSpecialistInstances=%d freeSpecialistAllowance=%d foodStored=%d foodKept=%d growthThreshold=%d maxFoodKeptPercent=%d avoidGrowth=%d foodSurplus=%d happySurplus=%d healthSurplus=%d food=%d prod=%d commerce=%d maintenanceTimes100=%d maintenanceModifier=%d occupationTurns=%d disorder=%d ownerCultureTimes100=%d cultureLevel=%s cultureLevelId=%d nextCultureThreshold=%d cultureUpdateTurns=%d ownerCulturePercent=%d highestCulturePlayer=%d highestCulturePercent=%d religions=%s holyReligions=%s corporations=%s headquarters=%s goldRate=%d researchRate=%d cultureRate=%d espionageRate=%d goldRateModifier=%d researchRateModifier=%d cultureRateModifier=%d espionageRateModifier=%d espionageDefenseModifier=%d defenseModifier=%d totalDefense=%d defenseDamage=%d defenseDamageMax=%d bombarded=%d airUnits=%d airCapacity=%d airSpaceAvailable=%d worked=%d workedImproved=%d workedUnimproved=%d workedFood=%d workedProd=%d workedCommerce=%d garrison=%d cityUnits=%d militaryUnits=%d civilianUnits=%d defenders=%d healthyDefenders=%d woundedDefenders=%d settlers=%d workers=%d attackers=%d connectedToCapital=%d plotGroupId=%d tradeRoutes=%d domesticTradeRoutes=%d foreignTradeRoutes=%d tradeFood=%d tradeProd=%d tradeCommerce=%d productionKind=%s production=%s productionUsesFood=%d productionTurns=%d productionStored=%d productionNeeded=%d overflowProduction=%d featureProduction=%d productionConversionX100=%s assignedSpecialistsByType=%s freeSpecialistsByType=%s gpProgress=%d gpThreshold=%d gpRate=%d gpTurnsLeft=%d gpOdds=%s",
 			iGameTurn, kCity.getOwner(), kCity.getID(), getSASGameRecordQuotedCityName(&kCity).GetCString(), kCity.getX(), kCity.getY(),
 			kCity.getOriginalOwner(), kCity.isCapital(), kCity.getGameTurnFounded(), kCity.getGameTurnAcquired(), kCity.getPopulation(), kCity.getHighestPopulation(),
+			kCity.angryPopulation(), kCity.getWorkingPopulation(), kCity.getSpecialistPopulation(), kCity.getNumGreatPeople(), kCity.totalFreeSpecialists(),
 			kCity.getFood(), kCity.getFoodKept(), kCity.growthThreshold(), kCity.getMaxFoodKeptPercent(), kCity.AI().AI_isEmphasizeAvoidGrowth() ? 1 : 0,
 			kCity.foodDifference(), kCity.happyLevel() - kCity.unhappyLevel(), kCity.goodHealth() - kCity.badHealth(),
 			kCity.getYieldRate(YIELD_FOOD), kCity.getYieldRate(YIELD_PRODUCTION), kCity.getYieldRate(YIELD_COMMERCE), kCity.getMaintenanceTimes100(), kCity.getMaintenanceModifier(),
@@ -6594,7 +6603,10 @@ static void logSASGameRecordCities(PlayerTypes ePlayer, int iGameTurn)
 	int iUnhealthyCities = 0;
 	int iStarvingCities = 0;
 	int iOccupiedCities = 0;
+	int iDisorderCities = 0;
 	int iAvoidGrowthCities = 0;
+	int iAngryPopulation = 0;
+	int iWorkingPopulation = 0;
 	int iCitiesProducingUnits = 0;
 	int iCitiesProducingMilitary = 0;
 	int iCitiesProducingWorkers = 0;
@@ -6603,8 +6615,9 @@ static void logSASGameRecordCities(PlayerTypes ePlayer, int iGameTurn)
 	int iCitiesProducingWonders = 0;
 	int iCitiesProducingProjects = 0;
 	int iCitiesProducingProcesses = 0;
-	int iSpecialists = 0;
-	int iFreeSpecialists = 0;
+	int iAssignedSpecialists = 0;
+	int iFreeSpecialistInstances = 0;
+	int iFreeSpecialistAllowance = 0;
 	int iGarrison = 0;
 	int iCityUnits = 0;
 	int iMilitaryUnitsInCities = 0;
@@ -6655,10 +6668,15 @@ static void logSASGameRecordCities(PlayerTypes ePlayer, int iGameTurn)
 			iStarvingCities++;
 		if (pLoopCity->isOccupation())
 			iOccupiedCities++;
+		if (pLoopCity->isDisorder())
+			iDisorderCities++;
 		if (pLoopCity->AI().AI_isEmphasizeAvoidGrowth())
 			iAvoidGrowthCities++;
-		iSpecialists += pLoopCity->getSpecialistPopulation();
-		iFreeSpecialists += pLoopCity->totalFreeSpecialists();
+		iAngryPopulation += pLoopCity->angryPopulation();
+		iWorkingPopulation += pLoopCity->getWorkingPopulation();
+		iAssignedSpecialists += pLoopCity->getSpecialistPopulation();
+		iFreeSpecialistInstances += pLoopCity->getNumGreatPeople();
+		iFreeSpecialistAllowance += pLoopCity->totalFreeSpecialists();
 		iGarrison += pLoopCity->plot()->getNumDefenders(ePlayer);
 		SASGameRecordPlotUnitCounts kCityUnits;
 		collectSASGameRecordPlotUnitCounts(pLoopCity->getPlot(), ePlayer, kCityUnits);
@@ -6699,21 +6717,24 @@ static void logSASGameRecordCities(PlayerTypes ePlayer, int iGameTurn)
 			iCitiesProducingProcesses++;
 		if (bLogCityDetails) logSASGameRecordCityDetail(*pLoopCity, iGameTurn);
 	}
-	logSASGameRecord("GAME_RECORD_CITIES turn=%d player=%d cities=%d capitalId=%d capital=%S connectedToCapital=%d totalFoodSurplus=%d totalHappySurplus=%d totalHealthSurplus=%d totalFood=%d totalProd=%d totalCommerce=%d totalFoodStored=%d totalFoodKept=%d totalMaintenanceTimes100=%d tradeRoutes=%d domesticTradeRoutes=%d foreignTradeRoutes=%d tradeFood=%d tradeProd=%d tradeCommerce=%d unhappyCities=%d unhealthyCities=%d starvingCities=%d occupiedCities=%d avoidGrowthCities=%d specialists=%d freeSpecialists=%d garrison=%d cityUnits=%d militaryUnits=%d civilianUnits=%d defenders=%d settlers=%d workers=%d nextGPCityId=%d nextGPCity=%S nextGPTurns=%d nextGPRate=%d nextGPProgress=%d citiesProducingUnits=%d citiesProducingMilitary=%d citiesProducingWorkers=%d citiesProducingSettlers=%d citiesProducingBuildings=%d citiesProducingWonders=%d citiesProducingProjects=%d citiesProducingProcesses=%d",
+	// <!-- custom: Aggregate citizen-state fields mirror the detailed city semantics: working/angry population, assigned population specialists, actual typed free-specialist instances, and the separate generic free-specialist allowance.
+	// Keep these names explicit because the inherited APIs use historically ambiguous terminology. (ChatGPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_CITIES turn=%d player=%d cities=%d capitalId=%d capital=%S connectedToCapital=%d totalFoodSurplus=%d totalHappySurplus=%d totalHealthSurplus=%d totalFood=%d totalProd=%d totalCommerce=%d totalFoodStored=%d totalFoodKept=%d totalMaintenanceTimes100=%d tradeRoutes=%d domesticTradeRoutes=%d foreignTradeRoutes=%d tradeFood=%d tradeProd=%d tradeCommerce=%d unhappyCities=%d unhealthyCities=%d starvingCities=%d occupiedCities=%d disorderCities=%d avoidGrowthCities=%d angryPopulation=%d workingPopulation=%d assignedSpecialists=%d freeSpecialistInstances=%d freeSpecialistAllowance=%d garrison=%d cityUnits=%d militaryUnits=%d civilianUnits=%d defenders=%d settlers=%d workers=%d nextGPCityId=%d nextGPCity=%S nextGPTurns=%d nextGPRate=%d nextGPProgress=%d citiesProducingUnits=%d citiesProducingMilitary=%d citiesProducingWorkers=%d citiesProducingSettlers=%d citiesProducingBuildings=%d citiesProducingWonders=%d citiesProducingProjects=%d citiesProducingProcesses=%d",
 			iGameTurn, ePlayer, iCities, pCapital == NULL ? -1 : pCapital->getID(), getSASGameRecordQuotedCityName(pCapital).GetCString(),
 			iConnectedToCapital, iTotalFoodSurplus, iTotalHappySurplus, iTotalHealthSurplus, iTotalFoodYield, iTotalProductionYield, iTotalCommerceYield, iTotalFoodStored, iTotalFoodKept, iTotalMaintenanceTimes100,
 			iTotalTradeRoutes, iDomesticTradeRoutes, iForeignTradeRoutes, iTradeFood, iTradeProduction, iTradeCommerce,
-			iUnhappyCities, iUnhealthyCities, iStarvingCities, iOccupiedCities, iAvoidGrowthCities, iSpecialists, iFreeSpecialists,
+			iUnhappyCities, iUnhealthyCities, iStarvingCities, iOccupiedCities, iDisorderCities, iAvoidGrowthCities, iAngryPopulation, iWorkingPopulation, iAssignedSpecialists, iFreeSpecialistInstances, iFreeSpecialistAllowance,
 			iGarrison, iCityUnits, iMilitaryUnitsInCities, iCivilianUnitsInCities, iDefendersInCities, iSettlersInCities, iWorkersInCities,
 			pNextGPCity == NULL ? -1 : pNextGPCity->getID(), getSASGameRecordQuotedCityName(pNextGPCity).GetCString(), pNextGPCity == NULL ? -1 : iBestGPTurns, pNextGPCity == NULL ? 0 : pNextGPCity->getGreatPeopleRate(), pNextGPCity == NULL ? 0 : pNextGPCity->getGreatPeopleProgress(),
 			iCitiesProducingUnits, iCitiesProducingMilitary, iCitiesProducingWorkers, iCitiesProducingSettlers, iCitiesProducingBuildings,
 			iCitiesProducingWonders, iCitiesProducingProjects, iCitiesProducingProcesses);
-	logSASGameRecord("GAME_RECORD_CITIES_DELTAS turn=%d player=%d deltaValid=%d citiesDelta=%+d connectedToCapitalDelta=%+d totalFoodSurplusDelta=%+d totalHappySurplusDelta=%+d totalHealthSurplusDelta=%+d totalFoodDelta=%+d totalProdDelta=%+d totalCommerceDelta=%+d tradeRoutesDelta=%+d tradeCommerceDelta=%+d specialistsDelta=%+d freeSpecialistsDelta=%+d garrisonDelta=%+d",
+	logSASGameRecord("GAME_RECORD_CITIES_DELTAS turn=%d player=%d deltaValid=%d citiesDelta=%+d connectedToCapitalDelta=%+d totalFoodSurplusDelta=%+d totalHappySurplusDelta=%+d totalHealthSurplusDelta=%+d totalFoodDelta=%+d totalProdDelta=%+d totalCommerceDelta=%+d tradeRoutesDelta=%+d tradeCommerceDelta=%+d angryPopulationDelta=%+d workingPopulationDelta=%+d assignedSpecialistsDelta=%+d freeSpecialistInstancesDelta=%+d freeSpecialistAllowanceDelta=%+d garrisonDelta=%+d",
 			iGameTurn, ePlayer, kPrevious.bValid,
 			getSASGameRecordDelta(kPrevious.bValid, iCities, kPrevious.iCityCount), getSASGameRecordDelta(kPrevious.bValid, iConnectedToCapital, kPrevious.iCityConnectedToCapital), getSASGameRecordDelta(kPrevious.bValid, iTotalFoodSurplus, kPrevious.iCityFoodSurplus),
 			getSASGameRecordDelta(kPrevious.bValid, iTotalHappySurplus, kPrevious.iCityHappySurplus), getSASGameRecordDelta(kPrevious.bValid, iTotalHealthSurplus, kPrevious.iCityHealthSurplus), getSASGameRecordDelta(kPrevious.bValid, iTotalFoodYield, kPrevious.iCityFood),
 			getSASGameRecordDelta(kPrevious.bValid, iTotalProductionYield, kPrevious.iCityProduction), getSASGameRecordDelta(kPrevious.bValid, iTotalCommerceYield, kPrevious.iCityCommerce), getSASGameRecordDelta(kPrevious.bValid, iTotalTradeRoutes, kPrevious.iCityTradeRoutes),
-			getSASGameRecordDelta(kPrevious.bValid, iTradeCommerce, kPrevious.iCityTradeCommerce), getSASGameRecordDelta(kPrevious.bValid, iSpecialists, kPrevious.iCitySpecialists), getSASGameRecordDelta(kPrevious.bValid, iFreeSpecialists, kPrevious.iCityFreeSpecialists), getSASGameRecordDelta(kPrevious.bValid, iGarrison, kPrevious.iCityGarrison));
+			getSASGameRecordDelta(kPrevious.bValid, iTradeCommerce, kPrevious.iCityTradeCommerce), getSASGameRecordDelta(kPrevious.bValid, iAngryPopulation, kPrevious.iCityAngryPopulation), getSASGameRecordDelta(kPrevious.bValid, iWorkingPopulation, kPrevious.iCityWorkingPopulation),
+			getSASGameRecordDelta(kPrevious.bValid, iAssignedSpecialists, kPrevious.iCityAssignedSpecialists), getSASGameRecordDelta(kPrevious.bValid, iFreeSpecialistInstances, kPrevious.iCityFreeSpecialistInstances), getSASGameRecordDelta(kPrevious.bValid, iFreeSpecialistAllowance, kPrevious.iCityFreeSpecialistAllowance), getSASGameRecordDelta(kPrevious.bValid, iGarrison, kPrevious.iCityGarrison));
 	kPrevious.iCityCount = iCities;
 	kPrevious.iCityConnectedToCapital = iConnectedToCapital;
 	kPrevious.iCityFoodSurplus = iTotalFoodSurplus;
@@ -6724,8 +6745,11 @@ static void logSASGameRecordCities(PlayerTypes ePlayer, int iGameTurn)
 	kPrevious.iCityCommerce = iTotalCommerceYield;
 	kPrevious.iCityTradeRoutes = iTotalTradeRoutes;
 	kPrevious.iCityTradeCommerce = iTradeCommerce;
-	kPrevious.iCitySpecialists = iSpecialists;
-	kPrevious.iCityFreeSpecialists = iFreeSpecialists;
+	kPrevious.iCityAngryPopulation = iAngryPopulation;
+	kPrevious.iCityWorkingPopulation = iWorkingPopulation;
+	kPrevious.iCityAssignedSpecialists = iAssignedSpecialists;
+	kPrevious.iCityFreeSpecialistInstances = iFreeSpecialistInstances;
+	kPrevious.iCityFreeSpecialistAllowance = iFreeSpecialistAllowance;
 	kPrevious.iCityGarrison = iGarrison;
 }
 
@@ -6867,12 +6891,14 @@ static void logSASGameRecordPlayerSnapshot(PlayerTypes ePlayer, int iGameTurn)
 	const bool bAutoplayControlled = kPlayer.isHumanDisabled();
 	const bool bHumanSlot = (bCurrentlyHumanControlled || bAutoplayControlled);
 	// <!-- custom: These observations begin with the current log session rather than the civilization's lifetime; expose that scope in the player-row field names. See KI#379. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
-	logSASGameRecord("GAME_RECORD_PLAYER turn=%d player=%d team=%d civ=%s leader=%s isHuman=%d humanSlot=%d currentlyHumanControlled=%d autoplayControlled=%d rank=%d deltaValid=%d score=%d scoreDelta=%+d cities=%d citiesDelta=%+d pop=%d popDelta=%+d land=%d landDelta=%+d units=%d unitsDelta=%+d combatUnits=%d combatUnitsDelta=%+d militarySupportUnits=%d militarySupportUnitsDelta=%+d power=%d powerDelta=%+d gold=%d goldDelta=%+d gpt=%d gptDelta=%+d researchRate=%d researchRateDelta=%+d researchPercent=%d currentResearch=%s researchOverflow=%d noResearchAvailable=%d researchTurns=%d era=%s stateReligion=%s techScorePercent=%d combatXP=%d greatPeopleCreated=%d greatGeneralsCreated=%d greatGeneralThreshold=%d goldenAgeTurns=%d loggedGoldenAgeTurns=%d anarchyTurns=%d loggedAnarchyTurns=%d revolutionTimer=%d conversionTimer=%d wars=%s",
+	// <!-- custom: Financial strike is player-wide, not a city disorder state. `getStrikeTurns` is an inherited cumulative counter that is not reset when a strike ends, so expose it as `cumulativeStrikeTurns` rather than implying a current streak.
+	// Exact strike turns are logged separately at level 2. (ChatGPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_PLAYER turn=%d player=%d team=%d civ=%s leader=%s isHuman=%d humanSlot=%d currentlyHumanControlled=%d autoplayControlled=%d rank=%d deltaValid=%d score=%d scoreDelta=%+d cities=%d citiesDelta=%+d pop=%d popDelta=%+d land=%d landDelta=%+d units=%d unitsDelta=%+d combatUnits=%d combatUnitsDelta=%+d militarySupportUnits=%d militarySupportUnitsDelta=%+d power=%d powerDelta=%+d gold=%d goldDelta=%+d gpt=%d gptDelta=%+d financialStrike=%d cumulativeStrikeTurns=%d researchRate=%d researchRateDelta=%+d researchPercent=%d currentResearch=%s researchOverflow=%d noResearchAvailable=%d researchTurns=%d era=%s stateReligion=%s techScorePercent=%d combatXP=%d greatPeopleCreated=%d greatGeneralsCreated=%d greatGeneralThreshold=%d goldenAgeTurns=%d loggedGoldenAgeTurns=%d anarchyTurns=%d loggedAnarchyTurns=%d revolutionTimer=%d conversionTimer=%d wars=%s",
 			iGameTurn, ePlayer, kPlayer.getTeam(), szCiv, szLeader, bCurrentlyHumanControlled, bHumanSlot, bCurrentlyHumanControlled, bAutoplayControlled, kGame.getPlayerRank(ePlayer) + 1, kPrevious.bValid,
 			iScore, getSASGameRecordDelta(kPrevious.bValid, iScore, kPrevious.iScore), iCities, getSASGameRecordDelta(kPrevious.bValid, iCities, kPrevious.iCities),
 			iPopulation, getSASGameRecordDelta(kPrevious.bValid, iPopulation, kPrevious.iPopulation), iLand, getSASGameRecordDelta(kPrevious.bValid, iLand, kPrevious.iLand),
 			iUnits, getSASGameRecordDelta(kPrevious.bValid, iUnits, kPrevious.iUnits), iCombatUnits, getSASGameRecordDelta(kPrevious.bValid, iCombatUnits, kPrevious.iCombatUnits),
-			iMilitarySupportUnits, getSASGameRecordDelta(kPrevious.bValid, iMilitarySupportUnits, kPrevious.iMilitarySupportUnits), iPower, getSASGameRecordDelta(kPrevious.bValid, iPower, kPrevious.iPower), iGold, getSASGameRecordDelta(kPrevious.bValid, iGold, kPrevious.iGold), iGoldRate, getSASGameRecordDelta(kPrevious.bValid, iGoldRate, kPrevious.iGoldRate),
+			iMilitarySupportUnits, getSASGameRecordDelta(kPrevious.bValid, iMilitarySupportUnits, kPrevious.iMilitarySupportUnits), iPower, getSASGameRecordDelta(kPrevious.bValid, iPower, kPrevious.iPower), iGold, getSASGameRecordDelta(kPrevious.bValid, iGold, kPrevious.iGold), iGoldRate, getSASGameRecordDelta(kPrevious.bValid, iGoldRate, kPrevious.iGoldRate), kPlayer.isStrike(), kPlayer.getStrikeTurns(),
 			iResearchRate, getSASGameRecordDelta(kPrevious.bValid, iResearchRate, kPrevious.iResearchRate), kPlayer.getCommercePercent(COMMERCE_RESEARCH), getSASGameRecordTechType(eResearch), kPlayer.getOverflowResearch(), kPlayer.isNoResearchAvailable(), iResearchTurns,
 			szEra, getSASGameRecordReligionType(kPlayer.getStateReligion()), kTeam.getBestKnownTechScorePercent(), kPlayer.getCombatExperience(), kPlayer.getGreatPeopleCreated(), kPlayer.getGreatGeneralsCreated(), kPlayer.greatPeopleThreshold(true),
 			kPlayer.getGoldenAgeTurns(), g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getAnarchyTurns(), g_aiSASGameRecordLoggedAnarchyTurns[ePlayer], kPlayer.getRevolutionTimer(), kPlayer.getConversionTimer(), getSASGameRecordWarTeams(kPlayer.getTeam()).GetCString());
@@ -8779,6 +8805,17 @@ void logSASGameRecordCircumnavigated(TeamTypes eTeam, int iFreeSeaMoves, bool bB
 			iFreeSeaMoves, bBonusApplied ? 1 : 0, iSeaExtraMovesBefore, iSeaExtraMovesAfter);
 }
 
+// <!-- custom: Financial strikes are rare but can begin, force unit disbands and end entirely between periodic snapshots.
+// Record each realized strike turn from values already produced by CvPlayer::doGold. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordFinancialStrikeTurn(PlayerTypes ePlayer, int iGoldBefore, int iCalculatedGoldRate, int iGoldAfterClamp, int iCumulativeStrikeTurns, int iUnitsBeforeDisband, int iUnitsAfterDisband)
+{
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=FINANCIAL_STRIKE_TURN player=%d team=%d goldBefore=%d calculatedGoldRate=%d projectedGoldBeforeClamp=%d goldAfterClamp=%d cumulativeStrikeTurns=%d unitsBeforeDisband=%d unitsAfterDisband=%d unitsDisbanded=%d",
+			GC.getGame().getGameTurn(), ePlayer, kPlayer.getTeam(), iGoldBefore, iCalculatedGoldRate, iGoldBefore + iCalculatedGoldRate, iGoldAfterClamp, iCumulativeStrikeTurns,
+			iUnitsBeforeDisband, iUnitsAfterDisband, std::max(0, iUnitsBeforeDisband - iUnitsAfterDisband));
+}
+
+
 // <!-- custom: Keep Golden Age/anarchy action rows consistent with the player snapshot by labeling recorder-local observations as logged turns. See KI#379. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 void logSASGameRecordGoldenAge(PlayerTypes ePlayer, bool bStart)
 {
@@ -8786,7 +8823,8 @@ void logSASGameRecordGoldenAge(PlayerTypes ePlayer, bool bStart)
 		return;
 	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s player=%d goldenAgeTurns=%d loggedGoldenAgeTurns=%d anarchyTurns=%d loggedAnarchyTurns=%d",
-			GC.getGame().getGameTurn(), bStart ? "GOLDEN_AGE_STARTED" : "GOLDEN_AGE_ENDED", ePlayer, kPlayer.getGoldenAgeTurns(), g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getAnarchyTurns(), g_aiSASGameRecordLoggedAnarchyTurns[ePlayer]);
+			GC.getGame().getGameTurn(), bStart ? "GOLDEN_AGE_STARTED" : "GOLDEN_AGE_ENDED", ePlayer, kPlayer.getGoldenAgeTurns(),
+			g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getAnarchyTurns(), g_aiSASGameRecordLoggedAnarchyTurns[ePlayer]);
 }
 
 void logSASGameRecordGoldenAgeTurnsChanged(PlayerTypes ePlayer, int iChange, int iOldGoldenAgeTurns, int iNewGoldenAgeTurns)
@@ -8795,7 +8833,8 @@ void logSASGameRecordGoldenAgeTurnsChanged(PlayerTypes ePlayer, int iChange, int
 		return;
 	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=GOLDEN_AGE_TURNS_CHANGED player=%d change=%+d oldGoldenAgeTurns=%d newGoldenAgeTurns=%d goldenAgeTurns=%d loggedGoldenAgeTurns=%d anarchyTurns=%d loggedAnarchyTurns=%d",
-			GC.getGame().getGameTurn(), ePlayer, iChange, iOldGoldenAgeTurns, iNewGoldenAgeTurns, kPlayer.getGoldenAgeTurns(), g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getAnarchyTurns(), g_aiSASGameRecordLoggedAnarchyTurns[ePlayer]);
+			GC.getGame().getGameTurn(), ePlayer, iChange, iOldGoldenAgeTurns, iNewGoldenAgeTurns, kPlayer.getGoldenAgeTurns(),
+			g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getAnarchyTurns(), g_aiSASGameRecordLoggedAnarchyTurns[ePlayer]);
 }
 
 void logSASGameRecordAnarchy(PlayerTypes ePlayer, bool bStart)
@@ -8804,7 +8843,8 @@ void logSASGameRecordAnarchy(PlayerTypes ePlayer, bool bStart)
 		return;
 	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s player=%d anarchyTurns=%d loggedAnarchyTurns=%d goldenAgeTurns=%d loggedGoldenAgeTurns=%d revolutionTimer=%d conversionTimer=%d",
-			GC.getGame().getGameTurn(), bStart ? "ANARCHY_STARTED" : "ANARCHY_ENDED", ePlayer, kPlayer.getAnarchyTurns(), g_aiSASGameRecordLoggedAnarchyTurns[ePlayer], kPlayer.getGoldenAgeTurns(), g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getRevolutionTimer(), kPlayer.getConversionTimer());
+			GC.getGame().getGameTurn(), bStart ? "ANARCHY_STARTED" : "ANARCHY_ENDED", ePlayer, kPlayer.getAnarchyTurns(),
+			g_aiSASGameRecordLoggedAnarchyTurns[ePlayer], kPlayer.getGoldenAgeTurns(), g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getRevolutionTimer(), kPlayer.getConversionTimer());
 }
 
 void logSASGameRecordCivicChanged(PlayerTypes ePlayer, CivicOptionTypes eCivicOption, CivicTypes eOldCivic, CivicTypes eNewCivic, ReligionTypes eOldEffectiveStateReligion, ReligionTypes eNewEffectiveStateReligion)
@@ -8812,7 +8852,8 @@ void logSASGameRecordCivicChanged(PlayerTypes ePlayer, CivicOptionTypes eCivicOp
 	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS || eCivicOption == NO_CIVICOPTION)
 		return;
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=CIVIC_CHANGED player=%d civicOption=%s oldCivic=%s newCivic=%s oldEffectiveStateReligion=%s newEffectiveStateReligion=%s anarchyTurns=%d",
-		GC.getGame().getGameTurn(), ePlayer, GC.getInfo(eCivicOption).getType(), getSASGameRecordCivicType(eOldCivic), getSASGameRecordCivicType(eNewCivic), getSASGameRecordReligionType(eOldEffectiveStateReligion), getSASGameRecordReligionType(eNewEffectiveStateReligion), GET_PLAYER(ePlayer).getAnarchyTurns());
+		GC.getGame().getGameTurn(), ePlayer, GC.getInfo(eCivicOption).getType(), getSASGameRecordCivicType(eOldCivic), getSASGameRecordCivicType(eNewCivic),
+		getSASGameRecordReligionType(eOldEffectiveStateReligion), getSASGameRecordReligionType(eNewEffectiveStateReligion), GET_PLAYER(ePlayer).getAnarchyTurns());
 }
 
 void logSASGameRecordLastStateReligionChanged(PlayerTypes ePlayer, ReligionTypes eOldReligion, ReligionTypes eNewReligion)
@@ -8822,7 +8863,8 @@ void logSASGameRecordLastStateReligionChanged(PlayerTypes ePlayer, ReligionTypes
 	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
 	ReligionTypes const eOldEffectiveReligion = (kPlayer.isStateReligion() ? eOldReligion : NO_RELIGION);
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=LAST_STATE_RELIGION_CHANGED player=%d oldLastStateReligion=%s newLastStateReligion=%s oldEffectiveStateReligion=%s newEffectiveStateReligion=%s anarchyTurns=%d",
-		GC.getGame().getGameTurn(), ePlayer, getSASGameRecordReligionType(eOldReligion), getSASGameRecordReligionType(eNewReligion), getSASGameRecordReligionType(eOldEffectiveReligion), getSASGameRecordReligionType(kPlayer.getStateReligion()), kPlayer.getAnarchyTurns());
+		GC.getGame().getGameTurn(), ePlayer, getSASGameRecordReligionType(eOldReligion), getSASGameRecordReligionType(eNewReligion), getSASGameRecordReligionType(eOldEffectiveReligion),
+		getSASGameRecordReligionType(kPlayer.getStateReligion()), kPlayer.getAnarchyTurns());
 }
 
 void logSASGameRecordBuildingCompletedByProduction(CvCity const* pCity, BuildingTypes eBuilding, int iRawModifiedOverflow, int iUnmodifiedOverflow, int iKeptOverflow, int iLostProduction, int iUnusedOverflowCapacity, int iOverflowGold)
