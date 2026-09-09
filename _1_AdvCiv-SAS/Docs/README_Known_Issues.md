@@ -949,14 +949,14 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#850 - (Provisional Pending inherited K-Mod culture-pressure overflow amplified by SAS limits) Maximum pressure can become negative](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-850)\
 [KI#851 - (Provisional Pending AdvCiv forced-specialist regression) Fallback removal leaves the force target active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-851)\
 [KI#852 - (Fixed inherited BtS project-emphasis defect) The Project branch was unreachable](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-852)\
-[KI#853 - (Provisional Pending inherited BtS anger-timing arithmetic defect) Exact cycles map to zero turns](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-853)\
-[KI#854 - (Provisional Pending inherited BtS anger/growth ordering defect) Equal timing counts recovery too early](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-854)\
+[KI#853 - (Fixed inherited BtS anger-timing arithmetic defect) Exact cycles mapped to zero turns](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-853)\
+[KI#854 - (Fixed BtS-origin anger/growth ordering defect reintroduced by K-Mod) Equal timing counted recovery too early](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-854)\
 [KI#855 - (Provisional Pending AdvCiv natural-yield-threshold integration regression) Final improvement projection omits Financial yield](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-855)\
 [KI#856 - (Fixed AdvCiv loop-refactor regression) Cathedral reserve shortage no longer updated state](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-856)\
 [KI#857 - (Provisional Pending inherited BtS panic-production domain defect) A ship can block a needed land defender](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-857)\
-[KI#858 - (Provisional Pending inherited BtS future-happiness bound defect) Three recovery channels are capped at two](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-858)\
+[KI#858 - (Fixed inherited BtS future-happiness bound defect) Three recovery channels were capped at two](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-858)\
 [KI#859 - (Provisional Pending K-Mod obsolete-building valuation defect with incomplete AdvCiv repair) Retained effects are priced as lost](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-859)\
-[KI#860 - (Provisional Pending inherited BtS stacked-anger valuation defect) Only one layer per source can recover](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-860)\
+[KI#860 - (Fixed inherited BtS stacked-anger valuation defect) Only one layer per source could recover](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-860)\
 [KI#861 - (Fixed inherited AdvCiv bug) Completion could double-count a Worker](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-861)\
 [KI#862 - (Provisional Pending AdvCiv Worker-cache regression) Reassignment forgets the old target city](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-862)\
 [KI#863 - (Fixed inherited AdvCiv bug) No Culture ETA was treated as imminent expansion](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-863)\
@@ -16746,17 +16746,21 @@ Found as F529 during ChatGPT-5.6-Sol's C031-WIP298 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-853"></a>
 
-## KI#853 - (Provisional Pending inherited BtS anger-timing arithmetic defect) Exact cycles map to zero turns
+## KI#853 - (Fixed inherited BtS anger-timing arithmetic defect) Exact cycles mapped to zero turns
 
-`AI_yieldValue` uses `timer % angerLength` for the next unhappy-layer expiry, so an exact full cycle reports zero turns instead of one full length. Use the positive-cycle remainder `((timer - 1) % length) + 1` for Hurry, Conscript and Defy anger.
+`AI_yieldValue` used `timer % angerLength` for the next unhappy-layer expiry, so an exact full cycle reported zero turns instead of one full length. The shared replacement now compares current stacked layers with the layers remaining at projected growth, which handles exact cycles without a separate fragile remainder formula and also integrates KI#854, KI#858 and KI#860.
+
+The repair compiled successfully. A Debug-opt Huge Continents, Normal-speed full-UWAI autoplay with 16 independent teams completed 416 turns through a Domination victory; no issue was observed.
 
 Found as F530 during ChatGPT-5.6-Sol's C031-WIP299 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
 <a id="ki-854"></a>
 
-## KI#854 - (Provisional Pending inherited BtS anger/growth ordering defect) Equal timing counts recovery too early
+## KI#854 - (Fixed BtS-origin anger/growth ordering defect reintroduced by K-Mod) Equal timing counted recovery too early
 
-The projected anger recovery uses `<=` against turns to growth even though normal city order performs growth before that turn's anger decrement. Equal counts therefore credit happiness one growth too early. After correcting KI#853's remainder, require expiry strictly before projected growth.
+BtS's projected anger recovery used `<=` against turns to growth even though normal city order performs growth before that turn's anger decrement. K-Mod had the correct strict `<` comparison before practical 1139 changed all three sources back to BtS's `<=`; Base AdvCiv 1.14 and SAS retained that reintroduction. The shared replacement subtracts only the `growthTurns - 1` decrements that occur before projected growth, so an anger layer expiring on the growth turn itself is no longer credited early.
+
+The repair compiled successfully. The same Debug-opt Huge Continents, Normal-speed full-UWAI autoplay with 16 independent teams completed 416 turns through a Domination victory; no issue was observed.
 
 Found as F531 during ChatGPT-5.6-Sol's C031-WIP300 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -16788,9 +16792,11 @@ Found as F534 during ChatGPT-5.6-Sol's C031-WIP304 `CvCityAI.cpp` deep re-audit;
 
 <a id="ki-858"></a>
 
-## KI#858 - (Provisional Pending inherited BtS future-happiness bound defect) Three recovery channels are capped at two
+## KI#858 - (Fixed inherited BtS future-happiness bound defect) Three recovery channels were capped at two
 
-The `AI_yieldValue` pre-gate assumes future happiness can increase by at most two, but its body independently credits Hurry, Conscript and Defy anger expiry for a possible total of three. A city at happiness -2 can therefore skip a valid positive-growth evaluation. Derive the bound from all represented channels or remove the false gate.
+The `AI_yieldValue` pre-gate assumed future happiness could increase by at most two, but its body independently credited Hurry, Conscript and Defy anger expiry for a possible total of three. A city at happiness -2 could therefore skip a valid positive-growth evaluation. The false optimization is removed; each source now contributes its actual number of layers recovered before growth.
+
+The repair compiled successfully. The same Debug-opt Huge Continents, Normal-speed full-UWAI autoplay with 16 independent teams completed 416 turns through a Domination victory; no issue was observed.
 
 Found as F535 during ChatGPT-5.6-Sol's C031-WIP308 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 
@@ -16804,9 +16810,11 @@ Found as F536 during ChatGPT-5.6-Sol's C031-WIP309-WIP310 `CvCityAI.cpp` deep re
 
 <a id="ki-860"></a>
 
-## KI#860 - (Provisional Pending inherited BtS stacked-anger valuation defect) Only one layer per source can recover
+## KI#860 - (Fixed inherited BtS stacked-anger valuation defect) Only one layer per source could recover
 
-`AI_yieldValue` credits at most one future happiness recovery for each temporary-anger source, even when multiple stacked layers of the same source expire before projected growth. Repeated whipping can therefore undercount recovered happiness. Count every layer whose corrected expiry precedes growth while preserving KI#853 and KI#854 boundaries.
+`AI_yieldValue` credited at most one future happiness recovery for each temporary-anger source, even when multiple stacked layers of the same source expired before projected growth. The shared replacement computes the ceiling-divided layer count both now and immediately before growth, adding their full difference while preserving KI#853's exact-cycle and KI#854's event-order boundaries.
+
+The repair compiled successfully. The same Debug-opt Huge Continents, Normal-speed full-UWAI autoplay with 16 independent teams completed 416 turns through a Domination victory; no issue was observed.
 
 Found as F537 during ChatGPT-5.6-Sol's C031-WIP310 `CvCityAI.cpp` deep re-audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
 

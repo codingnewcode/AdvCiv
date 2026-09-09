@@ -15910,6 +15910,21 @@ bool CvCityAI::AI_foodAvailable(int iExtra) const
 	return true;
 }*/
 
+// <!-- custom: Count how many stacked temporary-anger layers have expired before the projected growth. Growth occurs before that turn's anger decrement, so only earlier decrements count.
+// Comparing current and remaining ceiling divisions also handles exact cycles and multiple layers without a fixed recovery cap. See KI#853, KI#854, KI#858 and KI#860. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+static int SAS_angerLayersRecoveredBeforeGrowth(int iTimer, int iAngerLength, int iTurnsToGrow)
+{
+	FAssert(iTimer >= 0);
+	FAssert(iAngerLength > 0);
+	if (iTimer <= 0 || iAngerLength <= 0)
+		return 0;
+	int const iLayersNow = (iTimer - 1) / iAngerLength + 1;
+	int const iDecrementsBeforeGrowth = std::max(0, iTurnsToGrow - 1);
+	int const iTimerAtGrowth = (iDecrementsBeforeGrowth >= iTimer ? 0 : iTimer - iDecrementsBeforeGrowth);
+	int const iLayersAtGrowth = (iTimerAtGrowth <= 0 ? 0 : (iTimerAtGrowth - 1) / iAngerLength + 1);
+	return iLayersNow - iLayersAtGrowth;
+}
+
 /*	K-Mod: I've rewritten large chunks of this function.
 	I've deleted much of the original code, rather than commenting it;
 	just to keep things a bit tidier and clearer.
@@ -16168,51 +16183,15 @@ int CvCityAI::AI_yieldValue(int* piYields, int* piCommerceYields, bool bRemove, 
 								(iPopulation + 1)) / GC.getPERCENT_ANGER_DIVISOR();
 					}
 
-					int const kMaxHappyIncrease = 2;
+					// not including reassignment penalty because it's better to overestimate food here.
+					int const iNewFoodPerTurn = iFoodPerTurn + iFoodYield;
+					int const iApproxTurnsToGrow = (iNewFoodPerTurn <= 0 ? MAX_INT : ((iFoodToGrow - iFoodLevel + iNewFoodPerTurn - 1) / iNewFoodPerTurn));
 
-					// if happy is large enough so that it will be over zero after we do the checks
-					if (iHappinessLevel + kMaxHappyIncrease > 0)
-					{
-						/*	not including reassignment penalty
-							because it's better to overestimate food here. */
-						int iNewFoodPerTurn = iFoodPerTurn + iFoodYield;
-						int iApproxTurnsToGrow = (iNewFoodPerTurn <= 0 ? MAX_INT :
-								((iFoodToGrow - iFoodLevel + iNewFoodPerTurn - 1) / iNewFoodPerTurn));
-
-						// do we have hurry anger?
-						int iHurryAngerTimer = getHurryAngerTimer();
-						if (iHurryAngerTimer > 0)
-						{
-							int iTurnsUntilAngerIsReduced = iHurryAngerTimer % flatHurryAngerLength();
-
-							// angry population is bad but if we'll recover by the time we grow...
-							if (iTurnsUntilAngerIsReduced <= iApproxTurnsToGrow)
-								iFutureHappy++;
-						}
-
-						// do we have conscript anger?
-						int iConscriptAngerTimer = getConscriptAngerTimer();
-						if (iConscriptAngerTimer > 0)
-						{
-							int iTurnsUntilAngerIsReduced = iConscriptAngerTimer % flatConscriptAngerLength();
-
-							// angry population is bad but if we'll recover by the time we grow...
-							if (iTurnsUntilAngerIsReduced <= iApproxTurnsToGrow)
-								iFutureHappy++;
-						}
-
-						// do we have defy resolution anger?
-						int iDefyResolutionAngerTimer = getDefyResolutionAngerTimer();
-						if (iDefyResolutionAngerTimer > 0)
-						{
-							int iTurnsUntilAngerIsReduced = iDefyResolutionAngerTimer %
-									flatDefyResolutionAngerLength();
-
-							// angry population is bad but if we'll recover by the time we grow...
-							if (iTurnsUntilAngerIsReduced <= iApproxTurnsToGrow)
-								iFutureHappy++;
-						}
-					}
+					// <!-- custom: The legacy forecast counted only one next expiry per source, used modulo zero at exact cycles, counted an expiry on the growth turn itself, and could skip all three sources behind a hardcoded +2 gate.
+					// Count every layer that has actually expired before growth instead. See KI#853, KI#854, KI#858 and KI#860. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+					iFutureHappy += SAS_angerLayersRecoveredBeforeGrowth(getHurryAngerTimer(), flatHurryAngerLength(), iApproxTurnsToGrow);
+					iFutureHappy += SAS_angerLayersRecoveredBeforeGrowth(getConscriptAngerTimer(), flatConscriptAngerLength(), iApproxTurnsToGrow);
+					iFutureHappy += SAS_angerLayersRecoveredBeforeGrowth(getDefyResolutionAngerTimer(), flatDefyResolutionAngerLength(), iApproxTurnsToGrow);
 				}
 				/*  advc.121: Want the AI to grow cities a bit more aggressively
 					(but I don't quite know what I'm doing). Surely, in the
