@@ -18,9 +18,8 @@
 ## 02110-1301 USA
 ## advc (note): The license is in the BUG Doc folder.
 #
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: AdvCiv-SAS does not actively maintain this third-party BUG/Civ4lerts file. Edits here are limited to repo-wide consistency passes (e.g. getInfoTypeOrFail for fail-loud XML lookups). (Claude code Opus 4.7) -->
 ## <!-- custom: renamed BUG Doc to BUG_Doc for consistent naming/easy linking; verify it matches the folder. Credit: ChatGPT 5.1. (GPT-5.2-Codex (summarized)) -->

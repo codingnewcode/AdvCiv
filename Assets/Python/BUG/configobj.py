@@ -19,9 +19,8 @@
 # advc: One bugfix (see next advc comment). Unsure if the BUG devs had modified
 # this module at all.
 #
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: commenting out test docstrings causes in-game errors; only remove textual info when safe, and keep docstrings if an empty class would need indentation. Credit: ChatGPT. (GPT-5.2-Codex (summarized)) -->
 # <!-- custom: long changelog docstring moved to Long_Comments_py.txt #1 -->

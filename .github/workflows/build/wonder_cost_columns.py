@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: Check that normally constructible world wonders in the same technology-cost tier have the same production cost and that later, more expensive technology tiers have higher wonder costs. (GPT-5.6-Sol) -->
 

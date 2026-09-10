@@ -1,6 +1,5 @@
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: Creates ordinary SAVEGAME_NORMAL fast saves in the normal single-player save directory at selected game lifecycle/autoplay events.
 # These are permanent normal saves, not Civ4's rotating Autosaves-folder files and not BUG AutoSave UI/options.

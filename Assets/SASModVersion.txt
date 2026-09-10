@@ -1,6 +1,5 @@
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: Runtime source marker for GitHub/git-archive downloads. One immutable SAS_VERSION_ANCHOR_<exact-commit-count> tag plus Git describe distance reconstructs the same practical commit-count version without a manually updated VERSION file; export-subst also fills the exact commit and strict ISO-8601 committer date. (ChatGPT-5.6-Sol) -->
 versionDescribe=$Format:%(describe:tags,match=SAS_VERSION_ANCHOR_*,abbrev=10)$

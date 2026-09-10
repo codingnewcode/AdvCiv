@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # Build check: the Assets folder should contain only the expected DLL files,
 # and the 18-civ DLL should not be larger than the main/48-civ DLL.

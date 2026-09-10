@@ -1,6 +1,5 @@
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: moved some functions that are not used in games (outside of debugging code or such, not use in a "normal" game if i may say), especially the very nice i mean debug leaderheadinfo one but not only, (another) other functions(function) as well, moving them here as it would be heavy and unclean in this case and would also clutter needlessly the other helpers. -->
 

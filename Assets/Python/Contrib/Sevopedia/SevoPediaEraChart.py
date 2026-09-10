@@ -1,6 +1,6 @@
 # Era chart page for Sevopedia (AdvCiv-SAS)
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # Mirrors the handicap chart layout, but for EraInfo.
 #

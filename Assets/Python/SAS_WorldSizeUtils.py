@@ -1,6 +1,5 @@
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: Shared ARENA/SAS world-size helpers for map scripts. This used to live in the playable PrivateMaps/SAS_WorldSizes.py helper map; importing it with import-star leaked that map's compact getGridSize callback into scripts that did not define their own. RandomScriptMap Huge was empirically far too small (60 x 44) and became 120 x 84 after moving the helpers out of PrivateMaps, visually matching base AdvCiv Huge at a glance; the same leak likely affected other scripts such as Archipelago. Keep this utility outside PrivateMaps and do not add Civ4 map-script callback names here. (GPT-5.5?) -->
 

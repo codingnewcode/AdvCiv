@@ -9,9 +9,8 @@
 	 the same changes. Settings that only affect the user interface or artwork
 	 are generally safe to change individually. -->
 <!--
-AI, UI, or other modifications
-Created as part of AdvCiv-SAS improvements
-(c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+(c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 -->
 <Civ4Defines xmlns="x-schema:CIV4GlobalDefinesSchema.xml">
 	<!-- advc.002b: The DLL needs to know (well, it's not crucial ...) the

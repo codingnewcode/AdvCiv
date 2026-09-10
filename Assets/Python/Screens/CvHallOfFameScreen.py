@@ -5,9 +5,8 @@
 ## Rewritten by EmperorFool to use player's language and not break if no message is found.
 ## Modified by Alerum of the BUG Team to bring up to latest revision of Civilization 4: Patch 1.74.
 #
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md).
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md).
 
 from CvPythonExtensions import *
 import BugUtil

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# (c) 2026 wonderingabout & AI helpers
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 from __future__ import annotations
 
 import argparse

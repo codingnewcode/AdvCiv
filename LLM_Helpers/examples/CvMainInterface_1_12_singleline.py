@@ -1,8 +1,7 @@
 ## Sid Meier's Civilization 4 - Copyright Firaxis Games 2005
 #
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: This is a Base AdvCiv 1.12 CvMainInterface.py reference copy, mechanically converted with the help of ChatGPT-5.5 Thinking thanks, using the LLM_Helpers CvMainInterface cleanup scripts for comparison with AdvCiv-SAS. Source: public AdvCiv GitHub file as of 2026-06-10. Not tested in-game. -->
 from CvPythonExtensions import *

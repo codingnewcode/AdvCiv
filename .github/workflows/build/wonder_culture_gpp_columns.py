@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: Check world-wonder culture progression and building Great Person point consistency. Early/mid wonders share column-based flat culture; late culture-focused wonders use either flat culture or a percentage modifier, while other late wonders preserve their strategic identity without automatic culture. World-wonder GPP establish a nondecreasing ceiling that national and ordinary buildings must not exceed. (GPT-5.6-Sol) -->
 

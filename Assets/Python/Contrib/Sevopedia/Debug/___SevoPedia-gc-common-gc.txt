@@ -1,6 +1,5 @@
-AI, UI, or other modifications
-Created as part of AdvCiv-SAS improvements
-(c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+(c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 
 Fetched from sevopediabuilding but this is really the common gc that could have been fetched from any sevopedia category instead.
 

@@ -1,6 +1,5 @@
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 # <!-- custom: ruff vs code extension which i use as a linter in advciv-sas as per chatgpt's recommendation; very very useful, i have found thanks to it string format missing arguments ("%s %s %d" % (str1, str2) for example) for example. -->
 
 # <!-- custom: This file is for the user's VS Code Ruff extension and local editing signal/noise. Keep these ignores limited to noise that does not hide information we want to sanity check; python-ruff.yml currently runs isolated from this file and narrows CI separately from actual GitHub output. (ChatGPT-5.5 + GPT-5.5) -->

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: Removed or renamed technologies, assets, and UI features can leave apparently valid TXT_KEY entries behind, while renamed SAS assets can reference pedia keys that were never defined. Audit every SAS-owned GameText file and SAS-owned asset description while explicitly accounting for inherited/EXE references and BUG's dynamically constructed key families; inherited AdvCiv/BUG/BULL files have too much unused-key static-analysis noise for a reliable blocking test and remain covered by the broader manual audit. (GPT-5.6-Sol) -->
 

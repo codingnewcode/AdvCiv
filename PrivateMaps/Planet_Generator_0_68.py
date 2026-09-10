@@ -9,9 +9,8 @@
 #	Copyright (c) 2006 Nercury
 #-----------------------------------------------------------------------------
 #
-# AI, UI, or other modifications
-# Created as part of AdvCiv-SAS improvements
-# (c) 2026 wonderingabout & AI helpers (see Authors in root README.md)
+# AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+# (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
 #
 # <!-- custom: map from https://forums.civfanatics.com/resources/planet-generator-0-68.1817/ -->
 # <!-- custom: Long_Comments_py.txt #14 -->
