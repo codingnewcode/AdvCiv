@@ -9,6 +9,8 @@
 #include "CvArea.h" // advc: for CvArea::getID
 #include "CvUnit.h" // advc: for city/fort-related functions moved to CvUnit
 #include "CvMap.h" // advc.enum
+#include "CvGame.h" // <!-- custom: Direct Python/WorldBuilder owner changes now exclude pre-game setup from SASGameRecord transactions, which requires the full CvGame definition for isFinalInitialized. (GPT-5.6-Sol) -->
+#include "SASGameRecordLog.h" // <!-- custom: Attribute exact level-3 ownership mutations initiated through the Python/WorldBuilder plot wrapper. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 
 CyPlot::CyPlot(CvPlot* pPlot) : m_pPlot(pPlot) {}
 // advc.003y: (see CyCity.cpp)
@@ -634,13 +636,29 @@ int CyPlot::getOwner()
 void CyPlot::setOwner(int /*PlayerTypes*/ eNewValue)
 {
 	if (m_pPlot)
-		m_pPlot->setOwner((PlayerTypes) eNewValue, true, true);
+	{
+		bool const bLogSASOwnerChange = (gGameRecordLogLevel >= 3 && GC.getGame().isFinalInitialized() && m_pPlot->getOwner() != (PlayerTypes)eNewValue);
+		bool const bWorldBuilder = (bLogSASOwnerChange && gDLL->GetWorldBuilderMode());
+		// <!-- custom: A direct Python/WorldBuilder plot-owner request can recurse into city acquisition.
+		// Keep its external origin as the root tx while nested owner-change mechanisms remain precise. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		SASGameRecordTransactionScope kSASPythonOwnerTransaction(bWorldBuilder ? "WORLDBUILDER_PLOT_OWNER" : "PYTHON_PLOT_OWNER", bLogSASOwnerChange);
+		SASGameRecordPlotOwnerChangeCauseScope kSASPythonOwnerCause(bWorldBuilder ? SAS_PLOT_OWNER_CAUSE_WORLDBUILDER : SAS_PLOT_OWNER_CAUSE_PYTHON_EXTERNAL, bLogSASOwnerChange);
+		m_pPlot->setOwner((PlayerTypes)eNewValue, true, true);
+	}
 }
 
 void CyPlot::setOwnerNoUnitCheck(int /*PlayerTypes*/ eNewValue)
 {
 	if (m_pPlot)
-		m_pPlot->setOwner((PlayerTypes) eNewValue, false, true);
+	{
+		bool const bLogSASOwnerChange = (gGameRecordLogLevel >= 3 && GC.getGame().isFinalInitialized() && m_pPlot->getOwner() != (PlayerTypes)eNewValue);
+		bool const bWorldBuilder = (bLogSASOwnerChange && gDLL->GetWorldBuilderMode());
+		// <!-- custom: A direct Python/WorldBuilder plot-owner request can recurse into city acquisition.
+		// Keep its external origin as the root tx while nested owner-change mechanisms remain precise. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		SASGameRecordTransactionScope kSASPythonOwnerTransaction(bWorldBuilder ? "WORLDBUILDER_PLOT_OWNER" : "PYTHON_PLOT_OWNER", bLogSASOwnerChange);
+		SASGameRecordPlotOwnerChangeCauseScope kSASPythonOwnerCause(bWorldBuilder ? SAS_PLOT_OWNER_CAUSE_WORLDBUILDER : SAS_PLOT_OWNER_CAUSE_PYTHON_EXTERNAL, bLogSASOwnerChange);
+		m_pPlot->setOwner((PlayerTypes)eNewValue, false, true);
+	}
 }
 PlotTypes CyPlot::getPlotType()
 {

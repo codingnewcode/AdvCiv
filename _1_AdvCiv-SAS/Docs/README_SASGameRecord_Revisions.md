@@ -14,7 +14,9 @@
 
 ## Current reconstructed number and first explicit marker
 
-The original reconstruction counted **67 implementation-changing commits** from the feature introduction at SAS practical 6022 through practical 6438. Under the stricter maintenance rule above, practical 6439 also counts because it intentionally changed the provenance/header comments in the dedicated `sas_game_record_log.py` checker. Practical 6440 did not change SASGameRecord-related code.
+The original reconstruction counted **67 implementation-changing commits** from the feature introduction at SAS practical 6022 through practical 6438.
+
+Under the stricter maintenance rule above, practical 6439 also counts because it intentionally changed the provenance/header comments in the dedicated `sas_game_record_log.py` checker. Practical 6440 then introduced the explicit revision mechanism itself and therefore counts as the next implementation change.
 
 Therefore:
 
@@ -25,7 +27,7 @@ Therefore:
 Current emitted source-context field:
 
 ```text
-GAME_RECORD_SOURCE_CONTEXT recordRevision=71 ...
+GAME_RECORD_SOURCE_CONTEXT recordRevision=72 ...
 ```
 
 After this, each qualifying SASGameRecord update increments `SAS_GAME_RECORD_REVISION` by one and adds one short latest-first entry to this file in the same commit. The revision is only a downstream-update signal; exact runtime source identity remains in `GAME_RECORD_SOURCE_CONTEXT`.
@@ -38,11 +40,16 @@ Because this numbering is reconstructed after the fact, the descriptions are con
 
 ## History (latest first)
 
+### Revision 72 - SAS practical 6443
+
+- **Date:** 2026-09-10
+- **Change:** Added exact level-3 plot-ownership transition history with conservative immediate mechanism/source provenance, expanded causal transactions across city founding/culture expansion/flips, war/peace, vassalage and direct Python/WorldBuilder ownership chains, and extended CORE plot fingerprints with contested second-owner/forced-unowned state.
+
 ### Revision 71 - SAS practical 6442
 
 - **Date:** 2026-09-10
+- **Git commit:** `ac49c56121108e58b021d9bd127440ad03d68700`
 - **Change:** Added compact level-3 semantic CORE state checkpoints at the existing authoritative-RNG lifecycle boundaries, with component/combined fingerprints, latent gameplay/AI state and measured computation time; extended the RNG comparison helper to validate and localize first RNG-versus-state divergence.
-- **Validation:** Two 101-turn runs reloaded from the same turn-0 SAS Fast Save matched at all 104 comparable RNG and semantic-state checkpoints. One closed session alone appended `SESSION_FINALIZE`; the helper now reports that harmless lifecycle asymmetry separately. State scans had 1 ms median/p95 cost and 2 ms maximum across the pair.
 
 ### Revision 70 - SAS practical 6441
 

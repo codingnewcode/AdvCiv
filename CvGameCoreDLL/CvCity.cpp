@@ -1329,6 +1329,10 @@ void CvCity::doRevolt()
 	damageGarrison(eCulturalOwner); // advc: Code moved into subroutine
 	if (bCanFlip /* advc.099 */ && canCultureFlip(eCulturalOwner))
 	{
+		// <!-- custom: A realized culture flip can synchronously kill or transfer the city and cascade through acquireCity.
+		// Let nested city-transfer scopes join this rarer root operation so all level-2+ consequences share one tx; level 3 also preserves the border-change cause. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		bool const bLogSASCultureFlip = (gGameRecordLogLevel >= 2 && GC.getGame().isFinalInitialized());
+		SASGameRecordTransactionScope kSASCultureFlipTransaction("CITY_CULTURE_FLIP", bLogSASCultureFlip);
 		if (GET_PLAYER(eCulturalOwner).isOneCityChallenge())
 			kill(true);
 		else
@@ -7200,6 +7204,10 @@ void CvCity::setCultureLevel(CultureLevelTypes eNewValue, bool bUpdatePlotGroups
 	CultureLevelTypes const eOldValue = getCultureLevel();
 	if (eOldValue == eNewValue)
 		return;
+	// <!-- custom: A realized culture-level expansion can synchronously reassign many plots.
+	// Give its exact level-3 ownership rows one root transaction while updateCulture supplies the immediate CULTURE_UPDATE cause. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool const bLogSASCultureExpansionTransaction = (gGameRecordLogLevel >= 3 && GC.getGame().isFinalInitialized() && eNewValue > eOldValue && eNewValue > 1);
+	SASGameRecordTransactionScope kSASCultureExpansionTransaction("CITY_CULTURE_EXPANSION", bLogSASCultureExpansionTransaction);
 	m_eCultureLevel = eNewValue;
 	if (eOldValue != NO_CULTURELEVEL)
 	{

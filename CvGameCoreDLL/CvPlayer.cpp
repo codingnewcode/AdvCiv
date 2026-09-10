@@ -1584,8 +1584,11 @@ void CvPlayer::acquireCity(CvCity* pOldCity, bool bConquest, bool bTrade, bool b
 	FAssert(!bForFree || bTrade);
 	// <!-- custom: Bracket the complete synchronous city-transfer operation so old-city removal, recreated-city plot state, CITY_ACQUIRED/context rows and an immediate AI/auto raze share one causal `tx`.
 	// The generic scope self-joins an already-active transaction and is pre-gated at the same level that records city lifecycle consequences. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
-	bool const bLogSASCityAcquisition = (gGameRecordLogLevel >= 2);
+	int const iSASGameRecordLogLevel = gGameRecordLogLevel;
+	bool const bLogSASCityAcquisition = (iSASGameRecordLogLevel >= 2);
 	SASGameRecordTransactionScope kSASCityAcquisitionTransaction("CITY_ACQUISITION", bLogSASCityAcquisition);
+	// <!-- custom: The level-3 cause is narrower than the level-2 transaction and identifies the recreated city plot's immediate ownership mechanism. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	SASGameRecordPlotOwnerChangeCauseScope kSASCityAcquisitionOwnerCause(SAS_PLOT_OWNER_CAUSE_CITY_ACQUISITION, iSASGameRecordLogLevel >= 3 && kGame.isFinalInitialized());
 	CvPlot& kCityPlot = *pOldCity->plot();
 	// Kill ICBMs
 	//CLinkList<IDInfo> oldUnits; ... // advc: Deleted; unnecessary.
@@ -5369,6 +5372,12 @@ void CvPlayer::found(int iX, int iY)
 	// <!-- custom: moved up for more caching -->
 	// <!-- custom: performance optimization: cache repetitive calls -->
 	CvGame const& kGame = GC.getGame();
+	// <!-- custom: Founding can synchronously assign the city tile and adjacent culture before CITY_BUILT-style rows appear.
+	// Keep the whole post-initialization operation joinable; the direct city-tile assignment reports CITY_FOUNDING while nested border recalculation reports its immediate CULTURE_UPDATE mechanism. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	int const iSASGameRecordLogLevel = gGameRecordLogLevel;
+	bool const bLogSASCityFounding = (iSASGameRecordLogLevel >= 2 && kGame.isFinalInitialized());
+	SASGameRecordTransactionScope kSASCityFoundingTransaction("CITY_FOUNDING", bLogSASCityFounding);
+	SASGameRecordPlotOwnerChangeCauseScope kSASCityFoundingOwnerCause(SAS_PLOT_OWNER_CAUSE_CITY_FOUNDING, iSASGameRecordLogLevel >= 3 && bLogSASCityFounding);
 
 	// <advc.031c>
 	if (gFoundLogLevel > 0 && !isHuman() &&

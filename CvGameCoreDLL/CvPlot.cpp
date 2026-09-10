@@ -506,6 +506,8 @@ void CvPlot::updateCulture(bool bBumpUnits, bool bUpdatePlotGroups)
 				" should imply eSecondOwner!=NO_PLAYER");
 		}
 	}
+	// <!-- custom: Ordinary ownership recomputation is the strongest available mechanism provenance when no outer founding/acquisition/raze/culture-expansion/war scope already owns the root cause. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	SASGameRecordPlotOwnerChangeCauseScope kSASCultureOwnerCause(SAS_PLOT_OWNER_CAUSE_CULTURE_UPDATE, gGameRecordLogLevel >= 3 && GC.getGame().isFinalInitialized() && eCulturalOwner != getOwner());
 	setOwner(eCulturalOwner, // </advc.035>
 			bBumpUnits, bUpdatePlotGroups);
 }
@@ -4187,6 +4189,13 @@ void CvPlot::setOwner(PlayerTypes eNewValue, bool bCheckUnits, bool bUpdatePlotG
 	GC.getGame().addReplayMessage(*this, REPLAY_MESSAGE_PLOT_OWNER_CHANGE, eNewValue);
 
 	CvCity* pOldCity = getPlotCity();
+	// <!-- custom: The direct non-city owner assignment below is the one authoritative mutation point for exact level-3 territory history.
+	// Flush delayed recorder output before mutation so chronological seq and observed state remain truthful.
+	// City-plot transfers recurse through acquireCity/initCity and reach this direct path after the old city is removed. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool const bLogSASPlotOwnerChange = (gGameRecordLogLevel >= 3 && GC.getGame().isFinalInitialized() && pOldCity == NULL);
+	int const iSASOwnershipDurationBefore = (bLogSASPlotOwnerChange ? getOwnershipDuration() : 0);
+	bool const bSASOwnershipScoreBefore = (bLogSASPlotOwnerChange && isOwnershipScore());
+	if (bLogSASPlotOwnerChange) prepareSASGameRecordPlotOwnerChange();
 	if (pOldCity != NULL)  // advc: Removed some assertions and NULL/NO_... checks in this block
 	{
 		// <!-- custom: make these static const for performance optimization as advised by chatgpt 5 too. -->
@@ -4312,6 +4321,7 @@ void CvPlot::setOwner(PlayerTypes eNewValue, bool bCheckUnits, bool bUpdatePlotG
 
 		m_eOwner = eNewValue;
 		updateTeam(); // advc.opt
+		if (bLogSASPlotOwnerChange) logSASGameRecordPlotOwnerChanged(*this, eOldOwner, eNewValue, iSASOwnershipDurationBefore, bSASOwnershipScoreBefore);
 
 		setWorkingCityOverride(NULL);
 		updateWorkingCity();

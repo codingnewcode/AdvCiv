@@ -200,6 +200,7 @@ static unsigned __int64 g_uiSASGameRecordSemanticSequence = 0;
 static unsigned __int64 g_uiSASGameRecordNextTransaction = 0;
 static unsigned __int64 g_uiSASGameRecordActiveTransaction = 0;
 static CvString g_szSASGameRecordActiveTransactionKind;
+static SASGameRecordPlotOwnerChangeCause g_eSASGameRecordPlotOwnerChangeCause = SAS_PLOT_OWNER_CAUSE_NONE;
 // <!-- custom: Record snapshot UTC plus cumulative and per-interval wall time directly so benchmark duration is visible without external timestamp subtraction.
 // Use the monotonic millisecond timer for useful precision and immunity to system-clock adjustments; wall time intentionally includes pauses and user interaction. (GPT-5.6-Sol) -->
 static uint g_uiSASGameRecordSessionStartTime = 0;
@@ -849,6 +850,12 @@ static SASGameRecordStateObjectHash getSASGameRecordPlotStateSignature(CvPlot co
 	updateSASGameRecordStateValue(uiHash, kPlot.getImprovementType());
 	updateSASGameRecordStateValue(uiHash, kPlot.getRouteType());
 	updateSASGameRecordStateValue(uiHash, kPlot.getOwner());
+	CvCity const* pCity = kPlot.getPlotCity();
+	// <!-- custom: AdvCiv contested-border ownership and forced-unowned countdowns can change future territory without changing the current primary owner yet.
+	// During new-game/load rollover, the old plot can retain its city identifier after that city object no longer resolves; avoid inherited getSecondOwner's city-pointer dereference while fingerprinting the closing diagnostic session. See KI#382.2. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	PlayerTypes const eSecondOwner = (pCity != NULL ? pCity->getOwner() : (kPlot.isCity() ? NO_PLAYER : kPlot.getSecondOwner()));
+	updateSASGameRecordStateValue(uiHash, eSecondOwner);
+	updateSASGameRecordStateValue(uiHash, kPlot.getForceUnownedTimer());
 	updateSASGameRecordStateValue(uiHash, kPlot.getOwnershipDuration());
 	updateSASGameRecordStateValue(uiHash, kPlot.getImprovementDuration());
 	updateSASGameRecordStateValue(uiHash, kPlot.getUpgradeProgress());
@@ -858,7 +865,6 @@ static SASGameRecordStateObjectHash getSASGameRecordPlotStateSignature(CvPlot co
 	updateSASGameRecordStateValue(uiHash, kPlot.getRiverWEDirection());
 	for (int iI = 0; iI < NUM_YIELD_TYPES; iI++)
 		updateSASGameRecordStateValue(uiHash, GC.getMap().getPlotExtraYield(kPlot, (YieldTypes)iI));
-	CvCity const* pCity = kPlot.getPlotCity();
 	updateSASGameRecordStateValue(uiHash, pCity == NULL ? NO_PLAYER : pCity->getOwner());
 	updateSASGameRecordStateValue(uiHash, pCity == NULL ? -1 : pCity->getID());
 	return uiHash;
@@ -1285,11 +1291,12 @@ static CvString getSASGameRecordLogName()
 
 static void rollSASGameRecordLog(const char* szContext)
 {
-	// <!-- custom: `seq` and `tx` identities are intentionally local to one timestamped record session; source/log identity distinguishes different new/load files. (ChatGPT-5.6-Sol) -->
+	// <!-- custom: `seq`, `tx` and immediate plot-owner cause state are intentionally local to one timestamped record session; source/log identity distinguishes different new/load files. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 	g_uiSASGameRecordSemanticSequence = 0;
 	g_uiSASGameRecordNextTransaction = 0;
 	g_uiSASGameRecordActiveTransaction = 0;
 	g_szSASGameRecordActiveTransactionKind.clear();
+	g_eSASGameRecordPlotOwnerChangeCause = SAS_PLOT_OWNER_CAUSE_NONE;
 	time_t kSessionStartTime;
 	time(&kSessionStartTime);
 	g_uiSASGameRecordSessionStartTime = getSASMonotonicMilliseconds();
@@ -1424,6 +1431,29 @@ void SASGameRecordTransactionScope::end()
 	logSASGameRecord("GAME_RECORD_TRANSACTION_END turn=%d kind=%s", GC.getGame().getGameTurn(), g_szSASGameRecordActiveTransactionKind.GetCString());
 	g_uiSASGameRecordActiveTransaction = 0;
 	g_szSASGameRecordActiveTransactionKind.clear();
+}
+
+// <!-- custom: Nest immediate owner-change causes independently from the root transaction, temporarily overriding the outer mechanism and restoring it after the narrower setter chain returns. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+void SASGameRecordPlotOwnerChangeCauseScope::begin(SASGameRecordPlotOwnerChangeCause eCause)
+{
+	FAssert(eCause != SAS_PLOT_OWNER_CAUSE_NONE);
+	m_ePreviousCause = g_eSASGameRecordPlotOwnerChangeCause;
+	g_eSASGameRecordPlotOwnerChangeCause = eCause;
+	m_bActive = true;
+}
+
+void SASGameRecordPlotOwnerChangeCauseScope::end()
+{
+	FAssert(g_eSASGameRecordPlotOwnerChangeCause != SAS_PLOT_OWNER_CAUSE_NONE);
+	g_eSASGameRecordPlotOwnerChangeCause = m_ePreviousCause;
+}
+
+void prepareSASGameRecordPlotOwnerChange()
+{
+	// <!-- custom: Any pending synthetic CITY_BOMBARD happened before the ownership mutation.
+	// Flush it before CvPlot changes owner so its delayed row cannot observe half-mutated state or appear after the exact border transition. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (!g_bSASGameRecordFlushingCityBombard)
+		flushSASGameRecordPendingCityBombard();
 }
 
 // <!-- custom: Free-text escaping is shared with other diagnostic logs in CvGameCoreUtils; keep only this city-specific missing-value wrapper local. (ChatGPT-5.6-Sol) -->
@@ -2739,6 +2769,44 @@ static const char* getSASGameRecordImprovementType(ImprovementTypes eImprovement
 static const char* getSASGameRecordRouteType(RouteTypes eRoute)
 {
 	return (eRoute == NO_ROUTE ? "-" : GC.getInfo(eRoute).getType());
+}
+
+static char const* getSASGameRecordPlotOwnerChangeCause()
+{
+	switch (g_eSASGameRecordPlotOwnerChangeCause)
+	{
+	case SAS_PLOT_OWNER_CAUSE_CITY_FOUNDING: return "CITY_FOUNDING";
+	case SAS_PLOT_OWNER_CAUSE_CITY_ACQUISITION: return "CITY_ACQUISITION";
+	case SAS_PLOT_OWNER_CAUSE_CULTURE_UPDATE: return "CULTURE_UPDATE";
+	case SAS_PLOT_OWNER_CAUSE_WAR_BORDER: return "WAR_BORDER";
+	case SAS_PLOT_OWNER_CAUSE_PEACE_BORDER: return "PEACE_BORDER";
+	case SAS_PLOT_OWNER_CAUSE_WORLDBUILDER: return "WORLDBUILDER";
+	case SAS_PLOT_OWNER_CAUSE_PYTHON_EXTERNAL: return "PYTHON_EXTERNAL";
+	case SAS_PLOT_OWNER_CAUSE_NONE: break;
+	}
+	// <!-- custom: Root transaction identity is deliberately not reused as immediate mechanism provenance.
+	// If no setter path proved a mechanism, say UNKNOWN so missing coverage stays visible instead of being masked by tx. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	return "UNKNOWN";
+}
+
+void logSASGameRecordPlotOwnerChanged(CvPlot const& kPlot, PlayerTypes eOldOwner, PlayerTypes eNewOwner, int iOwnershipDurationBefore, bool bOwnershipScoreBefore)
+{
+	FAssertMsg(g_eSASGameRecordPlotOwnerChangeCause != SAS_PLOT_OWNER_CAUSE_NONE, "Every current direct CvPlot::setOwner path should supply immediate SASGameRecord ownership provenance");
+	TeamTypes const eOldTeam = (eOldOwner == NO_PLAYER ? NO_TEAM : GET_PLAYER(eOldOwner).getTeam());
+	TeamTypes const eNewTeam = (eNewOwner == NO_PLAYER ? NO_TEAM : GET_PLAYER(eNewOwner).getTeam());
+	int const iOldCulture = (eOldOwner == NO_PLAYER ? 0 : kPlot.getCulture(eOldOwner));
+	int const iNewCulture = (eNewOwner == NO_PLAYER ? 0 : kPlot.getCulture(eNewOwner));
+	int const iOldCulturePercent = (eOldOwner == NO_PLAYER ? 0 : kPlot.calculateCulturePercent(eOldOwner));
+	int const iNewCulturePercent = (eNewOwner == NO_PLAYER ? 0 : kPlot.calculateCulturePercent(eNewOwner));
+	PlayerTypes const eHighestCulturePlayer = kPlot.findHighestCulturePlayer();
+	int const iHighestCulturePercent = (eHighestCulturePlayer == NO_PLAYER ? 0 : kPlot.calculateCulturePercent(eHighestCulturePlayer));
+	// <!-- custom: Log only exact realized ownership transitions at the authoritative setter.
+	// Culture pressure plus second-owner/strategic-tile context explains many flips without duplicating periodic political maps or every per-player plot-culture value. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_PLOT_OWNER_CHANGED turn=%d x=%d y=%d area=%d cause=%s oldOwner=%d oldTeam=%d newOwner=%d newTeam=%d secondOwner=%d water=%d ownershipDurationBefore=%d ownershipScoreBefore=%d forceUnownedTurns=%d oldOwnerCulture=%d oldOwnerCulturePercent=%d newOwnerCulture=%d newOwnerCulturePercent=%d highestCulturePlayer=%d highestCulturePercent=%d bonus=%s improvement=%s route=%s",
+		GC.getGame().getGameTurn(), kPlot.getX(), kPlot.getY(), kPlot.getArea().getID(), getSASGameRecordPlotOwnerChangeCause(),
+		eOldOwner, eOldTeam, eNewOwner, eNewTeam, kPlot.getSecondOwner(), kPlot.isWater(), iOwnershipDurationBefore, bOwnershipScoreBefore, kPlot.getForceUnownedTimer(),
+		iOldCulture, iOldCulturePercent, iNewCulture, iNewCulturePercent, eHighestCulturePlayer, iHighestCulturePercent,
+		getSASGameRecordBonusType(kPlot.getBonusType()), getSASGameRecordImprovementType(kPlot.getImprovementType()), getSASGameRecordRouteType(kPlot.getRouteType()));
 }
 
 SASGameRecordGoodyResult::SASGameRecordGoodyResult() :

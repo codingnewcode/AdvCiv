@@ -16,7 +16,7 @@ int getSASGameRecordTurnInterval();
 // This is deliberately not a compatibility/schema promise: increment it for every intentional change to SASGameRecord implementation code, relevant bridges/call sites/configuration/checkers, or their code comments, even when emitted semantics are unchanged.
 // Standalone docs/example-log/package refreshes do not require a bump. Keep the matching revision-history entry in the same commit.
 // An anonymous enum keeps this a C++03 compile-time integer without a separate storage/linkage definition. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
-enum { SAS_GAME_RECORD_REVISION = 71 };
+enum { SAS_GAME_RECORD_REVISION = 72 };
 // <!-- custom: Finalize buffered observations in the old game state before a new game or loaded save resets/replaces it. See KI#382. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 void finalizeSASGameRecordLogSession();
 void startSASGameRecordLogForNewGame();
@@ -54,6 +54,40 @@ class CvCity;
 class CvPlayer;
 class CvPlot;
 class CvUnit;
+// <!-- custom: Exact level-3 plot-owner transitions use a small recorder-owned root/mechanism vocabulary instead of guessing causes from the final setter.
+// `tx` identifies the outer causal operation; this separate cause scope identifies the immediate owner-change mechanism/source. Nested cause scopes therefore override temporarily and restore on exit (e.g. tx=VASSALAGE with cause=WAR_BORDER or CULTURE_UPDATE).
+// Call sites gate before gathering logging-only state; disabled scopes perform only their cheap constructor branch. NONE reports UNKNOWN rather than borrowing the active transaction kind, keeping root operation (`tx`) and immediate mechanism (`cause`) semantically distinct. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+enum SASGameRecordPlotOwnerChangeCause
+{
+	SAS_PLOT_OWNER_CAUSE_NONE,
+	SAS_PLOT_OWNER_CAUSE_CITY_FOUNDING,
+	SAS_PLOT_OWNER_CAUSE_CITY_ACQUISITION,
+	SAS_PLOT_OWNER_CAUSE_CULTURE_UPDATE,
+	SAS_PLOT_OWNER_CAUSE_WAR_BORDER,
+	SAS_PLOT_OWNER_CAUSE_PEACE_BORDER,
+	SAS_PLOT_OWNER_CAUSE_WORLDBUILDER,
+	SAS_PLOT_OWNER_CAUSE_PYTHON_EXTERNAL
+};
+class SASGameRecordPlotOwnerChangeCauseScope
+{
+public:
+	SASGameRecordPlotOwnerChangeCauseScope(SASGameRecordPlotOwnerChangeCause eCause, bool bEnabled) : m_bActive(false), m_ePreviousCause(SAS_PLOT_OWNER_CAUSE_NONE)
+	{
+		if (bEnabled) begin(eCause);
+	}
+	~SASGameRecordPlotOwnerChangeCauseScope()
+	{
+		if (m_bActive) end();
+	}
+private:
+	void begin(SASGameRecordPlotOwnerChangeCause eCause);
+	void end();
+	bool m_bActive;
+	SASGameRecordPlotOwnerChangeCause m_ePreviousCause;
+};
+// <!-- custom: Flush older delayed recorder output before CvPlot begins mutating ownership, then emit the exact transition at the authoritative owner assignment. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+void prepareSASGameRecordPlotOwnerChange();
+void logSASGameRecordPlotOwnerChanged(CvPlot const& kPlot, PlayerTypes eOldOwner, PlayerTypes eNewOwner, int iOwnershipDurationBefore, bool bOwnershipScoreBefore);
 // <!-- custom: Forward-declare the vote payload because SASGameRecord only passes it by pointer.
 // This keeps the lightweight recorder header from needing CvStructs.h solely for diplomatic vote-source history hooks. (ChatGPT-5.6-Sol) -->
 struct VoteTriggeredData;

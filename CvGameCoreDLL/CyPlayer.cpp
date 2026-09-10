@@ -8,7 +8,9 @@
 #include "CyArea.h"
 #include "CySelectionGroup.h"
 #include "CvMap.h"
+#include "CvGame.h" // <!-- custom: Direct Python/WorldBuilder city initialization now excludes pre-game setup from SASGameRecord transactions, which requires the full CvGame definition for isFinalInitialized. (GPT-5.6-Sol) -->
 #include "CvDLLPythonIFaceBase.h"
+#include "SASGameRecordLog.h" // <!-- custom: Attribute direct live Python/WorldBuilder city initialization that bypasses CvPlayer::found. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 
 CyPlayer::CyPlayer() : m_pPlayer(NULL) {}
 CyPlayer::CyPlayer(CvPlayer* pPlayer) : m_pPlayer(pPlayer == NULL ? NULL : &pPlayer->AI()) // advc.003u
@@ -68,7 +70,14 @@ CyPlot* CyPlayer::findStartingPlot(bool bRandomize)
 
 CyCity* CyPlayer::initCity(int x, int y)
 {
-	return m_pPlayer ? new CyCity(m_pPlayer->initCity(x, y, true, true)) : NULL;
+	if (m_pPlayer == NULL)
+		return NULL;
+	int const iSASGameRecordLogLevel = gGameRecordLogLevel;
+	bool const bRecordLiveChange = (iSASGameRecordLogLevel >= 2 && GC.getGame().isFinalInitialized());
+	bool const bWorldBuilder = (bRecordLiveChange && gDLL->GetWorldBuilderMode());
+	SASGameRecordTransactionScope kSASPythonCityInitTransaction(bWorldBuilder ? "WORLDBUILDER_CITY_INIT" : "PYTHON_CITY_INIT", bRecordLiveChange);
+	SASGameRecordPlotOwnerChangeCauseScope kSASPythonCityInitOwnerCause(bWorldBuilder ? SAS_PLOT_OWNER_CAUSE_WORLDBUILDER : SAS_PLOT_OWNER_CAUSE_PYTHON_EXTERNAL, iSASGameRecordLogLevel >= 3 && bRecordLiveChange);
+	return new CyCity(m_pPlayer->initCity(x, y, true, true));
 }
 
 void CyPlayer::acquireCity(CyCity* pCity, bool bConquest, bool bTrade)

@@ -470,6 +470,7 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#380 - (Fixed AdvCiv-SAS diagnostic sentinel leak) Unavailable city-production values were logged as 2147483647](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-380)\
 [KI#381 - (Fixed AdvCiv-SAS diagnostic accounting defect) Process conversion was reported during city disorder](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-381)\
 [KI#382 - (Fixed AdvCiv-SAS diagnostic durability defect) Session rollover discarded buffered observations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-382)\
+[KI#382.2 - (Fixed AdvCiv-SAS diagnostic regression) Loading after another game crashed while fingerprinting the closing session](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-382.2)\
 [KI#383 - (Fixed AdvCiv-SAS UI regression) Leader Glance lost its War Trades hover explanation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-383)\
 [KI#384 - (Fixed inherited AdvCiv Pedia regression) Opening-menu right clicks formed a NULL civilization reference](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-384)\
 [KI#385 - (Pending Architectural inherited/SAS diagnostic drift) Scoreboard cheat war predictions duplicate stale AI_doWar logic](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-385)\
@@ -11759,6 +11760,18 @@ The compiled level-3 test ran to turn 201, saved and loaded into a distinct log 
 Follow-up Debug-opt rollover validation loaded and advanced a save, then began another game in the same Civ4 process. `SASGameRecord_20260910T083907Z_load1.log` and `SASGameRecord_20260910T083930Z_new2.log` both ended their old session with preserved nonzero map/synchronized RNG states and zero interval seed replacements at `SESSION_FINALIZE`; unlike the earlier Release smoke record, neither emitted seed-set-to-zero rows first. The same current source then compiled as Release and ran repeated short load/autoplay checks successfully.
 
 This buffering and rollover architecture is AdvCiv-SAS-only diagnostic code, so the defect is not inherited from AdvCiv, K-Mod or BtS. The direct-reset gap was exposed by the first post-implementation Release smoke record: both authoritative RNGs emitted seed-set-to-zero rows before `SESSION_FINALIZE`, proving that the old caller-level hooks were too late on that path. Found as F061/provisional KI#382 during ChatGPT-5.6-Sol's durable C012 closure of the `SASGameRecordLog.cpp` file-audit pass; independently reviewed, fixed and documented with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-382.2"></a>
+
+## KI#382.2 - (Fixed AdvCiv-SAS diagnostic regression) Loading after another game crashed while fingerprinting the closing session
+
+Screenshots/files for this issue: [google drive folder link](https://drive.google.com/drive/folders/1XeoVup5JbNLGq2X9KhWYtT5etJla5wCP?usp=sharing) (note: included 2 different T150 files because i'm not sure which i loaded).
+
+Revision 72 extended the level-3 CORE plot fingerprint with AdvCiv's contested second owner. A fresh Pangaea autoplay completed, but loading a recent turn-150 save in the same Civ4 process crashed during the preceding session's `SESSION_FINALIZE` checkpoint. The matching Debug-opt PDB dump traced `CvGame::read` through `CvGame::reset`, GameRecord finalization and the plot-state fingerprint to inherited `CvPlot::getSecondOwner`: during this rollover boundary, an old plot could still report a city identifier after its referenced city object no longer resolved, and the inherited getter dereferenced that null city pointer.
+
+The fix resolves the plot city once for the diagnostic fingerprint, uses its owner when the city remains valid, records `NO_PLAYER` for a city reference that no longer resolves during teardown, and calls the inherited contested-owner getter only for a non-city plot. This preserves live-game second-owner coverage without changing `CvPlot` gameplay behavior or pretending that partially dismantled rollover state is still available.
+
+The corrected Debug-opt DLL completed a new Pangaea autoplay followed in the same Civ4 process by two loads of a turn-150 save, each advanced to turn 175. The first loaded session finalized successfully when the second load began. Across the three post-fix records, 3,204 exact ownership rows had zero `UNKNOWN` causes and all 271 transaction begins had matching ends; neither load crashed.
 
 <a id="ki-383"></a>
 
