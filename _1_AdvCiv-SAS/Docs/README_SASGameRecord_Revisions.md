@@ -473,7 +473,7 @@ Because this numbering is reconstructed after the fact, the descriptions are con
 
 ## Maintenance template
 
-For the next qualifying committed update after revision 71, increment the public source constant and prepend one entry like this:
+For the next qualifying committed update, increment the public source constant and prepend one entry like this:
 
 ```markdown
 ### Revision N - SAS practical XXXX

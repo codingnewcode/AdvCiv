@@ -1106,7 +1106,33 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#1006 - (Provisional Pending inherited AdvC serialization defect) SPaH writes an uninitialized unused array tail](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1006)\
 [KI#1007 - (Provisional Pending Architectural inherited AdvC serialization defect) SPaH reload loses player identity](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1007)\
 [KI#1008 - (Provisional Pending Architectural inherited AdvC crash defect) Last-AI takeover empties the SPaH score distribution](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1008)\
-[KI#1009 - (Provisional Pending audit cursor) CyGlobalContextInterface4.cpp has not yet been classified](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1009)\
+[KI#1009 - (Provisional Pending AdvC Python-wrapper memory leak) Unit-cycling wrappers are never reclaimed](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1009)\
+[KI#1010 - (Provisional Pending inherited AdvC Rise/Fall display defect) A repeat chapter can show a stale penalty](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1010)\
+[KI#1011 - (Provisional Pending inherited AdvC Rise/Fall memory leak) Chapter-score breakdown strings survive destruction](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1011)\
+[KI#1012 - (Provisional Pending inherited AdvC Rise/Fall scoring defect) A vassal chapter loses its initial CIV-score baseline](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1012)\
+[KI#1013 - (Provisional Pending inherited AdvC Rise/Fall scoring defect) Defeat is awarded a false retirement bonus](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1013)\
+[KI#1014 - (Provisional Pending AdvC diagnostic memory-corruption defect) LOG_MAP_STATS indexes NO_FEATURE](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1014)\
+[KI#1015 - (Provisional Pending inherited AdvC diagnostic defect) Turn deactivation is logged as Turn ON](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1015)\
+[KI#1016 - (Provisional Pending UI inherited AdvC Rise/Fall defect) An endless final chapter appears already scored](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1016)\
+[KI#1017 - (Provisional Pending UI inherited AdvC Rise/Fall defect) A negative no-score sentinel is rendered as an ancient turn](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1017)\
+[KI#1018 - (Provisional Pending inherited AdvC startup robustness defect) Theme warning treats the mod name as a printf format](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1018)\
+[KI#1019 - (Provisional Pending inherited AdvC Rise/Fall numeric defect) Very negative totals enter fractional pow outside its real domain](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1019)\
+[KI#1020 - (Provisional Pending UI inherited AdvC Rise/Fall defect) Negative handicap modifiers are displayed with plus signs](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1020)\
+[KI#1021 - (Provisional Pending Architectural AdvC-SAS Rise/Fall scoring regression) Handicap scaling still centers the obsolete AdvC rating](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1021)\
+[KI#1022 - (Provisional Pending UI inherited K-Mod/BtS-text defect) Two diplomacy replacement tags are unsupported](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1022)\
+[KI#1023 - (Provisional Pending UI inherited AdvC text defect) Golden Age option help uses the wrong icon token](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1023)\
+[KI#1024 - (Provisional Pending Disabled inherited AdvC debug-harness defect) A canceled ReproTest remains armed](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1024)\
+[KI#1025 - (Provisional Pending Disabled inherited AdvC debug-harness defect) Player zero starts a zero-turn ReproTest](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1025)\
+[KI#1026 - (Provisional Pending inherited AdvC gameplay defect) Barbarian Shelf counts loaded land cargo as ships](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1026)\
+[KI#1027 - (Provisional Pending inherited AdvC gameplay defect) Shelf head-unit shortcuts miss ships behind an invisible foreign unit](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1027)\
+[KI#1028 - (Provisional Pending inherited AdvC lifecycle defect) Reopening Hall of Fame loses its native cleanup registration](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1028)\
+[KI#1029 - (Provisional Pending Architectural inherited wrapped-map iterator defect, exposed by SAS Arena) Radius iterators can repeat physical plots](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1029)\
+[KI#1030 - (Provisional Pending UI inherited AdvC Turn Log defect) Persistent NO_TECH discounts a nonexistent completion message](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1030)\
+[KI#1031 - (Provisional Pending SAS data regression) Stalin's Renaissance peace intro references a nonexistent audio script](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1031)\
+[KI#1032 - (Provisional Pending UI inherited AdvC SPaH defect) Hidden randomized points omit their disclosure](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1032)\
+[KI#1033 - (Provisional Pending UI inherited AdvC optional-alert defect) Multi-copy resource changes duplicate third-party alerts](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1033)\
+[KI#1034 - (Provisional Pending inherited K-Mod diagnostic defect) CvMap initialization uses an incomplete printf conversion](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1034)\
+[KI#1035 - (Provisional Pending audit cursor) Post-primary cross-file and deferred-note pass remains active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1035)\
 
 <a id="ki-1"></a>
 
@@ -18130,8 +18156,268 @@ Found as F687/provisional KI#1008 during ChatGPT-5.6-Sol's C031-WIP578-C031-WIP5
 
 <a id="ki-1009"></a>
 
-## KI#1009 - (Provisional Pending audit cursor) CyGlobalContextInterface4.cpp has not yet been classified
+## KI#1009 - (Provisional Pending AdvC Python-wrapper memory leak) Unit-cycling wrappers are never reclaimed
 
-Reserved for F688 while priority Queue 124 `CyGlobalContextInterface4.cpp` is open at C031-WIP579. No defect has been claimed yet; this placeholder keeps the continuous KI ledger explicit until the next durable checkpoint promotes a distinct root or leaves the cursor unused.
+`CyGame::getNextUnitInCycle` allocates a fresh `CyUnit` wrapper for every successful call, but `CyGameInterface.cpp` registers the result as `reference_existing_object`. Boost.Python therefore treats the new wrapper as borrowed and never deletes it when its Python proxy dies. The default unit-cycling buttons call this live API whenever selection buttons redraw, and the Workers option can allocate a second leaked wrapper per refresh.
 
-Reconciled from ChatGPT-5.6-Sol's C031-WIP579 continuation cursor with the help of GPT-5.6-Sol, thanks.
+AdvC practical 2820 introduced the new-wrapper implementation and non-owning registration together; Base AdvC 1.14 and SAS retain the leak, while K-Mod, Civ4CE and Taurus predate this wrapper. Pending changing only the return policy to `manage_new_object`, matching neighboring bindings that return freshly allocated `CyUnit` wrappers and leaving the underlying `CvUnit` lifetime unchanged.
+
+Found as F688/provisional KI#1009 during ChatGPT-5.6-Sol's C031-WIP591-C031-WIP592 `CyGameInterface.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1010"></a>
+
+## KI#1010 - (Provisional Pending inherited AdvC Rise/Fall display defect) A repeat chapter can show a stale penalty
+
+`RFChapterScore::update` assigns `fromRepeat` only while a repeat chapter's current pre-penalty total is positive. If a later live recomputation makes that total nonpositive, the penalty branch is skipped but the prior negative value remains cached; the score no longer includes it while the breakdown still prints it. Rank, population, land and civilization score can all decline during an ordinary chapter, so a positive preview can cross this boundary.
+
+AdvC practical 1268 introduced this persistent field, conditional assignment and unconditional repeat-line rendering together; Base AdvC 1.14 and SAS retain them unchanged. Pending clearing `fromRepeat` before every recomputation so serialized state and player-facing explanation always describe the current score without changing the rule that nonpositive chapters receive no repeat penalty.
+
+Found as F689/provisional KI#1010 during ChatGPT-5.6-Sol's C031-WIP598 `RFChapterScore.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1011"></a>
+
+## KI#1011 - (Provisional Pending inherited AdvC Rise/Fall memory leak) Chapter-score breakdown strings survive destruction
+
+`RFChapterScore` owns a heap-allocated `std::wstring* breakdownString` and deletes/replaces it during `reset` and `updateString`, but has no destructor. Normal chapter completion creates a breakdown even when the Victory Screen is never opened; later `RiseFall::reset` deletes its `RFChapter` objects without first calling the score object's reset, so each current breakdown allocation becomes unreachable. Repeated previews replace rather than accumulate strings, making this a small bounded leak per destroyed computed chapter rather than a refresh-frequency leak.
+
+AdvC practical 1268 introduced the owning pointer without destructor cleanup, and Base AdvC 1.14/SAS retain it. Pending adding an `RFChapterScore` destructor that deletes the owned string while preserving the existing reset/update replacement behavior.
+
+Found as F690/provisional KI#1011 during ChatGPT-5.6-Sol's C031-WIP599 `RFChapterScore.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1012"></a>
+
+## KI#1012 - (Provisional Pending inherited AdvC Rise/Fall scoring defect) A vassal chapter loses its initial CIV-score baseline
+
+At chapter start, `RFChapterScore::computeRank(true)` zeroes every vassal's `initialCivScores` entry before checking whether that player is the selected chapter civilization. Rise/Fall can legitimately select a vassal, but later score updates use that zeroed entry as the selected civilization's own historical baseline. This removes the intended initial-score subtraction and can inflate the chapter score; vassal exclusion from the separate rival/reference population remains valid.
+
+AdvC practical 1268 introduced the ordering and Base AdvC 1.14/SAS retain it unchanged. Pending capturing the chapter civilization's own baseline independently before applying the vassal filter to eligible rivals and reference scores.
+
+Found as F691/provisional KI#1012 during ChatGPT-5.6-Sol's C031-WIP600 `RFChapterScore.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1013"></a>
+
+## KI#1013 - (Provisional Pending inherited AdvC Rise/Fall scoring defect) Defeat is awarded a false retirement bonus
+
+When the current chapter civilization is defeated without retiring, `RFChapter::getRemainingTimePercent` deliberately leaves `retireTurn` at its `-1` sentinel because defeat is not retirement, but then feeds that sentinel into the retirement-time formula. Chapter 1 consequently reports 100% time unspent and later chapters can exceed 100% because their absolute start turn enters the numerator. The immediate elimination score can therefore award extra points and its frozen breakdown falsely says they came from retiring.
+
+AdvC practical 1268 introduced the defeat, retirement and score interaction together; Base AdvC 1.14 and SAS retain it. Pending returning zero remaining-time percentage for a dead, never-retired chapter before the formula, while preserving current-turn previews for living civilizations and real stored retirement turns.
+
+Found as F692/provisional KI#1013 during ChatGPT-5.6-Sol's C031-WIP601-C031-WIP602 `RFChapterScore.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1014"></a>
+
+## KI#1014 - (Provisional Pending AdvC diagnostic memory-corruption defect) LOG_MAP_STATS indexes NO_FEATURE
+
+`CvDLLLogger::logMapStats` sizes its land/water feature-count vectors for real XML features, then indexes them unconditionally with every plot's `FeatureTypes`. Ordinary featureless plots return the negative `NO_FEATURE` sentinel, which converts to a huge unsigned vector index and writes outside the allocation. The documented `LOG_MAP_STATS` facility is disabled by default, but enabling it with MessageLog reaches this loop during ordinary map generation and can corrupt memory or crash.
+
+AdvC practical 1702 introduced this optional diagnostic and both unguarded feature writes; Base AdvC 1.14 and SAS retain them, while K-Mod and Civ4CE do not contain the facility. Pending guarding `NO_FEATURE` before indexing, parallel to the existing `NO_BONUS` guard; featureless plots can be omitted or counted in a dedicated scalar rather than inserted into a real-feature vector.
+
+Found as F693/provisional KI#1014 during ChatGPT-5.6-Sol's C031-WIP603 `CvDLLLogger.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1015"></a>
+
+## KI#1015 - (Provisional Pending inherited AdvC diagnostic defect) Turn deactivation is logged as Turn ON
+
+`CvDLLLogger::logTurnActive` receives only a player ID and always emits `Player N Turn ON`. `CvPlayer::setTurnActive` calls it after both activation and deactivation, so MessageLog represents every OFF transition as another ON transition. The messages are diagnostic rather than gameplay state, but ordinary sequential turns can consequently contain two indistinguishable ON rows and mislead multiplayer, autoplay or OOS investigation.
+
+AdvC practical 1648 introduced the regression while extracting the former branch-local ON/OFF strings into `CvDLLLogger`; BtS retains the correct distinct strings, while Base AdvC 1.14 and SAS retain the hardcoded-ON helper. Pending passing the active Boolean explicitly and formatting ON or OFF from that event state.
+
+Found as F694/provisional KI#1015 during ChatGPT-5.6-Sol's C031-WIP604 `CvDLLLogger.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1016"></a>
+
+## KI#1016 - (Provisional Pending UI inherited AdvC Rise/Fall defect) An endless final chapter appears already scored
+
+With Rise/Fall enabled and Time Victory disabled, native code correctly represents the final chapter as ongoing and endless through a negative end-turn sentinel. `CvVictoryScreen.showRiseFall` recognizes a negative end only when `MaxTurns > 0`, so the supported no-turn-limit final chapter is instead rendered as non-ongoing and already scored; its changing partial score can be labeled as the final total.
+
+AdvC practical 1268 introduced the native sentinel and mismatched Python reconstruction together, and Base AdvC 1.14/SAS retain them. Pending separating `endlessChapter = endTurn < 0` from the narrower postgame `extChapter` state while preserving the existing extended-game display policy.
+
+Found as F695/provisional KI#1016 during ChatGPT-5.6-Sol's C031-WIP607 `RFChapter.cpp` cross-layer audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1017"></a>
+
+## KI#1017 - (Provisional Pending UI inherited AdvC Rise/Fall defect) A negative no-score sentinel is rendered as an ancient turn
+
+Before an endless final Rise/Fall chapter, native scheduling deliberately gives the penultimate chapter a large negative score-turn sentinel because no ordinary scheduled scoring turn exists. The Score tab special-cases that sentinel only for the final chapter, so it can display text such as `Scored on Turn -9750` and highlight the still-unscored points as though that turn had passed. Native score timing itself remains correct.
+
+AdvC practical 1271 introduced the negative penultimate sentinel and incomplete final-chapter-only display case together; Base AdvC 1.14/SAS retain them. Pending handling every negative score turn semantically before numeric comparison, with explicit text for the finished-but-unscheduled penultimate state.
+
+Found as F696/provisional KI#1017 during ChatGPT-5.6-Sol's C031-WIP608 `RFChapter.cpp` cross-layer audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1018"></a>
+
+## KI#1018 - (Provisional Pending inherited AdvC startup robustness defect) Theme warning treats the mod name as a printf format
+
+`CvArtFileMgr::testThemePath` builds a complete warning containing the actual user-derived mod-folder name, then passes that string itself as the `sprintf` format without arguments. A supported renamed folder containing a percent conversion can therefore make the warning read nonexistent variadic arguments, expose unrelated memory or crash instead of explaining the theme-path mismatch.
+
+AdvC practical 4087 introduced this warning and unsafe format use; Base AdvC 1.14/SAS retain it. Pending passing the completed string directly to the message box, or copying it through a fixed `%s` format, without treating path text as a formatting language.
+
+Found as F697/provisional KI#1018 during ChatGPT-5.6-Sol's C031-WIP617-C031-WIP618 `CvArtFileMgr.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1019"></a>
+
+## KI#1019 - (Provisional Pending inherited AdvC Rise/Fall numeric defect) Very negative totals enter fractional pow outside its real domain
+
+`RFTotalScore::getNormalizedScore` raises `(getScore() + 250) / 12.5` to the fractional power 2.5 without enforcing a nonnegative base. Supported chapter arithmetic can lower a seven-chapter Rise total below -250, producing a non-finite result before the code converts it to an integer used by replay, Hall of Fame and extended-game score presentation.
+
+AdvC practical 1268 introduced the unguarded nonlinear normalizer and practical 1271 moved its lower boundary to -250; Base AdvC 1.14/SAS retain it. Pending explicitly defining the endpoint policy before `pow`, such as clamping totals at or below -250 to normalized zero, or applying an intentionally signed transformation if negative normalized scores are desired.
+
+Found as F698/provisional KI#1019 during ChatGPT-5.6-Sol's C031-WIP627 `RFTotalScore.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1020"></a>
+
+## KI#1020 - (Provisional Pending UI inherited AdvC Rise/Fall defect) Negative handicap modifiers are displayed with plus signs
+
+Rise/Fall intentionally computes negative handicap adjustments on easier settings, but `TXT_KEY_RF_RISE_BREAKDOWN` hardcodes `+` before both signed integer substitutions. Rookie and Settler can therefore show contradictory forms such as `+-30 Pts (+-30%)` even though the underlying subtraction is correct.
+
+AdvC practical 1268 introduced the negative-capable formula and hardcoded signs together; SAS later renamed difficulty to handicap without changing this inherited behavior. Pending making both signs dynamic while preserving the score arithmetic.
+
+Found as F699/provisional KI#1020 during ChatGPT-5.6-Sol's C031-WIP628 `RFTotalScore.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1021"></a>
+
+## KI#1021 - (Provisional Pending Architectural AdvC-SAS Rise/Fall scoring regression) Handicap scaling still centers the obsolete AdvC rating
+
+Rise/Fall retains AdvC's `2.5 * iDifficulty - 75` conversion, whose neutral point is the old Noble rating 30. SAS practicals 4853 and 5970 redesigned the handicap ratings and explicitly made current Noble 50 the even baseline without updating this consumer, so Noble now receives a +50% Rise-score adjustment rather than 0%.
+
+This is a SAS cross-feature regression built from an inherited formula that was correct for Base AdvC's scale. Pending choosing and documenting the new slope or explicit per-handicap policy, centered at Noble 50 and monotone on both sides; that balance decision makes the repair architectural rather than a mechanical constant substitution.
+
+Found as F700/provisional KI#1021 during ChatGPT-5.6-Sol's C031-WIP629-C031-WIP630 `RFTotalScore.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1022"></a>
+
+## KI#1022 - (Provisional Pending UI inherited K-Mod/BtS-text defect) Two diplomacy replacement tags are unsupported
+
+Shipped English diplomacy uses `[CT_CIV]` for one Franklin Roosevelt no-peace line and `[CT_NAME_ADJ]` for one stronger Ragnar tribute demand, but the exported translator implements neither token. When either line is selected, the DLL reaches its unknown-diplomacy-string path instead of producing the requested substitution; the exact release-EXE fallback presentation is closed-source.
+
+K-Mod introduced the current translator while its supplied text already contained both bad tags, and Base AdvC 1.14/SAS retain the interaction. Pending correcting the XML to established tokens: likely `[CT_CIV_SHORT]` for Roosevelt and `[CT_CIV_ADJ]` for Ragnar, rather than adding ambiguous aliases to the DLL.
+
+Found as F701/provisional KI#1022 during ChatGPT-5.6-Sol's C031-WIP631 `CvDllTranslator.cpp` and localization audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1023"></a>
+
+## KI#1023 - (Provisional Pending UI inherited AdvC text defect) Golden Age option help uses the wrong icon token
+
+Advanced Scoreboard Display Order help uses `[ICON_GOLDEN_AGE]`, while the global translator registers the established `[ICON_GOLDENAGE]` token. A full current icon-token census found this as the only used-but-unregistered icon spelling, so the Golden Age half of the option legend cannot follow the normal icon substitution path; actual scoreboard state remains unaffected.
+
+AdvC practical 1489 introduced the mismatched English/German help token; Base AdvC 1.14/SAS retain it. Pending replacing the two text references with `[ICON_GOLDENAGE]` rather than renaming the global token.
+
+Found as F702/provisional KI#1023 during ChatGPT-5.6-Sol's C031-WIP632-C031-WIP633 `CvDllTranslator.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1024"></a>
+
+## KI#1024 - (Provisional Pending Disabled inherited AdvC debug-harness defect) A canceled ReproTest remains armed
+
+When Quick Save is blocked, `ReproTest` reports that the test was canceled and returns early from its constructor. Construction still succeeds and `startTest` installs the object as the live singleton, so the next unrelated save can become its first comparison pass and then QuickLoad a pre-existing unrelated QuickSave that this canceled test never created.
+
+AdvC practical 2033 introduced this constructor/singleton lifecycle; SAS only compile-gates the harness out of ordinary builds unless `ENABLE_REPRO_TEST` is deliberately enabled. Pending checking Quick Save before installation or exposing construction success and deleting/refusing an invalid object so cancellation always leaves no singleton.
+
+Found as F703/provisional KI#1024 during ChatGPT-5.6-Sol's C031-WIP635 `ReproTest.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1025"></a>
+
+## KI#1025 - (Provisional Pending Disabled inherited AdvC debug-harness defect) Player zero starts a zero-turn ReproTest
+
+The optional ReproTest trigger uses the contacted player ID directly as its autoplay duration. IDs are zero-based, so selecting player 0 successfully creates a baseline QuickSave but starts zero autoplay turns; no turn-end save advances the comparison state machine, and later unrelated saves can drive its two passes or produce false non-reproducibility results.
+
+AdvC practical 2033 introduced the player-ID duration mapping and Base AdvC 1.14 retains it; ordinary SAS builds leave the harness disabled. Pending mapping the ID to a positive duration such as `playerID + 1`, or rejecting zero through a real cancellation that installs no singleton.
+
+Found as F704/provisional KI#1025 during ChatGPT-5.6-Sol's C031-WIP636-C031-WIP637 `ReproTest.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1026"></a>
+
+## KI#1026 - (Provisional Pending inherited AdvC gameplay defect) Barbarian Shelf counts loaded land cargo as ships
+
+`Shelf::countBarbarians` supplies the existing ship count used for shelf crowding, sea-unit creation and fleet caps, but counts every Barbarian-visible unit on an accepted water plot. Loaded land passengers are therefore double-accounted as sea ships, which can suppress new ship creation or trigger crowd culling despite a small actual fleet.
+
+The earliest supplied AdvC Shelf snapshot already contains the broad unit count and Base AdvC 1.14/SAS retain it. Pending counting explicit Barbarian `DOMAIN_SEA` ships for sea-density consumers while deciding the separate Barbarian-contact semantics independently; loaded passengers should continue to affect the existing land-unit accounting only.
+
+Found as F705/provisional KI#1026 during ChatGPT-5.6-Sol's C031-WIP638 `Shelf.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1027"></a>
+
+## KI#1027 - (Provisional Pending inherited AdvC gameplay defect) Shelf head-unit shortcuts miss ships behind an invisible foreign unit
+
+Three Shelf helpers inspect only the plot's head unit or stop at the first non-Barbarian unit. A foreign Attack Submarine invisible to Barbarians can legally coexist with a Barbarian ship and sorts first by owner ID, so counting can omit the fleet, culling can skip the ship, and cargo loading can miss a later Barbarian transport.
+
+The earliest supplied AdvC Shelf snapshot already contains these assumptions and Base AdvC 1.14/SAS retain them. Pending iterating every plot unit and selecting the exact Barbarian sea-unit predicate needed by each caller; a shared explicit ship scan can repair KI#1026 and KI#1027 without weakening normal coexistence rules.
+
+Found as F706/provisional KI#1027 during ChatGPT-5.6-Sol's C031-WIP639-C031-WIP640 `Shelf.cpp` audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1028"></a>
+
+## KI#1028 - (Provisional Pending inherited AdvC lifecycle defect) Reopening Hall of Fame loses its native cleanup registration
+
+Opening Hall of Fame again constructs and registers the new native container before Python releases the old wrapper. The old container's destructor then unconditionally clears `CvGame::m_pHallOfFame`, erasing the new registration; the next game reset consequently skips the intended cleanup and retains the current replay set and screen-up flag until another replacement or Python shutdown.
+
+AdvC practical 1430 introduced the native registration/destructor/reset interaction atop the existing Python replacement order, and Base AdvC 1.14/SAS retain it. Pending identity-aware deregistration so an old container clears the global pointer only while it is still the registered object.
+
+Found as F707/provisional KI#1028 during ChatGPT-5.6-Sol's C031-WIP656-C031-WIP657 Hall-of-Fame lifecycle audit; deduplicated through the later native/wrapper files and reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1029"></a>
+
+## KI#1029 - (Provisional Pending Architectural inherited wrapped-map iterator defect, exposed by SAS Arena) Radius iterators can repeat physical plots
+
+`PlotCircleIter`/`SquareIter` enumerate unique logical offsets but resolve each independently through map wrapping. Once a radius reaches half a wrapped dimension, opposite offsets can alias the same physical plot; on a 14x10 cylindrical Arena, radius 7 visits three plots twice and radius 8 visits 27 plots twice. True Starts and default Starting Position Iteration consume these visits additively, so seam terrain and vicinity penalties can be overweighted.
+
+Older BtS/K-Mod-style offset loops already had the mathematical flaw; AdvC practical 1916 centralized the behavior in the iterator, and SAS Arena supplies an especially small supported fixture. Pending a low-overhead canonical-offset or conditional duplicate-suppression design that preserves the hot fast path and distance/order semantics, which makes this broader than a caller-local patch.
+
+Found as F708/provisional KI#1029 during ChatGPT-5.6-Sol's C031-WIP677 post-primary cross-file seam pass; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1030"></a>
+
+## KI#1030 - (Provisional Pending UI inherited AdvC Turn Log defect) Persistent NO_TECH discounts a nonexistent completion message
+
+At human turn activation, AdvC subtracts one from the interturn-message count whenever current research is `NO_TECH`, intending to ignore the technology-completion notice already represented by its splash. After the entire technology tree is exhausted, `NO_TECH` persists without any completion message; exactly `MessageLimit + 1` genuine messages are then reduced to the configured threshold and can fail to auto-open the Turn Log. The messages themselves remain stored.
+
+AdvC practical 1253 introduced the heuristic and Base AdvC 1.14/SAS retain it. Pending tracking an actual completion notice during the relevant window or excluding that specific message at production time, rather than inferring its existence from an empty research queue.
+
+Found as F709/provisional KI#1030 during ChatGPT-5.6-Sol's C031-WIP678 post-primary deferred-note pass; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1031"></a>
+
+## KI#1031 - (Provisional Pending SAS data regression) Stalin's Renaissance peace intro references a nonexistent audio script
+
+Stalin's Renaissance `DiplomacyIntroMusicPeace` uses `AS2D_DIPLO_STALIN_EARLY_INTROO`, while every neighboring era and the actual Audio2DScript use `AS2D_DIPLO_STALIN_EARLY_INTRO`. A full current audio-reference census found this as the only unmatched non-definition `AS2D_*`/`AS3D_*` reference, so peaceful Renaissance diplomacy cannot resolve the intended intro through the normal audio lookup.
+
+SAS practical 4880 introduced the per-era Stalin mapping and this one extra trailing `O`; Base AdvC does not contain it. Pending correcting the XML reference and adding a static check that every non-empty leader diplomacy-audio reference names a defined script.
+
+Found as F710/provisional KI#1031 during ChatGPT-5.6-Sol's C031-WIP679 post-primary data/cross-file pass; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1032"></a>
+
+## KI#1032 - (Provisional Pending UI inherited AdvC SPaH defect) Hidden randomized points omit their disclosure
+
+SPaH can randomize an unequal start-point distribution while deliberately displaying only configured pre-randomization values. Its Settings/replay text contains an intended `Not shown: randomization` disclosure guarded by serialized `randPoints`, but new-game code never sets that field true after `randomizePoints`, so the displayed setup silently looks exact.
+
+AdvC practical 1253 introduced the randomization, flag and disclosure without the true assignment; practical 1395 initialized the field false but still never set it. Pending resetting it at SPaH initialization, setting it only when randomization actually executes, and preserving the existing serialization so load/replay presentation remains truthful.
+
+Found as F711/provisional KI#1032 during ChatGPT-5.6-Sol's C031-WIP680 post-primary deferred UI/config pass; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1033"></a>
+
+## KI#1033 - (Provisional Pending UI inherited AdvC optional-alert defect) Multi-copy resource changes duplicate third-party alerts
+
+The default-off Bonus Third Parties alert stores resource relations in multisets and iterates every element of their multiset difference. A supported 0-to-2 or 2-to-0 change for the same exporter, recipient and resource therefore supplies the identical key twice, recomputes the same aggregate counts twice and emits two identical strategic-resource notifications; underlying deals and quantities remain correct.
+
+AdvC practical 1287 introduced the multiset snapshot and element-wise delta loop together, and Base AdvC 1.14/SAS retain it. Pending iterating each distinct changed relation once while keeping the multisets for quantity-aware messages and preserving visibility, war/death and recent-stop-trading suppression.
+
+Found as F712/provisional KI#1033 during ChatGPT-5.6-Sol's C031-WIP681 post-primary optional-alert pass; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1034"></a>
+
+## KI#1034 - (Provisional Pending inherited K-Mod diagnostic defect) CvMap initialization uses an incomplete printf conversion
+
+Every `CvMap::init` sends `CvString::format` a memory-log format ending in `num custom options=%6`. `%6` is only a width fragment without a conversion specifier, so the intended integer cannot be formatted correctly and the CRT receives malformed input; depending on its error result, `CvString::formatv` can also mistake that failure for truncation and retry buffer growth repeatedly.
+
+K-Mod history already contains the malformed literal, and Base AdvC 1.14/SAS retain it. A mechanical current scan found no second dangling conversion of this kind. Pending changing it to `%d`—no surrounding alignment indicates that `%6d` width was intended—and adding a lightweight static regression check for incomplete terminal conversions.
+
+Found as F713/provisional KI#1034 during ChatGPT-5.6-Sol's C031-WIP682 post-primary diagnostic/format pass; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1035"></a>
+
+## KI#1035 - (Provisional Pending audit cursor) Post-primary cross-file and deferred-note pass remains active
+
+All 169 current `.cpp` files are complete at C031-WIP676. Reserved for F714 while the post-primary pass continues mining the strongest proved/deferred current-live notes and cross-file/data/API seams after F708-F713 were promoted as KI#1029-KI#1034.
+
+Reconciled from ChatGPT-5.6-Sol's C031-WIP682 continuation cursor with the help of GPT-5.6-Sol, thanks.
