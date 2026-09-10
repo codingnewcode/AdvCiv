@@ -942,7 +942,8 @@ static void logSASGameRecordProvenanceContext()
 	if (!isSASGameRecordLogEnabled())
 		return;
 	logSASGameRecord("GAME_RECORD_MOD_CONTEXT %s", getSASModContextFields().GetCString());
-	logSASGameRecord("GAME_RECORD_SOURCE_CONTEXT %s", getSASSourceContextFields().GetCString());
+	// <!-- custom: Include the official recorder revision in SOURCE_CONTEXT: recordRevision tells copied implementations that SASGameRecord itself changed, while the remaining fields identify the exact running tree. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_SOURCE_CONTEXT recordRevision=%d %s", SAS_GAME_RECORD_REVISION, getSASSourceContextFields().GetCString());
 	logSASGameRecord("GAME_RECORD_DLL_CONTEXT %s", getSASDllContextFields().GetCString());
 }
 

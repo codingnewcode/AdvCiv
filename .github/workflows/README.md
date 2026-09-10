@@ -285,7 +285,7 @@ Verifies BBAI logging is disabled by default in `Assets/XML/GlobalDefines_advciv
 
 ### `build/sas_game_record_log.py`
 
-Verifies the independent `SASGameRecord` report is disabled by default in `Assets/XML/GlobalDefines_advciv_sas.xml`. `SAS_GAME_RECORD_LOG_LEVEL` must stay `0`; the snapshot interval, timestamped filenames, default-on anonymous performance metrics, and default level-2 display/runtime context are also checked because they configure how enabled records behave but do not enable record logging themselves.
+Verifies the independent `SASGameRecord` report is disabled by default in `Assets/XML/GlobalDefines_advciv_sas.xml`. `SAS_GAME_RECORD_LOG_LEVEL` must stay `0`; the snapshot interval, timestamped filenames, default-on anonymous performance metrics, and default level-2 display/runtime context are also checked because they configure how enabled records behave but do not enable record logging themselves. It also checks that the public `SAS_GAME_RECORD_REVISION` matches the newest contiguous entry in the maintained revision history and that the emitted `GAME_RECORD_SOURCE_CONTEXT recordRevision` field remains wired to that constant.
 
 ### `build/fonts.py`
 
