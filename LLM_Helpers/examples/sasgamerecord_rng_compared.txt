@@ -1,8 +1,7 @@
-A: SASGameRecord_20260910T055054Z_load1.log (502 checkpoints, valid)
-B: SASGameRecord_20260910T063639Z_load1.log (15 checkpoints, valid)
-First RNG divergence at checkpoint 8:
-  A turn=5 reason=END_GAME_TURN
-  B turn=5 reason=END_GAME_TURN
-  syncIntervalCallFingerprint: FNV1A32:CC8C298F vs FNV1A32:22A7726B
-  syncSessionCallFingerprint: FNV1A64:08C8C029FF8540AC vs FNV1A64:F2D4A8F05F1EA9C0
-Interpretation: Random values may still match, but call provenance, labels/data, NULL-message use, or EXE-wrapper origin differs.
+A: SASGameRecord_20260910T153020Z_load2.log (105 RNG checkpoints, 105 state checkpoints, revision 71, valid)
+B: SASGameRecord_20260910T153117Z_load3.log (104 RNG checkpoints, 104 state checkpoints, revision 71, valid)
+RNG checkpoints are identical through all 104 comparable checkpoints; A alone has a trailing SESSION_FINALIZE checkpoint.
+State fingerprint cost A: total=86 ms median=1 ms p95=1 ms max=2 ms
+State fingerprint cost B: total=80 ms median=1.0 ms p95=1 ms max=1 ms
+State checkpoints are identical through all 104 comparable checkpoints; A alone has a trailing SESSION_FINALIZE checkpoint.
+Combined interpretation: authoritative RNG and semantic CORE state match at every comparable checkpoint.

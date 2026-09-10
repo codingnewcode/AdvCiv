@@ -6,6 +6,7 @@
 #include "CvGameCoreDLL.h"
 #include "SASGameRecordLog.h"
 #include "CvGame.h" // <!-- custom: Needed for game-record turn, game-state, victory, RNG, and map-classification context rows. (GPT-5.5) -->
+#include "CvDeal.h" // <!-- custom: Needed directly for canonical state-checkpoint deal identities and persisted trade-item lists; do not rely on CvGame headers to complete CvDeal transitively. (ChatGPT-5.6-Sol) -->
 #include "CvCity.h" // <!-- custom: Needed by game-record city action/BFC rows; SASGameRecordLog.h only forward-declares CvCity. (GPT-5.5) -->
 #include "CvCityAI.h" // <!-- custom: Needed only to read the existing Avoid Growth AI emphasis flag in city snapshots/aggregates; CvCity.h only forward-declares CvCityAI. This is a compile-time type dependency and does not alter AI state or gameplay. (ChatGPT-5.6-Sol) -->
 #include "CvUnit.h" // <!-- custom: Needed by game-record battle rows; SASGameRecordLog.h only forward-declares CvUnit. (GPT-5.5) -->
@@ -325,6 +326,651 @@ static void updateSASGameRecordFNV1A32UInt32(unsigned int& uiHash, unsigned int 
 		updateSASGameRecordFNV1A32Byte(uiHash, (unsigned char)((uiValue >> iShift) & 0xFF));
 }
 
+// <!-- custom: Level-3 semantic state fingerprints complement authoritative RNG checkpoints: equal RNG streams do not prove equal gameplay state, while component hashes can narrow a deterministic divergence before ordinary snapshots explain it in human-readable detail.
+// Hash selected durable/core gameplay and AI-planning state in deterministic slot/free-list/map-index order; never hash raw object memory, pointers, padding, localized/user-entered strings, recorder state, RNG seeds, UI state, or incidental implementation caches whose differences are not gameplay-relevant.
+// Serialized/AI-visible bookkeeping such as power/assets/maintenance is intentionally retained: divergence in such cached gameplay values can itself change later AI/economic behavior even when the underlying units/buildings still match.
+// Deliberately omit very large per-plot-per-player culture/reveal arrays, per-build plot work-progress matrices and inactive per-city production inventories from this turn-by-turn CORE coverage; exact unit/group missions, city culture/buildings/current production, plot ownership/physical state, team/player state and ordinary SASGameRecord history still provide strong divergence sensitivity without turning each turn boundary into a full save/snapshot scan.
+// Each object's fields are first reduced with a cheap native 32-bit ordered mix, then that fixed-width signature enters a 64-bit FNV-1a component hash. This keeps the 32-bit Civ4 hot-turn cost far below hashing every scalar with emulated 64-bit multiplication.
+// The recordRevision identifies the exact recipe. These are diagnostic fingerprints rather than cryptographic proofs or savegame-equivalence guarantees. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+struct SASGameRecordStateFingerprints
+{
+	SASGameRecordStateFingerprints()
+	{
+		static unsigned __int64 const uiOffset = ((unsigned __int64)0xCBF29CE4 << 32) | 0x84222325;
+		uiGame = uiTeams = uiPlayers = uiCities = uiUnits = uiGroups = uiPlots = uiDeals = uiCombined = uiOffset;
+		iEverAliveTeamCount = iEverAlivePlayerCount = iCityCount = iUnitCount = iGroupCount = iDealCount = 0;
+		iPlotCount = 0;
+	}
+	unsigned __int64 uiGame;
+	unsigned __int64 uiTeams;
+	unsigned __int64 uiPlayers;
+	unsigned __int64 uiCities;
+	unsigned __int64 uiUnits;
+	unsigned __int64 uiGroups;
+	unsigned __int64 uiPlots;
+	unsigned __int64 uiDeals;
+	unsigned __int64 uiCombined;
+	int iEverAliveTeamCount;
+	int iEverAlivePlayerCount;
+	int iCityCount;
+	int iUnitCount;
+	int iGroupCount;
+	int iPlotCount;
+	int iDealCount;
+};
+
+struct SASGameRecordStateObjectHash
+{
+	SASGameRecordStateObjectHash() : uiPrimary(2166136261u), uiSecondary(0x9E3779B9u) {}
+	unsigned int uiPrimary;
+	unsigned int uiSecondary;
+};
+
+static void updateSASGameRecordStateValue(SASGameRecordStateObjectHash& kHash, int iValue)
+{
+	// <!-- custom: Two cheap native-32-bit ordered reducers retain substantially more divergence information per object before the 64-bit component hash, without paying an emulated 64-bit multiply for every scalar on Civ4's 32-bit build.
+	// Cast preserves negative sentinel bit patterns deterministically. The secondary hash-combine-style reducer intentionally differs from the primary FNV-like multiply/xor path; together they remain diagnostic rather than cryptographic. (ChatGPT-5.6-Sol) -->
+	unsigned int const uiValue = (unsigned int)iValue;
+	kHash.uiPrimary ^= uiValue;
+	kHash.uiPrimary *= 16777619u;
+	kHash.uiSecondary ^= uiValue + 0x9E3779B9u + (kHash.uiSecondary << 6) + (kHash.uiSecondary >> 2);
+}
+
+static void updateSASGameRecordStateObject(unsigned __int64& uiComponentHash, SASGameRecordStateObjectHash const& kObjectHash)
+{
+	updateSASGameRecordFNV1AUInt32(uiComponentHash, kObjectHash.uiPrimary);
+	updateSASGameRecordFNV1AUInt32(uiComponentHash, kObjectHash.uiSecondary);
+}
+
+static void updateSASGameRecordStateHash64(unsigned __int64& uiHash, unsigned __int64 uiValue)
+{
+	updateSASGameRecordFNV1AUInt32(uiHash, (unsigned int)(uiValue & 0xFFFFFFFF));
+	updateSASGameRecordFNV1AUInt32(uiHash, (unsigned int)(uiValue >> 32));
+}
+
+static void updateSASGameRecordTriggeredEventState(SASGameRecordStateObjectHash& uiHash, EventTriggeredData const* pData)
+{
+	// <!-- custom: Event text is localized/user-facing and deliberately excluded; the numeric trigger target/state is durable gameplay provenance that can affect later event validity and choices. (ChatGPT-5.6-Sol) -->
+	updateSASGameRecordStateValue(uiHash, pData != NULL);
+	if (pData == NULL)
+		return;
+	updateSASGameRecordStateValue(uiHash, pData->m_iId);
+	updateSASGameRecordStateValue(uiHash, pData->m_eTrigger);
+	updateSASGameRecordStateValue(uiHash, pData->m_iTurn);
+	updateSASGameRecordStateValue(uiHash, pData->m_ePlayer);
+	updateSASGameRecordStateValue(uiHash, pData->m_iCityId);
+	updateSASGameRecordStateValue(uiHash, pData->m_iPlotX);
+	updateSASGameRecordStateValue(uiHash, pData->m_iPlotY);
+	updateSASGameRecordStateValue(uiHash, pData->m_iUnitId);
+	updateSASGameRecordStateValue(uiHash, pData->m_eOtherPlayer);
+	updateSASGameRecordStateValue(uiHash, pData->m_iOtherPlayerCityId);
+	updateSASGameRecordStateValue(uiHash, pData->m_eReligion);
+	updateSASGameRecordStateValue(uiHash, pData->m_eCorporation);
+	updateSASGameRecordStateValue(uiHash, pData->m_eBuilding);
+}
+
+static SASGameRecordStateObjectHash getSASGameRecordGameStateSignature(CvGame& kGame)
+{
+	SASGameRecordStateObjectHash uiHash;
+	updateSASGameRecordStateValue(uiHash, kGame.getGameTurn());
+	updateSASGameRecordStateValue(uiHash, kGame.getElapsedGameTurns());
+	updateSASGameRecordStateValue(uiHash, kGame.getStartTurn());
+	updateSASGameRecordStateValue(uiHash, kGame.getGameState());
+	// <!-- custom: Do not hash getActivePlayer(): it is local client/UI context and can legitimately differ between peers whose synchronized gameplay state is identical. (GPT-5.6-Sol) -->
+	updateSASGameRecordStateValue(uiHash, kGame.getWinner());
+	updateSASGameRecordStateValue(uiHash, kGame.getVictory());
+	updateSASGameRecordStateValue(uiHash, kGame.getCurrentEra());
+	updateSASGameRecordStateValue(uiHash, kGame.getNumCities());
+	updateSASGameRecordStateValue(uiHash, kGame.getTotalPopulation());
+	updateSASGameRecordStateValue(uiHash, kGame.getNumDeals());
+	// <!-- custom: Map dimensions/wrap topology are part of gameplay geometry; a flattened plot sequence alone cannot distinguish every possible geometry with the same number/content of plots. (ChatGPT-5.6-Sol) -->
+	CvMap const& kMap = GC.getMap();
+	updateSASGameRecordStateValue(uiHash, kMap.getGridWidth());
+	updateSASGameRecordStateValue(uiHash, kMap.getGridHeight());
+	updateSASGameRecordStateValue(uiHash, kMap.isWrapX());
+	updateSASGameRecordStateValue(uiHash, kMap.isWrapY());
+	updateSASGameRecordStateValue(uiHash, kMap.getOwnedPlots());
+	updateSASGameRecordStateValue(uiHash, kMap.getNumAreas());
+	updateSASGameRecordStateValue(uiHash, kGame.getGlobalWarmingIndex());
+	updateSASGameRecordStateValue(uiHash, kGame.getNukesExploded());
+	updateSASGameRecordStateValue(uiHash, kGame.getTradeRoutes());
+	for (int iI = 0; iI < GC.getNumProjectInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kGame.getProjectCreatedCount((ProjectTypes)iI));
+	for (int iI = 0; iI < GC.getNumReligionInfos(); iI++)
+	{
+		ReligionTypes const eReligion = (ReligionTypes)iI;
+		updateSASGameRecordStateValue(uiHash, kGame.getReligionGameTurnFounded(eReligion));
+		CvCity const* pHolyCity = kGame.getHolyCity(eReligion);
+		updateSASGameRecordStateValue(uiHash, pHolyCity == NULL ? NO_PLAYER : pHolyCity->getOwner());
+		updateSASGameRecordStateValue(uiHash, pHolyCity == NULL ? -1 : pHolyCity->getID());
+	}
+	for (int iI = 0; iI < GC.getNumCorporationInfos(); iI++)
+	{
+		CorporationTypes const eCorp = (CorporationTypes)iI;
+		updateSASGameRecordStateValue(uiHash, kGame.getCorporationGameTurnFounded(eCorp));
+		CvCity const* pHeadquarters = kGame.getHeadquarters(eCorp);
+		updateSASGameRecordStateValue(uiHash, pHeadquarters == NULL ? NO_PLAYER : pHeadquarters->getOwner());
+		updateSASGameRecordStateValue(uiHash, pHeadquarters == NULL ? -1 : pHeadquarters->getID());
+	}
+	// <!-- custom: Vote outcomes and source timers can diverge before a resolution visibly changes cities/players, so retain this small durable global decision state in CORE. (ChatGPT-5.6-Sol) -->
+	for (int iI = 0; iI < GC.getNumVoteInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kGame.getVoteOutcome((VoteTypes)iI));
+	for (int iI = 0; iI < GC.getNumVoteSourceInfos(); iI++)
+	{
+		VoteSourceTypes const eSource = (VoteSourceTypes)iI;
+		updateSASGameRecordStateValue(uiHash, kGame.getSecretaryGeneralTimer(eSource));
+		updateSASGameRecordStateValue(uiHash, kGame.getVoteTimer(eSource));
+		updateSASGameRecordStateValue(uiHash, kGame.getDiploVoteCount(eSource));
+		updateSASGameRecordStateValue(uiHash, kGame.getVoteSourceReligion(eSource));
+	}
+	return uiHash;
+}
+
+static SASGameRecordStateObjectHash getSASGameRecordTeamStateSignature(CvTeamAI const& kTeam)
+{
+	SASGameRecordStateObjectHash uiHash;
+	updateSASGameRecordStateValue(uiHash, kTeam.getID());
+	updateSASGameRecordStateValue(uiHash, kTeam.isEverAlive());
+	if (!kTeam.isEverAlive())
+		return uiHash;
+	updateSASGameRecordStateValue(uiHash, kTeam.isAlive());
+	updateSASGameRecordStateValue(uiHash, kTeam.isMinorCiv());
+	updateSASGameRecordStateValue(uiHash, kTeam.getNumMembers());
+	updateSASGameRecordStateValue(uiHash, kTeam.getAliveCount());
+	updateSASGameRecordStateValue(uiHash, kTeam.getNumCities());
+	updateSASGameRecordStateValue(uiHash, kTeam.getTotalPopulation(false));
+	updateSASGameRecordStateValue(uiHash, kTeam.getTotalLand(false));
+	updateSASGameRecordStateValue(uiHash, kTeam.getPower(false));
+	updateSASGameRecordStateValue(uiHash, kTeam.getMasterTeam());
+	updateSASGameRecordStateValue(uiHash, kTeam.isCapitulated());
+	updateSASGameRecordStateValue(uiHash, kTeam.getVassalPower());
+	updateSASGameRecordStateValue(uiHash, kTeam.getMasterPower());
+	updateSASGameRecordStateValue(uiHash, kTeam.getEnemyWarWearinessModifier());
+	updateSASGameRecordStateValue(uiHash, kTeam.getCurrentEra());
+	updateSASGameRecordStateValue(uiHash, kTeam.AI_getWorstEnemy());
+	for (int iI = 0; iI < GC.getNumTechInfos(); iI++)
+	{
+		TechTypes const eTech = (TechTypes)iI;
+		updateSASGameRecordStateValue(uiHash, kTeam.isHasTech(eTech));
+		updateSASGameRecordStateValue(uiHash, kTeam.getResearchProgress(eTech));
+	}
+	// <!-- custom: Forced resource revelation is persistent team state that can differ before the corresponding bonus becomes otherwise visible through technology or map knowledge. (ChatGPT-5.6-Sol) -->
+	for (int iI = 0; iI < GC.getNumBonusInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kTeam.isForceRevealedBonus((BonusTypes)iI));
+	for (int iI = 0; iI < GC.getNumProjectInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kTeam.getProjectCount((ProjectTypes)iI));
+	for (int iI = 0; iI < MAX_TEAMS; iI++)
+	{
+		TeamTypes const eOther = (TeamTypes)iI;
+		updateSASGameRecordStateValue(uiHash, kTeam.isHasMet(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.isAtWar(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.isOpenBorders(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.isDefensivePact(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.isForcePeace(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.isPermanentWarPeace(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.getEspionagePointsAgainstTeam(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.getWarWeariness(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.getCounterespionageTurnsLeftAgainstTeam(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.getCounterespionageModAgainstTeam(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.AI_getWarPlan(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.AI_getWarPlanStateCounter(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.AI_getAtWarCounter(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.AI_getAtPeaceCounter(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.AI_getHasMetCounter(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.AI_getOpenBordersCounter(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.AI_getDefensivePactCounter(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.AI_getShareWarCounter(eOther));
+		updateSASGameRecordStateValue(uiHash, kTeam.AI_getWarSuccess(eOther).round());
+	}
+	return uiHash;
+}
+
+static SASGameRecordStateObjectHash getSASGameRecordPlayerStateSignature(CvPlayerAI const& kPlayer)
+{
+	SASGameRecordStateObjectHash uiHash;
+	updateSASGameRecordStateValue(uiHash, kPlayer.getID());
+	updateSASGameRecordStateValue(uiHash, kPlayer.isEverAlive());
+	if (!kPlayer.isEverAlive())
+		return uiHash;
+	updateSASGameRecordStateValue(uiHash, kPlayer.isAlive());
+	updateSASGameRecordStateValue(uiHash, kPlayer.isHuman());
+	updateSASGameRecordStateValue(uiHash, kPlayer.isMinorCiv());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getTeam());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getCivilizationType());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getLeaderType());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getPersonalityType());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getCurrentEra());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getParent());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getGold());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getGoldPerTurn());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getTotalMaintenanceTimes100());
+	// <!-- custom: Effective inflation cheaply exposes the stored inflation modifier even when current maintenance happens to mask it; this is future-consequential economic state rather than a display-only derivative. (ChatGPT-5.6-Sol) -->
+	updateSASGameRecordStateValue(uiHash, kPlayer.calculateInflationRate());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getTotalPopulation());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getTotalLand());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getAssets());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getPower());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getNumCities());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getNumUnits());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getGoldenAgeTurns());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getAnarchyTurns());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getStrikeTurns());
+	updateSASGameRecordStateValue(uiHash, kPlayer.isStrike());
+	updateSASGameRecordStateValue(uiHash, kPlayer.isTurnActive());
+	updateSASGameRecordStateValue(uiHash, kPlayer.isAutoMoves());
+	updateSASGameRecordStateValue(uiHash, kPlayer.isEndTurn());
+	updateSASGameRecordStateValue(uiHash, kPlayer.isExtendedGame());
+	updateSASGameRecordStateValue(uiHash, kPlayer.isFoundedFirstCity());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getStateReligion());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getLastStateReligion());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getRevolutionTimer());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getConversionTimer());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getOverflowResearch());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getCombatExperience());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getGreatPeopleCreated());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getGreatGeneralsCreated());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getCurrentResearch());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getExtraHealth());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getExtraHappiness());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getSpaceProductionModifier());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getBaseFreeUnits());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getBaseFreeMilitaryUnits());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getWarWearinessModifier());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getStateReligionUnitProductionModifier());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getStateReligionBuildingProductionModifier());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getStateReligionFreeExperience());
+	CvCity const* pCapital = kPlayer.getCapital();
+	updateSASGameRecordStateValue(uiHash, pCapital == NULL ? -1 : pCapital->getID());
+	updateSASGameRecordStateValue(uiHash, kPlayer.getLengthResearchQueue());
+	for (CLLNode<TechTypes>* pNode = kPlayer.headResearchQueueNode(); pNode != NULL; pNode = kPlayer.nextResearchQueueNode(pNode))
+		updateSASGameRecordStateValue(uiHash, pNode->m_data);
+	for (int iI = 0; iI < NUM_COMMERCE_TYPES; iI++)
+		updateSASGameRecordStateValue(uiHash, kPlayer.getCommercePercent((CommerceTypes)iI));
+	for (int iI = 0; iI < GC.getNumCivicOptionInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kPlayer.getCivics((CivicOptionTypes)iI));
+	for (int iI = 0; iI < MAX_TEAMS; iI++)
+		updateSASGameRecordStateValue(uiHash, kPlayer.getEspionageSpendingWeightAgainstTeam((TeamTypes)iI));
+	// <!-- custom: Pending/occurred/countdown random-event bookkeeping is small but future-consequential; identical visible economics/cities can otherwise hide a deterministic divergence in what events may fire next. (ChatGPT-5.6-Sol) -->
+	for (int iI = 0; iI < GC.getNumEventTriggerInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kPlayer.isTriggerFired((EventTriggerTypes)iI));
+	updateSASGameRecordStateValue(uiHash, kPlayer.getNumEventsTriggered());
+	int iEventIter = 0;
+	for (EventTriggeredData const* pEvent = kPlayer.firstEventTriggered(&iEventIter); pEvent != NULL; pEvent = kPlayer.nextEventTriggered(&iEventIter))
+		updateSASGameRecordTriggeredEventState(uiHash, pEvent);
+	for (int iI = 0; iI < GC.getNumEventInfos(); iI++)
+	{
+		EventTypes const eEvent = (EventTypes)iI;
+		updateSASGameRecordTriggeredEventState(uiHash, kPlayer.getEventOccured(eEvent));
+		updateSASGameRecordTriggeredEventState(uiHash, kPlayer.getEventCountdown(eEvent));
+	}
+	// <!-- custom: EventInfo and other gameplay paths can grant persistent free promotions for future matching units. Existing-unit promotion flags alone cannot reveal this latent player state. (ChatGPT-5.6-Sol) -->
+	for (int iI = 0; iI < GC.getNumPromotionInfos(); iI++)
+	{
+		PromotionTypes const ePromotion = (PromotionTypes)iI;
+		for (int iJ = 0; iJ < GC.getNumUnitCombatInfos(); iJ++)
+			updateSASGameRecordStateValue(uiHash, kPlayer.isFreePromotion((UnitCombatTypes)iJ, ePromotion));
+		for (int iJ = 0; iJ < GC.getNumUnitClassInfos(); iJ++)
+			updateSASGameRecordStateValue(uiHash, kPlayer.isFreePromotion((UnitClassTypes)iJ, ePromotion));
+	}
+	if (!kPlayer.isBarbarian())
+	{
+		// <!-- custom: The prototype failed to compile because raw AI_getStrategyHash is protected.
+		// Hash each public strategy predicate instead of widening CvPlayerAI solely for diagnostics; for AI players these expose the same stored strategy bits. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		for (int iStrategy = AI_DEFAULT_STRATEGY; iStrategy <= AI_STRATEGY_ESPIONAGE_ECONOMY; iStrategy <<= 1)
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_isDoStrategy((AIStrategy)iStrategy));
+		updateSASGameRecordStateValue(uiHash, kPlayer.AI_getVictoryStageHash());
+		updateSASGameRecordStateValue(uiHash, kPlayer.AI_getPeaceWeight());
+		updateSASGameRecordStateValue(uiHash, kPlayer.AI_getEspionageWeight());
+		updateSASGameRecordStateValue(uiHash, kPlayer.AI_getAttackOddsChange());
+		updateSASGameRecordStateValue(uiHash, kPlayer.AI_getExtraGoldTarget());
+		updateSASGameRecordStateValue(uiHash, kPlayer.AI_getCivicTimer());
+		updateSASGameRecordStateValue(uiHash, kPlayer.AI_getReligionTimer());
+		for (int iI = 0; iI < NUM_UNITAI_TYPES; iI++)
+		{
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_getNumAIUnits((UnitAITypes)iI));
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_getNumTrainAIUnits((UnitAITypes)iI));
+		}
+		for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
+		{
+			PlayerTypes const eOther = (PlayerTypes)iI;
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_getAttitudeExtra(eOther));
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_getSameReligionCounter(eOther));
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_getDifferentReligionCounter(eOther));
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_getFavoriteCivicCounter(eOther));
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_getBonusTradeCounter(eOther));
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_getPeacetimeTradeValue(eOther));
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_getPeacetimeGrantValue(eOther));
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_getGoldTradedTo(eOther));
+			updateSASGameRecordStateValue(uiHash, kPlayer.AI_isFirstContact(eOther));
+			for (int iJ = 0; iJ < NUM_MEMORY_TYPES; iJ++)
+				updateSASGameRecordStateValue(uiHash, kPlayer.AI_getMemoryCount(eOther, (MemoryTypes)iJ));
+			for (int iJ = 0; iJ < NUM_CONTACT_TYPES; iJ++)
+				updateSASGameRecordStateValue(uiHash, kPlayer.AI_getContactTimer(eOther, (ContactTypes)iJ));
+		}
+	}
+	return uiHash;
+}
+
+static SASGameRecordStateObjectHash getSASGameRecordCityStateSignature(CvCity const& kCity)
+{
+	SASGameRecordStateObjectHash uiHash;
+	updateSASGameRecordStateValue(uiHash, kCity.getOwner());
+	updateSASGameRecordStateValue(uiHash, kCity.getID());
+	updateSASGameRecordStateValue(uiHash, kCity.getX());
+	updateSASGameRecordStateValue(uiHash, kCity.getY());
+	updateSASGameRecordStateValue(uiHash, kCity.getGameTurnFounded());
+	updateSASGameRecordStateValue(uiHash, kCity.getGameTurnAcquired());
+	updateSASGameRecordStateValue(uiHash, kCity.getPreviousOwner());
+	updateSASGameRecordStateValue(uiHash, kCity.getOriginalOwner());
+	updateSASGameRecordStateValue(uiHash, kCity.getPopulation());
+	updateSASGameRecordStateValue(uiHash, kCity.getWorkingPopulation());
+	updateSASGameRecordStateValue(uiHash, kCity.getSpecialistPopulation());
+	updateSASGameRecordStateValue(uiHash, kCity.getFood());
+	updateSASGameRecordStateValue(uiHash, kCity.getFoodKept());
+	updateSASGameRecordStateValue(uiHash, kCity.getGreatPeopleProgress());
+	updateSASGameRecordStateValue(uiHash, kCity.getProduction());
+	updateSASGameRecordStateValue(uiHash, kCity.getOverflowProduction());
+	updateSASGameRecordStateValue(uiHash, kCity.getFeatureProduction());
+	updateSASGameRecordStateValue(uiHash, kCity.getMaintenanceTimes100());
+	// <!-- custom: Base-yield and commerce arrays are direct cached gameplay state used by later economy/AI calculations. Retain them cheaply so stale-cache divergences are visible even when their underlying plots/buildings still match. (ChatGPT-5.6-Sol) -->
+	for (int iI = 0; iI < NUM_YIELD_TYPES; iI++)
+		updateSASGameRecordStateValue(uiHash, kCity.getBaseYieldRate((YieldTypes)iI));
+	for (int iI = 0; iI < NUM_COMMERCE_TYPES; iI++)
+		updateSASGameRecordStateValue(uiHash, kCity.getCommerceRateTimes100((CommerceTypes)iI));
+	updateSASGameRecordStateValue(uiHash, kCity.getCultureLevel());
+	updateSASGameRecordStateValue(uiHash, kCity.getOccupationTimer());
+	updateSASGameRecordStateValue(uiHash, kCity.getCultureUpdateTimer());
+	updateSASGameRecordStateValue(uiHash, kCity.getDefenseDamage());
+	updateSASGameRecordStateValue(uiHash, kCity.getExtraHappiness());
+	updateSASGameRecordStateValue(uiHash, kCity.getExtraHealth());
+	updateSASGameRecordStateValue(uiHash, kCity.getHurryAngerTimer());
+	updateSASGameRecordStateValue(uiHash, kCity.getConscriptAngerTimer());
+	updateSASGameRecordStateValue(uiHash, kCity.getDefyResolutionAngerTimer());
+	updateSASGameRecordStateValue(uiHash, kCity.getHappinessTimer());
+	updateSASGameRecordStateValue(uiHash, kCity.isBombarded());
+	updateSASGameRecordStateValue(uiHash, kCity.isDrafted());
+	updateSASGameRecordStateValue(uiHash, kCity.isAirliftTargeted());
+	updateSASGameRecordStateValue(uiHash, kCity.isPlundered());
+	updateSASGameRecordStateValue(uiHash, kCity.isWeLoveTheKingDay());
+	updateSASGameRecordStateValue(uiHash, kCity.isCitizensAutomated());
+	updateSASGameRecordStateValue(uiHash, kCity.isProductionAutomated());
+	CvPlot const* pRallyPlot = kCity.getRallyPlot();
+	updateSASGameRecordStateValue(uiHash, pRallyPlot == NULL ? -1 : pRallyPlot->getX());
+	updateSASGameRecordStateValue(uiHash, pRallyPlot == NULL ? -1 : pRallyPlot->getY());
+	// <!-- custom: Current trade-city assignments are serialized and can affect commerce/blockade behavior before aggregate city yields visibly diverge.
+	// Hash the fixed loaded-mod route slots by stable owner/city identity. (ChatGPT-5.6-Sol) -->
+	int const iMaxTradeRoutes = GC.getDefineINT(CvGlobals::MAX_TRADE_ROUTES);
+	updateSASGameRecordStateValue(uiHash, iMaxTradeRoutes);
+	for (int iI = 0; iI < iMaxTradeRoutes; iI++)
+	{
+		CvCity const* pTradeCity = kCity.getTradeCity(iI);
+		updateSASGameRecordStateValue(uiHash, pTradeCity == NULL ? NO_PLAYER : pTradeCity->getOwner());
+		updateSASGameRecordStateValue(uiHash, pTradeCity == NULL ? -1 : pTradeCity->getID());
+	}
+	updateSASGameRecordStateValue(uiHash, kCity.getOrderQueueLength());
+	for (CLLNode<OrderData> const* pNode = kCity.headOrderQueueNode(); pNode != NULL; pNode = kCity.nextOrderQueueNode(pNode))
+	{
+		OrderData const& kOrder = pNode->m_data;
+		updateSASGameRecordStateValue(uiHash, kOrder.eOrderType);
+		updateSASGameRecordStateValue(uiHash, kOrder.iData1);
+		updateSASGameRecordStateValue(uiHash, kOrder.iData2);
+		updateSASGameRecordStateValue(uiHash, kOrder.bSave);
+	}
+	for (int iI = 0; iI < MAX_PLAYERS; iI++)
+		updateSASGameRecordStateValue(uiHash, kCity.getCultureTimes100((PlayerTypes)iI));
+	for (int iI = 0; iI < GC.getNumReligionInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kCity.isHasReligion((ReligionTypes)iI));
+	for (int iI = 0; iI < GC.getNumCorporationInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kCity.isHasCorporation((CorporationTypes)iI));
+	for (int iI = 0; iI < GC.getNumEventInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kCity.isEventOccured((EventTypes)iI));
+	// <!-- custom: Worked BFC assignments, forced specialists and emphasis/automation choices are cheap durable decision state.
+	// Hashing them can reveal a deterministic city-management divergence before population, food or production totals visibly separate. (ChatGPT-5.6-Sol) -->
+	for (int iI = 0; iI < NUM_CITY_PLOTS; iI++)
+		updateSASGameRecordStateValue(uiHash, kCity.isWorkingPlot((CityPlotTypes)iI));
+	for (int iI = 0; iI < GC.getNumSpecialistInfos(); iI++)
+	{
+		SpecialistTypes const eSpecialist = (SpecialistTypes)iI;
+		updateSASGameRecordStateValue(uiHash, kCity.getSpecialistCount(eSpecialist));
+		updateSASGameRecordStateValue(uiHash, kCity.getForceSpecialistCount(eSpecialist));
+		updateSASGameRecordStateValue(uiHash, kCity.getFreeSpecialistCount(eSpecialist));
+	}
+	CvCityAI const& kCityAI = kCity.AI();
+	for (int iI = 0; iI < GC.getNumEmphasizeInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kCityAI.AI_isEmphasize((EmphasizeTypes)iI));
+	updateSASGameRecordStateValue(uiHash, kCityAI.AI_isStrongEmphasis());
+	for (int iI = 0; iI < GC.getNumBuildingInfos(); iI++)
+	{
+		BuildingTypes const eBuilding = (BuildingTypes)iI;
+		int const iReal = kCity.getNumRealBuilding(eBuilding);
+		int const iFree = kCity.getNumFreeBuilding(eBuilding);
+		updateSASGameRecordStateValue(uiHash, iReal);
+		updateSASGameRecordStateValue(uiHash, iFree);
+		// <!-- custom: Original owner/time can affect retained culture and time-based building effects; only existing buildings need these extra values. (ChatGPT-5.6-Sol) -->
+		if (iReal > 0 || iFree > 0)
+		{
+			updateSASGameRecordStateValue(uiHash, kCity.getBuildingOriginalOwner(eBuilding));
+			updateSASGameRecordStateValue(uiHash, kCity.getBuildingOriginalTime(eBuilding));
+		}
+	}
+	// <!-- custom: BuildingClass modifiers are persistent city state and may remain latent while the affected building class is absent.
+	// Preserve their exact stored values rather than relying on current building/output state to imply them. (ChatGPT-5.6-Sol) -->
+	for (int iI = 0; iI < GC.getNumBuildingClassInfos(); iI++)
+	{
+		BuildingClassTypes const eClass = (BuildingClassTypes)iI;
+		for (int iJ = 0; iJ < NUM_YIELD_TYPES; iJ++)
+			updateSASGameRecordStateValue(uiHash, kCity.getBuildingYieldChange(eClass, (YieldTypes)iJ));
+		for (int iJ = 0; iJ < NUM_COMMERCE_TYPES; iJ++)
+			updateSASGameRecordStateValue(uiHash, kCity.getBuildingCommerceChange(eClass, (CommerceTypes)iJ));
+		updateSASGameRecordStateValue(uiHash, kCity.getBuildingHappyChange(eClass));
+		updateSASGameRecordStateValue(uiHash, kCity.getBuildingHealthChange(eClass));
+	}
+	return uiHash;
+}
+
+static SASGameRecordStateObjectHash getSASGameRecordUnitStateSignature(CvUnitAI const& kUnit)
+{
+	SASGameRecordStateObjectHash uiHash;
+	updateSASGameRecordStateValue(uiHash, kUnit.getOwner());
+	updateSASGameRecordStateValue(uiHash, kUnit.getID());
+	updateSASGameRecordStateValue(uiHash, kUnit.getUnitType());
+	updateSASGameRecordStateValue(uiHash, kUnit.getX());
+	updateSASGameRecordStateValue(uiHash, kUnit.getY());
+	if (kUnit.getUnitType() == NO_UNIT)
+		return uiHash;
+	updateSASGameRecordStateValue(uiHash, kUnit.getGameTurnCreated());
+	updateSASGameRecordStateValue(uiHash, kUnit.getDamage());
+	updateSASGameRecordStateValue(uiHash, kUnit.getMoves());
+	updateSASGameRecordStateValue(uiHash, kUnit.getExperience());
+	updateSASGameRecordStateValue(uiHash, kUnit.getLevel());
+	updateSASGameRecordStateValue(uiHash, kUnit.getGroupID());
+	updateSASGameRecordStateValue(uiHash, kUnit.getCargo());
+	updateSASGameRecordStateValue(uiHash, kUnit.getImmobileTimer());
+	updateSASGameRecordStateValue(uiHash, kUnit.getFortifyTurns());
+	updateSASGameRecordStateValue(uiHash, kUnit.isMadeAttack());
+	updateSASGameRecordStateValue(uiHash, kUnit.isMadeInterception());
+	updateSASGameRecordStateValue(uiHash, kUnit.isBlockading());
+	updateSASGameRecordStateValue(uiHash, kUnit.AI_getUnitAIType());
+	updateSASGameRecordStateValue(uiHash, kUnit.AI_getBirthmark());
+	CvUnit const* pTransport = kUnit.getTransportUnit();
+	updateSASGameRecordStateValue(uiHash, pTransport == NULL ? NO_PLAYER : pTransport->getOwner());
+	updateSASGameRecordStateValue(uiHash, pTransport == NULL ? -1 : pTransport->getID());
+	for (int iI = 0; iI < GC.getNumPromotionInfos(); iI++)
+		updateSASGameRecordStateValue(uiHash, kUnit.isHasPromotion((PromotionTypes)iI));
+	return uiHash;
+}
+
+static SASGameRecordStateObjectHash getSASGameRecordGroupStateSignature(CvSelectionGroupAI const& kGroup)
+{
+	SASGameRecordStateObjectHash uiHash;
+	updateSASGameRecordStateValue(uiHash, kGroup.getOwner());
+	updateSASGameRecordStateValue(uiHash, kGroup.getID());
+	updateSASGameRecordStateValue(uiHash, kGroup.getNumUnits());
+	// <!-- custom: Preserve the group's ordered member list, not only each unit's group ID; selection/combat code can observe linked-list order before any unit position or membership changes. (ChatGPT-5.6-Sol) -->
+	for (CLLNode<IDInfo> const* pNode = kGroup.headUnitNode(); pNode != NULL; pNode = kGroup.nextUnitNode(pNode))
+	{
+		updateSASGameRecordStateValue(uiHash, pNode->m_data.eOwner);
+		updateSASGameRecordStateValue(uiHash, pNode->m_data.iID);
+	}
+	updateSASGameRecordStateValue(uiHash, kGroup.getActivityType());
+	updateSASGameRecordStateValue(uiHash, kGroup.getAutomateType());
+	updateSASGameRecordStateValue(uiHash, kGroup.getLengthMissionQueue());
+	updateSASGameRecordStateValue(uiHash, kGroup.AI_getMissionAIType());
+	updateSASGameRecordStateValue(uiHash, kGroup.AI_isForceSeparate());
+	CvPlot const* pMissionPlot = kGroup.AI_getMissionAIPlot();
+	updateSASGameRecordStateValue(uiHash, pMissionPlot == NULL ? -1 : pMissionPlot->getX());
+	updateSASGameRecordStateValue(uiHash, pMissionPlot == NULL ? -1 : pMissionPlot->getY());
+	CvUnitAI const* pMissionUnit = kGroup.AI_getMissionAIUnit();
+	updateSASGameRecordStateValue(uiHash, pMissionUnit == NULL ? NO_PLAYER : pMissionUnit->getOwner());
+	updateSASGameRecordStateValue(uiHash, pMissionUnit == NULL ? -1 : pMissionUnit->getID());
+	for (CLLNode<MissionData>* pNode = kGroup.headMissionQueueNode(); pNode != NULL; pNode = kGroup.nextMissionQueueNode(pNode))
+	{
+		MissionData const& kMission = pNode->m_data;
+		updateSASGameRecordStateValue(uiHash, kMission.eMissionType);
+		updateSASGameRecordStateValue(uiHash, kMission.iData1);
+		updateSASGameRecordStateValue(uiHash, kMission.iData2);
+		updateSASGameRecordStateValue(uiHash, kMission.eFlags);
+		updateSASGameRecordStateValue(uiHash, kMission.iPushTurn);
+		updateSASGameRecordStateValue(uiHash, kMission.bModified);
+	}
+	return uiHash;
+}
+
+static SASGameRecordStateObjectHash getSASGameRecordPlotStateSignature(CvPlot const& kPlot, int iPlotIndex)
+{
+	SASGameRecordStateObjectHash uiHash;
+	updateSASGameRecordStateValue(uiHash, iPlotIndex);
+	// <!-- custom: Area partitioning is future-consequential for pathing and AI logic even when a plot's visible terrain/ownership has not changed. (ChatGPT-5.6-Sol) -->
+	updateSASGameRecordStateValue(uiHash, kPlot.getArea().getID());
+	updateSASGameRecordStateValue(uiHash, kPlot.getPlotType());
+	updateSASGameRecordStateValue(uiHash, kPlot.getTerrainType());
+	updateSASGameRecordStateValue(uiHash, kPlot.getFeatureType());
+	updateSASGameRecordStateValue(uiHash, kPlot.getBonusType());
+	updateSASGameRecordStateValue(uiHash, kPlot.getImprovementType());
+	updateSASGameRecordStateValue(uiHash, kPlot.getRouteType());
+	updateSASGameRecordStateValue(uiHash, kPlot.getOwner());
+	updateSASGameRecordStateValue(uiHash, kPlot.getOwnershipDuration());
+	updateSASGameRecordStateValue(uiHash, kPlot.getImprovementDuration());
+	updateSASGameRecordStateValue(uiHash, kPlot.getUpgradeProgress());
+	updateSASGameRecordStateValue(uiHash, kPlot.isNOfRiver());
+	updateSASGameRecordStateValue(uiHash, kPlot.getRiverNSDirection());
+	updateSASGameRecordStateValue(uiHash, kPlot.isWOfRiver());
+	updateSASGameRecordStateValue(uiHash, kPlot.getRiverWEDirection());
+	for (int iI = 0; iI < NUM_YIELD_TYPES; iI++)
+		updateSASGameRecordStateValue(uiHash, GC.getMap().getPlotExtraYield(kPlot, (YieldTypes)iI));
+	CvCity const* pCity = kPlot.getPlotCity();
+	updateSASGameRecordStateValue(uiHash, pCity == NULL ? NO_PLAYER : pCity->getOwner());
+	updateSASGameRecordStateValue(uiHash, pCity == NULL ? -1 : pCity->getID());
+	return uiHash;
+}
+
+static void updateSASGameRecordDealTradeState(SASGameRecordStateObjectHash& uiHash, CLinkList<TradeData> const& kList)
+{
+	updateSASGameRecordStateValue(uiHash, kList.getLength());
+	for (CLLNode<TradeData> const* pNode = kList.head(); pNode != NULL; pNode = CLinkList<TradeData>::static_next(pNode))
+	{
+		TradeData const& kTrade = pNode->m_data;
+		updateSASGameRecordStateValue(uiHash, kTrade.m_eItemType);
+		updateSASGameRecordStateValue(uiHash, kTrade.m_iData);
+		updateSASGameRecordStateValue(uiHash, kTrade.m_bOffering);
+		updateSASGameRecordStateValue(uiHash, kTrade.m_bHidden);
+	}
+}
+
+static SASGameRecordStateObjectHash getSASGameRecordDealStateSignature(CvDeal const& kDeal)
+{
+	SASGameRecordStateObjectHash uiHash;
+	updateSASGameRecordStateValue(uiHash, kDeal.getID());
+	updateSASGameRecordStateValue(uiHash, kDeal.getInitialGameTurn());
+	updateSASGameRecordStateValue(uiHash, kDeal.getFirstPlayer());
+	updateSASGameRecordStateValue(uiHash, kDeal.getSecondPlayer());
+	updateSASGameRecordDealTradeState(uiHash, kDeal.getFirstList());
+	updateSASGameRecordDealTradeState(uiHash, kDeal.getSecondList());
+	return uiHash;
+}
+
+static SASGameRecordStateFingerprints getSASGameRecordStateFingerprints()
+{
+	SASGameRecordStateFingerprints kResult;
+	CvGame& kGame = GC.getGame();
+	updateSASGameRecordStateObject(kResult.uiGame, getSASGameRecordGameStateSignature(kGame));
+	for (int iI = 0; iI < MAX_TEAMS; iI++)
+	{
+		CvTeamAI const& kTeam = GET_TEAM((TeamTypes)iI);
+		updateSASGameRecordStateObject(kResult.uiTeams, getSASGameRecordTeamStateSignature(kTeam));
+		if (kTeam.isEverAlive())
+			kResult.iEverAliveTeamCount++;
+	}
+	for (int iI = 0; iI < MAX_PLAYERS; iI++)
+	{
+		CvPlayerAI const& kPlayer = GET_PLAYER((PlayerTypes)iI);
+		updateSASGameRecordStateObject(kResult.uiPlayers, getSASGameRecordPlayerStateSignature(kPlayer));
+		if (!kPlayer.isEverAlive())
+			continue;
+		kResult.iEverAlivePlayerCount++;
+		FOR_EACH_CITY(pCity, kPlayer)
+		{
+			updateSASGameRecordStateObject(kResult.uiCities, getSASGameRecordCityStateSignature(*pCity));
+			kResult.iCityCount++;
+		}
+		FOR_EACH_UNITAI(pUnit, kPlayer)
+		{
+			updateSASGameRecordStateObject(kResult.uiUnits, getSASGameRecordUnitStateSignature(*pUnit));
+			kResult.iUnitCount++;
+		}
+		FOR_EACH_GROUPAI(pGroup, kPlayer)
+		{
+			updateSASGameRecordStateObject(kResult.uiGroups, getSASGameRecordGroupStateSignature(*pGroup));
+			kResult.iGroupCount++;
+		}
+	}
+	CvMap const& kMap = GC.getMap();
+	kResult.iPlotCount = (int)kMap.numPlots();
+	for (int iI = 0; iI < kResult.iPlotCount; iI++)
+		updateSASGameRecordStateObject(kResult.uiPlots, getSASGameRecordPlotStateSignature(kMap.getPlotByIndex(iI), iI));
+	int iDealIter = 0;
+	for (CvDeal const* pDeal = kGame.firstDeal(&iDealIter); pDeal != NULL; pDeal = kGame.nextDeal(&iDealIter))
+	{
+		updateSASGameRecordStateObject(kResult.uiDeals, getSASGameRecordDealStateSignature(*pDeal));
+		kResult.iDealCount++;
+	}
+	updateSASGameRecordStateHash64(kResult.uiCombined, kResult.uiGame);
+	updateSASGameRecordStateHash64(kResult.uiCombined, kResult.uiTeams);
+	updateSASGameRecordStateHash64(kResult.uiCombined, kResult.uiPlayers);
+	updateSASGameRecordStateHash64(kResult.uiCombined, kResult.uiCities);
+	updateSASGameRecordStateHash64(kResult.uiCombined, kResult.uiUnits);
+	updateSASGameRecordStateHash64(kResult.uiCombined, kResult.uiGroups);
+	updateSASGameRecordStateHash64(kResult.uiCombined, kResult.uiPlots);
+	updateSASGameRecordStateHash64(kResult.uiCombined, kResult.uiDeals);
+	updateSASGameRecordFNV1AUInt32(kResult.uiCombined, (unsigned int)kResult.iEverAliveTeamCount);
+	updateSASGameRecordFNV1AUInt32(kResult.uiCombined, (unsigned int)kResult.iEverAlivePlayerCount);
+	updateSASGameRecordFNV1AUInt32(kResult.uiCombined, (unsigned int)kResult.iCityCount);
+	updateSASGameRecordFNV1AUInt32(kResult.uiCombined, (unsigned int)kResult.iUnitCount);
+	updateSASGameRecordFNV1AUInt32(kResult.uiCombined, (unsigned int)kResult.iGroupCount);
+	updateSASGameRecordFNV1AUInt32(kResult.uiCombined, (unsigned int)kResult.iPlotCount);
+	updateSASGameRecordFNV1AUInt32(kResult.uiCombined, (unsigned int)kResult.iDealCount);
+	return kResult;
+}
+
+static void logSASGameRecordStateCheckpoint(int iGameTurn, char const* szReason)
+{
+#ifdef FASSERT_ENABLE
+	// <!-- custom: These values are assertion-only; gate their reads too because Debug-opt/Release compile FAssertMsg away and treat the resulting unused-local warnings as errors. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	unsigned int const uiMapSeedBefore = GC.getGame().getMapRand().getSeed();
+	unsigned int const uiSyncSeedBefore = GC.getGame().getSorenRand().getSeed();
+#endif
+	uint const uiStart = getSASMonotonicMilliseconds();
+	SASGameRecordStateFingerprints const kState = getSASGameRecordStateFingerprints();
+	uint const uiEnd = getSASMonotonicMilliseconds();
+#ifdef FASSERT_ENABLE
+	// <!-- custom: Fingerprinting must stay observational. All inputs above are direct/stable getters; this assertion guards future maintenance from accidentally introducing a helper that consumes authoritative RNG. (ChatGPT-5.6-Sol) -->
+	FAssertMsg(uiMapSeedBefore == GC.getGame().getMapRand().getSeed() && uiSyncSeedBefore == GC.getGame().getSorenRand().getSeed(), "SASGameRecord state fingerprint consumed authoritative RNG");
+#endif
+	logSASGameRecord("GAME_RECORD_STATE_CHECKPOINT turn=%d reason=%s coverage=CORE everAliveTeamCount=%d everAlivePlayerCount=%d cityCount=%d unitCount=%d groupCount=%d plotCount=%d dealCount=%d gameFingerprint=FNV1A64:%016I64X teamsFingerprint=FNV1A64:%016I64X playersFingerprint=FNV1A64:%016I64X citiesFingerprint=FNV1A64:%016I64X unitsFingerprint=FNV1A64:%016I64X groupsFingerprint=FNV1A64:%016I64X plotsFingerprint=FNV1A64:%016I64X dealsFingerprint=FNV1A64:%016I64X combinedFingerprint=FNV1A64:%016I64X computeMilliseconds=%u",
+		iGameTurn, szReason, kState.iEverAliveTeamCount, kState.iEverAlivePlayerCount, kState.iCityCount, kState.iUnitCount, kState.iGroupCount, kState.iPlotCount, kState.iDealCount,
+		kState.uiGame, kState.uiTeams, kState.uiPlayers, kState.uiCities, kState.uiUnits, kState.uiGroups, kState.uiPlots, kState.uiDeals, kState.uiCombined, getSASElapsedMilliseconds(uiStart, uiEnd));
+}
+
 static unsigned int getSASGameRecordRandomMessageHash(TCHAR const* szLog, unsigned int& uiLength)
 {
 	unsigned int uiHash = 2166136261u;
@@ -528,6 +1174,8 @@ void logSASGameRecordRngCheckpoint(int iGameTurn, SASGameRecordRngCheckpointReas
 			kMapCompleted.uiIntervalDeterministicRangeCalls, kMapCompleted.uiSessionDeterministicRangeCalls, kMapCompleted.uiIntervalSeedSets, kMapCompleted.uiSessionSeedSets, kMapCompleted.uiIntervalStreamFingerprint, kMapCompleted.uiSessionStreamFingerprint, kMapCompleted.uiIntervalCallFingerprint, kMapCompleted.uiSessionCallFingerprint,
 			kSyncCompleted.uiSessionStartState, kSyncCompleted.uiIntervalStartState, uiSyncState, kSyncCompleted.uiIntervalCalls, kSyncCompleted.uiSessionCalls, kSyncCompleted.uiIntervalNullMessageCalls, kSyncCompleted.uiSessionNullMessageCalls, kSyncCompleted.uiIntervalExternalCalls, kSyncCompleted.uiSessionExternalCalls,
 			kSyncCompleted.uiIntervalDeterministicRangeCalls, kSyncCompleted.uiSessionDeterministicRangeCalls, kSyncCompleted.uiIntervalSeedSets, kSyncCompleted.uiSessionSeedSets, kSyncCompleted.uiIntervalStreamFingerprint, kSyncCompleted.uiSessionStreamFingerprint, kSyncCompleted.uiIntervalCallFingerprint, kSyncCompleted.uiSessionCallFingerprint);
+	// <!-- custom: Reuse the exact same lifecycle boundary/reason for selected semantic gameplay state, so RNG-equal/state-different runs expose deterministic divergence immediately without adding another family of distant call sites. (ChatGPT-5.6-Sol) -->
+	logSASGameRecordStateCheckpoint(iGameTurn, getSASGameRecordRngCheckpointReason(eReason));
 }
 
 // <!-- custom: Windows exposes focus separately from minimization. Find Civ4's visible, unowned top-level process window so background-visible and minimized snapshots remain distinguishable.

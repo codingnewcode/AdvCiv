@@ -25,7 +25,7 @@ Therefore:
 Current emitted source-context field:
 
 ```text
-GAME_RECORD_SOURCE_CONTEXT recordRevision=70 ...
+GAME_RECORD_SOURCE_CONTEXT recordRevision=71 ...
 ```
 
 After this, each qualifying SASGameRecord update increments `SAS_GAME_RECORD_REVISION` by one and adds one short latest-first entry to this file in the same commit. The revision is only a downstream-update signal; exact runtime source identity remains in `GAME_RECORD_SOURCE_CONTEXT`.
@@ -38,14 +38,22 @@ Because this numbering is reconstructed after the fact, the descriptions are con
 
 ## History (latest first)
 
+### Revision 71 - SAS practical 6442
+
+- **Date:** 2026-09-10
+- **Change:** Added compact level-3 semantic CORE state checkpoints at the existing authoritative-RNG lifecycle boundaries, with component/combined fingerprints, latent gameplay/AI state and measured computation time; extended the RNG comparison helper to validate and localize first RNG-versus-state divergence.
+- **Validation:** Two 101-turn runs reloaded from the same turn-0 SAS Fast Save matched at all 104 comparable RNG and semantic-state checkpoints. One closed session alone appended `SESSION_FINALIZE`; the helper now reports that harmless lifecycle asymmetry separately. State scans had 1 ms median/p95 cost and 2 ms maximum across the pair.
+
 ### Revision 70 - SAS practical 6441
 
 - **Date:** 2026-09-10
+- **Git commit:** `e7c316b1988fca98dc8baa1271ab47049b26d2d0`
 - **Change:** Added session-local monotonic `seq` identity to every emitted structured `GAME_RECORD_*` row and generic causal `tx` scopes, initially bracketing city acquisition/raze so filtered records retain exact chronology and related city-transfer consequences remain explicitly joinable.
 
 ### Revision 69 - SAS practical 6440
 
 - **Date:** 2026-09-10
+- **Git commit:** `9337aece920266486be61a7bf60ec9f96e406bb9`
 - **Change:** Added the explicit emitted `GAME_RECORD_SOURCE_CONTEXT recordRevision` field, public `SAS_GAME_RECORD_REVISION` constant, committed revision history, maintenance guidance, and consistency checks so downstream copies can cheaply detect any later official SASGameRecord-related code update.
 
 ### Revision 68 - SAS practical 6439
@@ -458,7 +466,7 @@ Because this numbering is reconstructed after the fact, the descriptions are con
 
 ## Maintenance template
 
-For the next qualifying committed update after revision 69, increment the public source constant and prepend one entry like this:
+For the next qualifying committed update after revision 71, increment the public source constant and prepend one entry like this:
 
 ```markdown
 ### Revision N - SAS practical XXXX
