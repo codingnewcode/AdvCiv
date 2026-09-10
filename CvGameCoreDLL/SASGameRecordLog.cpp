@@ -192,6 +192,13 @@ static bool isSASGameRecordMapAsciiPoliticalEnabled()
 static CvString g_szSASGameRecordLogTimestamp;
 static int g_iSASGameRecordLogSequence = 0;
 static CvString g_szSASGameRecordLogContext;
+// <!-- custom: Structured row sequence and transaction IDs are recorder/session-local only; they never enter gameplay or save state.
+// `seq` is assigned only when a GAME_RECORD_* row is actually emitted, so buffered initialization actions receive their canonical chronology at flush time rather than when first formatted.
+// `tx` is attached when a row is formatted inside an active causal scope, so delayed emission cannot accidentally inherit a later unrelated transaction. Raw pipe-framed ASCII-map drawing rows intentionally remain undecorated. (ChatGPT-5.6-Sol) -->
+static unsigned __int64 g_uiSASGameRecordSemanticSequence = 0;
+static unsigned __int64 g_uiSASGameRecordNextTransaction = 0;
+static unsigned __int64 g_uiSASGameRecordActiveTransaction = 0;
+static CvString g_szSASGameRecordActiveTransactionKind;
 // <!-- custom: Record snapshot UTC plus cumulative and per-interval wall time directly so benchmark duration is visible without external timestamp subtraction.
 // Use the monotonic millisecond timer for useful precision and immunity to system-clock adjustments; wall time intentionally includes pauses and user interaction. (GPT-5.6-Sol) -->
 static uint g_uiSASGameRecordSessionStartTime = 0;
@@ -630,6 +637,11 @@ static CvString getSASGameRecordLogName()
 
 static void rollSASGameRecordLog(const char* szContext)
 {
+	// <!-- custom: `seq` and `tx` identities are intentionally local to one timestamped record session; source/log identity distinguishes different new/load files. (ChatGPT-5.6-Sol) -->
+	g_uiSASGameRecordSemanticSequence = 0;
+	g_uiSASGameRecordNextTransaction = 0;
+	g_uiSASGameRecordActiveTransaction = 0;
+	g_szSASGameRecordActiveTransactionKind.clear();
 	time_t kSessionStartTime;
 	time(&kSessionStartTime);
 	g_uiSASGameRecordSessionStartTime = getSASMonotonicMilliseconds();
@@ -643,6 +655,32 @@ static void rollSASGameRecordLog(const char* szContext)
 	}
 }
 
+static bool isSASGameRecordStructuredRow(std::string const& szLine)
+{
+	return (szLine.find("GAME_RECORD_") == 0);
+}
+
+static void insertSASGameRecordFieldAfterRowType(std::string& szLine, char const* szField)
+{
+	if (!isSASGameRecordStructuredRow(szLine))
+		return;
+	size_t const iTypeEnd = szLine.find(' ');
+	szLine.insert(iTypeEnd == std::string::npos ? szLine.length() : iTypeEnd, szField);
+}
+
+static void emitSASGameRecordLine(CvString const& szLogName, std::string szLine)
+{
+	// <!-- custom: Sequence only machine-readable GAME_RECORD_* rows.
+	// Pipe-framed ASCII-map drawing lines remain uninterrupted pictures between their sequenced BEGIN/END metadata rows. (ChatGPT-5.6-Sol) -->
+	if (isSASGameRecordStructuredRow(szLine))
+	{
+		CvString szSequence;
+		szSequence.Format(" seq=%I64u", ++g_uiSASGameRecordSemanticSequence);
+		insertSASGameRecordFieldAfterRowType(szLine, szSequence.GetCString());
+	}
+	gDLL->logMsg(szLogName.GetCString(), szLine.c_str(), false, false);
+}
+
 static void logSASGameRecordFormattedLine(CvString const& szLogName, TCHAR* format, va_list args)
 {
 	std::string szLine;
@@ -652,6 +690,14 @@ static void logSASGameRecordFormattedLine(CvString const& szLogName, TCHAR* form
 	FAssertMsg(bFormatted, "SASGameRecord row formatting failed");
 	if (!bFormatted)
 		return;
+	// <!-- custom: Capture causal membership before any buffering.
+	// `seq` is deliberately deferred until actual emission, but `tx` must describe the operation active when the observation was produced. (ChatGPT-5.6-Sol) -->
+	if (g_uiSASGameRecordActiveTransaction != 0 && isSASGameRecordStructuredRow(szLine))
+	{
+		CvString szTransaction;
+		szTransaction.Format(" tx=%I64u", g_uiSASGameRecordActiveTransaction);
+		insertSASGameRecordFieldAfterRowType(szLine, szTransaction.GetCString());
+	}
 	if (g_bSASGameRecordBufferInitializingActions && szLine.find("GAME_RECORD_ACTION ") == 0)
 	{
 		// <!-- custom: Successful initialization replaces this procedural transcript with compact finalized state. If initialization aborts, preserve event timing only on the raw fallback actions instead of adding a redundant timestamp to every normal row. (GPT-5.6-Sol) -->
@@ -661,7 +707,7 @@ static void logSASGameRecordFormattedLine(CvString const& szLogName, TCHAR* form
 		g_aszSASGameRecordInitializingActions.push_back(std::make_pair(szLogName, szLine));
 		return;
 	}
-	gDLL->logMsg(szLogName.GetCString(), szLine.c_str(), false, false);
+	emitSASGameRecordLine(szLogName, szLine);
 }
 
 static uint getSASGameRecordSessionWallMilliseconds(uint uiNow)
@@ -688,7 +734,7 @@ static void flushSASGameRecordInitializingActions(bool bContextComplete)
 	for (size_t iI = 0; iI < g_aszSASGameRecordInitializingActions.size(); iI++)
 	{
 		std::pair<CvString, std::string> const& kBuffered = g_aszSASGameRecordInitializingActions[iI];
-		gDLL->logMsg(kBuffered.first.GetCString(), kBuffered.second.c_str(), false, false);
+		emitSASGameRecordLine(kBuffered.first, kBuffered.second);
 	}
 	g_aszSASGameRecordInitializingActions.clear();
 }
@@ -706,6 +752,30 @@ void logSASGameRecord(TCHAR* format, ... )
 	va_start(args, format);
 	logSASGameRecordFormattedLine(getSASGameRecordLogName(), format, args);
 	va_end(args);
+}
+
+// <!-- custom: The first enabled scope owns a new session-local transaction; nested scopes join it so one synchronous causal chain stays one `tx`.
+// BEGIN/END rows make transaction kind and completeness explicit, while every structured row emitted inside the scope receives the same tx field automatically. (ChatGPT-5.6-Sol) -->
+void SASGameRecordTransactionScope::begin(char const* szKind)
+{
+	if (g_uiSASGameRecordActiveTransaction != 0)
+		return;
+	// <!-- custom: Flush an older synthetic bombard before arming the new transaction.
+	// logSASGameRecord itself flushes bombard rows, but doing that after tx activation would falsely attach the previous operation to this scope. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (!g_bSASGameRecordFlushingCityBombard)
+		flushSASGameRecordPendingCityBombard();
+	g_uiSASGameRecordActiveTransaction = ++g_uiSASGameRecordNextTransaction;
+	g_szSASGameRecordActiveTransactionKind = szKind;
+	m_bOwnsTransaction = true;
+	logSASGameRecord("GAME_RECORD_TRANSACTION_BEGIN turn=%d kind=%s", GC.getGame().getGameTurn(), szKind);
+}
+
+void SASGameRecordTransactionScope::end()
+{
+	FAssert(g_uiSASGameRecordActiveTransaction != 0);
+	logSASGameRecord("GAME_RECORD_TRANSACTION_END turn=%d kind=%s", GC.getGame().getGameTurn(), g_szSASGameRecordActiveTransactionKind.GetCString());
+	g_uiSASGameRecordActiveTransaction = 0;
+	g_szSASGameRecordActiveTransactionKind.clear();
 }
 
 // <!-- custom: Free-text escaping is shared with other diagnostic logs in CvGameCoreUtils; keep only this city-specific missing-value wrapper local. (ChatGPT-5.6-Sol) -->

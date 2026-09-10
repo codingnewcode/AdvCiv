@@ -16,7 +16,7 @@ int getSASGameRecordTurnInterval();
 // This is deliberately not a compatibility/schema promise: increment it for every intentional change to SASGameRecord implementation code, relevant bridges/call sites/configuration/checkers, or their code comments, even when emitted semantics are unchanged.
 // Standalone docs/example-log/package refreshes do not require a bump. Keep the matching revision-history entry in the same commit.
 // An anonymous enum keeps this a C++03 compile-time integer without a separate storage/linkage definition. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
-enum { SAS_GAME_RECORD_REVISION = 69 };
+enum { SAS_GAME_RECORD_REVISION = 70 };
 // <!-- custom: Finalize buffered observations in the old game state before a new game or loaded save resets/replaces it. See KI#382. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 void finalizeSASGameRecordLogSession();
 void startSASGameRecordLogForNewGame();
@@ -124,6 +124,26 @@ struct SASGameRecordRandomEventPlayerState
 	BonusTypes eBonusRevealed;
 	int iForceRevealedBonus;
 };
+// <!-- custom: Session-local transaction IDs tie together structured rows emitted synchronously by one consequential gameplay operation after filtering/chunking has separated them from raw file order.
+// A nested recorder scope deliberately joins the already-active outer transaction instead of creating parent/child IDs; this keeps one causal chain for operations such as city acquisition -> immediate AI/auto raze.
+// The recorder owns ID allocation and row decoration. Callers only bracket the existing operation, pre-gated at the detail level that already records its consequences. (ChatGPT-5.6-Sol) -->
+class SASGameRecordTransactionScope
+{
+public:
+	SASGameRecordTransactionScope(char const* szKind, bool bEnabled) : m_bOwnsTransaction(false)
+	{
+		if (bEnabled) begin(szKind);
+	}
+	~SASGameRecordTransactionScope()
+	{
+		if (m_bOwnsTransaction) end();
+	}
+private:
+	void begin(char const* szKind);
+	void end();
+	bool m_bOwnsTransaction;
+};
+
 // <!-- custom: Observe one AI_chooseProduction call as a scope so every early return is handled without teaching the AI decision tree about recorder schema.
 // When level 2+ is pre-enabled by the caller, the destructor compares the final head order with the entry state and records only meaningful switches, clears, or resumptions of stored production.
 // Earlier versions put the whole constructor/destructor in SASGameRecordLog.cpp. In ordinary Release builds that hides the disabled fast path across the translation-unit boundary.

@@ -1582,6 +1582,10 @@ void CvPlayer::acquireCity(CvCity* pOldCity, bool bConquest, bool bTrade, bool b
 	FAssert(!bConquest || !bTrade); // advc: mutually exclusive
 	// advc.ctr: bForFree isn't meaningful for conquests
 	FAssert(!bForFree || bTrade);
+	// <!-- custom: Bracket the complete synchronous city-transfer operation so old-city removal, recreated-city plot state, CITY_ACQUIRED/context rows and an immediate AI/auto raze share one causal `tx`.
+	// The generic scope self-joins an already-active transaction and is pre-gated at the same level that records city lifecycle consequences. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	bool const bLogSASCityAcquisition = (gGameRecordLogLevel >= 2);
+	SASGameRecordTransactionScope kSASCityAcquisitionTransaction("CITY_ACQUISITION", bLogSASCityAcquisition);
 	CvPlot& kCityPlot = *pOldCity->plot();
 	// Kill ICBMs
 	//CLinkList<IDInfo> oldUnits; ... // advc: Deleted; unnecessary.
@@ -4748,8 +4752,10 @@ void CvPlayer::raze(CvCity& kCity) // advc: param was CvCity*
 	FAssert(kCity.getOwner() == getID());
 
 	// <!-- custom: Pre-gate rare city-raze diagnostics before any logging-only context gathering.
-	// The recorder captures the live city here and finalizes after disband so the same row contains exact consequences rather than a before-only estimate. (ChatGPT-5.6-Sol) -->
+	// The recorder captures the live city here and finalizes after disband so the same row contains exact consequences rather than a before-only estimate.
+	// A later/manual raze starts its own causal transaction, while a synchronous AI/auto raze during acquireCity joins the existing CITY_ACQUISITION transaction. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 	bool const bLogSASCityRaze = (gGameRecordLogLevel >= 2);
+	SASGameRecordTransactionScope kSASCityRazeTransaction("CITY_RAZE", bLogSASCityRaze);
 	if (bLogSASCityRaze) beginSASGameRecordCityRaze(&kCity, getID());
 
 	AI().AI_processRazeMemory(kCity); // advc.003n: Moved into subroutine
