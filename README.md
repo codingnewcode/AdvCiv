@@ -1046,13 +1046,21 @@ BBAI_GAME_RNG mapRandState=3666828707 syncRandState=256979939
 
 `SASGameRecord_*.log` is a separate compact game record for autoplay, AI-strength, and cheap wall-clock performance review. It records broadly, yet in a detailed but also compact/efficient format most of what happens in a game.
 
-Many fields or information are shown, see [README_Main_Changes_Guide.md (SASGameRecord log)](/_1_AdvCiv-SAS/Docs/README_Main_Changes_Guide.md#sasgamerecord-log).
+The `SASGameRecord` log records many fields or information (see [README_Main_Changes_Guide.md (SASGameRecord log)](/_1_AdvCiv-SAS/Docs/README_Main_Changes_Guide.md#sasgamerecord-log)).
 
-Among them, `SASGameRecord` notably gives high-level context, notably initial map/landmass geography and bonus/yield context, economy, expansion, city and battle history, synthetic whole-war outcomes, autoplay start/end, player appearance/elimination, run status, worked plots, unit composition including `UnitCombat` shares, Barbarian cities and pressure, diplomacy, exploration, environmental and map changes, project-victory progress, compact air/missile/nuclear posture, per-city air-base capacity and city-defense state, synthetic city-bombard sequences, and detailed Barbarian positions/combat and air-strike/interception/plot-bomb actions at level 3.
+Thus, the `SASGameRecord` log can be used for various purposes, not just AI auditing or analysis/review. For example, its data can help explain why a specific leader/civ/player/team did well in this game, and help ascertain or determine if it was because the initial map location was advantageous, or if it took good diplomatic/economy/military decisions, if players in the game snowballed or if they were caught up or punished by other players, for example. It may also help the human player ask LLMs (or whichever tool/assistant they use to review the `SASGameRecord`) what they did wrong or for detailed strategic/tactical analysis. Because the record currently contains spoilers, this should preferably be done after the game is finished.
+
+Or the data in the `SASGameRecord` log can also help analyze whether the XML balance is fair: for example some leaders like Isabella (Spain) produce their civ-specific building (as of now Lonja (Market)) late game at ~T200 but it seems still useful, however Joao (Portugal) and Willem (Netherlands) almost never produced their old naval civ-specific buildings even on coastal cities, which helped assess these buildings were too weak and replace them with fairer, broader, and thus stronger for them land-based buildings (plus other effects as well as part of the rework to see what may fit/suit this civ/leader) better.
+
+The `SASGameRecord` log is therefore a broad logging tool, not just an AI sniping/logger.
+
+Among the other fields it logs, the `SASGameRecord` log notably gives high-level context, notably initial map/landmass geography and bonus/yield context, economy, expansion, city and battle history, synthetic whole-war outcomes, autoplay start/end, player appearance/elimination, run status, worked plots, unit composition including `UnitCombat` shares, Barbarian cities and pressure, diplomacy, exploration, environmental and map changes, project-victory progress, compact air/missile/nuclear posture, per-city air-base capacity and city-defense state, synthetic city-bombard sequences, and detailed Barbarian positions/combat and air-strike/interception/plot-bomb actions at level 3.
 
 SASGameRecord notably also records the realized Civ4 random-event (`EventTrigger` / `EventInfo`) lifecycle: delivered triggers, the EventInfo actually selected by an AI or human, concrete target validity, accepted/rejected replies, meaningful quest/event expiry, and variable realized results such as gold, technology progress, pillaging, free units and follow-up events.
 
 Level 3 can notably also preserve the active player's current Foreign-Advisor-style trade market: pairwise resource/technology offerability, refusal/mechanical reasons, extra gold/GPT capacity, optional resource GPT quotes, and optional recipient-side AI technology trade values. This is useful on its own and also helps an LLM interpret detailed BBAI decision traces.
+
+Level 3 also records compact reproducibility checkpoints for Civ4's authoritative map and synchronized RNG streams. Per-turn and rare lifecycle boundaries retain stream states, call/seed-set counts, and ordered fingerprints—including RNG advances that have no RandLog message—without emitting one row per roll; async/UI and temporary local RNG objects are deliberately excluded.
 
 Free-text values such as city, player, leader, civ, map-script, and log-file names are quoted and escaped so names with spaces remain parser-friendly. It is currently an all-player diagnostic record and can contain spoilers, so it is not a spoiler-free player-advice export.
 
@@ -1098,6 +1106,8 @@ GAME_RECORD_TURN_END turn=10 reason=interval sessionWallMilliseconds=17102 snaps
 ```
 
 <img src="./_1_AdvCiv-SAS/Images/LLM/SASGameRecord_example.PNG" alt="SASGameRecord_example.PNG" width="250"></img>
+
+Note: when sending this file or other logs to external/web LLMs such as ChatGPT, ZIP them first for a smaller upload and, currently, a substantially faster one; uploading raw `.log` files can hang or take much longer.
 
 ## CuCuGS
 

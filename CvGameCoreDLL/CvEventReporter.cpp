@@ -169,6 +169,8 @@ void CvEventReporter::gameStart()
 	if (isSASBBAILogEnabled()) logSASBBAINewGameStarted();
 	if (isSASGameRecordLogEnabled()) logSASGameRecordNewGameStarted();
 	m_kPythonEventMgr.reportGameStart();
+	// <!-- custom: End the level-3 initialization RNG interval only after Python gameStart too, so map/setup consumption has one complete baseline before normal gameplay begins. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (g_bSASGameRecordRngTrackingActive) logSASGameRecordRngCheckpoint(GC.getGame().getGameTurn(), SAS_RNG_CHECKPOINT_NEW_GAME_INITIALIZED);
 }
 
 void CvEventReporter::gameEnd()

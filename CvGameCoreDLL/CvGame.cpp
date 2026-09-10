@@ -62,8 +62,6 @@ void CvGame::init(HandicapTypes eHandicap)
 {
 	CvInitCore& ic = GC.getInitCore();
 
-	// <!-- custom: Preserve buffered observations in the preceding GameRecord session before reset destroys the old game and map state. See KI#382. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
-	if (isSASGameRecordLogEnabled()) finalizeSASGameRecordLogSession();
 	reset(eHandicap); // Reset serialized data
 	// <!-- custom: Start distinct diagnostic/report files before map generation so a new game begun after save-file tests does not continue writing to the last loaded-save logs. Caller-gated to avoid entering disabled logging helpers. (GPT-5.5) -->
 	if (isSASBBAILogEnabled()) startSASBBAILogForNewGame();
@@ -86,6 +84,8 @@ void CvGame::init(HandicapTypes eHandicap)
 	getSorenRand().init(ic.getSyncRandSeed());
 	m_initialRandSeed.uiMap = getMapRand().getSeed();
 	m_initialRandSeed.uiSync = getSorenRand().getSeed(); // <advc.027b>
+	// <!-- custom: Start level-3 RNG divergence tracking only after the authoritative new-game seeds exist, so map-generation/setup consumption has a meaningful session baseline instead of the pre-init zeroed CvRandom state. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 3) initializeSASGameRecordRngTracking();
 
 	// Init non-serialized data ...
 
@@ -364,6 +364,10 @@ void CvGame::regenerateMap(/* advc.tsl: */ bool bAutomated)
 {
 	if (GC.getInitCore().getWBMapScript())
 		return;
+	// <!-- custom: A non-automated main-menu/WorldBuilder regeneration explicitly replaces the authoritative map outside the recursive AUTO_REGEN_MAP setup path.
+	// Open a dedicated level-3 interval before old-map teardown so its end checkpoint measures the complete regeneration burst.
+	// AUTO_REGEN_MAP is excluded because it can recurse through setInitialItems(); the outer setup interval remains the truthful boundary for that nested initialization chain. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (g_bSASGameRecordRngTrackingActive && !bAutomated) logSASGameRecordRngCheckpoint(getGameTurn(), SAS_RNG_CHECKPOINT_MAP_REGENERATION_BEGIN);
 	CvMap& kMap = GC.getMap();
 	/*	<advc.004j> Not sure if the unmodded game or any mod included with AdvCiv
 		uses script data, but can't hurt to reset it. CvDLLButtonPopup::
@@ -458,6 +462,8 @@ void CvGame::regenerateMap(/* advc.tsl: */ bool bAutomated)
 	m_eInitialActivePlayer = NO_PLAYER; // advc.106h
 	setInitialItems();
 	// <advc.tsl>
+	// <!-- custom: AUTO_REGEN_MAP can recurse through setInitialItems(), so its return must not close nested regenerations in reverse order and create misleading near-empty intervals.
+	// Keep the complete automated chain in NEW_GAME_INITIALIZED; only manual regeneration reaches the end checkpoint below. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 	if (bAutomated)
 		return; // </advc.tsl>
 
@@ -507,6 +513,9 @@ void CvGame::regenerateMap(/* advc.tsl: */ bool bAutomated)
 				setUpdateTimer(UPDATE_LOOK_AT_STARTING_PLOT, 5); // </advc.004j>
 		}
 	}
+	// <!-- custom: Close manual regeneration only after graphical/player-facing setup, Rise & Fall reinitialization/autosave, and Dawn/start-camera setup have completed.
+	// Together with MAP_REGENERATION_BEGIN this isolates the full regeneration RNG burst without logging individual rolls. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (g_bSASGameRecordRngTrackingActive) logSASGameRecordRngCheckpoint(getGameTurn(), SAS_RNG_CHECKPOINT_MAP_REGENERATION_END);
 }
 
 // advc.004j:
@@ -603,6 +612,10 @@ void CvGame::setStartTurnYear(int iTurn)
 	loading a savegame, but it seems safer to do so.) */
 void CvGame::reset(HandicapTypes eHandicap, bool bConstructorCall)
 {
+	// <!-- custom: The EXE can call this exported reset directly, before CvGame::init/read.
+	// Finalize every non-constructor GameRecord session here while the old game, map and authoritative RNG states still exist; this also prevents reset() from recording its seed-zeroing as old-session RNG consumption.
+	// CvMap::read retains duplicate-safe protection for load orders that replace the map independently. See KI#382. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (!bConstructorCall && isSASGameRecordLogEnabled()) finalizeSASGameRecordLogSession();
 	uninit();
 
 	m_bAllGameDataRead = false; // advc;
@@ -5620,6 +5633,9 @@ void CvGame::setWinner(TeamTypes eNewWinner, VictoryTypes eNewVictory)
 		if (bSASFastSaveGameEnd)
 			GC.getPythonCaller()->call("saveGameEnd", "SASFastSave", true, true);
 	}
+	// <!-- custom: Winner assignment can happen outside normal turn end, and Rise & Fall suppresses CvEventReporter::victory.
+	// Sample after either mode's victory callback/save work but before GAMESTATE_OVER, keeping the VICTORY and GAME_END checkpoint order chronological. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (g_bSASGameRecordRngTrackingActive && (getWinner() != NO_TEAM || getVictory() != NO_VICTORY)) logSASGameRecordRngCheckpoint(getGameTurn(), SAS_RNG_CHECKPOINT_VICTORY);
 	if (getVictory() != NO_VICTORY)
 	{
 		if (getWinner() != NO_TEAM)
@@ -5680,6 +5696,9 @@ void CvGame::setGameState(GameStateTypes eNewValue)
 			if (pInfo != NULL)
 				itHuman->addPopup(pInfo);
 		}
+		// <!-- custom: Close the terminal RNG interval at the actual GAMESTATE_OVER boundary, after Python gameEnd/end-save callbacks, optional SAS Fast Save, Rise & Fall transition preparation, and end-sequence setup.
+		// Engine-owned terminal work continues after CvEventReporter::gameEnd, so that callback is intentionally not the boundary. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+		if (g_bSASGameRecordRngTrackingActive) logSASGameRecordRngCheckpoint(getGameTurn(), SAS_RNG_CHECKPOINT_GAME_END);
 	}
 	gDLL->UI().setDirty(Cursor_DIRTY_BIT, true);
 }
@@ -6347,6 +6366,9 @@ void CvGame::doTurn()
 		if (getAIAutoPlay() == 0)
 			reviveActivePlayer();
 	}
+	// <!-- custom: CvEventReporter::endGameTurn fires before autoplay/sync cleanup. Close the old RNG interval here: all work above still belongs to the current turn, while the counter advances below begin new-turn initialization.
+	// This avoids attributing new-turn deal expiry, Rise & Fall setup, votes, player activation, or victory checks to the turn that just ended. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (g_bSASGameRecordRngTrackingActive) logSASGameRecordRngCheckpoint(getGameTurn(), SAS_RNG_CHECKPOINT_END_GAME_TURN);
 
 	// <!-- custom: Corporation maintenance is cached after dividing out inflation, but AdvCiv computes inflation on demand.
 	// Preserve each effective rate across the two clock increments and rebuild only players whose rounded rate changed, preventing cached inverse-inflation terms from becoming obsolete. See KI#744. (GPT-5.6-Sol) -->
@@ -9767,6 +9789,8 @@ void CvGame::onAllGameDataRead()
 		if (itActive->isTurnActive())
 			itActive->validateDiplomacy();
 	} // </advc.134a>
+	// <!-- custom: Loaded-session tracking begins once complete serialized state is available; close its initialization interval only after all load-finalization work so its RNG use is not attributed to the first played turn. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (g_bSASGameRecordRngTrackingActive) logSASGameRecordRngCheckpoint(getGameTurn(), SAS_RNG_CHECKPOINT_SAVE_LOADED);
 }
 
 

@@ -1,3 +1,6 @@
+// AI, UI, logging, or other modifications first developed in AdvCiv-SAS
+// (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
+
 #pragma once
 
 #ifndef SAS_GAME_RECORD_LOG_H
@@ -14,6 +17,32 @@ void finalizeSASGameRecordLogSession();
 void startSASGameRecordLogForNewGame();
 void logSASGameRecordNewGameStarted();
 void startSASGameRecordLogForLoadedSave();
+
+class CvRandom;
+// <!-- custom: Level-3 RNG divergence tracking observes every advance of the authoritative game map/synchronized RNGs, including calls with NULL RandLog messages.
+// Async randomness is intentionally excluded because it is deliberately non-lockstep/client-sensitive; local/temporary CvRandom helpers are excluded because they do not advance CvGame's authoritative map/synchronized streams.
+// Keep the hot-path gate as one shared extern boolean so disabled/lower-detail runs do not call a recorder helper for every random number.
+// Tracking state is recorder-local only and never serialized into CvRandom or savegames. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+extern bool g_bSASGameRecordRngTrackingActive;
+// <!-- custom: Keep this closed recorder-only checkpoint vocabulary beside its API; unlike gameplay-wide cause metadata in CvEnums.h, these values exist solely to make distant SASGameRecord lifecycle hooks typo-safe and do not belong in CvGameCoreUtils. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+enum SASGameRecordRngCheckpointReason
+{
+	SAS_RNG_CHECKPOINT_NEW_GAME_INITIALIZED,
+	SAS_RNG_CHECKPOINT_MAP_REGENERATION_BEGIN,
+	SAS_RNG_CHECKPOINT_MAP_REGENERATION_END,
+	SAS_RNG_CHECKPOINT_AUTOPLAY_BEGIN,
+	SAS_RNG_CHECKPOINT_AUTOPLAY_END,
+	SAS_RNG_CHECKPOINT_END_GAME_TURN,
+	SAS_RNG_CHECKPOINT_VICTORY,
+	SAS_RNG_CHECKPOINT_GAME_END,
+	SAS_RNG_CHECKPOINT_SAVE_LOADED,
+	SAS_RNG_CHECKPOINT_SESSION_FINALIZE
+};
+void initializeSASGameRecordRngTracking();
+void noteSASGameRecordRandomCall(CvRandom const* pRandom, unsigned short usRange, TCHAR const* szLog, int iData1, int iData2);
+void noteSASGameRecordExternalRandomCall(CvRandom const* pRandom);
+void noteSASGameRecordRandomSeedSet(CvRandom const* pRandom, unsigned int uiOldState, unsigned int uiNewState, bool bReseed);
+void logSASGameRecordRngCheckpoint(int iGameTurn, SASGameRecordRngCheckpointReason eReason);
 
 class CvCity;
 // <!-- custom: Required by random-event APIs using CvPlayer references; this lightweight declaration fixed the resulting AgentIterator/CvPlayer compile errors. (GPT-5.6-Sol) -->
@@ -181,6 +210,8 @@ void logSASGameRecordBarbarianSpawn(CvUnit const* pUnit, char const* szCause);
 // <!-- custom: Level-2 goody rows preserve each realized hut outcome; level 3 keeps the existing exact Barbarian-spawn rows as complementary tactical detail. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordGoodyReceived(PlayerTypes ePlayer, CvPlot const* pPlot, CvUnit const* pTriggerUnit, GoodyTypes eGoody, SASGameRecordGoodyResult const& kResult);
 void logSASGameRecordGoodyNoOutcome(PlayerTypes ePlayer, CvPlot const* pPlot, CvUnit const* pTriggerUnit, GoodyTypes eTaboo, int iAttempts);
+// <!-- custom: Random-event delivery paths, apply dispositions, expiry reasons, affected scopes, and occurrence-clear scopes are separate small diagnostic vocabularies, each currently produced by one tightly coupled gameplay path and consumed only by SASGameRecord.
+// Keep their fixed string literals instead of conflating them in one permissive catch-all enum or adding several one-consumer enums and conversion switches. Promote an individual vocabulary to a typed enum if another independent producer or subsystem begins reusing it. (GPT-5.6-Sol) -->
 // <!-- custom: Civ4 EventInfo/random-event history is deliberately separate from generic GAME_RECORD_ACTION rows.
 // Calls are level-2 pre-gated at authoritative gameplay boundaries so disabled/level-1 runs do not collect target validity or construct diagnostic strings. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
 void logSASGameRecordRandomEventTriggered(CvPlayer const& kPlayer, EventTriggeredData const& kTriggeredData, char const* szDeliveryPath);

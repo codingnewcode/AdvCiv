@@ -1,3 +1,8 @@
+// AI, UI, logging, or other modifications first developed in AdvCiv-SAS
+// (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
+
+// <!-- custom: To validate or compare level-3 authoritative-RNG checkpoints, use /LLM_Helpers/compare_sasgamerecord_rng.py; /LLM_Helpers/examples/sasgamerecord_rng_compared.txt shows a maintained provenance-only divergence report. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+
 #include "CvGameCoreDLL.h"
 #include "SASGameRecordLog.h"
 #include "CvGame.h" // <!-- custom: Needed for game-record turn, game-state, victory, RNG, and map-classification context rows. (GPT-5.5) -->
@@ -198,6 +203,325 @@ static bool g_bSASGameRecordBufferInitializingActions = false;
 static std::vector<std::pair<CvString, std::string> > g_aszSASGameRecordInitializingActions;
 static void flushSASGameRecordPendingCityBombard();
 static bool g_bSASGameRecordFlushingCityBombard = false;
+
+// <!-- custom: Level-3 reproducibility telemetry observes the two authoritative CvGame RNG streams without changing CvRandom's serialized 8-byte layout.
+// RandLog intentionally remains the raw per-roll diagnostic; these trackers instead retain compact checkpoint-interval/session counts plus two order-sensitive FNV-1a fingerprints.
+// Session fingerprints stay 64-bit; interval fingerprints deliberately use 32-bit FNV because every checkpoint also carries interval start/end state and counters plus both independent fingerprints. This halves duplicated 64-bit multiply work in Civ4's 32-bit hot RNG path while retaining a strong interval-local diagnostic signal.
+// The stream fingerprint hashes the ordered abstract RNG operations needed to reproduce returned values: ROLL(requested upper bound) plus effective SEED_SET(new state) operations; a redundant same-state assignment is retained only in call provenance because it cannot alter any random value.
+// With the same session-start state and CvRandom algorithm, it therefore remains useful across source builds even when logging labels move, and still stays meaningful if benchmark/Python code deliberately reseeds an authoritative stream mid-session.
+// The richer call fingerprint additionally hashes a compact stable digest/length of the optional message, data1/data2 and EXE-wrapper origin for rolls, plus old/new state and reset-vs-reseed origin for seed sets. Each detailed operation is first reduced with cheap 32-bit FNV, then fed into the 64-bit session accumulator and native 32-bit interval accumulator, avoiding duplicated emulated 64-bit multiplies on Civ4's 32-bit build.
+// Messages often contain CALL_LOC_STR source locations, so exact call-fingerprint comparison is intentionally strongest for runs using the same DLL/source build; states, counts and stream fingerprints remain independently useful across builds.
+// As with the existing DLL FNV identifier, these are diagnostic divergence fingerprints rather than cryptographic proofs; independent seed/state/counter fields remain visible beside them.
+// NULL-message calls are important: CvRandom shuffles and some iterator randomization advance synchronized state while intentionally producing no RandLog row.
+// Async RNG is deliberately non-lockstep and can vary with client/UI activity (even though a few local human-interaction paths can use its result); local CvRandom helpers likewise do not advance CvGame's two authoritative streams.
+// Ignore both by pointer identity so this fingerprint answers synchronized/map-stream reproducibility rather than conflating independent randomness with it.
+// Python/third-party RNGs that do not advance these CvRandom objects, clocks and other external nondeterminism are likewise outside this layer; matching checkpoints are strong authoritative-RNG evidence, not a proof that all mutable game state is identical. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+bool g_bSASGameRecordRngTrackingActive = false;
+
+struct SASGameRecordRngTracker
+{
+	SASGameRecordRngTracker() { clear(); }
+	void clear()
+	{
+		bInitialized = false;
+		bNextCallExternal = false;
+		uiSessionStartState = uiIntervalStartState = 0;
+		uiSessionCalls = uiIntervalCalls = 0;
+		uiSessionNullMessageCalls = uiIntervalNullMessageCalls = 0;
+		uiSessionExternalCalls = uiIntervalExternalCalls = 0;
+		uiSessionDeterministicRangeCalls = uiIntervalDeterministicRangeCalls = 0;
+		uiSessionSeedSets = uiIntervalSeedSets = 0;
+		uiSessionStreamFingerprint = getOffsetBasis64();
+		uiSessionCallFingerprint = getOffsetBasis64();
+		uiIntervalStreamFingerprint = getOffsetBasis32();
+		uiIntervalCallFingerprint = getOffsetBasis32();
+	}
+	void initialize(unsigned int uiState)
+	{
+		clear();
+		bInitialized = true;
+		uiSessionStartState = uiIntervalStartState = uiState;
+	}
+	void resetInterval(unsigned int uiState)
+	{
+		uiIntervalStartState = uiState;
+		uiIntervalCalls = 0;
+		uiIntervalNullMessageCalls = 0;
+		uiIntervalExternalCalls = 0;
+		uiIntervalDeterministicRangeCalls = 0;
+		uiIntervalSeedSets = 0;
+		uiIntervalStreamFingerprint = getOffsetBasis32();
+		uiIntervalCallFingerprint = getOffsetBasis32();
+	}
+	static unsigned __int64 getOffsetBasis64() { return ((unsigned __int64)0xCBF29CE4 << 32) | 0x84222325; }
+	static unsigned int getOffsetBasis32() { return 2166136261u; }
+	bool bInitialized;
+	bool bNextCallExternal;
+	unsigned int uiSessionStartState;
+	unsigned int uiIntervalStartState;
+	unsigned __int64 uiSessionCalls;
+	unsigned __int64 uiIntervalCalls;
+	unsigned __int64 uiSessionNullMessageCalls;
+	unsigned __int64 uiIntervalNullMessageCalls;
+	unsigned __int64 uiSessionExternalCalls;
+	unsigned __int64 uiIntervalExternalCalls;
+	unsigned __int64 uiSessionDeterministicRangeCalls;
+	unsigned __int64 uiIntervalDeterministicRangeCalls;
+	unsigned __int64 uiSessionSeedSets;
+	unsigned __int64 uiIntervalSeedSets;
+	unsigned __int64 uiSessionStreamFingerprint;
+	unsigned int uiIntervalStreamFingerprint;
+	unsigned __int64 uiSessionCallFingerprint;
+	unsigned int uiIntervalCallFingerprint;
+};
+
+static SASGameRecordRngTracker g_kSASGameRecordMapRng;
+static SASGameRecordRngTracker g_kSASGameRecordSyncRng;
+// <!-- custom: Cache the two authoritative object addresses at session initialization so the level-3 hot path needs only pointer comparisons, not GC/CvGame lookups, for every RNG advance. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+static CvRandom const* g_pSASGameRecordMapRng = NULL;
+static CvRandom const* g_pSASGameRecordSyncRng = NULL;
+
+static void updateSASGameRecordFNV1AByte(unsigned __int64& uiHash, unsigned char ucValue)
+{
+	static unsigned __int64 const uiPrime = ((unsigned __int64)0x00000100 << 32) | 0x000001B3;
+	uiHash ^= ucValue;
+	uiHash *= uiPrime;
+}
+
+static void updateSASGameRecordFNV1AUInt16(unsigned __int64& uiHash, unsigned short usValue)
+{
+	updateSASGameRecordFNV1AByte(uiHash, (unsigned char)(usValue & 0xFF));
+	updateSASGameRecordFNV1AByte(uiHash, (unsigned char)(usValue >> 8));
+}
+
+static void updateSASGameRecordFNV1AUInt32(unsigned __int64& uiHash, unsigned int uiValue)
+{
+	for (int iShift = 0; iShift < 32; iShift += 8)
+		updateSASGameRecordFNV1AByte(uiHash, (unsigned char)((uiValue >> iShift) & 0xFF));
+}
+
+static void updateSASGameRecordFNV1A32Byte(unsigned int& uiHash, unsigned char ucValue)
+{
+	uiHash ^= ucValue;
+	uiHash *= 16777619u;
+}
+
+static void updateSASGameRecordFNV1A32UInt16(unsigned int& uiHash, unsigned short usValue)
+{
+	updateSASGameRecordFNV1A32Byte(uiHash, (unsigned char)(usValue & 0xFF));
+	updateSASGameRecordFNV1A32Byte(uiHash, (unsigned char)(usValue >> 8));
+}
+
+static void updateSASGameRecordFNV1A32UInt32(unsigned int& uiHash, unsigned int uiValue)
+{
+	for (int iShift = 0; iShift < 32; iShift += 8)
+		updateSASGameRecordFNV1A32Byte(uiHash, (unsigned char)((uiValue >> iShift) & 0xFF));
+}
+
+static unsigned int getSASGameRecordRandomMessageHash(TCHAR const* szLog, unsigned int& uiLength)
+{
+	unsigned int uiHash = 2166136261u;
+	uiLength = 0;
+	if (szLog == NULL)
+		return uiHash;
+	// <!-- custom: Source-location labels can be long and RNG calls are hot.
+	// Reduce the message with cheap 32-bit FNV first instead of doing an emulated 64-bit multiply for every character on Civ4's 32-bit build. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (sizeof(TCHAR) == 1)
+	{
+		for (TCHAR const* pChar = szLog; *pChar != 0; pChar++, uiLength++)
+			updateSASGameRecordFNV1A32Byte(uiHash, (unsigned char)*pChar);
+	}
+	else
+	{
+		for (TCHAR const* pChar = szLog; *pChar != 0; pChar++, uiLength++)
+		{
+			unsigned short const usChar = (unsigned short)*pChar;
+			updateSASGameRecordFNV1A32Byte(uiHash, (unsigned char)(usChar & 0xFF));
+			updateSASGameRecordFNV1A32Byte(uiHash, (unsigned char)(usChar >> 8));
+		}
+	}
+	return uiHash;
+}
+
+static unsigned int getSASGameRecordRandomCallSignature(unsigned short usRange, TCHAR const* szLog, int iData1, int iData2, bool bExternal)
+{
+	// <!-- custom: Collapse each detailed call context with cheap 32-bit FNV first; feed that token into the 64-bit session fingerprint and native 32-bit interval fingerprint.
+	// This keeps detailed provenance without duplicating the expensive 64-bit accumulator on Civ4's 32-bit build. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	unsigned int uiHash = 2166136261u;
+	updateSASGameRecordFNV1A32Byte(uiHash, 0xA7); // <!-- custom: Detailed ROLL boundary/version marker. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	updateSASGameRecordFNV1A32UInt16(uiHash, usRange);
+	updateSASGameRecordFNV1A32UInt32(uiHash, (unsigned int)iData1);
+	updateSASGameRecordFNV1A32UInt32(uiHash, (unsigned int)iData2);
+	updateSASGameRecordFNV1A32Byte(uiHash, bExternal ? 1 : 0);
+	if (szLog == NULL)
+		updateSASGameRecordFNV1A32Byte(uiHash, 0);
+	else
+	{
+		updateSASGameRecordFNV1A32Byte(uiHash, 1);
+		unsigned int uiMessageLength = 0;
+		unsigned int const uiMessageHash = getSASGameRecordRandomMessageHash(szLog, uiMessageLength);
+		updateSASGameRecordFNV1A32UInt32(uiHash, uiMessageLength);
+		updateSASGameRecordFNV1A32UInt32(uiHash, uiMessageHash);
+	}
+	return uiHash;
+}
+
+static unsigned int getSASGameRecordRandomSeedSetCallSignature(unsigned int uiOldState, unsigned int uiNewState, bool bReseed)
+{
+	unsigned int uiHash = 2166136261u;
+	updateSASGameRecordFNV1A32Byte(uiHash, 0xA8); // <!-- custom: Detailed SEED_SET boundary/version marker. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	updateSASGameRecordFNV1A32UInt32(uiHash, uiOldState);
+	updateSASGameRecordFNV1A32UInt32(uiHash, uiNewState);
+	updateSASGameRecordFNV1A32Byte(uiHash, bReseed ? 1 : 0);
+	return uiHash;
+}
+
+// <!-- custom: CvRandom callers already pre-gate on active level-3 tracking. Returning NULL here is a separate stream-identity filter that rejects async and temporary/local RNG objects while retaining only CvGame's authoritative map and synchronized streams. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+static SASGameRecordRngTracker* getSASGameRecordRngTracker(CvRandom const* pRandom)
+{
+	if (pRandom == g_pSASGameRecordMapRng)
+		return &g_kSASGameRecordMapRng;
+	if (pRandom == g_pSASGameRecordSyncRng)
+		return &g_kSASGameRecordSyncRng;
+	return NULL;
+}
+
+static void clearSASGameRecordRngTracking()
+{
+	g_bSASGameRecordRngTrackingActive = false;
+	g_pSASGameRecordMapRng = NULL;
+	g_pSASGameRecordSyncRng = NULL;
+	g_kSASGameRecordMapRng.clear();
+	g_kSASGameRecordSyncRng.clear();
+}
+
+void initializeSASGameRecordRngTracking()
+{
+	clearSASGameRecordRngTracking();
+	CvGame& kGame = GC.getGame();
+	g_pSASGameRecordMapRng = &kGame.getMapRand();
+	g_pSASGameRecordSyncRng = &kGame.getSorenRand();
+	g_kSASGameRecordMapRng.initialize(kGame.getMapRand().getSeed());
+	g_kSASGameRecordSyncRng.initialize(kGame.getSorenRand().getSeed());
+	g_bSASGameRecordRngTrackingActive = true;
+}
+
+void noteSASGameRecordExternalRandomCall(CvRandom const* pRandom)
+{
+	SASGameRecordRngTracker* pTracker = getSASGameRecordRngTracker(pRandom);
+	if (pTracker == NULL || !pTracker->bInitialized)
+		return;
+	// <!-- custom: getExternal immediately calls get/getInt after this marker; retain EXE origin in both counters and that next call's fingerprint. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	pTracker->bNextCallExternal = true;
+}
+
+void noteSASGameRecordRandomCall(CvRandom const* pRandom, unsigned short usRange, TCHAR const* szLog, int iData1, int iData2)
+{
+	SASGameRecordRngTracker* pTracker = getSASGameRecordRngTracker(pRandom);
+	if (pTracker == NULL || !pTracker->bInitialized)
+		return;
+	bool const bExternal = pTracker->bNextCallExternal;
+	pTracker->bNextCallExternal = false;
+	// <!-- custom: Hash the abstract stream operation directly, avoiding a nested signature. The requested range is intrinsically 16-bit, so hash exactly those two bytes rather than doing redundant work on two guaranteed-zero bytes.
+	// Keep cumulative/session hashes 64-bit, but use native 32-bit FNV for interval copies; checkpoint state/counters plus both hashes make that cheaper signal sufficiently strong for interval-local diagnosis. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	updateSASGameRecordFNV1AByte(pTracker->uiSessionStreamFingerprint, 0x52);
+	updateSASGameRecordFNV1AUInt16(pTracker->uiSessionStreamFingerprint, usRange);
+	updateSASGameRecordFNV1A32Byte(pTracker->uiIntervalStreamFingerprint, 0x52);
+	updateSASGameRecordFNV1A32UInt16(pTracker->uiIntervalStreamFingerprint, usRange);
+	unsigned int const uiCallSignature = getSASGameRecordRandomCallSignature(usRange, szLog, iData1, iData2, bExternal);
+	updateSASGameRecordFNV1AUInt32(pTracker->uiSessionCallFingerprint, uiCallSignature);
+	updateSASGameRecordFNV1A32UInt32(pTracker->uiIntervalCallFingerprint, uiCallSignature);
+	pTracker->uiSessionCalls++;
+	pTracker->uiIntervalCalls++;
+	if (szLog == NULL)
+	{
+		pTracker->uiSessionNullMessageCalls++;
+		pTracker->uiIntervalNullMessageCalls++;
+	}
+	if (bExternal)
+	{
+		pTracker->uiSessionExternalCalls++;
+		pTracker->uiIntervalExternalCalls++;
+	}
+	// <!-- custom: A low-level range <=1 still advances the seed despite yielding no entropy (the ordinary public range-0 wrapper returns before reaching here, so this is normally range 1). CvRandom::shuffle deliberately reaches range 1 on its final iteration.
+	// Count rather than "optimizing" such calls away because their seed consumption is part of Civ4's synchronized RNG sequence and shifts every later result. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (usRange <= 1)
+	{
+		pTracker->uiSessionDeterministicRangeCalls++;
+		pTracker->uiIntervalDeterministicRangeCalls++;
+	}
+}
+
+void noteSASGameRecordRandomSeedSet(CvRandom const* pRandom, unsigned int uiOldState, unsigned int uiNewState, bool bReseed)
+{
+	SASGameRecordRngTracker* pTracker = getSASGameRecordRngTracker(pRandom);
+	if (pTracker == NULL || !pTracker->bInitialized)
+		return;
+	pTracker->bNextCallExternal = false; // <!-- custom: A seed replacement cannot inherit a pending EXE-roll classification. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	// <!-- custom: A seed replacement is part of the authoritative RNG operation stream even though it consumes no roll. This is rare (notably benchmark Python can call CyRandom.init mid-session), so retain an explicit row too.
+	// Hash it into the value-stream fingerprint only when it actually changes state: redundantly assigning the current seed changes call provenance but not any present/future random values, so it belongs only in the richer call fingerprint/counters below. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (uiOldState != uiNewState)
+	{
+		updateSASGameRecordFNV1AByte(pTracker->uiSessionStreamFingerprint, 0x53);
+		updateSASGameRecordFNV1AUInt32(pTracker->uiSessionStreamFingerprint, uiNewState);
+		updateSASGameRecordFNV1A32Byte(pTracker->uiIntervalStreamFingerprint, 0x53);
+		updateSASGameRecordFNV1A32UInt32(pTracker->uiIntervalStreamFingerprint, uiNewState);
+	}
+	unsigned int const uiCallSignature = getSASGameRecordRandomSeedSetCallSignature(uiOldState, uiNewState, bReseed);
+	updateSASGameRecordFNV1AUInt32(pTracker->uiSessionCallFingerprint, uiCallSignature);
+	updateSASGameRecordFNV1A32UInt32(pTracker->uiIntervalCallFingerprint, uiCallSignature);
+	pTracker->uiSessionSeedSets++;
+	pTracker->uiIntervalSeedSets++;
+	char const* szStream = (pTracker == &g_kSASGameRecordMapRng ? "MAP" : "SYNC");
+	// <!-- custom: Position the rare replacement precisely within both the current checkpoint interval and recorder session. This lets external tooling reconstruct seed progression around a mid-turn benchmark/Python reseed without per-roll SASGameRecord rows. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_RNG_SEED_SET turn=%d stream=%s operation=%s oldState=%u newState=%u intervalCalls=%I64u sessionCalls=%I64u intervalSeedSets=%I64u sessionSeedSets=%I64u",
+		GC.getGame().getGameTurn(), szStream, bReseed ? "RESEED" : "RESET_OR_INIT", uiOldState, uiNewState, pTracker->uiIntervalCalls,
+		pTracker->uiSessionCalls, pTracker->uiIntervalSeedSets, pTracker->uiSessionSeedSets);
+}
+
+// <!-- custom: Fixed checkpoint boundaries are an enum rather than caller-written strings, preventing silent spelling drift in rows consumed by cross-run comparison tooling. Convert that recorder-owned vocabulary to its stable schema text in one place. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+static char const* getSASGameRecordRngCheckpointReason(SASGameRecordRngCheckpointReason eReason)
+{
+	switch (eReason)
+	{
+	case SAS_RNG_CHECKPOINT_NEW_GAME_INITIALIZED: return "NEW_GAME_INITIALIZED";
+	case SAS_RNG_CHECKPOINT_MAP_REGENERATION_BEGIN: return "MAP_REGENERATION_BEGIN";
+	case SAS_RNG_CHECKPOINT_MAP_REGENERATION_END: return "MAP_REGENERATION_END";
+	case SAS_RNG_CHECKPOINT_AUTOPLAY_BEGIN: return "AUTOPLAY_BEGIN";
+	case SAS_RNG_CHECKPOINT_AUTOPLAY_END: return "AUTOPLAY_END";
+	case SAS_RNG_CHECKPOINT_END_GAME_TURN: return "END_GAME_TURN";
+	case SAS_RNG_CHECKPOINT_VICTORY: return "VICTORY";
+	case SAS_RNG_CHECKPOINT_GAME_END: return "GAME_END";
+	case SAS_RNG_CHECKPOINT_SAVE_LOADED: return "SAVE_LOADED";
+	case SAS_RNG_CHECKPOINT_SESSION_FINALIZE: return "SESSION_FINALIZE";
+	}
+	FAssertMsg(false, "Unknown SASGameRecord RNG checkpoint reason");
+	return "UNKNOWN";
+}
+
+// <!-- custom: Callers pre-gate on active tracking so disabled levels never enter this substantial snapshot path. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+void logSASGameRecordRngCheckpoint(int iGameTurn, SASGameRecordRngCheckpointReason eReason)
+{
+	// <!-- custom: Flush the recorder's synthetic bombard sequence before sampling/resetting the RNG interval so future logging-side code cannot accidentally fall between the captured state and interval reset. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	flushSASGameRecordPendingCityBombard();
+	CvGame& kGame = GC.getGame();
+	SASGameRecordRngTracker& kMap = g_kSASGameRecordMapRng;
+	SASGameRecordRngTracker& kSync = g_kSASGameRecordSyncRng;
+	unsigned int const uiMapState = kGame.getMapRand().getSeed();
+	unsigned int const uiSyncState = kGame.getSorenRand().getSeed();
+	// <!-- custom: Snapshot the completed interval, then establish the next interval before writing the row.
+	// If present or future logging unexpectedly consumes authoritative RNG, that consumption stays in the new interval instead of being counted and erased by a post-log reset. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	SASGameRecordRngTracker const kMapCompleted = kMap;
+	SASGameRecordRngTracker const kSyncCompleted = kSync;
+	kMap.resetInterval(uiMapState);
+	kSync.resetInterval(uiSyncState);
+	logSASGameRecord("GAME_RECORD_RNG_CHECKPOINT turn=%d reason=%s rngFingerprintSchema=1 mapSessionStartState=%u mapIntervalStartState=%u mapState=%u mapIntervalCalls=%I64u mapSessionCalls=%I64u mapIntervalNullMessageCalls=%I64u mapSessionNullMessageCalls=%I64u mapIntervalExternalCalls=%I64u mapSessionExternalCalls=%I64u mapIntervalDeterministicRangeCalls=%I64u mapSessionDeterministicRangeCalls=%I64u mapIntervalSeedSets=%I64u mapSessionSeedSets=%I64u mapIntervalStreamFingerprint=FNV1A32:%08X mapSessionStreamFingerprint=FNV1A64:%016I64X mapIntervalCallFingerprint=FNV1A32:%08X mapSessionCallFingerprint=FNV1A64:%016I64X syncSessionStartState=%u syncIntervalStartState=%u syncState=%u syncIntervalCalls=%I64u syncSessionCalls=%I64u syncIntervalNullMessageCalls=%I64u syncSessionNullMessageCalls=%I64u syncIntervalExternalCalls=%I64u syncSessionExternalCalls=%I64u syncIntervalDeterministicRangeCalls=%I64u syncSessionDeterministicRangeCalls=%I64u syncIntervalSeedSets=%I64u syncSessionSeedSets=%I64u syncIntervalStreamFingerprint=FNV1A32:%08X syncSessionStreamFingerprint=FNV1A64:%016I64X syncIntervalCallFingerprint=FNV1A32:%08X syncSessionCallFingerprint=FNV1A64:%016I64X",
+			iGameTurn, getSASGameRecordRngCheckpointReason(eReason),
+			kMapCompleted.uiSessionStartState, kMapCompleted.uiIntervalStartState, uiMapState, kMapCompleted.uiIntervalCalls, kMapCompleted.uiSessionCalls, kMapCompleted.uiIntervalNullMessageCalls, kMapCompleted.uiSessionNullMessageCalls, kMapCompleted.uiIntervalExternalCalls, kMapCompleted.uiSessionExternalCalls,
+			kMapCompleted.uiIntervalDeterministicRangeCalls, kMapCompleted.uiSessionDeterministicRangeCalls, kMapCompleted.uiIntervalSeedSets, kMapCompleted.uiSessionSeedSets, kMapCompleted.uiIntervalStreamFingerprint, kMapCompleted.uiSessionStreamFingerprint, kMapCompleted.uiIntervalCallFingerprint, kMapCompleted.uiSessionCallFingerprint,
+			kSyncCompleted.uiSessionStartState, kSyncCompleted.uiIntervalStartState, uiSyncState, kSyncCompleted.uiIntervalCalls, kSyncCompleted.uiSessionCalls, kSyncCompleted.uiIntervalNullMessageCalls, kSyncCompleted.uiSessionNullMessageCalls, kSyncCompleted.uiIntervalExternalCalls, kSyncCompleted.uiSessionExternalCalls,
+			kSyncCompleted.uiIntervalDeterministicRangeCalls, kSyncCompleted.uiSessionDeterministicRangeCalls, kSyncCompleted.uiIntervalSeedSets, kSyncCompleted.uiSessionSeedSets, kSyncCompleted.uiIntervalStreamFingerprint, kSyncCompleted.uiSessionStreamFingerprint, kSyncCompleted.uiIntervalCallFingerprint, kSyncCompleted.uiSessionCallFingerprint);
+}
 
 // <!-- custom: Windows exposes focus separately from minimization. Find Civ4's visible, unowned top-level process window so background-visible and minimized snapshots remain distinguishable.
 // Return -1 if no suitable window exists. (GPT-5.6-Sol) -->
@@ -571,7 +895,10 @@ static void logSASGameRecordGameState(const char* szRowType)
 		logSASGameRecord("GAME_RECORD_RUNTIME_CONTEXT systemContextLevel=%d win32Runtime=%s pointerBits=%d logicalProcessors=%d totalPhysicalMemoryMB=%d", iSystemContextLevel, getSASGameRecordWin32Runtime(), (int)(8 * sizeof(void*)), iLogicalProcessors, iTotalPhysicalMemoryMB);
 	}
 	else logSASGameRecord("GAME_RECORD_RUNTIME_CONTEXT systemContextLevel=%d win32Runtime=- pointerBits=-1 logicalProcessors=-1 totalPhysicalMemoryMB=-1", iSystemContextLevel);
-	logSASGameRecord("GAME_RECORD_GAME_RNG mapRandState=%u syncRandState=%u", kGame.getMapRand().getSeed(), kGame.getSorenRand().getSeed());
+	// <!-- custom: Keep the game's persisted initial seeds beside the current post-initialization/load RNG states.
+	// Level-3 checkpoints add session-local consumption counts/fingerprints; this compact baseline remains useful at every enabled level. (GPT-5.6-Sol) -->
+	std::pair<uint,uint> const kInitialRandSeed = kGame.getInitialRandSeed();
+	logSASGameRecord("GAME_RECORD_GAME_RNG mapRandState=%u syncRandState=%u initialMapRandSeed=%u initialSyncRandSeed=%u", kGame.getMapRand().getSeed(), kGame.getSorenRand().getSeed(), kInitialRandSeed.first, kInitialRandSeed.second);
 }
 
 static void logSASGameRecordLogSettings()
@@ -675,6 +1002,9 @@ void startSASGameRecordLogForLoadedSave()
 {
 	rollSASGameRecordLog("load");
 	resetSASGameRecordState();
+	// <!-- custom: Loaded RNG state already exists when onAllGameDataRead starts this new recorder session, so use it directly as the level-3 baseline. Session counters intentionally restart at each timestamped load log.
+	// GAMEOPTION_NEW_RANDOM_SEED is likewise applied during deserialization while old-session tracking is already finalized; its resulting seed is intentionally the new session baseline rather than a cross-session SEED_SET operation. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 3) initializeSASGameRecordRngTracking();
 	// <!-- custom: The save contains no recorder-local war history. Begin partial observations for wars already in progress, with the loaded turn and current war success recorded explicitly as their observable baseline. (GPT-5.6-Sol) -->
 	if (gGameRecordLogLevel >= 2) initializeSASGameRecordWarsFromLoadedSave();
 	logSASGameRecordGameState("GAME_RECORD_SAVE_LOADED");
@@ -1463,6 +1793,8 @@ static int getSASGameRecordDelta(bool bValid, int iCurrent, int iPrevious)
 
 static void resetSASGameRecordState()
 {
+	// <!-- custom: Session rollover must stop the hot-path RNG hook until the new game's seeds or loaded save state establish a fresh level-3 baseline. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	clearSASGameRecordRngTracking();
 	for (int iI = 0; iI < MAX_PLAYERS; iI++)
 	{
 		g_aiSASGameRecordBattleWins[iI] = 0;
@@ -1823,6 +2155,10 @@ void finalizeSASGameRecordLogSession()
 	if (g_iSASGameRecordPendingPlotTurn >= 0)
 		flushSASGameRecordTurnChanges(g_iSASGameRecordPendingPlotTurn);
 	else flushSASGameRecordPendingCityBombard();
+	// <!-- custom: A direct reset, new-game or load rollover can occur between ordinary end-turn checkpoints.
+	// Preserve the last authoritative RNG state/consumption before the old session disappears, then disable the hot hook until the next session initializes its baseline. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (g_bSASGameRecordRngTrackingActive) logSASGameRecordRngCheckpoint(GC.getGame().getGameTurn(), SAS_RNG_CHECKPOINT_SESSION_FINALIZE);
+	clearSASGameRecordRngTracking();
 }
 
 static void prepareSASGameRecordTurnChanges()
@@ -9487,6 +9823,9 @@ void logSASGameRecordAutoPlayChanged(int iOldValue, int iNewValue, bool bChangeP
 			kGame.getGameTurn(), szAction, iOldValue, iNewValue, eActivePlayer, bChangePlayerStatus, g_iSASGameRecordAutoPlayRequestId, g_iSASGameRecordAutoPlayRequestedTurns, iCompletedTurns, iElapsedGameTurns, getSASGameRecordSessionWallMilliseconds(uiAutoPlayTime),
 			iAutoPlayWallMilliseconds, g_iSASGameRecordAutoPlayStartTurn, g_iSASGameRecordAutoPlayStartElapsedTurn, g_eSASGameRecordAutoPlayStartPlayer, g_iSASGameRecordAutoPlayPlayerChanges, g_iSASGameRecordTotalActivePlayerChanges,
 			getSASAutoPlayEndCause(eEndCause));
+	// <!-- custom: Treat only actual autoplay start/end as rare level-3 RNG boundaries, not the ordinary per-turn countdown changes. This isolates the benchmark/autoplay random-consumption window even when it begins or ends partway through a game turn.
+	// A benchmark seed entered in AIAutoPlay.py is applied immediately before AUTOPLAY_STARTED, so AUTOPLAY_BEGIN opens from that newly assigned authoritative state. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+	if (g_bSASGameRecordRngTrackingActive && (bStarted || bEnded)) logSASGameRecordRngCheckpoint(kGame.getGameTurn(), bStarted ? SAS_RNG_CHECKPOINT_AUTOPLAY_BEGIN : SAS_RNG_CHECKPOINT_AUTOPLAY_END);
 	// <!-- custom: Manual or scheduled autoplay completion is also a useful record boundary even when the game and its wars continue. (GPT-5.6-Sol) -->
 	if (gGameRecordLogLevel >= 2 && bEnded)
 	{

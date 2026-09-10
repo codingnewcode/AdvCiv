@@ -39,6 +39,8 @@ Always review diffs before committing generated source changes.
 - [Game speed helper scripts](#game-speed-helper-scripts)
   - [`compare_speed_summaries.py`](#compare_speed_summariespy)
   - [`autotune_speed_from_xml.py`](#autotune_speed_from_xmlpy)
+- [SASGameRecord comparison helpers](#sasgamerecord-comparison-helpers)
+  - [`compare_sasgamerecord_rng.py`](#compare_sasgamerecord_rngpy)
 - [Game info comparison helpers](#game-info-comparison-helpers)
   - [`compare_handicap_infos.py`](#compare_handicap_infospy)
 - [Static audit helpers](#static-audit-helpers)
@@ -698,6 +700,33 @@ python LLM_Helpers\autotune_speed_from_xml.py --speed slow
 python LLM_Helpers\autotune_speed_from_xml.py --speed slow --summary-steps 50
 python LLM_Helpers\autotune_speed_from_xml.py --speed slow --summary-steps 100 --focus-start-pct 20 --focus-end-pct 80
 python LLM_Helpers\autotune_speed_from_xml.py --speed slow --autoloop --iterations 8000 --seed 1
+```
+
+## SASGameRecord comparison helpers
+
+### `compare_sasgamerecord_rng.py`
+
+- Reads two `SASGameRecord` `.log` files or ZIP files containing exactly one `.log` each.
+- Validates every authoritative-RNG checkpoint's interval/session counter arithmetic, interval-state continuity, and Civ4 LCG progression whenever the interval contains no explicit seed replacement.
+- Reports the first differing lifecycle checkpoint and its differing map/synchronized RNG fields, then distinguishes changed RNG consumption from changed call provenance.
+- Exit status is 0 for identical checkpoints, 1 for a valid divergence, and 2 for invalid input or failed internal invariants.
+- Does not modify either record and adds no game/runtime overhead.
+- [`examples/sasgamerecord_rng_compared.txt`](/LLM_Helpers/examples/sasgamerecord_rng_compared.txt) shows a valid provenance-only divergence. Refresh it with `--example-output`; use `--output <path>` for another retained report.
+
+Interpretation:
+
+- `valid` means each individual record passed interval/session counter arithmetic, state continuity, and every applicable independent LCG reconstruction before comparison.
+- Different call counts mean one run consumed additional or fewer authoritative RNG advances in that interval.
+- Different state or stream fingerprints mean authoritative random consumption diverged, even if the call totals happen to match.
+- A call-fingerprint-only difference means the random stream still matches but its labels, data arguments, NULL-message classification or EXE-wrapper origin changed.
+- A lifecycle/checkpoint mismatch usually means the records represent different boundaries or were paired from unlike run sequences.
+
+Examples:
+
+```powershell
+python LLM_Helpers\compare_sasgamerecord_rng.py "C:\path\run_a.log" "C:\path\run_b.log"
+python LLM_Helpers\compare_sasgamerecord_rng.py "C:\path\run_a.zip" "C:\path\run_b.zip"
+python LLM_Helpers\compare_sasgamerecord_rng.py "C:\path\run_a.log" "C:\path\run_b.log" --example-output
 ```
 
 ## Game info comparison helpers
