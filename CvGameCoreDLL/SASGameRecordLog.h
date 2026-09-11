@@ -162,6 +162,10 @@ void logSASGameRecordVictory(TeamTypes eWinner, VictoryTypes eVictory);
 void logSASGameRecordRunStatus(char const* szReason);
 void logSASGameRecordPlayerEliminated(PlayerTypes ePlayer);
 void logSASGameRecordPlayerAliveChanged(PlayerTypes ePlayer, bool bRevived);
+// <!-- custom: Diplomatic-vote lifecycle rows preserve the exact proposal/election boundary and the final weighted ballot/result before Civ4 clears stored votes or applies the resolution. (ChatGPT-5.6-Sol) -->
+struct VoteTriggeredData;
+void logSASGameRecordVoteTriggered(VoteTriggeredData const* pVoteTriggered);
+void logSASGameRecordVoteResult(VoteTriggeredData const* pVoteTriggered, bool bThresholdPassed, bool bPassed, bool bCancelled, qword uiDefaultedAbstain, qword uiDefiers, qword uiEndorsers);
 // <!-- custom: Team-relationship lifecycle actions make first contact, permanent-alliance merges and vassal-state changes explicit instead of forcing snapshot consumers to infer their exact turn. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordTeamMerged(TeamTypes eSurvivingTeam, TeamTypes eAbsorbedTeam);
 void logSASGameRecordTeamMet(TeamTypes eTeam, TeamTypes eOtherTeam, bool bNewDiplo, int iX1, int iY1, int iX2, int iY2, CvPlot const* pTeamContactPlot, CvPlot const* pOtherContactPlot);

@@ -5716,6 +5716,221 @@ void logSASGameRecordBlockadePlunder(CvUnit const* pUnit, CvCity const* pCity, i
 			iGold, iTradeRoutes, iProfitPerRoute, iContext >= 0 ? 1 : 0, iStartTurn, iAgeTurns);
 }
 
+// <!-- custom: Vote helpers below are recorder schema, not gameplay abstractions: they translate native vote enums/flags into stable factual history tokens while leaving AI valuation in BBAI. (ChatGPT-5.6-Sol) -->
+static CvString getSASGameRecordPlayerVoteChoice(PlayerVoteTypes eChoice)
+{
+	CvString szChoice;
+	if (eChoice >= 0 && eChoice < MAX_CIV_TEAMS)
+	{
+		szChoice.Format("TEAM_%d", eChoice);
+		return szChoice;
+	}
+	switch (eChoice)
+	{
+	case NO_PLAYER_VOTE_CHECKED: return CvString("UNCHECKED");
+	case PLAYER_VOTE_NEVER: return CvString("NEVER");
+	case PLAYER_VOTE_ABSTAIN: return CvString("ABSTAIN");
+	case PLAYER_VOTE_NO: return CvString("NO");
+	case PLAYER_VOTE_YES: return CvString("YES");
+	case NO_PLAYER_VOTE: return CvString("NONE");
+	default:
+		szChoice.Format("VALUE_%d", eChoice);
+		return szChoice;
+	}
+}
+
+static CvString getSASGameRecordVoteEffects(VoteTypes eVote)
+{
+	if (eVote == NO_VOTE)
+		return CvString("-");
+	CvVoteInfo const& kVote = GC.getInfo(eVote);
+	CvString szEffects;
+	CvString szItem;
+	if (kVote.isSecretaryGeneral())
+		szEffects = "SECRETARY_GENERAL";
+	if (kVote.isVictory())
+	{
+		if (!szEffects.empty()) szEffects += ",";
+		szEffects += "DIPLOMATIC_VICTORY";
+	}
+	if (kVote.getTradeRoutes() != 0)
+	{
+		szItem.Format(szEffects.empty() ? "TRADE_ROUTES:%+d" : ",TRADE_ROUTES:%+d", kVote.getTradeRoutes());
+		szEffects += szItem;
+	}
+	if (kVote.isFreeTrade())
+		szEffects += (szEffects.empty() ? "FREE_TRADE" : ",FREE_TRADE");
+	if (kVote.isNoNukes())
+		szEffects += (szEffects.empty() ? "NO_NUKES" : ",NO_NUKES");
+	FOR_EACH_NON_DEFAULT_KEY(kVote.isForceCivic(), Civic)
+	{
+		szItem.Format(szEffects.empty() ? "FORCE_CIVIC:%s" : ",FORCE_CIVIC:%s", getSASGameRecordCivicType(eLoopCivic));
+		szEffects += szItem;
+	}
+	if (kVote.isOpenBorders())
+		szEffects += (szEffects.empty() ? "OPEN_BORDERS" : ",OPEN_BORDERS");
+	if (kVote.isDefensivePact())
+		szEffects += (szEffects.empty() ? "DEFENSIVE_PACT" : ",DEFENSIVE_PACT");
+	if (kVote.isForcePeace())
+		szEffects += (szEffects.empty() ? "FORCE_PEACE" : ",FORCE_PEACE");
+	if (kVote.isForceNoTrade())
+		szEffects += (szEffects.empty() ? "EMBARGO" : ",EMBARGO");
+	if (kVote.isForceWar())
+		szEffects += (szEffects.empty() ? "FORCE_WAR" : ",FORCE_WAR");
+	if (kVote.isAssignCity())
+		szEffects += (szEffects.empty() ? "ASSIGN_CITY" : ",ASSIGN_CITY");
+	return getSASDiagnosticOrDash(szEffects);
+}
+
+static bool isSASGameRecordPersistentVote(VoteTypes eVote)
+{
+	if (eVote == NO_VOTE)
+		return false;
+	CvVoteInfo const& kVote = GC.getInfo(eVote);
+	return (kVote.getTradeRoutes() != 0 || kVote.isFreeTrade() || kVote.isNoNukes() || kVote.isForceCivic().isAnyNonDefault());
+}
+
+static CvString getSASGameRecordVotePlayerMask(qword uiPlayers)
+{
+	CvString szPlayers;
+	for (int iPlayer = 0; iPlayer < MAX_CIV_PLAYERS; iPlayer++)
+	{
+		if ((uiPlayers & ((qword)1 << iPlayer)) != 0)
+			appendSASDiagnosticIntListValue(szPlayers, iPlayer);
+	}
+	return getSASDiagnosticOrDash(szPlayers);
+}
+
+static CvString getSASGameRecordVoteEligibleTeams(VoteTriggeredData const& kTriggered)
+{
+	CvGame const& kGame = GC.getGame();
+	if (!kGame.isTeamVote(kTriggered.kVoteOption.eVote))
+		return CvString("-");
+	CvString szTeams;
+	for (TeamIter<MAJOR_CIV> itTeam; itTeam.hasNext(); ++itTeam)
+	{
+		if (kGame.isTeamVoteEligible(itTeam->getID(), kTriggered.eVoteSource))
+			appendSASDiagnosticIntListValue(szTeams, itTeam->getID());
+	}
+	return getSASDiagnosticOrDash(szTeams);
+}
+
+static CvString getSASGameRecordVoteBallots(VoteTriggeredData const& kTriggered)
+{
+	CvGame const& kGame = GC.getGame();
+	CvString szBallots;
+	for (PlayerIter<MAJOR_CIV> itPlayer; itPlayer.hasNext(); ++itPlayer)
+	{
+		if (!itPlayer->isVotingMember(kTriggered.eVoteSource))
+			continue;
+		PlayerVoteTypes const eChoice = kGame.getPlayerVote(itPlayer->getID(), kTriggered.getID());
+		CvString szItem;
+		szItem.Format(szBallots.empty() ? "P%d@T%d:%s:%d" : ",P%d@T%d:%s:%d",
+				itPlayer->getID(), itPlayer->getTeam(), getSASGameRecordPlayerVoteChoice(eChoice).GetCString(),
+				itPlayer->getVotes(kTriggered.kVoteOption.eVote, kTriggered.eVoteSource));
+		szBallots += szItem;
+	}
+	return getSASDiagnosticOrDash(szBallots);
+}
+
+static void getSASGameRecordVoteTarget(VoteTriggeredData const& kTriggered, PlayerTypes& eTargetPlayer, TeamTypes& eTargetTeam, CvCity const*& pTargetCity, PlayerTypes& eOtherPlayer, TeamTypes& eOtherTeam)
+{
+	eTargetPlayer = kTriggered.kVoteOption.ePlayer;
+	eTargetTeam = (eTargetPlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(eTargetPlayer).getTeam());
+	pTargetCity = NULL;
+	if (eTargetPlayer != NO_PLAYER && kTriggered.kVoteOption.iCityId >= 0)
+		pTargetCity = GET_PLAYER(eTargetPlayer).getCity(kTriggered.kVoteOption.iCityId);
+	eOtherPlayer = kTriggered.kVoteOption.eOtherPlayer;
+	eOtherTeam = (eOtherPlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(eOtherPlayer).getTeam());
+}
+
+void logSASGameRecordVoteTriggered(VoteTriggeredData const* pVoteTriggered)
+{
+	if (pVoteTriggered == NULL || pVoteTriggered->kVoteOption.eVote == NO_VOTE)
+		return;
+	CvGame const& kGame = GC.getGame();
+	VoteTypes const eVote = pVoteTriggered->kVoteOption.eVote;
+	CvVoteInfo const& kVote = GC.getInfo(eVote);
+	TeamTypes const eSecretaryTeam = kGame.getSecretaryGeneral(pVoteTriggered->eVoteSource);
+	PlayerTypes eProposer = NO_PLAYER;
+	if (!kVote.isSecretaryGeneral() && eSecretaryTeam != NO_TEAM)
+		eProposer = GET_TEAM(eSecretaryTeam).getSecretaryID();
+	PlayerTypes eTargetPlayer;
+	TeamTypes eTargetTeam;
+	CvCity const* pTargetCity;
+	PlayerTypes eOtherPlayer;
+	TeamTypes eOtherTeam;
+	getSASGameRecordVoteTarget(*pVoteTriggered, eTargetPlayer, eTargetTeam, pTargetCity, eOtherPlayer, eOtherTeam);
+	bool const bPreviouslyPassed = kGame.isVotePassed(eVote);
+	char const* szContext = (kVote.isSecretaryGeneral() ? "AUTOMATIC_SECRETARY_ELECTION" : (bPreviouslyPassed ? "ACTIVE_RESOLUTION_RECONSIDERATION" : "SECRETARY_PROPOSAL"));
+	BuildingTypes const eSourceBuilding = kGame.getVoteSourceBuilding(pVoteTriggered->eVoteSource);
+	CvCity const* pSourceCity = kGame.getVoteSourceCity(pVoteTriggered->eVoteSource, NO_TEAM);
+
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=DIPLO_VOTE_TRIGGERED triggeredId=%d source=%s vote=%s context=%s sourceReligion=%s sourceBuilding=%s sourceOwner=%d sourceCityId=%d sourceCity=%S sourceX=%d sourceY=%d secretaryTeamBefore=%d proposerPlayer=%d teamVote=%d secretaryElection=%d victoryVote=%d previousOutcome=%s previouslyPassed=%d effects=%s eligibleTeams=%s requiredVotes=%d possibleVotes=%d targetPlayer=%d targetTeam=%d targetCityId=%d targetCity=%S targetX=%d targetY=%d otherPlayer=%d otherTeam=%d",
+			kGame.getGameTurn(), pVoteTriggered->getID(), getSASGameRecordVoteSourceType(pVoteTriggered->eVoteSource), getSASGameRecordVoteType(eVote), szContext, getSASGameRecordReligionType(kGame.getVoteSourceReligion(pVoteTriggered->eVoteSource)),
+			getSASGameRecordBuildingType(eSourceBuilding), pSourceCity == NULL ? -1 : pSourceCity->getOwner(), pSourceCity == NULL ? -1 : pSourceCity->getID(), getSASGameRecordQuotedCityName(pSourceCity).GetCString(), pSourceCity == NULL ? -1 : pSourceCity->getX(), pSourceCity == NULL ? -1 : pSourceCity->getY(),
+			eSecretaryTeam, eProposer, kGame.isTeamVote(eVote) ? 1 : 0, kVote.isSecretaryGeneral() ? 1 : 0, kVote.isVictory() ? 1 : 0,
+			getSASGameRecordPlayerVoteChoice(kGame.getVoteOutcome(eVote)).GetCString(), bPreviouslyPassed ? 1 : 0, getSASGameRecordVoteEffects(eVote).GetCString(), getSASGameRecordVoteEligibleTeams(*pVoteTriggered).GetCString(),
+			kGame.getVoteRequired(eVote, pVoteTriggered->eVoteSource), kGame.countPossibleVote(eVote, pVoteTriggered->eVoteSource),
+			eTargetPlayer, eTargetTeam, pVoteTriggered->kVoteOption.iCityId, getSASGameRecordQuotedCityName(pTargetCity).GetCString(), pTargetCity == NULL ? -1 : pTargetCity->getX(), pTargetCity == NULL ? -1 : pTargetCity->getY(), eOtherPlayer, eOtherTeam);
+}
+
+void logSASGameRecordVoteResult(VoteTriggeredData const* pVoteTriggered, bool bThresholdPassed, bool bPassed, bool bCancelled, qword uiDefaultedAbstain, qword uiDefiers, qword uiEndorsers)
+{
+	if (pVoteTriggered == NULL || pVoteTriggered->kVoteOption.eVote == NO_VOTE)
+		return;
+	CvGame const& kGame = GC.getGame();
+	VoteTypes const eVote = pVoteTriggered->kVoteOption.eVote;
+	CvVoteInfo const& kVote = GC.getInfo(eVote);
+	bool const bTeamVote = kGame.isTeamVote(eVote);
+	bool const bPreviouslyPassed = kGame.isVotePassed(eVote);
+	TeamTypes eWinningTeam = NO_TEAM;
+	int iWinningVotes = -1;
+	if (bTeamVote && !bCancelled)
+	{
+		eWinningTeam = kGame.findHighestVoteTeam(*pVoteTriggered);
+		if (eWinningTeam != NO_TEAM)
+			iWinningVotes = kGame.countVote(*pVoteTriggered, (PlayerVoteTypes)eWinningTeam);
+	}
+	int const iYesVotes = (bTeamVote || bCancelled ? -1 : kGame.countVote(*pVoteTriggered, PLAYER_VOTE_YES));
+	int const iNoVotes = (bTeamVote || bCancelled ? -1 : kGame.countVote(*pVoteTriggered, PLAYER_VOTE_NO));
+	int const iAbstainVotes = (bCancelled ? -1 : kGame.countVote(*pVoteTriggered, PLAYER_VOTE_ABSTAIN));
+	int const iNeverVotes = (bTeamVote || bCancelled ? -1 : kGame.countVote(*pVoteTriggered, PLAYER_VOTE_NEVER));
+	char const* szResult = (bCancelled ? "CANCELLED" : (bPassed ? "PASSED" : (bThresholdPassed && uiDefiers != 0 ? "DEFIED" : "FAILED")));
+	char const* szOperation = "NO_CHANGE";
+	if (bCancelled)
+		szOperation = "CANCELLED";
+	else if (kVote.isSecretaryGeneral())
+		szOperation = (bPassed ? "ELECT" : (bPreviouslyPassed ? "CLEAR_SECRETARY" : "NO_ELECTION"));
+	else if (kVote.isVictory())
+		szOperation = (bPassed ? "DIPLOMATIC_VICTORY" : "NO_VICTORY");
+	else if (isSASGameRecordPersistentVote(eVote))
+	{
+		if (bPreviouslyPassed && !bPassed) szOperation = "DEACTIVATE";
+		else if (!bPreviouslyPassed && bPassed) szOperation = "ACTIVATE";
+		else if (bPreviouslyPassed && bPassed) szOperation = "KEEP_ACTIVE";
+	}
+	else if (bPassed)
+		szOperation = "APPLY_ONE_SHOT";
+	PlayerTypes eTargetPlayer;
+	TeamTypes eTargetTeam;
+	CvCity const* pTargetCity;
+	PlayerTypes eOtherPlayer;
+	TeamTypes eOtherTeam;
+	getSASGameRecordVoteTarget(*pVoteTriggered, eTargetPlayer, eTargetTeam, pTargetCity, eOtherPlayer, eOtherTeam);
+	TeamTypes const eSecretaryTeam = kGame.getSecretaryGeneral(pVoteTriggered->eVoteSource);
+
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=DIPLO_VOTE_RESULT triggeredId=%d source=%s vote=%s result=%s operation=%s sourceReligion=%s secretaryTeamBefore=%d teamVote=%d secretaryElection=%d victoryVote=%d previousOutcome=%s previouslyPassed=%d thresholdPassed=%d resolutionPassed=%d winningTeam=%d winningVotes=%d yesVotes=%d noVotes=%d abstainVotes=%d neverVotes=%d requiredVotes=%d possibleVotes=%d defaultedAbstain=%s defiers=%s endorsers=%s effects=%s ballots=%s targetPlayer=%d targetTeam=%d targetCityId=%d targetCity=%S targetX=%d targetY=%d otherPlayer=%d otherTeam=%d",
+			kGame.getGameTurn(), pVoteTriggered->getID(), getSASGameRecordVoteSourceType(pVoteTriggered->eVoteSource), getSASGameRecordVoteType(eVote), szResult, szOperation, getSASGameRecordReligionType(kGame.getVoteSourceReligion(pVoteTriggered->eVoteSource)),
+			eSecretaryTeam, bTeamVote ? 1 : 0, kVote.isSecretaryGeneral() ? 1 : 0, kVote.isVictory() ? 1 : 0,
+			getSASGameRecordPlayerVoteChoice(kGame.getVoteOutcome(eVote)).GetCString(), bPreviouslyPassed ? 1 : 0, bThresholdPassed ? 1 : 0, bPassed ? 1 : 0,
+			eWinningTeam, iWinningVotes, iYesVotes, iNoVotes, iAbstainVotes, iNeverVotes,
+			kGame.getVoteRequired(eVote, pVoteTriggered->eVoteSource), kGame.countPossibleVote(eVote, pVoteTriggered->eVoteSource),
+			getSASGameRecordVotePlayerMask(uiDefaultedAbstain).GetCString(), getSASGameRecordVotePlayerMask(uiDefiers).GetCString(), getSASGameRecordVotePlayerMask(uiEndorsers).GetCString(),
+			getSASGameRecordVoteEffects(eVote).GetCString(), getSASGameRecordVoteBallots(*pVoteTriggered).GetCString(),
+			eTargetPlayer, eTargetTeam, pVoteTriggered->kVoteOption.iCityId, getSASGameRecordQuotedCityName(pTargetCity).GetCString(), pTargetCity == NULL ? -1 : pTargetCity->getX(), pTargetCity == NULL ? -1 : pTargetCity->getY(), eOtherPlayer, eOtherTeam);
+}
+
 // <!-- custom: Religion/corporation founding and realized city membership changes are authoritative EventReporter boundaries.
 // Missionary/Executive attempt rows complement them from the deeper CvUnit boundary with consumed-unit outcome context. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordReligionFounded(ReligionTypes eReligion, PlayerTypes ePlayer)

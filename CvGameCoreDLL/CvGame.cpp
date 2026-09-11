@@ -10040,6 +10040,8 @@ VoteTriggeredData* CvGame::addVoteTriggered(VoteSourceTypes eVoteSource,
 	FAssert(pData != NULL); // advc
 	pData->eVoteSource = eVoteSource;
 	pData->kVoteOption = kOptionData;
+	// <!-- custom: Preserve the exact AP/UN proposal/election boundary before ballots are cast; detailed vote reasoning remains in AI diagnostics. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordVoteTriggered(pData);
 	for (PlayerAIIter<MAJOR_CIV> it; it.hasNext(); ++it)
 	{
 		CvPlayerAI& kVoter = *it;
@@ -10097,9 +10099,16 @@ void CvGame::doVoteResults()
 		VoteTypes eVote = subdata.eVote;
 		VoteSourceTypes eVoteSource = pVoteTriggered->eVoteSource;
 		bool bPassed = false;
+		bool bThresholdPassed = false;
+		bool const bLogVoteResult = (gGameRecordLogLevel >= 2);
+		qword uiDefaultedAbstain = 0;
+		qword uiDefiers = 0;
+		qword uiEndorsers = 0;
 
 		if (!canDoResolution(eVoteSource, subdata))
 		{
+			// <!-- custom: A triggered vote can become invalid before resolution; preserve that cancellation instead of silently deleting its history. (ChatGPT-5.6-Sol) -->
+			if (bLogVoteResult) logSASGameRecordVoteResult(pVoteTriggered, false, false, true, 0, 0, 0);
 			for (PlayerIter<MAJOR_CIV> itObs; itObs.hasNext(); ++itObs)
 			{
 				if (!itObs->isVotingMember(eVoteSource))
@@ -10133,6 +10142,7 @@ void CvGame::doVoteResults()
 				else if (getPlayerVote(ePlayer, pVoteTriggered->getID())
 					== NO_PLAYER_VOTE_CHECKED)
 				{	//default player vote to abstain
+					if (bLogVoteResult) uiDefaultedAbstain |= ((qword)1 << ePlayer);
 					setPlayerVote(ePlayer, pVoteTriggered->getID(), PLAYER_VOTE_ABSTAIN);
 				}
 			}
@@ -10149,6 +10159,7 @@ void CvGame::doVoteResults()
 				{	// <advc.150b> Store vote count for later
 					iVotes = countVote(*pVoteTriggered, (PlayerVoteTypes)eTeam);
 					bPassed = (iVotes >= getVoteRequired(eVote, eVoteSource));
+					bThresholdPassed = bPassed;
 				}	// </advc.150b>
 				szBuffer = GC.getInfo(eVote).getDescription();
 				if (eTeam != NO_TEAM)
@@ -10194,6 +10205,8 @@ void CvGame::doVoteResults()
 								GET_PLAYER(eVoter).getVotes(eVote, eVoteSource)));
 					}
 				}
+				// <!-- custom: Serialize the complete weighted election ballot before setVoteOutcome clears each player's stored vote. (ChatGPT-5.6-Sol) -->
+				if (bLogVoteResult) logSASGameRecordVoteResult(pVoteTriggered, bThresholdPassed, bPassed, false, uiDefaultedAbstain, 0, 0);
 				if (eTeam != NO_TEAM && bPassed)
 					setVoteOutcome(*pVoteTriggered, (PlayerVoteTypes)eTeam);
 				else setVoteOutcome(*pVoteTriggered, PLAYER_VOTE_ABSTAIN);
@@ -10209,6 +10222,7 @@ void CvGame::doVoteResults()
 				}
 				iVotes = countVote(*pVoteTriggered, PLAYER_VOTE_YES);
 				bPassed = (iVotes >= getVoteRequired(eVote, eVoteSource));
+				bThresholdPassed = bPassed;
 				// </advc.150b>
 				// Defying resolution
 				if (bPassed)
@@ -10221,6 +10235,7 @@ void CvGame::doVoteResults()
 							itPlayer->canDefyResolution(eVoteSource, subdata))
 						{
 							bPassed = false;
+							if (bLogVoteResult) uiDefiers |= ((qword)1 << itPlayer->getID());
 							itPlayer->setDefiedResolution(eVoteSource, subdata);
 						}
 					}
@@ -10234,6 +10249,7 @@ void CvGame::doVoteResults()
 						if (getPlayerVote(itPlayer->getID(), pVoteTriggered->getID()) ==
 							PLAYER_VOTE_YES)
 						{
+							if (bLogVoteResult) uiEndorsers |= ((qword)1 << itPlayer->getID());
 							itPlayer->setEndorsedResolution(eVoteSource, subdata);
 						}
 					}
@@ -10286,6 +10302,8 @@ void CvGame::doVoteResults()
 						}
 					}
 				}
+				// <!-- custom: Preserve the final weighted ballot, grace-defaulted abstentions and actual defiance/endorsement before setVoteOutcome clears per-player vote storage and applies the resolution. (ChatGPT-5.6-Sol) -->
+				if (bLogVoteResult) logSASGameRecordVoteResult(pVoteTriggered, bThresholdPassed, bPassed, false, uiDefaultedAbstain, uiDefiers, uiEndorsers);
 				setVoteOutcome(*pVoteTriggered, bPassed ? PLAYER_VOTE_YES : PLAYER_VOTE_NO);
 			}
 			// <advc.150b>
