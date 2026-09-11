@@ -1217,6 +1217,23 @@ static void appendSASGameRecordSignedValue(CvString& szList, const char* szName,
 	szList += szItem;
 }
 
+// <!-- custom: Team snapshots intentionally list living members, but CvTeam::addTeam reassigns every player slot on the absorbed team.
+// Keep a separate exact helper for that rare structural boundary. (ChatGPT-5.6-Sol) -->
+static CvString getSASGameRecordTeamAssignedPlayers(TeamTypes eTeam, int& iCount)
+{
+	iCount = 0;
+	CvString szList;
+	for (int iI = 0; iI < MAX_PLAYERS; iI++)
+	{
+		PlayerTypes const eLoopPlayer = (PlayerTypes)iI;
+		if (GET_PLAYER(eLoopPlayer).getTeam() != eTeam)
+			continue;
+		appendSASDiagnosticIntListValue(szList, eLoopPlayer);
+		iCount++;
+	}
+	return getSASDiagnosticOrDash(szList);
+}
+
 static CvString getSASGameRecordTeamMembers(TeamTypes eTeam)
 {
 	CvString szList;
@@ -4903,7 +4920,10 @@ void logSASGameRecordGreatGeneralAttached(CvUnit const* pGreatGeneral, CvUnit co
 	if (pGreatGeneral == NULL || pTargetUnit == NULL)
 		return;
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=GREAT_GENERAL_ATTACHED player=%d generalUnitId=%d generalUnit=%s targetUnitId=%d targetUnit=%s targetUnitAI=%s x=%d y=%d promotion=%s targetXP=%d targetLevel=%d",
-		GC.getGame().getGameTurn(), pGreatGeneral->getOwner(), pGreatGeneral->getID(), getSASGameRecordUnitType(pGreatGeneral->getUnitType()), pTargetUnit->getID(), getSASGameRecordUnitType(pTargetUnit->getUnitType()), getSASGameRecordUnitAIType(pTargetUnit->AI_getUnitAIType()), pTargetUnit->getX(), pTargetUnit->getY(), ePromotion == NO_PROMOTION ? "-" : GC.getInfo(ePromotion).getType(), pTargetUnit->getExperience(), pTargetUnit->getLevel());
+		GC.getGame().getGameTurn(), pGreatGeneral->getOwner(), pGreatGeneral->getID(), getSASGameRecordUnitType(pGreatGeneral->getUnitType()),
+		pTargetUnit->getID(), getSASGameRecordUnitType(pTargetUnit->getUnitType()), getSASGameRecordUnitAIType(pTargetUnit->AI_getUnitAIType()),
+		pTargetUnit->getX(), pTargetUnit->getY(), ePromotion == NO_PROMOTION ? "-" : GC.getInfo(ePromotion).getType(),
+		pTargetUnit->getExperience(), pTargetUnit->getLevel());
 }
 
 void logSASGameRecordUnitScrapped(CvUnit const* pUnit)
@@ -4919,7 +4939,9 @@ void logSASGameRecordUnitScrapped(CvUnit const* pUnit)
 	if (gGameRecordLogLevel >= 3)
 	{
 		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=UNIT_SCRAPPED player=%d unitId=%d unit=%s unitAI=%s x=%d y=%d damage=%d xp=%d level=%d age=%d cargo=%d cargoSpace=%d",
-			GC.getGame().getGameTurn(), ePlayer, pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()), pUnit->getX(), pUnit->getY(), pUnit->getDamage(), pUnit->getExperience(), pUnit->getLevel(), GC.getGame().getGameTurn() - pUnit->getGameTurnCreated(), pUnit->getCargo(), pUnit->cargoSpace());
+			GC.getGame().getGameTurn(), ePlayer, pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()),
+			pUnit->getX(), pUnit->getY(), pUnit->getDamage(), pUnit->getExperience(), pUnit->getLevel(), GC.getGame().getGameTurn() - pUnit->getGameTurnCreated(),
+			pUnit->getCargo(), pUnit->cargoSpace());
 	}
 }
 
@@ -4936,7 +4958,10 @@ void logSASGameRecordUnitUpgraded(CvUnit const* pOldUnit, CvUnit const* pNewUnit
 	if (gGameRecordLogLevel >= 3)
 	{
 		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=UNIT_UPGRADED player=%d oldUnitId=%d newUnitId=%d fromUnit=%s toUnit=%s unitAI=%s x=%d y=%d cost=%d oldXP=%d newXP=%d oldLevel=%d newLevel=%d",
-			GC.getGame().getGameTurn(), ePlayer, pOldUnit->getID(), pNewUnit->getID(), getSASGameRecordUnitType(pOldUnit->getUnitType()), getSASGameRecordUnitType(pNewUnit->getUnitType()), getSASGameRecordUnitAIType(pNewUnit->AI_getUnitAIType()), pNewUnit->getX(), pNewUnit->getY(), iCost, pOldUnit->getExperience(), pNewUnit->getExperience(), pOldUnit->getLevel(), pNewUnit->getLevel());
+			GC.getGame().getGameTurn(), ePlayer, pOldUnit->getID(), pNewUnit->getID(), getSASGameRecordUnitType(pOldUnit->getUnitType()),
+			getSASGameRecordUnitType(pNewUnit->getUnitType()), getSASGameRecordUnitAIType(pNewUnit->AI_getUnitAIType()),
+			pNewUnit->getX(), pNewUnit->getY(), iCost, pOldUnit->getExperience(), pNewUnit->getExperience(),
+			pOldUnit->getLevel(), pNewUnit->getLevel());
 	}
 }
 
@@ -4952,7 +4977,9 @@ void logSASGameRecordUnitCaptured(PlayerTypes eOldOwner, UnitTypes eOldUnitType,
 	kFlow.iCapturedProductionNeeded += GET_PLAYER(eNewOwner).getProductionNeeded(pNewUnit->getUnitType());
 	// <!-- custom: Upstream AdvCiv 1.14 has no mature-SAS unitCaptured Python event. Log directly at the successful initUnit boundary so this telemetry port stays factual without expanding the Python event API merely for recorder plumbing. (ChatGPT-5.6-Sol) -->
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=UNIT_CAPTURED oldOwner=%d newOwner=%d oldUnit=%s newUnitId=%d newUnit=%s newUnitAI=%s x=%d y=%d",
-		GC.getGame().getGameTurn(), eOldOwner, eNewOwner, getSASGameRecordUnitType(eOldUnitType), pNewUnit->getID(), getSASGameRecordUnitType(pNewUnit->getUnitType()), getSASGameRecordUnitAIType(pNewUnit->AI_getUnitAIType()), pNewUnit->getX(), pNewUnit->getY());
+		GC.getGame().getGameTurn(), eOldOwner, eNewOwner, getSASGameRecordUnitType(eOldUnitType), pNewUnit->getID(),
+		getSASGameRecordUnitType(pNewUnit->getUnitType()), getSASGameRecordUnitAIType(pNewUnit->AI_getUnitAIType()),
+		pNewUnit->getX(), pNewUnit->getY());
 }
 
 // <!-- custom: Per-war aggregate accounting and the final all-purpose statistics row remain deferred until the remaining combat/city/unit action families are complete. (ChatGPT-5.6-Sol) -->
@@ -4988,6 +5015,42 @@ void logSASGameRecordWarPlanChanged(TeamTypes eTeam, TeamTypes eTarget, WarPlanT
 			bWar, GET_TEAM(eTeam).isAtWar(eTarget), iOldStateCounter, GET_TEAM(eTeam).getNumWars(true, true), GET_TEAM(eTarget).getNumWars(true, true));
 }
 
+
+// <!-- custom: CvTeam::addTeam is the authoritative team-merge boundary. Log both pre-merge player assignments while the absorbed team still owns its slots.
+// Periodic team snapshots can then describe the resulting state without forcing a consumer to infer the exact merge turn. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordTeamMerged(TeamTypes eSurvivingTeam, TeamTypes eAbsorbedTeam)
+{
+	if (eSurvivingTeam < 0 || eSurvivingTeam >= MAX_TEAMS || eAbsorbedTeam < 0 || eAbsorbedTeam >= MAX_TEAMS || eSurvivingTeam == eAbsorbedTeam)
+		return;
+	int iSurvivingPlayerCount = 0;
+	int iAbsorbedPlayerCount = 0;
+	CvString const szSurvivingPlayers = getSASGameRecordTeamAssignedPlayers(eSurvivingTeam, iSurvivingPlayerCount);
+	CvString const szAbsorbedPlayers = getSASGameRecordTeamAssignedPlayers(eAbsorbedTeam, iAbsorbedPlayerCount);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=TEAM_MERGED survivingTeam=%d absorbedTeam=%d survivingPlayersBefore=%s absorbedPlayers=%s survivingPlayerCountBefore=%d absorbedPlayerCount=%d resultingPlayerCount=%d",
+			GC.getGame().getGameTurn(), eSurvivingTeam, eAbsorbedTeam, szSurvivingPlayers.GetCString(),
+			szAbsorbedPlayers.GetCString(), iSurvivingPlayerCount, iAbsorbedPlayerCount, iSurvivingPlayerCount + iAbsorbedPlayerCount);
+}
+
+void logSASGameRecordTeamMet(TeamTypes eTeam, TeamTypes eOtherTeam, bool bNewDiplo, int iX1, int iY1, int iX2, int iY2, CvPlot const* pTeamContactPlot, CvPlot const* pOtherContactPlot)
+{
+	bool const bMeetDataPlot1Valid = (iX1 >= 0 && iY1 >= 0 && iX1 < GC.getMap().getGridWidth() && iY1 < GC.getMap().getGridHeight());
+	bool const bMeetDataPlot2Valid = (iX2 >= 0 && iY2 >= 0 && iX2 < GC.getMap().getGridWidth() && iY2 < GC.getMap().getGridHeight());
+	// <!-- custom: FirstContactData may leave coordinates meaningless when the corresponding validity test fails.
+	// Preserve the validity flag, but serialize invalid pairs canonically as -1,-1 instead of leaking uninitialized values into the log. (ChatGPT-5.6-Sol) -->
+	int const iLoggedX1 = (bMeetDataPlot1Valid ? iX1 : -1);
+	int const iLoggedY1 = (bMeetDataPlot1Valid ? iY1 : -1);
+	int const iLoggedX2 = (bMeetDataPlot2Valid ? iX2 : -1);
+	int const iLoggedY2 = (bMeetDataPlot2Valid ? iY2 : -1);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=TEAM_MET team=%d otherTeam=%d bNewDiplo=%d teamMembers=%s otherMembers=%s meetDataPlot1=%d,%d meetDataPlot1Valid=%d meetDataPlot2=%d,%d meetDataPlot2Valid=%d teamContactPlot=%d,%d otherTeamContactPlot=%d,%d",
+			GC.getGame().getGameTurn(), eTeam, eOtherTeam, bNewDiplo, getSASGameRecordTeamMembers(eTeam).GetCString(), getSASGameRecordTeamMembers(eOtherTeam).GetCString(), iLoggedX1, iLoggedY1, bMeetDataPlot1Valid, iLoggedX2, iLoggedY2, bMeetDataPlot2Valid,
+			pTeamContactPlot == NULL ? -1 : pTeamContactPlot->getX(), pTeamContactPlot == NULL ? -1 : pTeamContactPlot->getY(),
+			pOtherContactPlot == NULL ? -1 : pOtherContactPlot->getX(), pOtherContactPlot == NULL ? -1 : pOtherContactPlot->getY());
+}
+
+void logSASGameRecordVassalState(TeamTypes eMaster, TeamTypes eVassal, bool bVassal)
+{
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s master=%d vassal=%d", GC.getGame().getGameTurn(), bVassal ? "VASSALAGE_STARTED" : "VASSALAGE_ENDED", eMaster, eVassal);
+}
 void logSASGameRecordTurn(int iGameTurn)
 {
 	logSASGameRecordSnapshot(iGameTurn, "interval");

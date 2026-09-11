@@ -449,6 +449,7 @@ void CvEventReporter::victory(TeamTypes eWinner, VictoryTypes eVictory)
 
 void CvEventReporter::vassalState(TeamTypes eMaster, TeamTypes eVassal, bool bVassal)
 {
+	if (gGameRecordLogLevel >= 2) logSASGameRecordVassalState(eMaster, eVassal, bVassal);
 	m_kPythonEventMgr.reportVassalState(eMaster, eVassal, bVassal);
 }
 

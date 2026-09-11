@@ -397,6 +397,8 @@ void CvTeam::addTeam(TeamTypes eTeam)
 	/*  advc.104t: Leader id needed later for merging data; unavailable after the
 		loop below. */
 	PlayerTypes eTeamLeader = GET_TEAM(eTeam).getLeaderID();
+	// <!-- custom: Capture the exact permanent-alliance merge boundary while both pre-merge player assignments still exist. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordTeamMerged(getID(), eTeam);
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
 		if (GET_PLAYER((PlayerTypes)i).getTeam() == eTeam)
@@ -1616,6 +1618,11 @@ void CvTeam::meet(TeamTypes eTeam, bool bNewDiplo,
 	CvTeam& kTeam = GET_TEAM(eTeam);
 	CvPlot const* pAt = makeHasMet(eTeam, bNewDiplo, pData);
 	CvPlot const* pOtherAt = kTeam.makeHasMet(getID(), bNewDiplo, pData);
+	// <!-- custom: Record first contact only after both directional has-met states exist; preserve AdvCiv 1.14 contact behavior unchanged. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2 && isAlive() && kTeam.isAlive() && !isBarbarian() && !kTeam.isBarbarian())
+	{
+		logSASGameRecordTeamMet(getID(), eTeam, bNewDiplo, pData == NULL ? -1 : pData->x1, pData == NULL ? -1 : pData->y1, pData == NULL ? -1 : pData->x2, pData == NULL ? -1 : pData->y2, pAt, pOtherAt);
+	}
 	// <advc.120l> (Not in makeHasMet b/c all the has-met data needs to be set first)
 	if (pData != NULL &&
 		GC.IsGraphicsInitialized() && // No reminder while initializing a scenario
