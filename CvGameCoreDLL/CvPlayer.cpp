@@ -7245,6 +7245,8 @@ void CvPlayer::killGoldenAgeUnits(CvUnit* pUnitAlive)
 		if (pBestUnit != NULL)
 		{
 			abUnitUsed.set(pBestUnit->getUnitType(), true);
+			if (gGameRecordLogLevel >= 2)
+				logSASGameRecordGreatPersonGoldenAgeConsumed(pBestUnit);
 			pBestUnit->kill(true);
 			//play animations
 			if (pBestUnit->getPlot().isActiveVisible(false))

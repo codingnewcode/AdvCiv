@@ -330,6 +330,8 @@ void CvEventReporter::goodyReceived(PlayerTypes ePlayer, CvPlot *pGoodyPlot, CvU
 
 void CvEventReporter::greatPersonBorn(CvUnit *pUnit, PlayerTypes ePlayer, CvCity *pCity)
 {
+	if (gGameRecordLogLevel >= 2)
+		logSASGameRecordGreatPersonBorn(pUnit, ePlayer, pCity);
 	m_kPythonEventMgr.reportGreatPersonBorn( pUnit, ePlayer, pCity);
 	m_kStatistics.unitBuilt(pUnit);
 }

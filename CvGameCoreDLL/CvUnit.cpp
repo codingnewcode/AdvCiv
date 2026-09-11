@@ -445,6 +445,9 @@ void CvUnit::kill(bool bDelay, PlayerTypes ePlayer)
 	if (ePlayer != NO_PLAYER)
 	{
 		CvEventReporter::getInstance().unitKilled(this, ePlayer);
+		// <!-- custom: CombatResult records normal Great-Person combat deaths; preserve the separate direct player-kill path without duplicating an active fight. (ChatGPT-5.6-Sol) -->
+		if (gGameRecordLogLevel >= 2 && !isFighting())
+			logSASGameRecordGreatPersonDied(this, ePlayer, "NONCOMBAT_PLAYER_KILL");
 		if (NO_UNIT != getLeaderUnitType() ||
 			// <advc.004u> Treat unattached GP here too
 			m_pUnitInfo->getDefaultUnitAIType() == UNITAI_GENERAL ||
@@ -5740,7 +5743,11 @@ bool CvUnit::join(SpecialistTypes eSpecialist)
 		return false;
 	CvCity* pCity = getPlot().getPlotCity();
 	if (pCity != NULL)
+	{
 		pCity->changeFreeSpecialistCount(eSpecialist, 1);
+		if (gGameRecordLogLevel >= 2)
+			logSASGameRecordGreatPersonJoined(this, pCity, eSpecialist);
+	}
 	if (getPlot().isActiveVisible(false))
 		NotifyEntity(MISSION_JOIN);
 	kill(true);
@@ -5786,6 +5793,8 @@ bool CvUnit::construct(BuildingTypes eBuilding)
 	{
 		pCity->setNumRealBuilding(eBuilding, pCity->getNumRealBuilding(eBuilding) + 1);
 		CvEventReporter::getInstance().buildingBuilt(pCity, eBuilding);
+		if (gGameRecordLogLevel >= 2)
+			logSASGameRecordGreatPersonConstructed(this, pCity, eBuilding);
 	}
 	if (getPlot().isActiveVisible(false))
 		NotifyEntity(MISSION_CONSTRUCT);
@@ -5831,8 +5840,10 @@ bool CvUnit::discover()
 
 	TechTypes eDiscoveryTech = getDiscoveryTech();
 	FAssertMsg(eDiscoveryTech != NO_TECH, "DiscoveryTech is not assigned a valid value");
+	// <!-- custom: Preserve the realized bulb amount for the action row before the Great Person is consumed. (ChatGPT-5.6-Sol) -->
+	int const iSASResearch = getDiscoverResearch(eDiscoveryTech);
 
-	GET_TEAM(getTeam()).changeResearchProgress(eDiscoveryTech, getDiscoverResearch(eDiscoveryTech), getOwner(), TECH_ACQUISITION_GREAT_PERSON);
+	GET_TEAM(getTeam()).changeResearchProgress(eDiscoveryTech, iSASResearch, getOwner(), TECH_ACQUISITION_GREAT_PERSON);
 
 	// K-Mod. If the AI bulbs something, let them reconsider their current research.
 	CvPlayerAI& kOwner = GET_PLAYER(getOwner());
@@ -5845,6 +5856,8 @@ bool CvUnit::discover()
 
 	if (getPlot().isActiveVisible(false))
 		NotifyEntity(MISSION_DISCOVER);
+	if (gGameRecordLogLevel >= 2)
+		logSASGameRecordGreatPersonDiscovered(this, eDiscoveryTech, iSASResearch);
 
 	kill(true);
 
@@ -5900,10 +5913,15 @@ bool CvUnit::hurry()
 	if (!canHurry(plot()))
 		return false;
 	CvCity* pCity = getPlot().getPlotCity();
+	// <!-- custom: Capture the target and realized hurry production before the production mutation can complete or replace the building. (ChatGPT-5.6-Sol) -->
+	int const iSASProduction = getHurryProduction(plot());
+	BuildingTypes const eSASBuilding = (pCity == NULL ? NO_BUILDING : pCity->getProductionBuilding());
 	if (pCity != NULL)
-		pCity->changeProduction(getHurryProduction(plot()));
+		pCity->changeProduction(iSASProduction);
 	if (getPlot().isActiveVisible(false))
 		NotifyEntity(MISSION_HURRY);
+	if (gGameRecordLogLevel >= 2)
+		logSASGameRecordGreatPersonHurried(this, pCity, eSASBuilding, iSASProduction);
 	kill(true);
 	return true;
 }
@@ -5950,9 +5968,13 @@ bool CvUnit::trade()
 {
 	if (!canTrade(plot()))
 		return false;
-	GET_PLAYER(getOwner()).changeGold(getTradeGold(plot()));
+	CvCity* const pSASCity = getPlot().getPlotCity();
+	int const iSASGold = getTradeGold(plot());
+	GET_PLAYER(getOwner()).changeGold(iSASGold);
 	if (getPlot().isActiveVisible(false))
 		NotifyEntity(MISSION_TRADE);
+	if (gGameRecordLogLevel >= 2)
+		logSASGameRecordGreatPersonTradeMission(this, pSASCity, iSASGold);
 	kill(true);
 	return true;
 }
@@ -5999,7 +6021,8 @@ bool CvUnit::greatWork()
 		pCity->setCultureUpdateTimer(0);
 		pCity->setOccupationTimer(0);
 
-		int iCultureToAdd = 100 * getGreatWorkCulture(plot());
+		int const iSASCulture = getGreatWorkCulture(plot());
+		int iCultureToAdd = 100 * iSASCulture;
 		/*int iNumTurnsApplied = (GC.getDefineINT("GREAT_WORKS_CULTURE_TURNS") * GC.getInfo(GC.getGame().getGameSpeedType()).getUnitGreatWorkPercent()) / 100;
 		for (int i = 0; i < iNumTurnsApplied; ++i)
 			pCity->changeCultureTimes100(getOwner(), iCultureToAdd / iNumTurnsApplied, true, true);
@@ -6010,6 +6033,8 @@ bool CvUnit::greatWork()
 		pCity->changeCultureTimes100(getOwner(), iCultureToAdd, true, true);
 		GET_PLAYER(getOwner()).AI_updateCommerceWeights(); // significant culture change may cause signficant weight changes.
 		// K-Mod end
+		if (gGameRecordLogLevel >= 2)
+			logSASGameRecordGreatPersonGreatWork(this, pCity, iSASCulture);
 	}
 	if (getPlot().isActiveVisible(false))
 		NotifyEntity(MISSION_GREAT_WORK);
@@ -6051,10 +6076,13 @@ bool CvUnit::infiltrate()
 	if (!canInfiltrate(plot()))
 		return false;
 	int iPoints = getEspionagePoints(NULL);
+	CvCity* const pSASCity = getPlot().getPlotCity();
 	GET_TEAM(getTeam()).changeEspionagePointsAgainstTeam(TEAMID(getPlot().getOwner()), iPoints);
 	GET_TEAM(getTeam()).changeEspionagePointsEver(iPoints);
 	if (getPlot().isActiveVisible(false))
 		NotifyEntity(MISSION_INFILTRATE);
+	if (gGameRecordLogLevel >= 2)
+		logSASGameRecordGreatPersonInfiltrated(this, pSASCity, iPoints);
 	kill(true);
 	return true;
 }
@@ -6224,6 +6252,8 @@ bool CvUnit::testSpyIntercepted(PlayerTypes eTargetPlayer, bool bMission, int iM
 
 	if (getPlot().isActiveVisible(false))
 		NotifyEntity(MISSION_SURRENDER);
+	if (gGameRecordLogLevel >= 2)
+		logSASGameRecordGreatPersonDied(this, eTargetPlayer, "SPY_INTERCEPTED");
 
 	kill(true);
 	return true;
@@ -6312,6 +6342,8 @@ bool CvUnit::goldenAge()
 	if (!canGoldenAge(plot()))
 		return false;
 
+	if (gGameRecordLogLevel >= 2)
+		logSASGameRecordGreatPersonGoldenAgeConsumed(this);
 	GET_PLAYER(getOwner()).killGoldenAgeUnits(this);
 	GET_PLAYER(getOwner()).changeGoldenAgeTurns(GET_PLAYER(getOwner()).getGoldenAgeLength());
 	GET_PLAYER(getOwner()).changeNumUnitGoldenAges(1);
