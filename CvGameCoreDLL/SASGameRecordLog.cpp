@@ -778,6 +778,11 @@ static const char* getSASGameRecordTechType(TechTypes eTech)
 	return (eTech == NO_TECH ? "-" : GC.getInfo(eTech).getType());
 }
 
+static const char* getSASGameRecordGoodyType(GoodyTypes eGoody)
+{
+	return (eGoody == NO_GOODY ? "-" : GC.getInfo(eGoody).getType());
+}
+
 static const char* getSASGameRecordBonusType(BonusTypes eBonus)
 {
 	return (eBonus == NO_BONUS ? "-" : GC.getInfo(eBonus).getType());
@@ -5080,6 +5085,66 @@ void logSASGameRecordBarbarianSpawn(CvUnit const* pUnit, char const* szCause)
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=BARBARIAN_UNIT_SPAWNED cause=%s unitId=%d unit=%s unitAI=%s x=%d y=%d area=%d cargo=%d transportId=%d",
 			GC.getGame().getGameTurn(), szCause, pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()),
 			pUnit->getX(), pUnit->getY(), pPlot == NULL ? -1 : pPlot->getArea().getID(), pUnit->isCargo(), pUnit->getTransportUnit() == NULL ? -1 : pUnit->getTransportUnit()->getID());
+}
+
+SASGameRecordGoodyResult::SASGameRecordGoodyResult() :
+	bFollowupOutcome(false), bUpgradeRoll(false), bUpgradeApplied(false), bAdditionalOutcomeAttempted(false),
+	iGold(0), iNewlyRevealedPlots(0), iExperienceGained(0), iDamageHealed(0), eTech(NO_TECH), iTechRewardValue(0),
+	iTechProgressBefore(-1), iTechProgressAfter(-1), iTechCost(-1), bTechCompleted(false), iFreePromotionsGranted(0)
+{}
+
+static CvString getSASGameRecordGoodyUnits(std::vector<CvUnit const*> const& apUnits, bool bIncludePromotions)
+{
+	CvString szUnits;
+	for (size_t iI = 0; iI < apUnits.size(); iI++)
+	{
+		CvUnit const* pUnit = apUnits[iI];
+		if (pUnit == NULL)
+			continue;
+		CvString szPromotions;
+		if (bIncludePromotions)
+		{
+			FOR_EACH_ENUM(Promotion)
+			{
+				if (!pUnit->isHasPromotion(eLoopPromotion))
+					continue;
+				if (!szPromotions.empty())
+					szPromotions += "+";
+				szPromotions += getSASGameRecordPromotionType(eLoopPromotion);
+			}
+		}
+		CvString szItem;
+		if (szPromotions.empty())
+			szItem.Format("%s%s:%d@(%d,%d)", szUnits.empty() ? "" : ",", getSASGameRecordUnitType(pUnit->getUnitType()), pUnit->getID(), pUnit->getX(), pUnit->getY());
+		else szItem.Format("%s%s:%d@(%d,%d)[%s]", szUnits.empty() ? "" : ",", getSASGameRecordUnitType(pUnit->getUnitType()), pUnit->getID(), pUnit->getX(), pUnit->getY(), szPromotions.GetCString());
+		szUnits += szItem;
+	}
+	return getSASDiagnosticOrDash(szUnits);
+}
+
+// <!-- custom: Log the resolved goody result rather than only the XML label. AdvCiv goodies can randomize gold/research, reveal a variable map area, upgrade free units, spawn variable hostile units, or roll a same-sign follow-up outcome.
+// Generic TECH_ACQUIRED remains complementary chronology; this rare level-2 row ties downstream effects back to the hut that caused them. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordGoodyReceived(PlayerTypes ePlayer, CvPlot const* pPlot, CvUnit const* pTriggerUnit, GoodyTypes eGoody, SASGameRecordGoodyResult const& kResult)
+{
+	if (pPlot == NULL || ePlayer < 0 || ePlayer >= MAX_PLAYERS || eGoody == NO_GOODY)
+		return;
+	int const iTechProgressAdded = (kResult.iTechProgressBefore < 0 || kResult.iTechProgressAfter < 0 ? -1 : kResult.iTechProgressAfter - kResult.iTechProgressBefore);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=GOODY_RECEIVED player=%d team=%d x=%d y=%d area=%d triggerUnitId=%d triggerUnit=%s goody=%s bad=%d followup=%d upgradeRoll=%d upgradeApplied=%d additionalOutcomeAttempted=%d gold=%d newlyRevealedPlots=%d experienceGained=%d damageHealed=%d tech=%s techRewardValue=%d techStoredProgressBefore=%d techStoredProgressAdded=%d techStoredProgressAfter=%d techCost=%d techCompleted=%d freeUnitCount=%d freePromotionsGranted=%d freeUnits=%s barbarianUnitCount=%d barbarianUnits=%s",
+			GC.getGame().getGameTurn(), ePlayer, GET_PLAYER(ePlayer).getTeam(), pPlot->getX(), pPlot->getY(), pPlot->getArea().getID(),
+			pTriggerUnit == NULL ? -1 : pTriggerUnit->getID(), pTriggerUnit == NULL ? "-" : getSASGameRecordUnitType(pTriggerUnit->getUnitType()), getSASGameRecordGoodyType(eGoody), GC.getInfo(eGoody).isBad(),
+			kResult.bFollowupOutcome, kResult.bUpgradeRoll, kResult.bUpgradeApplied, kResult.bAdditionalOutcomeAttempted, kResult.iGold, kResult.iNewlyRevealedPlots, kResult.iExperienceGained, kResult.iDamageHealed,
+			getSASGameRecordTechType(kResult.eTech), kResult.iTechRewardValue, kResult.iTechProgressBefore, iTechProgressAdded, kResult.iTechProgressAfter, kResult.iTechCost, kResult.bTechCompleted,
+			(int)kResult.apFreeUnits.size(), kResult.iFreePromotionsGranted, getSASGameRecordGoodyUnits(kResult.apFreeUnits, true).GetCString(), (int)kResult.apBarbarianUnits.size(), getSASGameRecordGoodyUnits(kResult.apBarbarianUnits, false).GetCString());
+}
+
+// <!-- custom: A hut can exhaust NUM_DO_GOODY_ATTEMPTS without finding an eligible result. Preserve that rare factual no-outcome boundary, including failed AdvCiv follow-up rolls. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordGoodyNoOutcome(PlayerTypes ePlayer, CvPlot const* pPlot, CvUnit const* pTriggerUnit, GoodyTypes eTaboo, int iAttempts)
+{
+	if (pPlot == NULL || ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=GOODY_NO_OUTCOME player=%d team=%d x=%d y=%d area=%d triggerUnitId=%d triggerUnit=%s followup=%d taboo=%s attempts=%d",
+			GC.getGame().getGameTurn(), ePlayer, GET_PLAYER(ePlayer).getTeam(), pPlot->getX(), pPlot->getY(), pPlot->getArea().getID(),
+			pTriggerUnit == NULL ? -1 : pTriggerUnit->getID(), pTriggerUnit == NULL ? "-" : getSASGameRecordUnitType(pTriggerUnit->getUnitType()), eTaboo != NO_GOODY, getSASGameRecordGoodyType(eTaboo), iAttempts);
 }
 
 // <!-- custom: Per-war aggregate accounting and the final all-purpose statistics row remain deferred until the remaining combat/city/unit action families are complete. (ChatGPT-5.6-Sol) -->

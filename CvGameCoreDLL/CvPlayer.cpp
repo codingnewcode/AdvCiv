@@ -20,7 +20,7 @@
 #include "CvBugOptions.h"
 #include "CvDLLFlagEntityIFaceBase.h" // BBAI
 #include "BBAILog.h"
-#include "SASGameRecordLog.h" // <!-- custom: Research and player-state mutation boundaries feed factual SASGameRecord lifecycle rows. (ChatGPT-5.6-Sol) -->
+#include "SASGameRecordLog.h" // <!-- custom: Structured player/action boundaries feed factual SASGameRecord lifecycle rows. (ChatGPT-5.6-Sol) -->
 #include "RiseFall.h" // advc.708: Needed only for savegame compatibility
 #include "SelfMod.h" // advc.092b
 
@@ -4722,6 +4722,12 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 	CvGoodyInfo const& kGoody = GC.getInfo(eGoody);
 	CvGame const& kGame = GC.getGame();
 	// </advc>
+	// <!-- custom: Goody outcomes are rare, but their randomized realized effects can materially alter early selfplay. Gate logging-only measurements at level 2+ and preserve the entry recursion flag before AdvCiv may reuse bNoRecursion for an upgraded free-unit result. (ChatGPT-5.6-Sol) -->
+	bool const bLogGoodyOutcome = (gGameRecordLogLevel >= 2);
+	bool const bLogGoodyDetails = (bLogGoodyOutcome && gGameRecordLogLevel >= 3);
+	bool const bFollowupOutcome = bNoRecursion;
+	SASGameRecordGoodyResult kGameRecordResult;
+	if (bLogGoodyOutcome) kGameRecordResult.bFollowupOutcome = bFollowupOutcome;
 	szBuffer = kGoody.getDescription();
 
 	// <advc.314>
@@ -4732,6 +4738,7 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 	/*  Meaning that an upgraded version of kGoody should be used, or, if there
 		is none, that an additional outcome should be rolled. */
 	bool bUpgrade = SyncRandSuccess(rUpgradeProb);
+	if (bLogGoodyOutcome) kGameRecordResult.bUpgradeRoll = bUpgrade;
 	// </advc.314>
 	int iGold = kGoody.getGold() +
 			SyncRandNum(kGoody.getGoldRand1()) +
@@ -4739,6 +4746,7 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 	//iGold  = (iGold * GC.getInfo(kGame.getGameSpeedType()).getGrowthPercent()) / 100;
 	// advc.314: Replacing the above
 	iGold = (iGold * kGame.goodyHutEffectFactor()).round();
+	if (bLogGoodyOutcome && !kGoody.isTech()) kGameRecordResult.iGold = iGold;
 	if (iGold != 0 &&
 		// advc.314: isTech means that iGold is the research progress
 		!kGoody.isTech())
@@ -4777,15 +4785,27 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 		for (PlotCircleIter it(*pBestPlot, iMapRange, false); it.hasNext(); ++it)
 		{
 			if (SyncRandSuccess100(kGoody.getMapProb()))
+			{
+				bool const bWasRevealed = (bLogGoodyOutcome && it->isRevealed(getTeam()));
 				it->setRevealed(getTeam(), true, false, NO_TEAM, true);
+				if (bLogGoodyOutcome && !bWasRevealed && it->isRevealed(getTeam())) kGameRecordResult.iNewlyRevealedPlots++;
+			}
 		}
 	}
 
 	if (pUnit != NULL)
+	{
+		int const iExperienceBefore = (bLogGoodyOutcome ? pUnit->getExperience() : 0);
 		pUnit->changeExperience(kGoody.getExperience());
+		if (bLogGoodyOutcome) kGameRecordResult.iExperienceGained = pUnit->getExperience() - iExperienceBefore;
+	}
 
 	if (pUnit != NULL)
+	{
+		int const iDamageBefore = (bLogGoodyOutcome ? pUnit->getDamage() : 0);
 		pUnit->changeDamage(-(kGoody.getHealing()));
+		if (bLogGoodyOutcome) kGameRecordResult.iDamageHealed = iDamageBefore - pUnit->getDamage();
+	}
 
 	if (kGoody.isTech())
 	{
@@ -4807,6 +4827,13 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 		FAssert(eBestTech != NO_TECH);
 		// <advc.314> Most of the code from here on is modified
 		CvTeam& kOurTeam = GET_TEAM(getTeam());
+		if (bLogGoodyOutcome)
+		{
+			kGameRecordResult.eTech = eBestTech;
+			kGameRecordResult.iTechRewardValue = iGold;
+			kGameRecordResult.iTechProgressBefore = kOurTeam.getResearchProgress(eBestTech);
+			kGameRecordResult.iTechCost = kOurTeam.getResearchCost(eBestTech);
+		}
 		if (iGold <= 0 || fixp(0.8) * kOurTeam.getResearchLeft(eBestTech) <= iGold)
 		{
 			kOurTeam.setHasTech(eBestTech, true, getID(), true, true, false, TECH_ACQUISITION_GOODY);
@@ -4818,6 +4845,11 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 			kOurTeam.changeResearchProgress(eBestTech, iGold, getID(), TECH_ACQUISITION_GOODY);
 			szBuffer = gDLL->getText("TXT_KEY_MISC_PROGRESS_TOWARDS_TECH", iGold,
 					GC.getInfo(eBestTech).getDescription());
+		}
+		if (bLogGoodyOutcome)
+		{
+			kGameRecordResult.iTechProgressAfter = kOurTeam.getResearchProgress(eBestTech);
+			kGameRecordResult.bTechCompleted = kOurTeam.isHasTech(eBestTech);
 		}
 	}
 	std::vector<UnitTypes> aeBestUnits;
@@ -4870,6 +4902,7 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 			if (bUpgrade && kGoody.getBarbarianUnitClass() != NO_UNITCLASS)
 			{
 				eUnitClass = (UnitClassTypes)kGoody.getBarbarianUnitClass();
+				if (bLogGoodyOutcome) kGameRecordResult.bUpgradeApplied = true;
 				// Upgrade applied, don't roll an additional outcome.
 				bNoRecursion = true;
 			}
@@ -4893,8 +4926,28 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 						GC.getInfo(eLoopUnit).getDescription());
 				addGoodyMsg(szBuffer, *pPlot, kGoody.getSound());
 				szBuffer.clear();
+				int iPromotionsBefore = 0;
+				if (bLogGoodyOutcome)
+				{
+					FOR_EACH_ENUM(Promotion)
+					{
+						if (pNewUnit->isHasPromotion(eLoopPromotion))
+							iPromotionsBefore++;
+					}
+				}
 				if (pNewUnit->canAcquirePromotionAny())
 					promoteFreeUnit(*pNewUnit, rUpgradeProb);
+				if (bLogGoodyOutcome)
+				{
+					int iPromotionsAfter = 0;
+					FOR_EACH_ENUM(Promotion)
+					{
+						if (pNewUnit->isHasPromotion(eLoopPromotion))
+							iPromotionsAfter++;
+					}
+					kGameRecordResult.iFreePromotionsGranted += std::max(0, iPromotionsAfter - iPromotionsBefore);
+					kGameRecordResult.apFreeUnits.push_back(pNewUnit);
+				}
 			}
 		}
 	}
@@ -4939,9 +4992,12 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 					FAssert(eLoopUnit != NO_UNIT);
 					if(eLoopUnit != NO_UNIT)
 					{
-						GET_PLAYER(BARBARIAN_PLAYER).initUnit(eLoopUnit,
+						CvUnit* pBarbarian = GET_PLAYER(BARBARIAN_PLAYER).initUnit(eLoopUnit,
 								pAdj->getX(), pAdj->getY(),
 								(pAdj->isWater() ? UNITAI_ATTACK_SEA : UNITAI_ATTACK));
+						if (bLogGoodyOutcome && pBarbarian != NULL)
+							kGameRecordResult.apBarbarianUnits.push_back(pBarbarian);
+						if (bLogGoodyDetails) logSASGameRecordBarbarianSpawn(pBarbarian, "GOODY_HUT");
 						iBarbCount++;
 					}
 					if ((iPass > 0 && iBarbCount >= iMinBarbs) || iBarbCount >= iMaxBarbs)
@@ -4955,6 +5011,11 @@ void CvPlayer::receiveGoody(CvPlot* pPlot, GoodyTypes eGoody, CvUnit* pUnit,
 		{	// Give the unit a chance to run away
 			pUnit->changeMoves(-std::min(GC.getMOVE_DENOMINATOR(), pUnit->getMoves()));
 		}*/
+	}
+	if (bLogGoodyOutcome)
+	{
+		kGameRecordResult.bAdditionalOutcomeAttempted = (bUpgrade && !bNoRecursion);
+		logSASGameRecordGoodyReceived(getID(), pPlot, pUnit, eGoody, kGameRecordResult);
 	}
 	if(bUpgrade && !bNoRecursion)
 		doGoody(pPlot, pUnit, eGoody); // </advc.314>
@@ -4975,6 +5036,7 @@ void CvPlayer::doGoody(CvPlot* pPlot, CvUnit* pUnit, /* advc.314: */ GoodyTypes 
 		return;
 	} // </advc>
 	int const iAttempts = GC.getDefineINT("NUM_DO_GOODY_ATTEMPTS"); // advc.opt
+	bool bReceivedGoody = false;
 	for (int i = 0; i < iAttempts; i++)
 	{
 		if (GC.getInfo(getHandicapType()).getNumGoodies() <= 0)
@@ -4991,11 +5053,13 @@ void CvPlayer::doGoody(CvPlot* pPlot, CvUnit* pUnit, /* advc.314: */ GoodyTypes 
 		if (canReceiveGoody(pPlot, eGoody, pUnit))
 		{
 			receiveGoody(pPlot, eGoody, pUnit, /* advc.314: */ eTaboo != NO_GOODY);
+			bReceivedGoody = true;
 			// advc (note): pUnit can be NULL here, but a CyUnit for Python can still be created.
 			CvEventReporter::getInstance().goodyReceived(getID(), pPlot, pUnit, eGoody);
 			break;
 		}
 	}
+	if (!bReceivedGoody && gGameRecordLogLevel >= 2) logSASGameRecordGoodyNoOutcome(getID(), pPlot, pUnit, eTaboo, iAttempts);
 }
 
 

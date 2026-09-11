@@ -15,7 +15,7 @@ void logSASGameRecordTurn(int iGameTurn);
 void noteSASGameRecordResearchTargetChangeCause(PlayerTypes ePlayer, ResearchTargetChangeCause eCause);
 // <!-- custom: Preserve the exact fresh-research/carried-overflow split only for level-2 ordinary research application; the recorder consumes it if that same call completes the technology. (ChatGPT-5.6-Sol) -->
 void noteSASGameRecordResearchApplication(PlayerTypes ePlayer, TechTypes eTech, int iModifiedResearchRate, int iIncomingOverflowUnmodified, int iIncomingOverflowModified);
-// <!-- custom: The incremental AdvCiv 1.14 port currently uses this player-turn helper only for finalized research-target observation; mature AdvCiv-SAS also accumulates session Golden-Age/anarchy counters here, which can be added with their later action-history slice. (ChatGPT-5.6-Sol) -->
+// <!-- custom: This mixed-level player-turn helper observes finalized research-target changes and accumulates the session-local Golden Age/anarchy duration counters used by their lifecycle rows. Only the research-target comparison self-gates at level 2+. (ChatGPT-5.6-Sol) -->
 void updateSASGameRecordPlayerTurnState(PlayerTypes ePlayer);
 // <!-- custom: Research completion has its own accounting row because generic TECH_ACQUIRED also covers trades, free technologies, espionage and other sources where research overflow fields would be meaningless. Call only for actual TECH_ACQUISITION_RESEARCH threshold crossings at level 2+. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordResearchCompleted(TechTypes eTech, TeamTypes eTeam, PlayerTypes ePlayer, int iProgressBefore, int iProgressBeforePostCompletionAdjustment, int iResearchModifier, int iUnmodifiedOverflow);
@@ -85,8 +85,32 @@ void logSASGameRecordGreatGeneralAttached(CvUnit const* pGreatGeneral, CvUnit co
 void logSASGameRecordUnitScrapped(CvUnit const* pUnit);
 void logSASGameRecordUnitUpgraded(CvUnit const* pOldUnit, CvUnit const* pNewUnit, int iCost);
 void logSASGameRecordUnitCaptured(PlayerTypes eOldOwner, UnitTypes eOldUnitType, CvUnit const* pNewUnit);
-// <!-- custom: Fog-created Barbarian units bypass ordinary production/completion history; preserve exact realized spawn cause/location at level 3. (ChatGPT-5.6-Sol) -->
+// <!-- custom: Goody huts can resolve randomized gold/research/map/unit/combat effects and optional same-sign follow-up outcomes. Preserve the realized result as one compact level-2 record; level 3 can additionally identify exact hostile units through BARBARIAN_UNIT_SPAWNED. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordGoodyResult
+{
+	SASGameRecordGoodyResult();
+	bool bFollowupOutcome;
+	bool bUpgradeRoll;
+	bool bUpgradeApplied;
+	bool bAdditionalOutcomeAttempted;
+	int iGold;
+	int iNewlyRevealedPlots;
+	int iExperienceGained;
+	int iDamageHealed;
+	TechTypes eTech;
+	int iTechRewardValue;
+	int iTechProgressBefore;
+	int iTechProgressAfter;
+	int iTechCost;
+	bool bTechCompleted;
+	int iFreePromotionsGranted;
+	std::vector<CvUnit const*> apFreeUnits;
+	std::vector<CvUnit const*> apBarbarianUnits;
+};
+// <!-- custom: Fog-created Barbarian units bypass ordinary production/completion history; preserve exact realized spawn cause/location at level 3. Goody-hut hostile spawns use the same detailed unit row. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordBarbarianSpawn(CvUnit const* pUnit, char const* szCause);
+void logSASGameRecordGoodyReceived(PlayerTypes ePlayer, CvPlot const* pPlot, CvUnit const* pTriggerUnit, GoodyTypes eGoody, SASGameRecordGoodyResult const& kResult);
+void logSASGameRecordGoodyNoOutcome(PlayerTypes ePlayer, CvPlot const* pPlot, CvUnit const* pTriggerUnit, GoodyTypes eTaboo, int iAttempts);
 // <!-- custom: War lifecycle hooks preserve factual declaration/cascade and peace context at the authoritative CvTeam boundaries. The incremental 1.14 port intentionally leaves mature per-war aggregate summaries for a later slice. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordWarStarted(TeamTypes eDeclarer, TeamTypes eTarget, WarPlanTypes eWarPlan, bool bPrimaryDoW, bool bNewDiplo, PlayerTypes eSponsor, bool bRandomEvent, WarDeclarationCause eCause);
 void logSASGameRecordWarEnded(TeamTypes eTeam, TeamTypes eOtherTeam, int iTeamAWarSuccess, int iTeamBWarSuccess, bool bCapitulate, TeamTypes eBroker, bool bRandomEvent, bool bReparations);
