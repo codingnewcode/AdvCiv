@@ -30,6 +30,30 @@ void logSASGameRecordCityAcquired(PlayerTypes eOldOwner, PlayerTypes eNewOwner, 
 void noteSASGameRecordCombatStarted(CvUnit const* pAttacker, CvUnit const* pDefender, CvPlot const* pBattlePlot);
 void logSASGameRecordNonlethalCombat(CvUnit const* pAttacker, CvUnit const* pDefender, CvPlot const* pBattlePlot, bool bCombatLimitReached);
 void logSASGameRecordCombatResult(CvUnit const* pWinner, CvUnit const* pLoser, CvPlot const* pBattlePlot);
+// <!-- custom: Observe one AI_chooseProduction call as a scope so every early return is handled without teaching the AI decision tree about recorder schema.
+// At level 2+, the destructor compares the final head order with the entry state and records only meaningful switches, clears, or resumptions of stored production. The disabled level-0/1 path stays a null-pointer check. (ChatGPT-5.6-Sol) -->
+class SASGameRecordAIProductionChoiceScope
+{
+public:
+	SASGameRecordAIProductionChoiceScope(CvCity const& kCity, bool bEnabled) : m_pCity(NULL)
+	{
+		if (bEnabled) begin(kCity);
+	}
+	~SASGameRecordAIProductionChoiceScope()
+	{
+		if (m_pCity != NULL) end();
+	}
+private:
+	void begin(CvCity const& kCity);
+	void end();
+	CvCity const* m_pCity;
+	OrderTypes m_eOldOrder;
+	int m_iOldData1;
+	int m_iOldStored;
+	int m_iOldNeeded;
+	int m_iOldTurnsLeft;
+	int m_iOldAccumulatedInactiveTurns;
+};
 // <!-- custom: Production-resolution hooks preserve exact completion, overflow and stored-production loss at authoritative CvCity boundaries; compact interval production-flow rows summarize the same evidence at level 2+. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordUnitCompleted(CvCity const* pCity, CvUnit const* pUnit, bool bConscripted, int iRawModifiedOverflow = 0, int iUnmodifiedOverflow = 0, int iKeptOverflow = 0, int iLostProduction = 0, int iUnusedOverflowCapacity = 0, int iOverflowGold = 0);
 void logSASGameRecordBuildingCompletedByProduction(CvCity const* pCity, BuildingTypes eBuilding, int iRawModifiedOverflow, int iUnmodifiedOverflow, int iKeptOverflow, int iLostProduction, int iUnusedOverflowCapacity, int iOverflowGold);

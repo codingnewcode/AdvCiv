@@ -310,7 +310,18 @@ static SASGameRecordBattleQuality g_akSASGameRecordBattleQuality[MAX_PLAYERS];
 static SASGameRecordBattleQuality g_akSASGameRecordTotalBattleQuality[MAX_PLAYERS];
 static int g_iSASGameRecordBattleStartTurn = 0;
 
-// <!-- custom: Incremental upstream port of mature SASGameRecordPlayerFlow now covers production and military quality; natural city-population flow and AI target-transition matrices remain later independent slices. (ChatGPT-5.6-Sol) -->
+// <!-- custom: Recorder-only production categories are shared by the interval transition matrix and exact target-change formatting. Keep this independent from gameplay enums. (ChatGPT-5.6-Sol) -->
+enum SASGameRecordProductionKindIndex
+{
+	SAS_PRODUCTION_UNIT = 0,
+	SAS_PRODUCTION_BUILDING,
+	SAS_PRODUCTION_WONDER,
+	SAS_PRODUCTION_PROJECT,
+	SAS_PRODUCTION_PROCESS,
+	NUM_SAS_PRODUCTION_KINDS
+};
+
+// <!-- custom: Incremental upstream port of mature SASGameRecordPlayerFlow now covers factual production resolution, AI production-target churn, and military quality; natural city-population flow remains a later independent slice. (ChatGPT-5.6-Sol) -->
 struct SASGameRecordPlayerFlow
 {
 	int iUnitsCompleted;
@@ -330,6 +341,15 @@ struct SASGameRecordPlayerFlow
 	int iOverflowGold;
 	int iFailedInvestedProduction;
 	int iFailGold;
+	// <!-- custom: Distinguish strategic AI target switching from actual mechanical production loss. Stored production is parked/resumed, not counted as wasted. (ChatGPT-5.6-Sol) -->
+	int iAIProductionTargetSwitches;
+	int iAIProductionTargetClears;
+	int iAIProductionInvestedTargetChanges;
+	int iAIProductionParked;
+	int iAIProductionTargetResumes;
+	int iAIProductionResumed;
+	int aiAIProductionTransitions[NUM_SAS_PRODUCTION_KINDS * NUM_SAS_PRODUCTION_KINDS];
+	std::vector<std::pair<int,int> > aAIProductionTargetChangesByCity;
 	int iProductionDecayActions;
 	int iProductionDecayLost;
 	int iProductionInvalidatedActions;
@@ -383,6 +403,14 @@ struct SASGameRecordPlayerFlow
 		iOverflowGold = 0;
 		iFailedInvestedProduction = 0;
 		iFailGold = 0;
+		iAIProductionTargetSwitches = 0;
+		iAIProductionTargetClears = 0;
+		iAIProductionInvestedTargetChanges = 0;
+		iAIProductionParked = 0;
+		iAIProductionTargetResumes = 0;
+		iAIProductionResumed = 0;
+		for (int iI = 0; iI < NUM_SAS_PRODUCTION_KINDS * NUM_SAS_PRODUCTION_KINDS; iI++) aiAIProductionTransitions[iI] = 0;
+		aAIProductionTargetChangesByCity.clear();
 		iProductionDecayActions = 0;
 		iProductionDecayLost = 0;
 		iProductionInvalidatedActions = 0;
@@ -420,7 +448,8 @@ struct SASGameRecordPlayerFlow
 	}
 	bool hasProduction() const
 	{
-		return (iUnitsCompleted > 0 || iUnitsConscripted > 0 || iBuildingsCompleted > 0 || iProjectsCompleted > 0 || iOverflowActions > 0 || iFailedInvestedProduction > 0 || iFailGold > 0 || iProductionDecayActions > 0 || iProductionInvalidatedActions > 0 || iProductionUpgradeTransfers > 0 || iProductionUpgradeOverwritten > 0);
+		return (iUnitsCompleted > 0 || iUnitsConscripted > 0 || iBuildingsCompleted > 0 || iProjectsCompleted > 0 || iOverflowActions > 0 || iFailedInvestedProduction > 0 || iFailGold > 0 ||
+			iAIProductionTargetSwitches > 0 || iAIProductionTargetClears > 0 || iAIProductionTargetResumes > 0 || iProductionDecayActions > 0 || iProductionInvalidatedActions > 0 || iProductionUpgradeTransfers > 0 || iProductionUpgradeOverwritten > 0);
 	}
 	bool hasMilitary() const
 	{
@@ -3232,6 +3261,131 @@ static const char* getSASGameRecordProductionType(OrderTypes eOrder, int iData1)
 	}
 }
 
+// <!-- custom: Production churn is about the active head target, not every queued-order mutation. This compact recorder-only index also distinguishes Wonders from ordinary buildings. (ChatGPT-5.6-Sol) -->
+static int getSASGameRecordProductionKindIndex(OrderTypes eOrder, int iData1)
+{
+	switch (eOrder)
+	{
+	case ORDER_TRAIN: return SAS_PRODUCTION_UNIT;
+	case ORDER_CONSTRUCT:
+		return (iData1 >= 0 && iData1 < GC.getNumBuildingInfos() && GC.getInfo((BuildingTypes)iData1).isLimited() ? SAS_PRODUCTION_WONDER : SAS_PRODUCTION_BUILDING);
+	case ORDER_CREATE: return SAS_PRODUCTION_PROJECT;
+	case ORDER_MAINTAIN: return SAS_PRODUCTION_PROCESS;
+	default: return -1;
+	}
+}
+
+static void captureSASGameRecordProductionTarget(CvCity const& kCity, OrderTypes& eOrder, int& iData1, int& iStored, int& iNeeded, int& iTurnsLeft, int& iAccumulatedInactiveTurns)
+{
+	OrderData const kOrder = kCity.getOrderData(0);
+	eOrder = kOrder.eOrderType;
+	iData1 = kOrder.iData1;
+	iStored = 0;
+	iNeeded = 0;
+	iTurnsLeft = -1;
+	iAccumulatedInactiveTurns = -1;
+	switch (eOrder)
+	{
+	case ORDER_TRAIN:
+		iStored = kCity.getUnitProduction((UnitTypes)iData1);
+		iNeeded = kCity.getProductionNeeded((UnitTypes)iData1);
+		iTurnsLeft = kCity.getProductionTurnsLeft();
+		if (iTurnsLeft == MAX_INT) iTurnsLeft = -1;
+		iAccumulatedInactiveTurns = kCity.getUnitProductionTime((UnitTypes)iData1);
+		break;
+	case ORDER_CONSTRUCT:
+		iStored = kCity.getBuildingProduction((BuildingTypes)iData1);
+		iNeeded = kCity.getProductionNeeded((BuildingTypes)iData1);
+		iTurnsLeft = kCity.getProductionTurnsLeft();
+		if (iTurnsLeft == MAX_INT) iTurnsLeft = -1;
+		iAccumulatedInactiveTurns = kCity.getBuildingProductionTime((BuildingTypes)iData1);
+		break;
+	case ORDER_CREATE:
+		iStored = kCity.getProjectProduction((ProjectTypes)iData1);
+		iNeeded = kCity.getProductionNeeded((ProjectTypes)iData1);
+		iTurnsLeft = kCity.getProductionTurnsLeft();
+		if (iTurnsLeft == MAX_INT) iTurnsLeft = -1;
+		break;
+	case ORDER_MAINTAIN:
+		break;
+	default:
+		eOrder = NO_ORDER;
+		iData1 = -1;
+		break;
+	}
+}
+
+static void noteSASGameRecordAIProductionTargetChangedCity(SASGameRecordPlayerFlow& kFlow, int iCityId)
+{
+	for (size_t iI = 0; iI < kFlow.aAIProductionTargetChangesByCity.size(); iI++)
+	{
+		if (kFlow.aAIProductionTargetChangesByCity[iI].first == iCityId)
+		{
+			kFlow.aAIProductionTargetChangesByCity[iI].second++;
+			return;
+		}
+	}
+	kFlow.aAIProductionTargetChangesByCity.push_back(std::make_pair(iCityId, 1));
+}
+
+void SASGameRecordAIProductionChoiceScope::begin(CvCity const& kCity)
+{
+	m_pCity = &kCity;
+	captureSASGameRecordProductionTarget(kCity, m_eOldOrder, m_iOldData1, m_iOldStored, m_iOldNeeded, m_iOldTurnsLeft, m_iOldAccumulatedInactiveTurns);
+}
+
+void SASGameRecordAIProductionChoiceScope::end()
+{
+	OrderTypes eNewOrder = NO_ORDER;
+	int iNewData1 = -1;
+	int iNewStored = 0;
+	int iNewNeeded = 0;
+	int iNewTurnsLeft = -1;
+	int iNewAccumulatedInactiveTurns = -1;
+	captureSASGameRecordProductionTarget(*m_pCity, eNewOrder, iNewData1, iNewStored, iNewNeeded, iNewTurnsLeft, iNewAccumulatedInactiveTurns);
+	bool const bSameTarget = (m_eOldOrder == eNewOrder && m_iOldData1 == iNewData1);
+	if (bSameTarget)
+		return;
+	bool const bOldTarget = (m_eOldOrder != NO_ORDER);
+	bool const bNewTarget = (eNewOrder != NO_ORDER);
+	bool const bResume = (bNewTarget && iNewStored > 0);
+	// <!-- custom: Normal completion -> fresh next target is not churn. Preserve only a real active-target change or selection that resumes previously stored production. (ChatGPT-5.6-Sol) -->
+	if (!bOldTarget && !bResume)
+		return;
+	PlayerTypes const ePlayer = m_pCity->getOwner();
+	if (ePlayer < 0 || ePlayer >= MAX_CIV_PLAYERS)
+		return;
+	SASGameRecordPlayerFlow& kFlow = g_akSASGameRecordPlayerFlow[ePlayer];
+	if (bOldTarget)
+	{
+		if (bNewTarget) kFlow.iAIProductionTargetSwitches++;
+		else kFlow.iAIProductionTargetClears++;
+		if (m_iOldStored > 0)
+		{
+			kFlow.iAIProductionInvestedTargetChanges++;
+			kFlow.iAIProductionParked += m_iOldStored;
+		}
+		noteSASGameRecordAIProductionTargetChangedCity(kFlow, m_pCity->getID());
+		int const iOldKind = getSASGameRecordProductionKindIndex(m_eOldOrder, m_iOldData1);
+		int const iNewKind = getSASGameRecordProductionKindIndex(eNewOrder, iNewData1);
+		if (iOldKind >= 0 && iNewKind >= 0)
+			kFlow.aiAIProductionTransitions[iOldKind * NUM_SAS_PRODUCTION_KINDS + iNewKind]++;
+	}
+	if (bResume)
+	{
+		kFlow.iAIProductionTargetResumes++;
+		kFlow.iAIProductionResumed += iNewStored;
+	}
+	if (gGameRecordLogLevel >= 3)
+	{
+		char const* szChange = (bOldTarget ? (bNewTarget ? "SWITCH" : "CLEAR") : "RESUME");
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=AI_PRODUCTION_TARGET_CHANGED player=%d cityId=%d city=%S change=%s oldKind=%s oldTarget=%s oldStored=%d oldNeeded=%d oldTurnsLeft=%d oldAccumulatedInactiveTurns=%d newKind=%s newTarget=%s newStored=%d newNeeded=%d newTurnsLeft=%d newAccumulatedInactiveTurns=%d oldStoredParked=%d newStoredResumed=%d",
+			GC.getGame().getGameTurn(), ePlayer, m_pCity->getID(), getSASGameRecordQuotedCityName(m_pCity).GetCString(), szChange,
+			getSASGameRecordProductionKind(m_eOldOrder, m_iOldData1), getSASGameRecordProductionType(m_eOldOrder, m_iOldData1), m_iOldStored, m_iOldNeeded, m_iOldTurnsLeft, m_iOldAccumulatedInactiveTurns,
+			getSASGameRecordProductionKind(eNewOrder, iNewData1), getSASGameRecordProductionType(eNewOrder, iNewData1), iNewStored, iNewNeeded, iNewTurnsLeft, iNewAccumulatedInactiveTurns, m_iOldStored > 0 ? m_iOldStored : 0, bResume ? iNewStored : 0);
+	}
+}
+
 static const char* getSASGameRecordCityProductionKind(CvCity const& kCity)
 {
 	if (kCity.getProductionUnit() != NO_UNIT)
@@ -3987,7 +4141,33 @@ static void logSASGameRecordBattleBuckets(int iGameTurn)
 	g_iSASGameRecordBattleStartTurn = iGameTurn + 1;
 }
 
-// <!-- custom: Compact production-resolution flow mirrors the mature schema but intentionally omits AI target-transition fields until that separate decision-history slice is ported. (ChatGPT-5.6-Sol) -->
+static CvString getSASGameRecordAIProductionTransitions(SASGameRecordPlayerFlow const& kFlow)
+{
+	CvString szTransitions;
+	static char const* const aszKinds[NUM_SAS_PRODUCTION_KINDS] = {"UNIT", "BUILDING", "WONDER", "PROJECT", "PROCESS"};
+	for (int iOld = 0; iOld < NUM_SAS_PRODUCTION_KINDS; iOld++)
+	{
+		for (int iNew = 0; iNew < NUM_SAS_PRODUCTION_KINDS; iNew++)
+		{
+			int const iCount = kFlow.aiAIProductionTransitions[iOld * NUM_SAS_PRODUCTION_KINDS + iNew];
+			if (iCount <= 0) continue;
+			CvString szItem;
+			szItem.Format(szTransitions.empty() ? "%s>%s:%d" : ",%s>%s:%d", aszKinds[iOld], aszKinds[iNew], iCount);
+			szTransitions += szItem;
+		}
+	}
+	return getSASDiagnosticOrDash(szTransitions);
+}
+
+static int getSASGameRecordMaxAIProductionTargetChangesOneCity(SASGameRecordPlayerFlow const& kFlow)
+{
+	int iMax = 0;
+	for (size_t iI = 0; iI < kFlow.aAIProductionTargetChangesByCity.size(); iI++)
+		iMax = std::max(iMax, kFlow.aAIProductionTargetChangesByCity[iI].second);
+	return iMax;
+}
+
+// <!-- custom: Production-resolution flow now also preserves strategic AI head-target churn separately from real mechanical production loss. (ChatGPT-5.6-Sol) -->
 static void logSASGameRecordProductionFlowBuckets(int iGameTurn)
 {
 	for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
@@ -4004,10 +4184,11 @@ static void logSASGameRecordProductionFlowBuckets(int iGameTurn)
 		}
 		FOR_EACH_ENUM(Building) appendSASGameRecordTypeCount(szBuildingTypes, getSASGameRecordBuildingType(eLoopBuilding), kFlow.aiBuildingTypes[eLoopBuilding]);
 		FOR_EACH_ENUM(Project) appendSASGameRecordTypeCount(szProjectTypes, getSASGameRecordProjectType(eLoopProject), kFlow.aiProjectTypes[eLoopProject]);
-		logSASGameRecord("GAME_RECORD_PRODUCTION_FLOW turn=%d range=%d-%d player=%d unitsProduced=%d unitProductionNeeded=%d unitTypes=%s unitsConscripted=%d conscriptProductionNeeded=%d conscriptedUnitTypes=%s buildingsCompleted=%d buildingProductionNeeded=%d buildingTypes=%s projectsCompleted=%d projectProductionNeeded=%d projectTypes=%s overflowActions=%d rawModifiedOverflow=%d unmodifiedOverflow=%d keptOverflow=%d lostProduction=%d unusedOverflowCapacity=%d overflowGold=%d failedInvestedProduction=%d failGold=%d productionDecayActions=%d productionDecayLost=%d productionInvalidatedActions=%d productionInvalidatedLost=%d productionUpgradeTransfers=%d productionUpgradeTransferred=%d productionUpgradeOverwriteActions=%d productionUpgradeOverwritten=%d",
+		logSASGameRecord("GAME_RECORD_PRODUCTION_FLOW turn=%d range=%d-%d player=%d unitsProduced=%d unitProductionNeeded=%d unitTypes=%s unitsConscripted=%d conscriptProductionNeeded=%d conscriptedUnitTypes=%s buildingsCompleted=%d buildingProductionNeeded=%d buildingTypes=%s projectsCompleted=%d projectProductionNeeded=%d projectTypes=%s overflowActions=%d rawModifiedOverflow=%d unmodifiedOverflow=%d keptOverflow=%d lostProduction=%d unusedOverflowCapacity=%d overflowGold=%d failedInvestedProduction=%d failGold=%d aiTargetSwitches=%d aiTargetClears=%d aiInvestedTargetChanges=%d aiProductionParked=%d aiTargetResumes=%d aiProductionResumed=%d aiTargetChangedCities=%d aiMaxTargetChangesOneCity=%d aiTargetTransitions=%s productionDecayActions=%d productionDecayLost=%d productionInvalidatedActions=%d productionInvalidatedLost=%d productionUpgradeTransfers=%d productionUpgradeTransferred=%d productionUpgradeOverwriteActions=%d productionUpgradeOverwritten=%d",
 			iGameTurn, g_iSASGameRecordProductionFlowStartTurn, iGameTurn, ePlayer, kFlow.iUnitsCompleted, kFlow.iUnitProductionNeeded, getSASDiagnosticOrDash(szUnitTypes).GetCString(), kFlow.iUnitsConscripted, kFlow.iConscriptProductionNeeded, getSASDiagnosticOrDash(szConscriptedUnitTypes).GetCString(),
 			kFlow.iBuildingsCompleted, kFlow.iBuildingProductionNeeded, getSASDiagnosticOrDash(szBuildingTypes).GetCString(), kFlow.iProjectsCompleted, kFlow.iProjectProductionNeeded, getSASDiagnosticOrDash(szProjectTypes).GetCString(),
 			kFlow.iOverflowActions, kFlow.iRawModifiedOverflow, kFlow.iUnmodifiedOverflow, kFlow.iKeptOverflow, kFlow.iLostProduction, kFlow.iUnusedOverflowCapacity, kFlow.iOverflowGold, kFlow.iFailedInvestedProduction, kFlow.iFailGold,
+			kFlow.iAIProductionTargetSwitches, kFlow.iAIProductionTargetClears, kFlow.iAIProductionInvestedTargetChanges, kFlow.iAIProductionParked, kFlow.iAIProductionTargetResumes, kFlow.iAIProductionResumed, (int)kFlow.aAIProductionTargetChangesByCity.size(), getSASGameRecordMaxAIProductionTargetChangesOneCity(kFlow), getSASGameRecordAIProductionTransitions(kFlow).GetCString(),
 			kFlow.iProductionDecayActions, kFlow.iProductionDecayLost, kFlow.iProductionInvalidatedActions, kFlow.iProductionInvalidatedLost, kFlow.iProductionUpgradeTransfers, kFlow.iProductionUpgradeTransferred, kFlow.iProductionUpgradeOverwriteActions, kFlow.iProductionUpgradeOverwritten);
 	}
 	g_iSASGameRecordProductionFlowStartTurn = iGameTurn + 1;

@@ -11,6 +11,7 @@
 #include "CvInfo_GameOption.h"
 #include "CvInfo_Civics.h"
 #include "BBAILog.h" // BETTER_BTS_AI_MOD, AI logging, 10/02/09, jdog5000
+#include "SASGameRecordLog.h" // <!-- custom: Level-2+ AI production-target scope; disabled path is intentionally tiny. (ChatGPT-5.6-Sol) -->
 
 
 CvCityAI::CvCityAI() // advc.003u: Merged with AI_reset
@@ -425,6 +426,9 @@ void CvCityAI::AI_chooseProduction()
 {
 	PROFILE_FUNC();
 
+	// <!-- custom: One scope observes the authoritative entry/final head target across every early return.
+	// Only civilization AI cities at SASGameRecord level 2+ capture state; ordinary completion -> fresh next selection is suppressed as non-churn. (ChatGPT-5.6-Sol) -->
+	SASGameRecordAIProductionChoiceScope kSASGameRecordProductionChoiceScope(*this, gGameRecordLogLevel >= 2 && !isHuman() && !isBarbarian());
 	bool bWasFoodProduction = isFoodProduction();
 	bool bDanger = AI_isDanger();
 
