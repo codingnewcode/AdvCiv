@@ -93,11 +93,13 @@ void logSASGameRecordWarPlanChanged(TeamTypes eTeam, TeamTypes eTarget, WarPlanT
 void logSASGameRecordCityGrowthPrevented(CvCity const* pCity, int iFoodDiscarded);
 void logSASGameRecordCityPopulationChanged(CvCity const* pCity, bool bGrowth, int iPopulationBefore, int iFoodDifference, int iFoodBefore, int iFoodAfterDifference, int iFoodKeptBefore, int iFoodKeptBeforePopulationChange, int iGrowthThresholdBefore);
 void logSASGameRecordCityCultureExpanded(CvCity const* pCity);
-// <!-- custom: Authoritative religion/corporation founding and realized city membership changes. Spread-attempt/failure provenance remains a separate later CvUnit layer. (ChatGPT-5.6-Sol) -->
+// <!-- custom: Authoritative religion/corporation founding and city membership changes, plus consumed Missionary/Executive spread-attempt provenance for failures and displacement outcomes. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordReligionFounded(ReligionTypes eReligion, PlayerTypes ePlayer);
 void logSASGameRecordCorporationFounded(CorporationTypes eCorporation, PlayerTypes ePlayer);
 void logSASGameRecordReligionChanged(ReligionTypes eReligion, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded);
+void logSASGameRecordReligionSpreadAttempt(CvUnit const* pUnit, ReligionTypes eReligion, CvCity const* pCity, int iDirectSpreadChance, bool bSuccess, ReligionTypes eDisplacedReligion);
 void logSASGameRecordCorporationChanged(CorporationTypes eCorporation, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded);
+void logSASGameRecordCorporationSpreadAttempt(CvUnit const* pUnit, CorporationTypes eCorporation, CvCity const* pCity, int iSpreadChance, int iGoldCost, int iGoldBefore, bool bSuccess);
 // <!-- custom: Exact Golden Age/anarchy lifecycle actions complement periodic remaining-turn snapshots; logged duration counters are session-local observations. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordGoldenAge(PlayerTypes ePlayer, bool bStart);
 void logSASGameRecordGoldenAgeTurnsChanged(PlayerTypes ePlayer, int iChange, int iOldGoldenAgeTurns, int iNewGoldenAgeTurns);

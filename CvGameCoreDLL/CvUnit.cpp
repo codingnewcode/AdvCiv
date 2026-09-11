@@ -5542,13 +5542,13 @@ bool CvUnit::spread(ReligionTypes eReligion)
 				+ iMissingReligions * 100;//std::max(100, 100 - 10 * iPresentReligions)
 		iSpreadProb /= GC.getNumReligionInfos();
 
-		bool bSuccess;
+		// <!-- custom: Resolve the existing K-Mod spread outcome completely before applying its effects, so GameRecord can retain the consumed Missionary attempt without adding or reordering RNG. (ChatGPT-5.6-Sol) -->
+		bool bSuccess = false;
+		ReligionTypes eDisplacedReligion = NO_RELIGION;
 		// K-Mod end
 
 		if (SyncRandSuccess100(iSpreadProb))
 		{
-			pCity->setHasReligion(eReligion, true, true, false,
-					getOwner()); // advc.106e
 			bSuccess = true;
 		}
 		else
@@ -5578,25 +5578,31 @@ bool CvUnit::spread(ReligionTypes eReligion)
 			}
 			std::partial_sort(aieRankedReligions.begin(), aieRankedReligions.begin() + 1,
 					aieRankedReligions.end());
-			ReligionTypes eFailedReligion = aieRankedReligions[0].second;
-			if (eFailedReligion == eReligion)
+			ReligionTypes const eFailedReligion = aieRankedReligions[0].second;
+			if (eFailedReligion != eReligion)
 			{
-				CvWString szBuffer(gDLL->getText("TXT_KEY_MISC_RELIGION_FAILED_TO_SPREAD",
-						getNameKey(), GC.getInfo(eReligion).getChar(), pCity->getNameKey()));
-				gDLL->UI().addMessage(getOwner(), true, -1, szBuffer, "AS2D_NOSPREAD",
-						MESSAGE_TYPE_INFO, getButton(), GC.getColorType("RED"),
-						pCity->getX(), pCity->getY());
-				bSuccess = false;
-			}
-			else
-			{
-				pCity->setHasReligion(eReligion, true, true, false,
-						getOwner()); // advc.106e
-				pCity->setHasReligion(eFailedReligion, false, true, false,
-						getOwner()); // advc.106e
 				bSuccess = true;
-			} // K-Mod end
+				eDisplacedReligion = eFailedReligion;
+			}
 		}
+
+		// <!-- custom: Record the exact pre-change attempt; canonical RELIGION_SPREAD/REMOVED rows remain the authoritative membership consequences. (ChatGPT-5.6-Sol) -->
+		if (gGameRecordLogLevel >= 2)
+			logSASGameRecordReligionSpreadAttempt(this, eReligion, pCity, iSpreadProb, bSuccess, eDisplacedReligion);
+		if (bSuccess)
+		{
+			pCity->setHasReligion(eReligion, true, true, false, getOwner()); // advc.106e
+			if (eDisplacedReligion != NO_RELIGION)
+				pCity->setHasReligion(eDisplacedReligion, false, true, false, getOwner()); // advc.106e
+		}
+		else
+		{
+			CvWString szBuffer(gDLL->getText("TXT_KEY_MISC_RELIGION_FAILED_TO_SPREAD",
+					getNameKey(), GC.getInfo(eReligion).getChar(), pCity->getNameKey()));
+			gDLL->UI().addMessage(getOwner(), true, -1, szBuffer, "AS2D_NOSPREAD",
+					MESSAGE_TYPE_INFO, getButton(), GC.getColorType("RED"),
+					pCity->getX(), pCity->getY());
+		} // K-Mod end
 
 		// Python Event
 		CvEventReporter::getInstance().unitSpreadReligionAttempt(this, eReligion, bSuccess);
@@ -5693,14 +5699,21 @@ bool CvUnit::spreadCorporation(CorporationTypes eCorporation)
 	CvCity* pCity = getPlot().getPlotCity();
 	if (pCity != NULL)
 	{
-		GET_PLAYER(getOwner()).changeGold(-spreadCorporationCost(eCorporation, pCity));
+		int const iSpreadCost = spreadCorporationCost(eCorporation, pCity);
+		bool const bLogGameRecordSpread = (gGameRecordLogLevel >= 2);
+		int const iGoldBefore = bLogGameRecordSpread ? GET_PLAYER(getOwner()).getGold() : 0;
+		GET_PLAYER(getOwner()).changeGold(-iSpreadCost);
 		int iSpreadProb = m_pUnitInfo->getCorporationSpreads(eCorporation);
 		if (pCity->getTeam() != getTeam())
 			iSpreadProb /= 2;
 
 		iSpreadProb += (((GC.getNumCorporationInfos() - pCity->getCorporationCount()) *
 				(100 - iSpreadProb)) / GC.getNumCorporationInfos());
-		if (SyncRandSuccess100(iSpreadProb))
+		// <!-- custom: Store the original single success roll once so logging reuses the realized result without extra or reordered RNG. (ChatGPT-5.6-Sol) -->
+		bool const bSuccess = SyncRandSuccess100(iSpreadProb);
+		if (bLogGameRecordSpread)
+			logSASGameRecordCorporationSpreadAttempt(this, eCorporation, pCity, iSpreadProb, iSpreadCost, iGoldBefore, bSuccess);
+		if (bSuccess)
 			pCity->setHasCorporation(eCorporation, true, true, false);
 		else
 		{

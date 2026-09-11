@@ -5157,6 +5157,18 @@ void logSASGameRecordReligionChanged(ReligionTypes eReligion, PlayerTypes ePlaye
 			getSASGameRecordReligionType(eReligion), kGame.getHolyCity(eReligion) == pCity ? 1 : 0, getSASGameRecordReligionType(kPlayer.getStateReligion()), pCity->getReligionCount());
 }
 
+void logSASGameRecordReligionSpreadAttempt(CvUnit const* pUnit, ReligionTypes eReligion, CvCity const* pCity, int iDirectSpreadChance, bool bSuccess, ReligionTypes eDisplacedReligion)
+{
+	if (pUnit == NULL || eReligion == NO_RELIGION || pCity == NULL)
+		return;
+	char const* szOutcome = (bSuccess ? (eDisplacedReligion == NO_RELIGION ? "SPREAD" : "SPREAD_AND_DISPLACE") : "FAILED");
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=RELIGION_SPREAD_ATTEMPT player=%d team=%d unitId=%d unit=%s unitAI=%s religion=%s targetPlayer=%d targetTeam=%d cityId=%d city=%S x=%d y=%d directSpreadChance=%d outcome=%s displacedReligion=%s religionsBefore=%d",
+			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getTeam(), pUnit->getID(),
+			getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()), getSASGameRecordReligionType(eReligion),
+			pCity->getOwner(), pCity->getTeam(), pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(),
+			iDirectSpreadChance, szOutcome, getSASGameRecordReligionType(eDisplacedReligion), pCity->getReligionCount());
+}
+
 void logSASGameRecordCorporationChanged(CorporationTypes eCorporation, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded)
 {
 	if (eCorporation == NO_CORPORATION || pCity == NULL || ePlayer < 0 || ePlayer >= MAX_PLAYERS)
@@ -5168,6 +5180,18 @@ void logSASGameRecordCorporationChanged(CorporationTypes eCorporation, PlayerTyp
 			getSASGameRecordCorporationType(eCorporation), kGame.getHeadquarters(eCorporation) == pCity ? 1 : 0, pCity->getCorporationCount());
 }
 
+
+void logSASGameRecordCorporationSpreadAttempt(CvUnit const* pUnit, CorporationTypes eCorporation, CvCity const* pCity, int iSpreadChance, int iGoldCost, int iGoldBefore, bool bSuccess)
+{
+	if (pUnit == NULL || eCorporation == NO_CORPORATION || pCity == NULL)
+		return;
+	CvPlayer const& kPlayer = GET_PLAYER(pUnit->getOwner());
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=CORPORATION_SPREAD_ATTEMPT player=%d team=%d unitId=%d unit=%s unitAI=%s corporation=%s targetPlayer=%d targetTeam=%d cityId=%d city=%S x=%d y=%d spreadChance=%d outcome=%s goldCost=%d goldBefore=%d goldAfter=%d corporationsBefore=%d",
+			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getTeam(), pUnit->getID(),
+			getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()), getSASGameRecordCorporationType(eCorporation),
+			pCity->getOwner(), pCity->getTeam(), pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(),
+			iSpreadChance, bSuccess ? "SPREAD" : "FAILED", iGoldCost, iGoldBefore, kPlayer.getGold(), pCity->getCorporationCount());
+}
 
 // <!-- custom: Exact Golden Age/anarchy lifecycle actions complement periodic remaining-turn snapshots. Logged duration fields are explicitly session-local and reset whenever a new GameRecord log begins. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordGoldenAge(PlayerTypes ePlayer, bool bStart)
