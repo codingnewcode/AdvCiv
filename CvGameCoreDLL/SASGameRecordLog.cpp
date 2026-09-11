@@ -4392,11 +4392,76 @@ static void logSASGameRecordMilitaryFlowBuckets(int iGameTurn)
 	g_iSASGameRecordMilitaryFlowStartTurn = iGameTurn + 1;
 }
 
+static CvString getSASGameRecordEliminatedPlayers()
+{
+	CvString szList;
+	for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
+	{
+		PlayerTypes const eLoopPlayer = (PlayerTypes)iI;
+		CvPlayer const& kLoopPlayer = GET_PLAYER(eLoopPlayer);
+		if (kLoopPlayer.isEverAlive() && !kLoopPlayer.isAlive() && !kLoopPlayer.isBarbarian())
+			appendSASDiagnosticIntListValue(szList, eLoopPlayer);
+	}
+	return getSASDiagnosticOrDash(szList);
+}
+
+static PlayerTypes getSASGameRecordTopScorePlayer()
+{
+	PlayerTypes eBestPlayer = NO_PLAYER;
+	int iBestScore = MIN_INT;
+	for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
+	{
+		PlayerTypes const eLoopPlayer = (PlayerTypes)iI;
+		CvPlayer const& kLoopPlayer = GET_PLAYER(eLoopPlayer);
+		if (!kLoopPlayer.isAlive() || kLoopPlayer.isBarbarian())
+			continue;
+		int const iScore = kLoopPlayer.calculateScore();
+		if (eBestPlayer == NO_PLAYER || iScore > iBestScore)
+		{
+			eBestPlayer = eLoopPlayer;
+			iBestScore = iScore;
+		}
+	}
+	return eBestPlayer;
+}
+
+static PlayerTypes getSASGameRecordTopPowerPlayer()
+{
+	PlayerTypes eBestPlayer = NO_PLAYER;
+	int iBestPower = MIN_INT;
+	for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
+	{
+		PlayerTypes const eLoopPlayer = (PlayerTypes)iI;
+		CvPlayer const& kLoopPlayer = GET_PLAYER(eLoopPlayer);
+		if (!kLoopPlayer.isAlive() || kLoopPlayer.isBarbarian())
+			continue;
+		int const iPower = kLoopPlayer.getPower();
+		if (eBestPlayer == NO_PLAYER || iPower > iBestPower)
+		{
+			eBestPlayer = eLoopPlayer;
+			iBestPower = iPower;
+		}
+	}
+	return eBestPlayer;
+}
+
+void logSASGameRecordRunStatus(char const* szReason)
+{
+	// <!-- custom: CvGame::getNumHumanPlayers is not const in the Civ4 SDK headers, so this local game reference cannot be const. (GPT-5.5) -->
+	CvGame& kGame = GC.getGame();
+	PlayerTypes const eTopScorePlayer = getSASGameRecordTopScorePlayer();
+	PlayerTypes const eTopPowerPlayer = getSASGameRecordTopPowerPlayer();
+	// <!-- custom: One compact checkpoint states who remains, who has been eliminated and who currently leads; this also works for ordinary non-victory autoplay snapshots. (GPT-5.5 + ChatGPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_RUN_STATUS turn=%d reason=%s elapsed=%d year=%d winnerTeam=%d victory=%s playersAlive=%d teamsAlive=%d playersEverAlive=%d humans=%d eliminatedPlayers=%s topScorePlayer=%d topScore=%d topPowerPlayer=%d topPower=%d totalCities=%d totalPopulation=%d",
+			kGame.getGameTurn(), szReason == NULL ? "-" : szReason, kGame.getElapsedGameTurns(), kGame.getGameTurnYear(), kGame.getWinner(), kGame.getVictory() == NO_VICTORY ? "-" : GC.getInfo(kGame.getVictory()).getType(), kGame.countCivPlayersAlive(), kGame.countCivTeamsAlive(), kGame.countCivPlayersEverAlive(), kGame.getNumHumanPlayers(), getSASGameRecordEliminatedPlayers().GetCString(), eTopScorePlayer, eTopScorePlayer == NO_PLAYER ? 0 : GET_PLAYER(eTopScorePlayer).calculateScore(), eTopPowerPlayer, eTopPowerPlayer == NO_PLAYER ? 0 : GET_PLAYER(eTopPowerPlayer).getPower(), kGame.getNumCities(), kGame.getTotalPopulation());
+}
+
 static void logSASGameRecordSnapshot(int iGameTurn, char const* szReason)
 {
 	CvGame const& kGame = GC.getGame();
 	logSASGameRecord("GAME_RECORD_TURN_BEGIN turn=%d reason=%s elapsed=%d year=%d playersAlive=%d teamsAlive=%d totalCities=%d totalPopulation=%d",
 			iGameTurn, szReason, kGame.getElapsedGameTurns(), kGame.getGameTurnYear(), kGame.countCivPlayersAlive(), kGame.countCivTeamsAlive(), kGame.getNumCities(), kGame.getTotalPopulation());
+	logSASGameRecordRunStatus(szReason);
 	if (gGameRecordLogLevel >= 2)
 	{
 		logSASGameRecordMapBonusTotals(iGameTurn);
@@ -6061,6 +6126,28 @@ void logSASGameRecordVictory(TeamTypes eWinner, VictoryTypes eVictory)
 	}
 	// <!-- custom: Victory can occur between configured snapshot intervals. Force one exact final state now; logSASGameRecordTurn suppresses a duplicate if this was already an interval turn. (ChatGPT-5.6-Sol) -->
 	logSASGameRecordSnapshot(GC.getGame().getGameTurn(), "victory");
+}
+
+void logSASGameRecordPlayerEliminated(PlayerTypes ePlayer)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=PLAYER_ELIMINATED player=%d team=%d civ=%s leader=%s cities=%d units=%d score=%d power=%d playersAlive=%d teamsAlive=%d eliminatedPlayers=%s",
+			GC.getGame().getGameTurn(), ePlayer, kPlayer.getTeam(), kPlayer.getCivilizationType() == NO_CIVILIZATION ? "-" : GC.getInfo(kPlayer.getCivilizationType()).getType(), kPlayer.getLeaderType() == NO_LEADER ? "-" : GC.getInfo(kPlayer.getLeaderType()).getType(),
+			kPlayer.getNumCities(), kPlayer.getNumUnits(), kPlayer.calculateScore(), kPlayer.getPower(), GC.getGame().countCivPlayersAlive(), GC.getGame().countCivTeamsAlive(), getSASGameRecordEliminatedPlayers().GetCString());
+	logSASGameRecordRunStatus("playerEliminated");
+}
+
+void logSASGameRecordPlayerAliveChanged(PlayerTypes ePlayer, bool bRevived)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s player=%d team=%d civ=%s leader=%s cities=%d units=%d score=%d power=%d playersAlive=%d teamsAlive=%d playersEverAlive=%d",
+			GC.getGame().getGameTurn(), bRevived ? "PLAYER_REVIVED" : "PLAYER_APPEARED", ePlayer, kPlayer.getTeam(), kPlayer.getCivilizationType() == NO_CIVILIZATION ? "-" : GC.getInfo(kPlayer.getCivilizationType()).getType(), kPlayer.getLeaderType() == NO_LEADER ? "-" : GC.getInfo(kPlayer.getLeaderType()).getType(),
+			kPlayer.getNumCities(), kPlayer.getNumUnits(), kPlayer.calculateScore(), kPlayer.getPower(), GC.getGame().countCivPlayersAlive(), GC.getGame().countCivTeamsAlive(), GC.getGame().countCivPlayersEverAlive());
+	logSASGameRecordRunStatus(bRevived ? "playerRevived" : "playerAppeared");
 }
 
 void logSASGameRecordVassalState(TeamTypes eMaster, TeamTypes eVassal, bool bVassal)

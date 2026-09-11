@@ -158,6 +158,10 @@ void logSASGameRecordVictoryLaunched(PlayerTypes ePlayer, VictoryTypes eVictory)
 void logSASGameRecordVictoryProgressResetForCapital(CvCity const* pCapital);
 void logSASGameRecordSpaceshipFailed(TeamTypes eTeam, VictoryTypes eVictory, int iLaunchSuccessPercent);
 void logSASGameRecordVictory(TeamTypes eWinner, VictoryTypes eVictory);
+// <!-- custom: Compact run/player lifecycle rows make elimination, later appearance/revival and the current run leader/winner state explicit instead of forcing consumers to infer them from missing periodic snapshots. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRunStatus(char const* szReason);
+void logSASGameRecordPlayerEliminated(PlayerTypes ePlayer);
+void logSASGameRecordPlayerAliveChanged(PlayerTypes ePlayer, bool bRevived);
 // <!-- custom: Team-relationship lifecycle actions make first contact, permanent-alliance merges and vassal-state changes explicit instead of forcing snapshot consumers to infer their exact turn. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordTeamMerged(TeamTypes eSurvivingTeam, TeamTypes eAbsorbedTeam);
 void logSASGameRecordTeamMet(TeamTypes eTeam, TeamTypes eOtherTeam, bool bNewDiplo, int iX1, int iY1, int iX2, int iY2, CvPlot const* pTeamContactPlot, CvPlot const* pOtherContactPlot);

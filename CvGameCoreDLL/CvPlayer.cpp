@@ -8788,6 +8788,9 @@ void CvPlayer::setAlive(bool bNewValue)
 			m_bEverAlive = true;
 			GET_TEAM(getTeam()).changeEverAliveCount(1);
 		}
+		// <!-- custom: Initial slots are already described by GAME_RECORD_PLAYER_SETUP; log later appearances/revivals explicitly so alive-state transitions have an exact turn. (GPT-5.5 + ChatGPT-5.6-Sol) -->
+		if (gGameRecordLogLevel >= 2 && !isBarbarian() && (bEverAlive || kGame.getElapsedGameTurns() > 0))
+			logSASGameRecordPlayerAliveChanged(getID(), bEverAlive);
 		if (getNumCities() <= 0)
 			setFoundedFirstCity(false);
 		updatePlotGroups();
@@ -8821,6 +8824,9 @@ void CvPlayer::setAlive(bool bNewValue)
 		//killUnits(); // advc.003m: Moved up
 		killCities();
 		killAllDeals();
+		// <!-- custom: Elimination was otherwise only inferable from teardown side effects and missing later snapshots. Log after cleanup so remaining city/unit counts are final. (GPT-5.5 + ChatGPT-5.6-Sol) -->
+		if (gGameRecordLogLevel >= 2 && bEverAlive && !isBarbarian())
+			logSASGameRecordPlayerEliminated(getID());
 
 		setTurnActive(false);
 
