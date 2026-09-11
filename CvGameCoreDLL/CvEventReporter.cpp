@@ -335,6 +335,7 @@ void CvEventReporter::greatPersonBorn(CvUnit *pUnit, PlayerTypes ePlayer, CvCity
 
 void CvEventReporter::buildingBuilt(CvCity *pCity, BuildingTypes eBuilding)
 {
+	if (gGameRecordLogLevel >= 2) logSASGameRecordBuildingBuilt(pCity, eBuilding);
 	m_kPythonEventMgr.reportBuildingBuilt(pCity, eBuilding);
 	m_kStatistics.buildingBuilt(pCity, eBuilding);
 }

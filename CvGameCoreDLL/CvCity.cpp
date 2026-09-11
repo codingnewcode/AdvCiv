@@ -14,6 +14,7 @@
 #include "CvGameTextMgr.h"
 #include "CvBugOptions.h" // advc.060
 #include "BBAILog.h" // BETTER_BTS_AI_MOD, AI logging, 10/02/09, jdog5000
+#include "SASGameRecordLog.h" // <!-- custom: Production-resolution telemetry records factual completion, overflow and stored-production loss at the existing CvCity mutation boundaries. (ChatGPT-5.6-Sol) -->
 
 
 CvCity::CvCity() // advc.003u: Merged with the deleted reset function
@@ -2843,6 +2844,7 @@ CvUnit* CvCity::initConscriptedUnit()
 	addProductionExperience(pUnit, true);
 	pUnit->setMoves(0);
 	// K-Mod, 26/Jun/2011: Conscription counts as building the unit
+	if (gGameRecordLogLevel >= 2) logSASGameRecordUnitCompleted(this, pUnit, true);
 	CvEventReporter::getInstance().unitBuilt(this, pUnit);
 
 	return pUnit;
@@ -9861,6 +9863,13 @@ void CvCity::popOrder(int iNum, bool bFinish,
 	int iMaxedBuildingOrProject = NO_BUILDING; // advc.123f
 
 	OrderTypes eOrderType = pOrderNode->m_data.eOrderType;
+	// <!-- custom: Reuse handleOverflow's exact gameplay result on the matching production-completion row; these remain zero when no positive overflow exists. (ChatGPT-5.6-Sol) -->
+	int iRawModifiedOverflow = 0;
+	int iUnmodifiedOverflow = 0;
+	int iKeptOverflow = 0;
+	int iLostOverflowProduction = 0;
+	int iUnusedOverflowCapacity = 0;
+	int iOverflowGold = 0;
 	switch(eOrderType)
 	{
 	case ORDER_TRAIN:
@@ -9870,7 +9879,7 @@ void CvCity::popOrder(int iNum, bool bFinish,
 			next order isn't already being produced when calculating production
 			modifiers for the overflow cap. */
 		handleOverflow(getUnitProduction(eTrainUnit) - getProductionNeeded(eTrainUnit),
-				getProductionModifier(eTrainUnit), eOrderType); // </advc.064b>
+				getProductionModifier(eTrainUnit), eOrderType, &iRawModifiedOverflow, &iUnmodifiedOverflow, &iKeptOverflow, &iLostOverflowProduction, &iUnusedOverflowCapacity, &iOverflowGold); // </advc.064b>
 		UnitAITypes eTrainAIUnit = (UnitAITypes)pOrderNode->m_data.iData2;
 		FAssert(eTrainUnit != NO_UNIT);
 		FAssert(eTrainAIUnit != NO_UNITAI);
@@ -9892,6 +9901,8 @@ void CvCity::popOrder(int iNum, bool bFinish,
 		CvUnit* pUnit = kOwner.initUnit(eTrainUnit, getX(), getY(), eTrainAIUnit);
 		pUnit->finishMoves();
 		addProductionExperience(pUnit);
+		// <!-- custom: Record completion before air-capacity relocation can destroy a freshly produced air unit. (ChatGPT-5.6-Sol) -->
+		if (gGameRecordLogLevel >= 2) logSASGameRecordUnitCompleted(this, pUnit, false, iRawModifiedOverflow, iUnmodifiedOverflow, iKeptOverflow, iLostOverflowProduction, iUnusedOverflowCapacity, iOverflowGold);
 		CvPlot* pRallyPlot = getRallyPlot(); // (advc.001b: moved up)
 		if (GC.getInfo(eTrainUnit).getDomainType() == DOMAIN_AIR &&
 			getPlot().countNumAirUnits(getTeam()) > getAirUnitCapacity(getTeam()))
@@ -9939,7 +9950,7 @@ void CvCity::popOrder(int iNum, bool bFinish,
 		// <advc.064b> Moved into new function (and moved up)
 		handleOverflow(getBuildingProduction(eConstructBuilding) -
 				getProductionNeeded(eConstructBuilding),
-				getProductionModifier(eConstructBuilding), eOrderType);
+				getProductionModifier(eConstructBuilding), eOrderType, &iRawModifiedOverflow, &iUnmodifiedOverflow, &iKeptOverflow, &iLostOverflowProduction, &iUnusedOverflowCapacity, &iOverflowGold);
 		// </advc.064b>
 		BuildingClassTypes eBuildingClass = GC.getInfo(eConstructBuilding).getBuildingClassType();
 		kOwner.changeBuildingClassMaking(eBuildingClass, -1);
@@ -9965,6 +9976,8 @@ void CvCity::popOrder(int iNum, bool bFinish,
 		{
 			iMaxedBuildingOrProject = eConstructBuilding;
 		} // </advc.123f>
+		// <!-- custom: buildingBuilt can also originate from unit construction; aggregate city-production completions only at ORDER_CONSTRUCT. (ChatGPT-5.6-Sol) -->
+		if (gGameRecordLogLevel >= 2) logSASGameRecordBuildingCompletedByProduction(this, eConstructBuilding, iRawModifiedOverflow, iUnmodifiedOverflow, iKeptOverflow, iLostOverflowProduction, iUnusedOverflowCapacity, iOverflowGold);
 		CvEventReporter::getInstance().buildingBuilt(this, eConstructBuilding);
 		if (gCityLogLevel >= 1) // BETTER_BTS_AI_MOD, AI logging, 10/02/09, jdog5000
 			logBBAI("    City %S finishes production of building %S", getName().GetCString(), GC.getInfo(eConstructBuilding).getDescription());
@@ -9976,7 +9989,7 @@ void CvCity::popOrder(int iNum, bool bFinish,
 		// <advc.064b> Moved into new function (and moved up)
 		handleOverflow(getProjectProduction(eCreateProject) -
 				getProductionNeeded(eCreateProject),
-				getProductionModifier(eCreateProject), eOrderType);
+				getProductionModifier(eCreateProject), eOrderType, &iRawModifiedOverflow, &iUnmodifiedOverflow, &iKeptOverflow, &iLostOverflowProduction, &iUnusedOverflowCapacity, &iOverflowGold);
 		// </advc.064b>
 		GET_TEAM(getTeam()).changeProjectMaking(eCreateProject, -1);
 		doPopOrder(pOrderNode); // advc.064d
@@ -9984,6 +9997,7 @@ void CvCity::popOrder(int iNum, bool bFinish,
 			break;
 		/*	Event reported to Python before the project is built, so that we can
 			show the movie before awarding free techs, for example */
+		if (gGameRecordLogLevel >= 2) logSASGameRecordProjectBuilt(this, eCreateProject, iRawModifiedOverflow, iUnmodifiedOverflow, iKeptOverflow, iLostOverflowProduction, iUnusedOverflowCapacity, iOverflowGold);
 		CvEventReporter::getInstance().projectBuilt(this, eCreateProject);
 		GET_TEAM(getTeam()).changeProjectCount(eCreateProject, 1);
 		if (GC.getInfo(eCreateProject).isSpaceship())
@@ -10605,7 +10619,8 @@ bool CvCity::doCheckProduction()
 		for (int i = 0; i < kCiv.getNumUnits(); i++)
 		{
 			UnitTypes eUnit = kCiv.unitAt(i);
-			if (getUnitProduction(eUnit) <= 0)
+			int const iStoredProduction = getUnitProduction(eUnit);
+			if (iStoredProduction <= 0)
 				continue;
 			if (kOwner.isProductionMaxedUnitClass(kCiv.unitClass(eUnit)))
 			{	// advc.123f: Commented out (fail gold from national units)
@@ -10615,7 +10630,11 @@ bool CvCity::doCheckProduction()
 					CvWString szBuffer = gDLL->getText("TXT_KEY_MISC_LOST_WONDER_PROD_CONVERTED", getNameKey(), GC.getInfo(eUnit).getTextKeyWide(), iProductionGold);
 					gDLL->UI().addMessage(getOwner(), false, -1, szBuffer, getPlot(), "AS2D_WONDERGOLD", MESSAGE_TYPE_MINOR_EVENT, GC.getInfo(COMMERCE_GOLD).getButton(), GC.getColorType("RED"));
 				}*/
+				bool const bLogProductionInvalidated = (gGameRecordLogLevel >= 2);
+				bool const bActiveTarget = (bLogProductionInvalidated && getProductionUnit() == eUnit);
+				bool const bQueued = (bLogProductionInvalidated && getFirstUnitOrder(eUnit) >= 0);
 				setUnitProduction(eUnit, 0);
+				if (bLogProductionInvalidated) logSASGameRecordProductionInvalidated(this, ORDER_TRAIN, eUnit, iStoredProduction, bActiveTarget, bQueued);
 			}
 		}
 	}
@@ -10624,7 +10643,8 @@ bool CvCity::doCheckProduction()
 		for (int i = 0; i < kCiv.getNumBuildings(); i++)
 		{
 			BuildingTypes eBuilding = kCiv.buildingAt(i);
-			if (getBuildingProduction(eBuilding) <= 0)
+			int const iStoredProduction = getBuildingProduction(eBuilding);
+			if (iStoredProduction <= 0)
 				continue;
 			if (kOwner.isProductionMaxedBuildingClass(kCiv.buildingClass(eBuilding)))
 			{	// advc.123f: Commented out. Fail gold now handled in popOrder.
@@ -10634,7 +10654,11 @@ bool CvCity::doCheckProduction()
 					CvWString szBuffer = gDLL->getText("TXT_KEY_MISC_LOST_WONDER_PROD_CONVERTED", getNameKey(), GC.getInfo(eBuilding).getTextKeyWide(), iProductionGold);
 					gDLL->UI().addMessage(getOwner(), false, -1, szBuffer, getPlot(), "AS2D_WONDERGOLD", MESSAGE_TYPE_MINOR_EVENT, GC.getInfo(COMMERCE_GOLD).getButton(), GC.getColorType("RED"));
 				}*/
+				bool const bLogProductionInvalidated = (gGameRecordLogLevel >= 2);
+				bool const bActiveTarget = (bLogProductionInvalidated && getProductionBuilding() == eBuilding);
+				bool const bQueued = (bLogProductionInvalidated && getFirstBuildingOrder(eBuilding) >= 0);
 				setBuildingProduction(eBuilding, 0);
+				if (bLogProductionInvalidated) logSASGameRecordProductionInvalidated(this, ORDER_CONSTRUCT, eBuilding, iStoredProduction, bActiveTarget, bQueued);
 			}
 		}
 	}
@@ -10642,7 +10666,8 @@ bool CvCity::doCheckProduction()
 	{
 		FOR_EACH_ENUM(Project)
 		{
-			if (getProjectProduction(eLoopProject) <= 0)
+			int const iStoredProduction = getProjectProduction(eLoopProject);
+			if (iStoredProduction <= 0)
 				continue;
 			if (kOwner.isProductionMaxedProject(eLoopProject))
 			{	// advc.123f: Commented out. Fail gold now handled in popOrder.
@@ -10652,7 +10677,11 @@ bool CvCity::doCheckProduction()
 					CvWString szBuffer = gDLL->getText("TXT_KEY_MISC_LOST_WONDER_PROD_CONVERTED", getNameKey(), GC.getInfo(eLoopProject).getTextKeyWide(), iProductionGold);
 					gDLL->UI().addMessage(getOwner(), false, -1, szBuffer, getPlot(), "AS2D_WONDERGOLD", MESSAGE_TYPE_MINOR_EVENT, GC.getInfo(COMMERCE_GOLD).getButton(), GC.getColorType("RED"));
 				}*/
+				bool const bLogProductionInvalidated = (gGameRecordLogLevel >= 2);
+				bool const bActiveTarget = (bLogProductionInvalidated && getProductionProject() == eLoopProject);
+				bool const bQueued = (bLogProductionInvalidated && getFirstProjectOrder(eLoopProject) >= 0);
 				setProjectProduction(eLoopProject, 0);
+				if (bLogProductionInvalidated) logSASGameRecordProductionInvalidated(this, ORDER_CREATE, eLoopProject, iStoredProduction, bActiveTarget, bQueued);
 			}
 		}
 	}
@@ -10683,8 +10712,11 @@ void CvCity::upgradeProduction()
 		FAssert(eUpgradeUnit != eUnit);
 
 		int iUpgradeProduction = getUnitProduction(eUnit);
+		bool const bLogProductionUpgrade = (gGameRecordLogLevel >= 2);
+		int const iUpgradeProductionBefore = (bLogProductionUpgrade ? getUnitProduction(eUpgradeUnit) : 0);
 		setUnitProduction(eUnit, 0);
 		setUnitProduction(eUpgradeUnit, iUpgradeProduction);
+		if (bLogProductionUpgrade && (iUpgradeProduction > 0 || iUpgradeProductionBefore > 0)) logSASGameRecordProductionUpgraded(this, eUnit, eUpgradeUnit, iUpgradeProduction, iUpgradeProductionBefore);
 
 		CLLNode<OrderData>* pOrderNode = headOrderQueueNode();
 		while (pOrderNode != NULL)
@@ -10810,9 +10842,9 @@ void CvCity::doDecay()
 				{
 					int iProduction = getBuildingProduction(eLoopBuilding);
 					int const iDecayPercent = GC.getDefineINT(CvGlobals::BUILDING_PRODUCTION_DECAY_PERCENT);
-					setBuildingProduction(eLoopBuilding, iProduction -
-							(iProduction * (100 - iDecayPercent) + iGameSpeedPercent - 1) /
-							iGameSpeedPercent);
+					int const iNewProduction = iProduction - (iProduction * (100 - iDecayPercent) + iGameSpeedPercent - 1) / iGameSpeedPercent;
+					setBuildingProduction(eLoopBuilding, iNewProduction);
+					if (gGameRecordLogLevel >= 2 && iNewProduction < iProduction) logSASGameRecordProductionDecay(this, ORDER_CONSTRUCT, eLoopBuilding, iProduction, iNewProduction, getBuildingProductionTime(eLoopBuilding));
 				}
 			}
 		}
@@ -10834,9 +10866,9 @@ void CvCity::doDecay()
 				{
 					int iProduction = getUnitProduction(eLoopUnit);
 					int const iDecayPercent = GC.getDefineINT(CvGlobals::UNIT_PRODUCTION_DECAY_PERCENT);
-					setUnitProduction(eLoopUnit, iProduction -
-							(iProduction * (100 - iDecayPercent) + iGameSpeedPercent - 1) /
-							iGameSpeedPercent);
+					int const iNewProduction = iProduction - (iProduction * (100 - iDecayPercent) + iGameSpeedPercent - 1) / iGameSpeedPercent;
+					setUnitProduction(eLoopUnit, iNewProduction);
+					if (gGameRecordLogLevel >= 2 && iNewProduction < iProduction) logSASGameRecordProductionDecay(this, ORDER_TRAIN, eLoopUnit, iProduction, iNewProduction, getUnitProductionTime(eLoopUnit));
 				}
 			}
 		}
@@ -13381,6 +13413,7 @@ void CvCity::failProduction(int iOrderData, int iInvestedProduction, bool bProje
 	if (iGoldPercent <= 0)
 		return;
 	int iProductionGold = (iInvestedProduction * iGoldPercent) / 100;
+	if (gGameRecordLogLevel >= 2 && iInvestedProduction > 0) logSASGameRecordProductionFailed(this, iOrderData, bProject, iInvestedProduction, iProductionGold);
 	GET_PLAYER(getOwner()).changeGold(iProductionGold);
 	CvWString szMsg = gDLL->getText("TXT_KEY_MISC_LOST_WONDER_PROD_CONVERTED",
 			getNameKey(), bProject ?
@@ -13409,8 +13442,14 @@ int CvCity::failGoldPercent(OrderTypes eOrder) const // Fail and overflow gold
 }
 
 
-void CvCity::handleOverflow(int iRawOverflow, int iProductionModifier, OrderTypes eOrderType)
+void CvCity::handleOverflow(int iRawOverflow, int iProductionModifier, OrderTypes eOrderType, int* piRawModifiedOverflow, int* piUnmodifiedOverflow, int* piKeptOverflow, int* piLostProduction, int* piUnusedOverflowCapacity, int* piOverflowGold)
 {
+	if (piRawModifiedOverflow != NULL) *piRawModifiedOverflow = 0;
+	if (piUnmodifiedOverflow != NULL) *piUnmodifiedOverflow = 0;
+	if (piKeptOverflow != NULL) *piKeptOverflow = 0;
+	if (piLostProduction != NULL) *piLostProduction = 0;
+	if (piUnusedOverflowCapacity != NULL) *piUnusedOverflowCapacity = 0;
+	if (piOverflowGold != NULL) *piOverflowGold = 0;
 	if(iRawOverflow < 0) // Can happen through the "+" cheat (Debug mode)
 		return;
 	FAssert(getOverflowProduction() == 0);
@@ -13421,6 +13460,16 @@ void CvCity::handleOverflow(int iRawOverflow, int iProductionModifier, OrderType
 	if(iOverflow <= 0)
 		return;
 	setOverflowProduction(iOverflow);
+	int const iPositiveLostProduction = std::max(0, iLostProduction);
+	int const iUnusedCapacity = std::max(0, -iLostProduction);
+	int const iUnmodifiedOverflow = iOverflow + iPositiveLostProduction;
+	if (piRawModifiedOverflow != NULL) *piRawModifiedOverflow = iRawOverflow;
+	if (piUnmodifiedOverflow != NULL) *piUnmodifiedOverflow = iUnmodifiedOverflow;
+	if (piKeptOverflow != NULL) *piKeptOverflow = iOverflow;
+	if (piLostProduction != NULL) *piLostProduction = iPositiveLostProduction;
+	if (piUnusedOverflowCapacity != NULL) *piUnusedOverflowCapacity = iUnusedCapacity;
+	if (piOverflowGold != NULL) *piOverflowGold = iProductionGold;
+	if (gGameRecordLogLevel >= 2) logSASGameRecordProductionOverflow(this, iRawOverflow, iUnmodifiedOverflow, iOverflow, iPositiveLostProduction, iUnusedCapacity, iProductionGold);
 	if(iProductionGold > 0 || iLostProduction > 0)
 		payOverflowGold(iLostProduction, iProductionGold);
 }

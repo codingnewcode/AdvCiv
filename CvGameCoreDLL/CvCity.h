@@ -1578,7 +1578,7 @@ protected:
 	// advc.123f:
 	void failProduction(int iOrderData, int iInvestedProduction, bool bProject = false);
 	// <advc.064b>
-	void handleOverflow(int iRawOverflow, int iProductionModifier, OrderTypes eOrderType);
+	void handleOverflow(int iRawOverflow, int iProductionModifier, OrderTypes eOrderType, int* piRawModifiedOverflow = NULL, int* piUnmodifiedOverflow = NULL, int* piKeptOverflow = NULL, int* piLostProduction = NULL, int* piUnusedOverflowCapacity = NULL, int* piOverflowGold = NULL);
 	int failGoldPercent(OrderTypes eOrder) const; // also used by 123f
 	void payOverflowGold(int iLostProduction, int iGoldChange);
 	int getProductionTurnsLeft(int iProductionNeeded, int iProduction,
