@@ -521,6 +521,28 @@ struct SASGameRecordCombatPending
 };
 static std::vector<SASGameRecordCombatPending> g_aSASGameRecordCombatPending;
 
+// <!-- custom: Naval blockades persist across turns but the save only stores the current blockading flag.
+// Keep recorder-local start context so an end row can report observed duration and accumulated plunder; loaded mid-blockade sessions gracefully fall back to startKnown=0. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordBlockadeContext
+{
+	PlayerTypes ePlayer;
+	int iUnitId;
+	int iStartTurn;
+	int iStartElapsedTurn;
+	int iStartX;
+	int iStartY;
+	int iRangePlots;
+	int iAffectedTeams;
+	int iAffectedCities;
+	CvString szRangePlots;
+	CvString szAffectedTeams;
+	CvString szAffectedCities;
+	int iPlunderEvents;
+	int iGoldPlundered;
+	std::vector<std::pair<PlayerTypes,int> > aPlunderedCities;
+};
+static std::vector<SASGameRecordBlockadeContext> g_aSASGameRecordBlockades;
+
 static int getSASGameRecordDelta(bool bValid, int iCurrent, int iPrevious)
 {
 	return bValid ? iCurrent - iPrevious : 0;
@@ -547,6 +569,11 @@ static void resetSASGameRecordCityLifecycleState()
 		g_aiSASGameRecordCitiesTradedIn[iI] = 0;
 		g_aiSASGameRecordCitiesTradedOut[iI] = 0;
 	}
+}
+
+static void resetSASGameRecordBlockadeState()
+{
+	g_aSASGameRecordBlockades.clear();
 }
 
 static void resetSASGameRecordCombatState()
@@ -5146,6 +5173,185 @@ void logSASGameRecordCityHurry(CvCity const* pCity, HurryTypes eHurry, int iProd
 			iGoldCost, iGoldBefore, kPlayer.getGold(), iPopulationCost, iPopulationBefore, pCity->getPopulation(), iHurryAngerAdded, iHurryAngerBefore, pCity->getHurryAngerTimer());
 }
 
+void logSASGameRecordPillage(CvUnit const* pUnit, ImprovementTypes eOldImprovement, RouteTypes eOldRoute, BonusTypes eOldBonus, PlayerTypes eVictimPlayer, int iGoldGained)
+{
+	if (pUnit == NULL)
+		return;
+	CvPlot const& kPlot = pUnit->getPlot();
+	CvCity const* pWorkingCity = kPlot.getWorkingCity();
+	char const* szStructure = (eOldRoute != kPlot.getRouteType() ? "ROUTE" :
+			(eOldImprovement != kPlot.getImprovementType() ? "IMPROVEMENT" : "-"));
+	TeamTypes const eVictimTeam = (eVictimPlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(eVictimPlayer).getTeam());
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=UNIT_PILLAGE player=%d team=%d unitId=%d unit=%s unitAI=%s x=%d y=%d victimPlayer=%d victimTeam=%d structure=%s improvementOld=%s improvementNew=%s routeOld=%s routeNew=%s bonus=%s workingCityId=%d workingCity=%S goldGained=%d hiddenNationality=%d alwaysHostile=%d",
+			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getTeam(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()),
+			kPlot.getX(), kPlot.getY(), eVictimPlayer, eVictimTeam, szStructure,
+			getSASGameRecordImprovementType(eOldImprovement), getSASGameRecordImprovementType(kPlot.getImprovementType()),
+			getSASGameRecordRouteType(eOldRoute), getSASGameRecordRouteType(kPlot.getRouteType()), getSASGameRecordBonusType(eOldBonus),
+			pWorkingCity == NULL ? -1 : pWorkingCity->getID(), getSASGameRecordQuotedCityName(pWorkingCity).GetCString(), iGoldGained,
+			pUnit->getUnitInfo().isHiddenNationality() ? 1 : 0, pUnit->isAlwaysHostile(kPlot) ? 1 : 0);
+}
+
+static int getSASGameRecordBlockadeContextIndex(PlayerTypes ePlayer, int iUnitId)
+{
+	for (size_t iI = 0; iI < g_aSASGameRecordBlockades.size(); iI++)
+	{
+		if (g_aSASGameRecordBlockades[iI].ePlayer == ePlayer && g_aSASGameRecordBlockades[iI].iUnitId == iUnitId)
+			return (int)iI;
+	}
+	return -1;
+}
+
+static bool hasSASGameRecordCityReference(std::vector<std::pair<PlayerTypes,int> > const& aCities, PlayerTypes ePlayer, int iCityId)
+{
+	for (size_t iI = 0; iI < aCities.size(); iI++)
+	{
+		if (aCities[iI].first == ePlayer && aCities[iI].second == iCityId)
+			return true;
+	}
+	return false;
+}
+
+static void captureSASGameRecordBlockadeContext(CvUnit const& kUnit, SASGameRecordBlockadeContext& kContext, bool bCheckCanPlunder)
+{
+	kContext.ePlayer = kUnit.getOwner();
+	kContext.iUnitId = kUnit.getID();
+	kContext.iStartTurn = GC.getGame().getGameTurn();
+	kContext.iStartElapsedTurn = GC.getGame().getElapsedGameTurns();
+	kContext.iStartX = kUnit.getX();
+	kContext.iStartY = kUnit.getY();
+	kContext.iRangePlots = 0;
+	kContext.iAffectedTeams = 0;
+	kContext.iAffectedCities = 0;
+	kContext.szRangePlots.clear();
+	kContext.szAffectedTeams.clear();
+	kContext.szAffectedCities.clear();
+	kContext.iPlunderEvents = 0;
+	kContext.iGoldPlundered = 0;
+	kContext.aPlunderedCities.clear();
+
+	std::vector<CvPlot*> apRange;
+	// <!-- custom: START mirrors updatePlunder's legal range exactly. A fallback END may use the physical range with legality disabled because the unit can end precisely after becoming unable to plunder. (ChatGPT-5.6-Sol) -->
+	kUnit.blockadeRange(apRange, 0, bCheckCanPlunder);
+	kContext.iRangePlots = (int)apRange.size();
+	for (size_t iI = 0; iI < apRange.size(); iI++)
+	{
+		CvString szItem;
+		szItem.Format(kContext.szRangePlots.empty() ? "%d,%d" : ";%d,%d", apRange[iI]->getX(), apRange[iI]->getY());
+		kContext.szRangePlots += szItem;
+	}
+
+	bool abAffectedTeams[MAX_TEAMS];
+	for (int iTeam = 0; iTeam < MAX_TEAMS; iTeam++)
+		abAffectedTeams[iTeam] = false;
+	// <!-- custom: Mirror CvUnit::updatePlunder's team admission test so the logged scope describes teams this unit actually blockades, including hidden-nationality behavior. (ChatGPT-5.6-Sol) -->
+	for (TeamIter<ALIVE,KNOWN_POTENTIAL_ENEMY_OF> it(kUnit.getTeam()); it.hasNext(); ++it)
+	{
+		CvTeam const& kTeam = *it;
+		if (!kUnit.isEnemy(kTeam.getID()))
+			continue;
+		abAffectedTeams[kTeam.getID()] = true;
+		CvString szItem;
+		szItem.Format(kContext.szAffectedTeams.empty() ? "%d" : ",%d", kTeam.getID());
+		kContext.szAffectedTeams += szItem;
+		kContext.iAffectedTeams++;
+	}
+
+	std::vector<std::pair<PlayerTypes,int> > aCities;
+	for (size_t iI = 0; iI < apRange.size(); iI++)
+	{
+		FOR_EACH_ADJ_PLOT(*apRange[iI])
+		{
+			CvCity const* pCity = pAdj->getPlotCity();
+			if (pCity == NULL || pCity->getTeam() < 0 || pCity->getTeam() >= MAX_TEAMS || !abAffectedTeams[pCity->getTeam()] ||
+				hasSASGameRecordCityReference(aCities, pCity->getOwner(), pCity->getID()))
+			{
+				continue;
+			}
+			aCities.push_back(std::make_pair(pCity->getOwner(), pCity->getID()));
+			CvString szItem;
+			szItem.Format(kContext.szAffectedCities.empty() ? "P%d:C%d@%d,%d" : ";P%d:C%d@%d,%d",
+					pCity->getOwner(), pCity->getID(), pCity->getX(), pCity->getY());
+			kContext.szAffectedCities += szItem;
+		}
+	}
+	kContext.iAffectedCities = (int)aCities.size();
+}
+
+void logSASGameRecordBlockadeChanged(CvUnit const* pUnit, bool bStarting)
+{
+	if (pUnit == NULL)
+		return;
+	int const iExisting = getSASGameRecordBlockadeContextIndex(pUnit->getOwner(), pUnit->getID());
+	if (bStarting)
+	{
+		if (iExisting >= 0)
+			g_aSASGameRecordBlockades.erase(g_aSASGameRecordBlockades.begin() + iExisting);
+		SASGameRecordBlockadeContext kContext;
+		captureSASGameRecordBlockadeContext(*pUnit, kContext, true);
+		g_aSASGameRecordBlockades.push_back(kContext);
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=NAVAL_BLOCKADE_STARTED player=%d team=%d unitId=%d unit=%s unitAI=%s x=%d y=%d rangePlots=%d plots=%s affectedTeams=%d teams=%s affectedCities=%d cities=%s canPlunder=%d hiddenNationality=%d alwaysHostile=%d",
+				GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getTeam(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()),
+				pUnit->getX(), pUnit->getY(), kContext.iRangePlots, kContext.szRangePlots.empty() ? "-" : kContext.szRangePlots.GetCString(),
+				kContext.iAffectedTeams, kContext.szAffectedTeams.empty() ? "-" : kContext.szAffectedTeams.GetCString(),
+				kContext.iAffectedCities, kContext.szAffectedCities.empty() ? "-" : kContext.szAffectedCities.GetCString(),
+				pUnit->canPlunder(pUnit->getPlot()) ? 1 : 0, pUnit->getUnitInfo().isHiddenNationality() ? 1 : 0, pUnit->isAlwaysHostile(pUnit->getPlot()) ? 1 : 0);
+		return;
+	}
+
+	SASGameRecordBlockadeContext kContext;
+	bool const bStartKnown = (iExisting >= 0);
+	if (bStartKnown)
+		kContext = g_aSASGameRecordBlockades[iExisting];
+	else
+	{
+		captureSASGameRecordBlockadeContext(*pUnit, kContext, false);
+		kContext.iStartTurn = -1;
+		kContext.iStartElapsedTurn = -1;
+		kContext.iStartX = -1;
+		kContext.iStartY = -1;
+	}
+	int const iDurationTurns = (bStartKnown ? GC.getGame().getGameTurn() - kContext.iStartTurn : -1);
+	int const iDurationElapsedTurns = (bStartKnown ? GC.getGame().getElapsedGameTurns() - kContext.iStartElapsedTurn : -1);
+	SASGameRecordBlockadeContext kEndContext;
+	captureSASGameRecordBlockadeContext(*pUnit, kEndContext, false);
+	bool const bScopeChanged = (bStartKnown &&
+			(kContext.szAffectedTeams != kEndContext.szAffectedTeams || kContext.szAffectedCities != kEndContext.szAffectedCities));
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=NAVAL_BLOCKADE_ENDED player=%d team=%d unitId=%d unit=%s unitAI=%s startKnown=%d rangeSource=%s startTurn=%d startX=%d startY=%d endX=%d endY=%d durationTurns=%d durationElapsedTurns=%d rangePlots=%d plots=%s affectedTeams=%d teams=%s affectedCities=%d cities=%s endAffectedTeams=%d endTeams=%s endAffectedCities=%d endCities=%s scopeChanged=%d plunderEvents=%d goldPlundered=%d uniquePlunderedCities=%d canPlunderAtEnd=%d",
+			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getTeam(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()),
+			bStartKnown ? 1 : 0, bStartKnown ? "START" : "END_FALLBACK", kContext.iStartTurn, kContext.iStartX, kContext.iStartY, pUnit->getX(), pUnit->getY(), iDurationTurns, iDurationElapsedTurns,
+			kContext.iRangePlots, kContext.szRangePlots.empty() ? "-" : kContext.szRangePlots.GetCString(),
+			kContext.iAffectedTeams, kContext.szAffectedTeams.empty() ? "-" : kContext.szAffectedTeams.GetCString(),
+			kContext.iAffectedCities, kContext.szAffectedCities.empty() ? "-" : kContext.szAffectedCities.GetCString(),
+			kEndContext.iAffectedTeams, kEndContext.szAffectedTeams.empty() ? "-" : kEndContext.szAffectedTeams.GetCString(),
+			kEndContext.iAffectedCities, kEndContext.szAffectedCities.empty() ? "-" : kEndContext.szAffectedCities.GetCString(), bScopeChanged ? 1 : 0,
+			kContext.iPlunderEvents, kContext.iGoldPlundered, (int)kContext.aPlunderedCities.size(), pUnit->canPlunder(pUnit->getPlot()) ? 1 : 0);
+	if (iExisting >= 0)
+		g_aSASGameRecordBlockades.erase(g_aSASGameRecordBlockades.begin() + iExisting);
+}
+
+void logSASGameRecordBlockadePlunder(CvUnit const* pUnit, CvCity const* pCity, int iGold, int iTradeRoutes, int iProfitPerRoute)
+{
+	if (pUnit == NULL || pCity == NULL || iGold <= 0)
+		return;
+	int const iContext = getSASGameRecordBlockadeContextIndex(pUnit->getOwner(), pUnit->getID());
+	int iStartTurn = -1;
+	int iAgeTurns = -1;
+	if (iContext >= 0)
+	{
+		SASGameRecordBlockadeContext& kContext = g_aSASGameRecordBlockades[iContext];
+		kContext.iPlunderEvents++;
+		kContext.iGoldPlundered += iGold;
+		if (!hasSASGameRecordCityReference(kContext.aPlunderedCities, pCity->getOwner(), pCity->getID()))
+			kContext.aPlunderedCities.push_back(std::make_pair(pCity->getOwner(), pCity->getID()));
+		iStartTurn = kContext.iStartTurn;
+		iAgeTurns = GC.getGame().getGameTurn() - kContext.iStartTurn;
+	}
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=NAVAL_BLOCKADE_PLUNDER player=%d team=%d unitId=%d unit=%s unitAI=%s unitX=%d unitY=%d victimPlayer=%d victimTeam=%d cityId=%d city=%S cityX=%d cityY=%d gold=%d tradeRoutes=%d profitPerRoute=%d blockadeStartKnown=%d blockadeStartTurn=%d blockadeAgeTurns=%d",
+			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getTeam(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()),
+			pUnit->getX(), pUnit->getY(), pCity->getOwner(), pCity->getTeam(), pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(),
+			iGold, iTradeRoutes, iProfitPerRoute, iContext >= 0 ? 1 : 0, iStartTurn, iAgeTurns);
+}
+
 void logSASGameRecordReligionFounded(ReligionTypes eReligion, PlayerTypes ePlayer)
 {
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=RELIGION_FOUNDED player=%d religion=%s",
@@ -5496,6 +5702,7 @@ void startSASGameRecordLogForNewGame()
 	resetSASGameRecordResearchState();
 	resetSASGameRecordCityLifecycleState();
 	resetSASGameRecordCombatState();
+	resetSASGameRecordBlockadeState();
 	resetSASGameRecordMilitaryFlowState();
 	CvString const szLogName = getSASGameRecordLogName();
 	logSASGameRecord("GAME_RECORD_NEW_GAME_INITIALIZING utc=%s logFile=%s", getSASGameRecordLogTimestamp().GetCString(), getSASDiagnosticQuoted(szLogName.GetCString()).GetCString());
@@ -5528,6 +5735,7 @@ void startSASGameRecordLogForLoadedSave()
 	resetSASGameRecordResearchState();
 	resetSASGameRecordCityLifecycleState();
 	resetSASGameRecordCombatState();
+	resetSASGameRecordBlockadeState();
 	resetSASGameRecordMilitaryFlowState();
 	logSASGameRecordGameState("GAME_RECORD_SAVE_LOADED");
 	logSASGameRecordLogSettings();

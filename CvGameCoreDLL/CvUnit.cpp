@@ -4837,6 +4837,12 @@ bool CvUnit::pillage(/* advc.111: */ bool bForceImprovement)
 	}
 	ImprovementTypes const eOldImprovement = kPlot.getImprovementType();
 	RouteTypes const eOldRoute = kPlot.getRouteType();
+	// <!-- custom: A successful pillage can replace an improvement with another improvement or remove a route, and the gold transfer happens inside the existing pillage helper.
+	// Capture only the cheap pre-action facts needed to attribute the completed outcome; no logging-only work is done below level 2. (ChatGPT-5.6-Sol) -->
+	bool const bLogGameRecordPillage = (gGameRecordLogLevel >= 2);
+	BonusTypes const eOldBonus = bLogGameRecordPillage ? kPlot.getBonusType() : NO_BONUS;
+	PlayerTypes const ePillageVictim = bLogGameRecordPillage ? kPlot.getOwner() : NO_PLAYER;
+	int const iPillagerGoldBefore = bLogGameRecordPillage ? GET_PLAYER(getOwner()).getGold() : 0;
 	// <advc.111>
 	bool bPillaged = false;
 	if (getDestructibleStructureAt(kPlot, false, bForceImprovement) == STRUCTURE_ROUTE)
@@ -4857,7 +4863,14 @@ bool CvUnit::pillage(/* advc.111: */ bool bForceImprovement)
 	/*	advc.111: (Could just compare old with current, but that wouldn't catch
 		improvements that replace themselves upon being pillaged.) */
 	if (bPillaged)
+	{
+		if (bLogGameRecordPillage)
+		{
+			logSASGameRecordPillage(this, eOldImprovement, eOldRoute, eOldBonus, ePillageVictim,
+					GET_PLAYER(getOwner()).getGold() - iPillagerGoldBefore);
+		}
 		CvEventReporter::getInstance().unitPillage(this, eOldImprovement, eOldRoute, getOwner());
+	}
 	return true;
 }
 
@@ -10000,8 +10013,14 @@ void CvUnit::setBlockading(bool bNewValue)
 {
 	if (bNewValue != isBlockading())
 	{
+		// <!-- custom: A blockade persists across turns, while CvUnit stores only the current boolean state.
+		// Record the end before clearing and the start after applying so the recorder can pair one unit's lifecycle without changing blockade counts or gameplay timing. (ChatGPT-5.6-Sol) -->
+		if (!bNewValue && gGameRecordLogLevel >= 2)
+			logSASGameRecordBlockadeChanged(this, false);
 		m_bBlockading = bNewValue;
 		updatePlunder(isBlockading() ? 1 : -1, true);
+		if (bNewValue && gGameRecordLogLevel >= 2)
+			logSASGameRecordBlockadeChanged(this, true);
 	}
 }
 
@@ -10026,12 +10045,17 @@ void CvUnit::collectBlockadeGold()
 			if(!pCity->isPlundered() && isEnemy(pCity->getTeam()) &&
 				!::atWar(pCity->getTeam(), getTeam()))
 			{
-				int iGold = pCity->calculateTradeProfit(pCity) * pCity->getTradeRoutes();
+				// <!-- custom: These components already determine the real blockade transfer; retain them separately so the recorder can explain the exact realized gold without recomputation. (ChatGPT-5.6-Sol) -->
+				int const iTradeRoutes = pCity->getTradeRoutes();
+				int const iProfitPerRoute = pCity->calculateTradeProfit(pCity);
+				int const iGold = iProfitPerRoute * iTradeRoutes;
 				if(iGold <= 0)
 					continue;
 				pCity->setPlundered(true);
 				GET_PLAYER(getOwner()).changeGold(iGold);
 				GET_PLAYER(pCity->getOwner()).changeGold(-iGold);
+				if (gGameRecordLogLevel >= 2)
+					logSASGameRecordBlockadePlunder(this, pCity, iGold, iTradeRoutes, iProfitPerRoute);
 
 				CvWString szBuffer = gDLL->getText("TXT_KEY_MISC_TRADE_ROUTE_PLUNDERED",
 						getNameKey(), pCity->getNameKey(), iGold);

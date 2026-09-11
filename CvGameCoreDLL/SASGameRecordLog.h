@@ -91,6 +91,10 @@ void logSASGameRecordWarEnded(TeamTypes eTeam, TeamTypes eOtherTeam, int iTeamAW
 void logSASGameRecordWarPlanChanged(TeamTypes eTeam, TeamTypes eTarget, WarPlanTypes eOldWarPlan, WarPlanTypes eNewWarPlan, bool bWar, int iOldStateCounter);
 // <!-- custom: Consequential city economy/lifecycle actions complement periodic snapshots: hurrying preserves the exact realized production/cost mutation, natural growth/starvation is interval-compacted at level 2 while level 3 preserves exact transitions, and culture expansion uses its authoritative event boundary. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordCityHurry(CvCity const* pCity, HurryTypes eHurry, int iProductionBefore, int iProductionAdded, int iGoldCost, int iPopulationCost, int iHurryAngerAdded, int iGoldBefore, int iPopulationBefore, int iHurryAngerBefore);
+// <!-- custom: Pillage and naval-blockade actions preserve the acting unit, exact structure/economic result and persistent blockade lifetime that periodic snapshots cannot reconstruct. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordPillage(CvUnit const* pUnit, ImprovementTypes eOldImprovement, RouteTypes eOldRoute, BonusTypes eOldBonus, PlayerTypes eVictimPlayer, int iGoldGained);
+void logSASGameRecordBlockadeChanged(CvUnit const* pUnit, bool bStarting);
+void logSASGameRecordBlockadePlunder(CvUnit const* pUnit, CvCity const* pCity, int iGold, int iTradeRoutes, int iProfitPerRoute);
 void logSASGameRecordCityGrowthPrevented(CvCity const* pCity, int iFoodDiscarded);
 void logSASGameRecordCityPopulationChanged(CvCity const* pCity, bool bGrowth, int iPopulationBefore, int iFoodDifference, int iFoodBefore, int iFoodAfterDifference, int iFoodKeptBefore, int iFoodKeptBeforePopulationChange, int iGrowthThresholdBefore);
 void logSASGameRecordCityCultureExpanded(CvCity const* pCity);
