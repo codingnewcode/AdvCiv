@@ -89,7 +89,8 @@ void logSASGameRecordUnitCaptured(PlayerTypes eOldOwner, UnitTypes eOldUnitType,
 void logSASGameRecordWarStarted(TeamTypes eDeclarer, TeamTypes eTarget, WarPlanTypes eWarPlan, bool bPrimaryDoW, bool bNewDiplo, PlayerTypes eSponsor, bool bRandomEvent, WarDeclarationCause eCause);
 void logSASGameRecordWarEnded(TeamTypes eTeam, TeamTypes eOtherTeam, int iTeamAWarSuccess, int iTeamBWarSuccess, bool bCapitulate, TeamTypes eBroker, bool bRandomEvent, bool bReparations);
 void logSASGameRecordWarPlanChanged(TeamTypes eTeam, TeamTypes eTarget, WarPlanTypes eOldWarPlan, WarPlanTypes eNewWarPlan, bool bWar, int iOldStateCounter);
-// <!-- custom: Natural city growth/starvation is compacted into level-2 interval flow while level 3 preserves exact city transitions; culture expansion uses the existing authoritative event boundary. (ChatGPT-5.6-Sol) -->
+// <!-- custom: Consequential city economy/lifecycle actions complement periodic snapshots: hurrying preserves the exact realized production/cost mutation, natural growth/starvation is interval-compacted at level 2 while level 3 preserves exact transitions, and culture expansion uses its authoritative event boundary. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordCityHurry(CvCity const* pCity, HurryTypes eHurry, int iProductionBefore, int iProductionAdded, int iGoldCost, int iPopulationCost, int iHurryAngerAdded, int iGoldBefore, int iPopulationBefore, int iHurryAngerBefore);
 void logSASGameRecordCityGrowthPrevented(CvCity const* pCity, int iFoodDiscarded);
 void logSASGameRecordCityPopulationChanged(CvCity const* pCity, bool bGrowth, int iPopulationBefore, int iFoodDifference, int iFoodBefore, int iFoodAfterDifference, int iFoodKeptBefore, int iFoodKeptBeforePopulationChange, int iGrowthThresholdBefore);
 void logSASGameRecordCityCultureExpanded(CvCity const* pCity);
@@ -100,6 +101,8 @@ void logSASGameRecordReligionChanged(ReligionTypes eReligion, PlayerTypes ePlaye
 void logSASGameRecordReligionSpreadAttempt(CvUnit const* pUnit, ReligionTypes eReligion, CvCity const* pCity, int iDirectSpreadChance, bool bSuccess, ReligionTypes eDisplacedReligion);
 void logSASGameRecordCorporationChanged(CorporationTypes eCorporation, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded);
 void logSASGameRecordCorporationSpreadAttempt(CvUnit const* pUnit, CorporationTypes eCorporation, CvCity const* pCity, int iSpreadChance, int iGoldCost, int iGoldBefore, bool bSuccess);
+// <!-- custom: Financial strikes can begin, force unit disbands and end between periodic snapshots; preserve each realized strike turn from the values already produced by CvPlayer::doGold. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordFinancialStrikeTurn(PlayerTypes ePlayer, int iGoldBefore, int iCalculatedGoldRate, int iGoldAfterClamp, int iCumulativeStrikeTurns, int iUnitsBeforeDisband, int iUnitsAfterDisband);
 // <!-- custom: Exact Golden Age/anarchy lifecycle actions complement periodic remaining-turn snapshots; logged duration counters are session-local observations. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordGoldenAge(PlayerTypes ePlayer, bool bStart);
 void logSASGameRecordGoldenAgeTurnsChanged(PlayerTypes ePlayer, int iChange, int iOldGoldenAgeTurns, int iNewGoldenAgeTurns);

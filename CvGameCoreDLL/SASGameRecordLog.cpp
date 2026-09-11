@@ -5134,6 +5134,18 @@ void logSASGameRecordCityCultureExpanded(CvCity const* pCity)
 		GC.getInfo(eCultureLevel).getType(), eCultureLevel, pCity->getCultureTimes100(pCity->getOwner()), pCity->getCultureThreshold(), pCity->getDefenseModifier(false), pCity->getTotalDefense(false));
 }
 
+void logSASGameRecordCityHurry(CvCity const* pCity, HurryTypes eHurry, int iProductionBefore, int iProductionAdded, int iGoldCost, int iPopulationCost, int iHurryAngerAdded, int iGoldBefore, int iPopulationBefore, int iHurryAngerBefore)
+{
+	if (pCity == NULL || eHurry == NO_HURRY)
+		return;
+	PlayerTypes const ePlayer = pCity->getOwner();
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=CITY_HURRIED player=%d cityId=%d city=%S x=%d y=%d hurry=%s targetKind=%s target=%s productionBefore=%d productionNeeded=%d productionAdded=%d productionAfter=%d goldCost=%d goldBefore=%d goldAfter=%d populationCost=%d populationBefore=%d populationAfter=%d hurryAngerAdded=%d hurryAngerBefore=%d hurryAngerAfter=%d",
+			GC.getGame().getGameTurn(), ePlayer, pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(), GC.getInfo(eHurry).getType(),
+			getSASGameRecordCityProductionKind(*pCity), getSASGameRecordCityProductionType(*pCity), iProductionBefore, getSASGameRecordCityProductionNeeded(*pCity), iProductionAdded, pCity->getProduction(),
+			iGoldCost, iGoldBefore, kPlayer.getGold(), iPopulationCost, iPopulationBefore, pCity->getPopulation(), iHurryAngerAdded, iHurryAngerBefore, pCity->getHurryAngerTimer());
+}
+
 void logSASGameRecordReligionFounded(ReligionTypes eReligion, PlayerTypes ePlayer)
 {
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=RELIGION_FOUNDED player=%d religion=%s",
@@ -5191,6 +5203,16 @@ void logSASGameRecordCorporationSpreadAttempt(CvUnit const* pUnit, CorporationTy
 			getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()), getSASGameRecordCorporationType(eCorporation),
 			pCity->getOwner(), pCity->getTeam(), pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(),
 			iSpreadChance, bSuccess ? "SPREAD" : "FAILED", iGoldCost, iGoldBefore, kPlayer.getGold(), pCity->getCorporationCount());
+}
+
+// <!-- custom: Financial strikes are rare but can begin, force unit disbands and end entirely between periodic snapshots.
+// Record each realized strike turn from values already produced by CvPlayer::doGold. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordFinancialStrikeTurn(PlayerTypes ePlayer, int iGoldBefore, int iCalculatedGoldRate, int iGoldAfterClamp, int iCumulativeStrikeTurns, int iUnitsBeforeDisband, int iUnitsAfterDisband)
+{
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=FINANCIAL_STRIKE_TURN player=%d team=%d goldBefore=%d calculatedGoldRate=%d projectedGoldBeforeClamp=%d goldAfterClamp=%d cumulativeStrikeTurns=%d unitsBeforeDisband=%d unitsAfterDisband=%d unitsDisbanded=%d",
+			GC.getGame().getGameTurn(), ePlayer, kPlayer.getTeam(), iGoldBefore, iCalculatedGoldRate, iGoldBefore + iCalculatedGoldRate, iGoldAfterClamp, iCumulativeStrikeTurns,
+			iUnitsBeforeDisband, iUnitsAfterDisband, std::max(0, iUnitsBeforeDisband - iUnitsAfterDisband));
 }
 
 // <!-- custom: Exact Golden Age/anarchy lifecycle actions complement periodic remaining-turn snapshots. Logged duration fields are explicitly session-local and reset whenever a new GameRecord log begins. (ChatGPT-5.6-Sol) -->

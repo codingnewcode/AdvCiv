@@ -2613,12 +2613,21 @@ void CvCity::hurry(HurryTypes eHurry)
 	int iHurryGold = hurryGold(eHurry);
 	int iHurryPopulation = hurryPopulation(eHurry);
 	int iHurryAngerLength = hurryAngerLength(eHurry);
+	int const iHurryProduction = hurryProduction(eHurry);
+	// <!-- custom: Hurrying is a consequential production/economy boundary that periodic city snapshots cannot reconstruct after the fact.
+	// Capture only the cheap before-state needed by the level-2 factual row, and do no logging-only work when SASGameRecord is disabled/lower-detail. (ChatGPT-5.6-Sol) -->
+	bool const bLogGameRecordHurry = (gGameRecordLogLevel >= 2);
+	int const iProductionBefore = bLogGameRecordHurry ? getProduction() : 0;
+	int const iGoldBefore = bLogGameRecordHurry ? GET_PLAYER(getOwner()).getGold() : 0;
+	int const iPopulationBefore = bLogGameRecordHurry ? getPopulation() : 0;
+	int const iHurryAngerBefore = bLogGameRecordHurry ? getHurryAngerTimer() : 0;
 
-	changeProduction(hurryProduction(eHurry));
+	changeProduction(iHurryProduction);
 	GET_PLAYER(getOwner()).changeGold(-(iHurryGold));
 	changePopulation(-(iHurryPopulation));
 
 	changeHurryAngerTimer(iHurryAngerLength);
+	if (bLogGameRecordHurry) logSASGameRecordCityHurry(this, eHurry, iProductionBefore, iHurryProduction, iHurryGold, iHurryPopulation, iHurryAngerLength, iGoldBefore, iPopulationBefore, iHurryAngerBefore);
 
 	if (gCityLogLevel >= 2) // BETTER_BTS_AI_MOD, AI logging, 10/02/09, jdog5000
 	{
