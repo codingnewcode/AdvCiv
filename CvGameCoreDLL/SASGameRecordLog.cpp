@@ -5144,6 +5144,28 @@ void logSASGameRecordCorporationChanged(CorporationTypes eCorporation, PlayerTyp
 }
 
 
+// <!-- custom: Policy/religion action history complements periodic policy snapshots with the exact post-initialization transition turn and preserves civic-driven effective state-religion changes separately from the player's remembered last-state-religion choice. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordCivicChanged(PlayerTypes ePlayer, CivicOptionTypes eCivicOption, CivicTypes eOldCivic, CivicTypes eNewCivic, ReligionTypes eOldEffectiveStateReligion, ReligionTypes eNewEffectiveStateReligion)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS || eCivicOption == NO_CIVICOPTION)
+		return;
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=CIVIC_CHANGED player=%d civicOption=%s oldCivic=%s newCivic=%s oldEffectiveStateReligion=%s newEffectiveStateReligion=%s anarchyTurns=%d",
+			GC.getGame().getGameTurn(), ePlayer, GC.getInfo(eCivicOption).getType(), getSASGameRecordCivicType(eOldCivic), getSASGameRecordCivicType(eNewCivic),
+			getSASGameRecordReligionType(eOldEffectiveStateReligion), getSASGameRecordReligionType(eNewEffectiveStateReligion), GET_PLAYER(ePlayer).getAnarchyTurns());
+}
+
+void logSASGameRecordLastStateReligionChanged(PlayerTypes ePlayer, ReligionTypes eOldReligion, ReligionTypes eNewReligion)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	ReligionTypes const eOldEffectiveReligion = (kPlayer.isStateReligion() ? eOldReligion : NO_RELIGION);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=LAST_STATE_RELIGION_CHANGED player=%d oldLastStateReligion=%s newLastStateReligion=%s oldEffectiveStateReligion=%s newEffectiveStateReligion=%s anarchyTurns=%d",
+			GC.getGame().getGameTurn(), ePlayer, getSASGameRecordReligionType(eOldReligion), getSASGameRecordReligionType(eNewReligion), getSASGameRecordReligionType(eOldEffectiveReligion),
+			getSASGameRecordReligionType(kPlayer.getStateReligion()), kPlayer.getAnarchyTurns());
+}
+
+
 // <!-- custom: CvTeam::addTeam is the authoritative team-merge boundary. Log both pre-merge player assignments while the absorbed team still owns its slots.
 // Periodic team snapshots can then describe the resulting state without forcing a consumer to infer the exact merge turn. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordTeamMerged(TeamTypes eSurvivingTeam, TeamTypes eAbsorbedTeam)

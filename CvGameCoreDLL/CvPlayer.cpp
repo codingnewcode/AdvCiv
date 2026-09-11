@@ -20,7 +20,7 @@
 #include "CvBugOptions.h"
 #include "CvDLLFlagEntityIFaceBase.h" // BBAI
 #include "BBAILog.h"
-#include "SASGameRecordLog.h" // <!-- custom: Research application and finalized-target boundaries feed compact SASGameRecord research lifecycle rows. (ChatGPT-5.6-Sol) -->
+#include "SASGameRecordLog.h" // <!-- custom: Research and player-state mutation boundaries feed factual SASGameRecord lifecycle rows. (ChatGPT-5.6-Sol) -->
 #include "RiseFall.h" // advc.708: Needed only for savegame compatibility
 #include "SelfMod.h" // advc.092b
 
@@ -10485,6 +10485,10 @@ void CvPlayer::setCivics(CivicOptionTypes eCivicOption, CivicTypes eNewValue)
 	if(eOldCivic == eNewValue)
 		return;
 
+	// <!-- custom: Periodic policy snapshots can hide between-interval civic switches. Preserve the old effective state religion before civic effects are replaced.
+	// This observes the transition only and deliberately does not import AdvCiv-SAS's separate KI#799 building-commerce cache repair. (ChatGPT-5.6-Sol) -->
+	bool const bLogCivicChange = (gGameRecordLogLevel >= 2 && GC.getGame().isFinalInitialized() && !isBarbarian());
+	ReligionTypes const eOldEffectiveStateReligion = (bLogCivicChange ? getStateReligion() : NO_RELIGION);
 	bool const bWasStateReligion = isStateReligion(); // advc.106
 
 	m_aeCivics.set(eCivicOption, eNewValue);
@@ -10499,6 +10503,8 @@ void CvPlayer::setCivics(CivicOptionTypes eCivicOption, CivicTypes eNewValue)
 
 	if(!kGame.isFinalInitialized() || /* advc.003n: */ isBarbarian())
 		return;
+	if (bLogCivicChange)
+		logSASGameRecordCivicChanged(getID(), eCivicOption, eOldCivic, eNewValue, eOldEffectiveStateReligion, getStateReligion());
 
 	if (getCivics(eCivicOption) != NO_CIVIC &&
 		/* BtS code (which erroneously blocked the message for certain civic switches)

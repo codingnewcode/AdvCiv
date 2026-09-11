@@ -420,6 +420,9 @@ void CvEventReporter::setPlayerAlive(PlayerTypes ePlayerID, bool bNewValue)
 
 void CvEventReporter::playerChangeStateReligion(PlayerTypes ePlayerID, ReligionTypes eNewReligion, ReligionTypes eOldReligion)
 {
+	// <!-- custom: Record realized last-state-religion transitions at the existing authoritative event boundary; civic-driven effective-religion changes are recorded separately by CvPlayer::setCivics. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2 && GC.getGame().isFinalInitialized())
+		logSASGameRecordLastStateReligionChanged(ePlayerID, eOldReligion, eNewReligion);
 	m_kPythonEventMgr.reportPlayerChangeStateReligion(ePlayerID, eNewReligion, eOldReligion);
 }
 
