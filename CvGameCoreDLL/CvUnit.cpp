@@ -954,6 +954,8 @@ void CvUnit::updateAirCombat(bool bQuick)
 		kAirMission.setUnit(BATTLE_UNIT_DEFENDER, pInterceptor);
 
 		resolveAirCombat(pInterceptor, pPlot, kAirMission);
+		// <!-- custom: Detailed GameRecord interception rows prevent interrupted air missions from being mistaken for unused aircraft; record only the resolved interception combat, without guessing which higher-level air mission was interrupted. (GPT-5.6) -->
+		if (gGameRecordLogLevel >= 3) logSASGameRecordAirInterception(this, pInterceptor, pPlot, kAirMission.getDamage(BATTLE_UNIT_ATTACKER), kAirMission.getDamage(BATTLE_UNIT_DEFENDER));
 
 		if (!bVisible)
 			bFinish = true;
@@ -11221,6 +11223,9 @@ bool CvUnit::airStrike(CvPlot& kPlot, /* <advc.004c> */ bool* pbIntercepted)
 	changeMoves(GC.getMOVE_DENOMINATOR());
 
 	int iDamage = airCombatDamage(pDefender);
+	// <!-- custom: Unit inventories show that aircraft exist; this level-3 action proves that an air strike was actually executed and records its primary-target damage. Log before setDamage because a combat-limit-100 unit could otherwise invalidate the defender pointer. (GPT-5.6) -->
+	bool const bLogAirStrikeDetails = (gGameRecordLogLevel >= 3);
+	const int iGameRecordDefenderDamageBefore = (bLogAirStrikeDetails ? pDefender->getDamage() : -1);
 	int iUnitDamage = std::max(pDefender->getDamage(),
 			std::min(pDefender->getDamage() + iDamage, airCombatLimit()));
 
@@ -11239,6 +11244,7 @@ bool CvUnit::airStrike(CvPlot& kPlot, /* <advc.004c> */ bool* pbIntercepted)
 			kPlot.getX(), kPlot.getY());
 
 	collateralCombat(&kPlot, pDefender);
+	if (bLogAirStrikeDetails) logSASGameRecordAirStrike(this, pDefender, iGameRecordDefenderDamageBefore, iUnitDamage);
 	pDefender->setDamage(iUnitDamage, getOwner());
 
 	return true;
