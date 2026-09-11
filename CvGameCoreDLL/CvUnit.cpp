@@ -4026,7 +4026,16 @@ bool CvUnit::nuke(int iX, int iY)
 	int const iMissionTime = getGroup()->nukeMissionTime();
 	bool const bShortAnimation = (iMissionTime <= 8); // </advc.002m>
 
-	if (SyncRandSuccess100(iBestInterception))
+	bool const bIntercepted = SyncRandSuccess100(iBestInterception);
+	// <!-- custom: The interception roll is the authoritative launch boundary. Reuse the already-computed affected-team flags rather than rescanning nuke victims; log before interception can kill the unit or a successful suicide launch can defer its explosion through delayed death. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2)
+	{
+		bool abSASAffectedTeams[MAX_TEAMS];
+		for (int iTeam = 0; iTeam < MAX_TEAMS; iTeam++)
+			abSASAffectedTeams[iTeam] = abTeamsAffected.get((TeamTypes)iTeam);
+		logSASGameRecordNukeLaunched(this, &kPlot, abSASAffectedTeams, bIntercepted, eBestTeam, iBestInterception);
+	}
+	if (bIntercepted)
 	{
 		for (PlayerIter<MAJOR_CIV> it; it.hasNext(); ++it) // advc.003n: Only major civs
 		{

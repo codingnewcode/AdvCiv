@@ -4693,6 +4693,63 @@ void logSASGameRecordAirBombPlot(CvUnit const* pUnit, CvPlot const* pTargetPlot,
 			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()), pUnit->getX(), pUnit->getY(), pTargetPlot->getOwner(), pTargetPlot->getX(), pTargetPlot->getY(), szTargetKind, szTarget, bSuccess);
 }
 
+// <!-- custom: Record the launch after its interception roll while the nuke unit and pre-detonation target still exist. CvUnit::nuke passes its already-computed affected-team flags, so this helper only formats them. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordNukeLaunched(CvUnit const* pUnit, CvPlot const* pTargetPlot, bool const* pabAffectedTeams, bool bIntercepted, TeamTypes eBestInterceptorTeam, int iInterceptionChance)
+{
+	if (pUnit == NULL || pTargetPlot == NULL || pabAffectedTeams == NULL)
+		return;
+	CvString szAffectedTeams;
+	for (int iTeam = 0; iTeam < MAX_TEAMS; iTeam++)
+	{
+		if (pabAffectedTeams[iTeam])
+			appendSASDiagnosticIntListValue(szAffectedTeams, iTeam);
+	}
+	CvCity const* pTargetCity = pTargetPlot->getPlotCity();
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=NUKE_LAUNCHED player=%d team=%d unitId=%d unit=%s x=%d y=%d plotOwner=%d plotTeam=%d targetCityId=%d targetCity=%S targetCityOwner=%d targetCityTeam=%d targetCityPopulation=%d affectedTeams=%s intercepted=%d bestInterceptorTeam=%d interceptionChance=%d",
+			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getTeam(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), pTargetPlot->getX(), pTargetPlot->getY(), pTargetPlot->getOwner(), pTargetPlot->getTeam(),
+			pTargetCity == NULL ? -1 : pTargetCity->getID(), getSASGameRecordQuotedCityName(pTargetCity).GetCString(), pTargetCity == NULL ? NO_PLAYER : pTargetCity->getOwner(), pTargetCity == NULL ? NO_TEAM : pTargetCity->getTeam(), pTargetCity == NULL ? -1 : pTargetCity->getPopulation(), getSASDiagnosticOrDash(szAffectedTeams).GetCString(), bIntercepted, eBestInterceptorTeam, iInterceptionChance);
+}
+
+// <!-- custom: CvPlot::nukeExplosion already gathers the realized post-random consequences for player messages. Reuse those counters plus the small exact fallout/population totals collected in the same pass; no diagnostic-only second scan is added. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordNukeEffects(CvUnit const* pUnit, CvPlot const* pTargetPlot, int iFalloutPlotsCreated, int iImprovementsDestroyed, int iFeaturesDestroyed, int iUnitsDamaged, int iUnitsKilled, int iBuildingsDestroyed, int iCitiesAffected, int iPopulationKilled)
+{
+	if (pUnit == NULL || pTargetPlot == NULL)
+		return;
+	CvCity const* pTargetCity = pTargetPlot->getPlotCity();
+	logSASGameRecord("GAME_RECORD_NUKE_EFFECTS turn=%d player=%d team=%d unitId=%d unit=%s x=%d y=%d targetCityId=%d targetCity=%S targetCityOwner=%d targetCityTeam=%d targetCityPopulationAfter=%d falloutPlotsCreated=%d improvementsDestroyed=%d featuresDestroyed=%d unitsDamaged=%d unitsKilled=%d buildingsDestroyed=%d citiesAffected=%d populationKilled=%d nukesExplodedAfter=%d",
+			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getTeam(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), pTargetPlot->getX(), pTargetPlot->getY(),
+			pTargetCity == NULL ? -1 : pTargetCity->getID(), getSASGameRecordQuotedCityName(pTargetCity).GetCString(), pTargetCity == NULL ? NO_PLAYER : pTargetCity->getOwner(), pTargetCity == NULL ? NO_TEAM : pTargetCity->getTeam(), pTargetCity == NULL ? -1 : pTargetCity->getPopulation(),
+			iFalloutPlotsCreated, iImprovementsDestroyed, iFeaturesDestroyed, iUnitsDamaged, iUnitsKilled, iBuildingsDestroyed, iCitiesAffected, iPopulationKilled, GC.getGame().getNukesExploded());
+}
+
+// <!-- custom: Preserve each city caught in an actual unit-launched blast, including defended cities whose realized loss happens to be zero. Building identities come directly from the existing destruction loop. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordNukeCityEffect(CvUnit const* pNukeUnit, CvCity const* pCity, int iPopulationBefore, int iNukeModifier, std::vector<BuildingTypes> const& aeBuildingsDestroyed)
+{
+	if (pNukeUnit == NULL || pCity == NULL)
+		return;
+	CvString szBuildingsDestroyed;
+	for (size_t i = 0; i < aeBuildingsDestroyed.size(); i++)
+		appendSASGameRecordType(szBuildingsDestroyed, getSASGameRecordBuildingType(aeBuildingsDestroyed[i]));
+	int const iPopulationAfter = pCity->getPopulation();
+	logSASGameRecord("GAME_RECORD_NUKE_CITY_EFFECT turn=%d player=%d team=%d nukeUnitId=%d nukeUnit=%s affectedPlayer=%d affectedTeam=%d cityId=%d city=%S x=%d y=%d nukeModifier=%d populationBefore=%d populationAfter=%d populationKilled=%d buildingsDestroyedCount=%d buildingsDestroyed=%s",
+			GC.getGame().getGameTurn(), pNukeUnit->getOwner(), pNukeUnit->getTeam(), pNukeUnit->getID(), getSASGameRecordUnitType(pNukeUnit->getUnitType()),
+			pCity->getOwner(), pCity->getTeam(), pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(), iNukeModifier,
+			iPopulationBefore, iPopulationAfter, std::max(0, iPopulationBefore - iPopulationAfter), (int)aeBuildingsDestroyed.size(), getSASDiagnosticOrDash(szBuildingsDestroyed).GetCString());
+}
+
+// <!-- custom: Level-3 nuke unit rows retain tactical identity before the existing damage/kill operation can remove the object. Indirect cargo/noncombat deaths use damageAfter=-1 rather than inventing a gameplay damage value. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordNukeUnitEffect(CvUnit const* pNukeUnit, CvUnit const* pAffectedUnit, CvPlot const* pPlot, int iDamageBefore, int iDamageAfter, bool bKilled, char const* szCause)
+{
+	if (pNukeUnit == NULL || pAffectedUnit == NULL || pPlot == NULL)
+		return;
+	CvUnit const* pTransport = pAffectedUnit->getTransportUnit();
+	int const iDamageDelta = (iDamageBefore >= 0 && iDamageAfter >= 0 ? iDamageAfter - iDamageBefore : -1);
+	logSASGameRecord("GAME_RECORD_NUKE_UNIT_EFFECT turn=%d player=%d team=%d nukeUnitId=%d nukeUnit=%s affectedPlayer=%d affectedTeam=%d unitId=%d unit=%s unitAI=%s x=%d y=%d damageBefore=%d damageAfter=%d damageDelta=%d killed=%d cause=%s cargo=%d transportPlayer=%d transportId=%d",
+			GC.getGame().getGameTurn(), pNukeUnit->getOwner(), pNukeUnit->getTeam(), pNukeUnit->getID(), getSASGameRecordUnitType(pNukeUnit->getUnitType()),
+			pAffectedUnit->getOwner(), pAffectedUnit->getTeam(), pAffectedUnit->getID(), getSASGameRecordUnitType(pAffectedUnit->getUnitType()), getSASGameRecordUnitAIType(pAffectedUnit->AI_getUnitAIType()),
+			pPlot->getX(), pPlot->getY(), iDamageBefore, iDamageAfter, iDamageDelta, bKilled, szCause, pAffectedUnit->isCargo(), pTransport == NULL ? NO_PLAYER : pTransport->getOwner(), pTransport == NULL ? -1 : pTransport->getID());
+}
+
 void logSASGameRecordResearchCompleted(TechTypes eTech, TeamTypes eTeam, PlayerTypes ePlayer, int iProgressBefore, int iProgressBeforePostCompletionAdjustment, int iResearchModifier, int iUnmodifiedOverflow)
 {
 	CvTeam const& kTeam = GET_TEAM(eTeam);

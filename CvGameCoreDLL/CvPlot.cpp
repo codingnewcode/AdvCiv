@@ -16,6 +16,7 @@
 #include "CvDLLSymbolIFaceBase.h"
 #include "CvDLLPlotBuilderIFaceBase.h"
 #include "CvDLLFlagEntityIFaceBase.h"
+#include "SASGameRecordLog.h" // <!-- custom: Nuclear explosion telemetry reuses the existing damage/destruction pass without a diagnostic-only rescan. (ChatGPT-5.6-Sol) -->
 
 /*	advc.make: I've added safeIntCast calls in a few places that looked at least
 	slightly hazardous. Beyond that, explicit casts would only add clutter.
@@ -830,6 +831,11 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 	std::vector<std::vector<NukeEffect> > aaUnitKilled(MAX_PLAYERS);
 	std::vector<NukeEffect> aBuildingDestroyed;
 	std::vector<NukeEffect> aCitizensKilled;
+	// <!-- custom: Reuse this existing explosion pass for compact nuke effect totals. Per-city consequences use level 2; exact affected-unit identities/damage use level 3. Keep both inert unless an actual unit-launched bomb is being recorded. (ChatGPT-5.6-Sol) -->
+	bool const bLogSASNukeEffects = (bBomb && pNukeUnit != NULL && gGameRecordLogLevel >= 2);
+	bool const bLogSASNukeUnitEffects = (bLogSASNukeEffects && gGameRecordLogLevel >= 3);
+	int iSASFalloutPlots = 0;
+	int iSASPopulationKilled = 0;
 	// </advc.650>
 	for (SquareIter it(*this, iRange); it.hasNext(); ++it)
 	{
@@ -859,6 +865,8 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 									GC.getInfo(p.getFeatureType()).getDescription()));
 						} // </advc.650>
 						p.setImprovementType(NO_IMPROVEMENT);
+						if (bLogSASNukeEffects && p.getFeatureType() != (FeatureTypes)GC.getDefineINT("NUKE_FEATURE"))
+							iSASFalloutPlots++;
 						p.setFeatureType((FeatureTypes)GC.getDefineINT("NUKE_FEATURE"));
 					}
 				}
@@ -911,6 +919,8 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 					bool const bLethal = pLoopUnit->isLethalDamage(iNukeDamage);
 					(bLethal ? aaUnitKilled : aaUnitDamaged)[pLoopUnit->getOwner()].
 							push_back(NukeEffect(&p, pLoopUnit->getName()));
+					int const iSASDamageBefore = (bLogSASNukeUnitEffects ? pLoopUnit->getDamage() : -1);
+					int const iSASDamageAfter = (bLogSASNukeUnitEffects ? std::min(pLoopUnit->maxHitPoints(), iSASDamageBefore + iNukeDamage) : -1);
 					if (bLethal && pLoopUnit->hasCargo())
 					{
 						std::vector<CvUnit*> apCargo;
@@ -919,9 +929,11 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 						{
 							aaUnitKilled[apCargo[i]->getOwner()].push_back(
 									NukeEffect(&p, apCargo[i]->getName()));
+							if (bLogSASNukeUnitEffects) logSASGameRecordNukeUnitEffect(pNukeUnit, apCargo[i], &p, apCargo[i]->getDamage(), -1, true, "CARGO_WITH_TRANSPORT");
 						}
 					}
 					// </advc.650>
+					if (bLogSASNukeUnitEffects) logSASGameRecordNukeUnitEffect(pNukeUnit, pLoopUnit, &p, iSASDamageBefore, iSASDamageAfter, bLethal, "DIRECT_DAMAGE");
 					pLoopUnit->changeDamage(iNukeDamage, pNukeUnit != NULL ?
 							pNukeUnit->getOwner() : NO_PLAYER);
 				}
@@ -935,12 +947,18 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 					// <advc.650>
 					aaUnitKilled[pLoopUnit->getOwner()].push_back(
 							NukeEffect(&p, pLoopUnit->getName())); // </advc.650>
+					if (bLogSASNukeUnitEffects) logSASGameRecordNukeUnitEffect(pNukeUnit, pLoopUnit, &p, pLoopUnit->getDamage(), -1, true, "NONCOMBAT_KILLED");
 					pLoopUnit->kill(false, pNukeUnit != NULL ? pNukeUnit->getOwner() : NO_PLAYER);
 				}
 			}
 		}
 		if (pCity == NULL)
 			continue;
+
+		// <!-- custom: Capture strategic per-city nuke consequences from the same destruction pass; build stable XML-type lists only while level-2 recording is enabled. (ChatGPT-5.6-Sol) -->
+		int const iSASPopulationBefore = (bLogSASNukeEffects ? pCity->getPopulation() : -1);
+		int const iSASNukeModifier = (bLogSASNukeEffects ? pCity->getNukeModifier() : 0);
+		std::vector<BuildingTypes> aeSASBuildingsDestroyed;
 
 		FOR_EACH_ENUM2(Building, eBuilding)
 		{
@@ -951,6 +969,7 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 				// <advc.650>
 				aBuildingDestroyed.push_back(NukeEffect(&p,
 						GC.getInfo(eBuilding).getDescription())); // </advc.650>
+				if (bLogSASNukeEffects) aeSASBuildingsDestroyed.push_back(eBuilding);
 				pCity->setNumRealBuilding(eBuilding,
 						pCity->getNumRealBuilding(eBuilding) - 1);
 			}
@@ -965,11 +984,25 @@ void CvPlot::nukeExplosion(int iRange, CvUnit* pNukeUnit, bool bBomb)
 		int iPopChange = -std::min(pCity->getPopulation() - 1, iNukedPopulation);
 		// advc.650:
 		aCitizensKilled.push_back(NukeEffect(&p, CvWString::format(L"%d", -iPopChange)));
+		if (bLogSASNukeEffects) iSASPopulationKilled += -iPopChange;
 		pCity->changePopulation(iPopChange);
+		if (bLogSASNukeEffects) logSASGameRecordNukeCityEffect(pNukeUnit, pCity, iSASPopulationBefore, iSASNukeModifier, aeSASBuildingsDestroyed);
 	}
 	if (bBomb) // K-Mod
 	{
 		GC.getGame().changeNukesExploded(1);
+		// <!-- custom: The existing effect vectors above already contain the authoritative realized results after all nuke RNG. Sum only their existing per-player unit buckets; no second unit/map scan is added. (ChatGPT-5.6-Sol) -->
+		if (bLogSASNukeEffects)
+		{
+			int iSASUnitsDamaged = 0;
+			int iSASUnitsKilled = 0;
+			for (int iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++)
+			{
+				iSASUnitsDamaged += (int)aaUnitDamaged[iPlayer].size();
+				iSASUnitsKilled += (int)aaUnitKilled[iPlayer].size();
+			}
+			logSASGameRecordNukeEffects(pNukeUnit, this, iSASFalloutPlots, (int)aImprovementDestroyed.size(), (int)aFeatureDestroyed.size(), iSASUnitsDamaged, iSASUnitsKilled, (int)aBuildingDestroyed.size(), (int)aCitizensKilled.size(), iSASPopulationKilled);
+		}
 		CvEventReporter::getInstance().nukeExplosion(this, pNukeUnit);
 	}
 	// <advc.650>

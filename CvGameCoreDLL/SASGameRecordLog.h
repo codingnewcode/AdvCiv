@@ -35,6 +35,11 @@ void logSASGameRecordCityBombard(CvUnit const* pUnit, CvCity const* pCity, char 
 void logSASGameRecordAirStrike(CvUnit const* pUnit, CvUnit const* pDefender, int iDefenderDamageBefore, int iDefenderDamageAfter);
 void logSASGameRecordAirInterception(CvUnit const* pAttacker, CvUnit const* pInterceptor, CvPlot const* pTargetPlot, int iAttackerDamageTaken, int iInterceptorDamageTaken);
 void logSASGameRecordAirBombPlot(CvUnit const* pUnit, CvPlot const* pTargetPlot, char const* szTargetKind, char const* szTarget, bool bSuccess);
+// <!-- custom: Nuclear telemetry brackets each actual launch at the interception boundary and reuses the existing explosion pass for realized strategic/tactical effects. Level 2 records launch, aggregate effects and per-city consequences; level 3 retains exact affected-unit identities/damage. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordNukeLaunched(CvUnit const* pUnit, CvPlot const* pTargetPlot, bool const* pabAffectedTeams, bool bIntercepted, TeamTypes eBestInterceptorTeam, int iInterceptionChance);
+void logSASGameRecordNukeEffects(CvUnit const* pUnit, CvPlot const* pTargetPlot, int iFalloutPlotsCreated, int iImprovementsDestroyed, int iFeaturesDestroyed, int iUnitsDamaged, int iUnitsKilled, int iBuildingsDestroyed, int iCitiesAffected, int iPopulationKilled);
+void logSASGameRecordNukeCityEffect(CvUnit const* pNukeUnit, CvCity const* pCity, int iPopulationBefore, int iNukeModifier, std::vector<BuildingTypes> const& aeBuildingsDestroyed);
+void logSASGameRecordNukeUnitEffect(CvUnit const* pNukeUnit, CvUnit const* pAffectedUnit, CvPlot const* pPlot, int iDamageBefore, int iDamageAfter, bool bKilled, char const* szCause);
 // <!-- custom: Observe one AI_chooseProduction call as a scope so every early return is handled without teaching the AI decision tree about recorder schema.
 // At level 2+, the destructor compares the final head order with the entry state and records only meaningful switches, clears, or resumptions of stored production. The disabled level-0/1 path stays a null-pointer check. (ChatGPT-5.6-Sol) -->
 class SASGameRecordAIProductionChoiceScope
