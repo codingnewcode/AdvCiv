@@ -341,6 +341,14 @@ struct SASGameRecordPlayerFlow
 	int iOverflowGold;
 	int iFailedInvestedProduction;
 	int iFailGold;
+	// <!-- custom: Natural city population flow is compacted into interval totals at level 2; level 3 additionally keeps exact city transitions.
+	// Hurries, conscription, events, conquest/razing and other non-growth population changes retain their own provenance-specific boundaries rather than being mixed into these counters. (ChatGPT-5.6-Sol) -->
+	int iCityGrowthEvents;
+	int iPopulationGainedFromGrowth;
+	int iCityGrowthPreventedEvents;
+	int iFoodDiscardedByAvoidGrowth;
+	int iCityStarvationEvents;
+	int iPopulationLostToStarvation;
 	// <!-- custom: Distinguish strategic AI target switching from actual mechanical production loss. Stored production is parked/resumed, not counted as wasted. (ChatGPT-5.6-Sol) -->
 	int iAIProductionTargetSwitches;
 	int iAIProductionTargetClears;
@@ -403,6 +411,12 @@ struct SASGameRecordPlayerFlow
 		iOverflowGold = 0;
 		iFailedInvestedProduction = 0;
 		iFailGold = 0;
+		iCityGrowthEvents = 0;
+		iPopulationGainedFromGrowth = 0;
+		iCityGrowthPreventedEvents = 0;
+		iFoodDiscardedByAvoidGrowth = 0;
+		iCityStarvationEvents = 0;
+		iPopulationLostToStarvation = 0;
 		iAIProductionTargetSwitches = 0;
 		iAIProductionTargetClears = 0;
 		iAIProductionInvestedTargetChanges = 0;
@@ -455,10 +469,15 @@ struct SASGameRecordPlayerFlow
 	{
 		return (iUpgrades > 0 || iScrapped > 0 || iCaptured > 0 || iCombatWins > 0 || iCombatLosses > 0 || iExperienceGained > 0 || iExperiencePreventedByCap > 0 || iExperienceLostAdjustments > 0 || iPromotionsChosen > 0 || iLeaderPromotionApplications > 0 || iEnemyExperienceDestroyed > 0 || iOwnExperienceLost > 0);
 	}
+	bool hasCityPopulationFlow() const
+	{
+		return (iCityGrowthEvents > 0 || iCityGrowthPreventedEvents > 0 || iCityStarvationEvents > 0);
+	}
 };
 static SASGameRecordPlayerFlow g_akSASGameRecordPlayerFlow[MAX_PLAYERS];
 static int g_iSASGameRecordProductionFlowStartTurn = 0;
 static int g_iSASGameRecordMilitaryFlowStartTurn = 0;
+static int g_iSASGameRecordCityPopulationFlowStartTurn = 0;
 
 // <!-- custom: Session totals complement current-unit XP snapshots: veteran deaths, upgrades and captures no longer erase evidence of XP generated, promotion decisions made or veteran quality exchanged in combat.
 // Promotion-type detail stays interval-only to avoid repeating a growing lifetime list. (ChatGPT-5.6-Sol) -->
@@ -554,6 +573,7 @@ static void resetSASGameRecordMilitaryFlowState()
 	}
 	g_iSASGameRecordProductionFlowStartTurn = GC.getGame().getGameTurn();
 	g_iSASGameRecordMilitaryFlowStartTurn = GC.getGame().getGameTurn();
+	g_iSASGameRecordCityPopulationFlowStartTurn = GC.getGame().getGameTurn();
 }
 
 static void resetSASGameRecordGlobalPrevious()
@@ -4211,7 +4231,23 @@ static void logSASGameRecordProductionFlowBuckets(int iGameTurn)
 	g_iSASGameRecordProductionFlowStartTurn = iGameTurn + 1;
 }
 
-// <!-- custom: Military-flow rows reuse the mature SAS schema; production fields are logged immediately beforehand and both families share the same per-snapshot reset below. (ChatGPT-5.6-Sol) -->
+// <!-- custom: Natural growth/starvation is a separate factual flow from production and military accounting. Log it before the shared military-flow reset consumes the player-flow bucket. (ChatGPT-5.6-Sol) -->
+static void logSASGameRecordCityPopulationFlowBuckets(int iGameTurn)
+{
+	for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
+	{
+		PlayerTypes const ePlayer = (PlayerTypes)iI;
+		SASGameRecordPlayerFlow const& kFlow = g_akSASGameRecordPlayerFlow[iI];
+		if (!kFlow.hasCityPopulationFlow())
+			continue;
+		logSASGameRecord("GAME_RECORD_CITY_POPULATION_FLOW turn=%d range=%d-%d player=%d growthEvents=%d populationGained=%d growthPreventedEvents=%d foodDiscardedByAvoidGrowth=%d starvationEvents=%d populationLost=%d netNaturalPopulationChange=%+d",
+			iGameTurn, g_iSASGameRecordCityPopulationFlowStartTurn, iGameTurn, ePlayer, kFlow.iCityGrowthEvents, kFlow.iPopulationGainedFromGrowth, kFlow.iCityGrowthPreventedEvents, kFlow.iFoodDiscardedByAvoidGrowth,
+			kFlow.iCityStarvationEvents, kFlow.iPopulationLostToStarvation, kFlow.iPopulationGainedFromGrowth - kFlow.iPopulationLostToStarvation);
+	}
+	g_iSASGameRecordCityPopulationFlowStartTurn = iGameTurn + 1;
+}
+
+// <!-- custom: Military-flow rows reuse the mature SAS schema; production/population fields are logged immediately beforehand and all families share the same per-snapshot reset below. (ChatGPT-5.6-Sol) -->
 static void logSASGameRecordMilitaryFlowBuckets(int iGameTurn)
 {
 	for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
@@ -4265,6 +4301,7 @@ static void logSASGameRecordSnapshot(int iGameTurn, char const* szReason)
 		logSASGameRecordBarbarians(iGameTurn);
 		logSASGameRecordBattleBuckets(iGameTurn);
 		logSASGameRecordProductionFlowBuckets(iGameTurn);
+		logSASGameRecordCityPopulationFlowBuckets(iGameTurn);
 		logSASGameRecordMilitaryFlowBuckets(iGameTurn);
 	}
 	logSASGameRecord("GAME_RECORD_TURN_END turn=%d reason=%s", iGameTurn, szReason);
@@ -5018,6 +5055,60 @@ void logSASGameRecordWarPlanChanged(TeamTypes eTeam, TeamTypes eTarget, WarPlanT
 
 // <!-- custom: Religion/corporation founding and realized city membership changes are authoritative EventReporter boundaries already exposed by AdvCiv.
 // Keep these factual lifecycle actions separate from missionary/executive attempt reasoning, which requires deeper CvUnit instrumentation and remains deferred. (ChatGPT-5.6-Sol) -->
+// <!-- custom: Natural growth/starvation can occur entirely between periodic city snapshots. Level 2 keeps compact interval totals; level 3 additionally preserves exact city/food/granary transitions. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordCityGrowthPrevented(CvCity const* pCity, int iFoodDiscarded)
+{
+	if (pCity == NULL)
+		return;
+	PlayerTypes const ePlayer = pCity->getOwner();
+	if (ePlayer < 0 || ePlayer >= MAX_CIV_PLAYERS)
+		return;
+	SASGameRecordPlayerFlow& kFlow = g_akSASGameRecordPlayerFlow[ePlayer];
+	kFlow.iCityGrowthPreventedEvents++;
+	kFlow.iFoodDiscardedByAvoidGrowth += std::max(0, iFoodDiscarded);
+}
+
+void logSASGameRecordCityPopulationChanged(CvCity const* pCity, bool bGrowth, int iPopulationBefore, int iFoodDifference, int iFoodBefore, int iFoodAfterDifference, int iFoodKeptBefore, int iFoodKeptBeforePopulationChange, int iGrowthThresholdBefore)
+{
+	if (pCity == NULL)
+		return;
+	PlayerTypes const ePlayer = pCity->getOwner();
+	if (ePlayer < 0 || ePlayer >= MAX_CIV_PLAYERS)
+		return;
+	int const iPopulationAfter = pCity->getPopulation();
+	int const iPopulationDelta = iPopulationAfter - iPopulationBefore;
+	if ((bGrowth && iPopulationDelta <= 0) || (!bGrowth && iPopulationDelta >= 0))
+		return;
+	SASGameRecordPlayerFlow& kFlow = g_akSASGameRecordPlayerFlow[ePlayer];
+	if (bGrowth)
+	{
+		kFlow.iCityGrowthEvents++;
+		kFlow.iPopulationGainedFromGrowth += iPopulationDelta;
+	}
+	else
+	{
+		kFlow.iCityStarvationEvents++;
+		kFlow.iPopulationLostToStarvation += -iPopulationDelta;
+	}
+	if (gGameRecordLogLevel >= 3)
+	{
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=CITY_POPULATION_CHANGED cause=%s player=%d cityId=%d city=%S x=%d y=%d populationBefore=%d populationAfter=%d populationDelta=%+d foodDifference=%+d foodBefore=%d foodAfterDifference=%d foodAfter=%d foodKeptBefore=%d foodKeptBeforePopulationChange=%d foodKeptAfter=%d growthThresholdBefore=%d growthThresholdAfter=%d maxFoodKeptPercent=%d",
+			GC.getGame().getGameTurn(), bGrowth ? "GROWTH" : "STARVATION", ePlayer, pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(),
+			iPopulationBefore, iPopulationAfter, iPopulationDelta, iFoodDifference, iFoodBefore, iFoodAfterDifference, pCity->getFood(), iFoodKeptBefore, iFoodKeptBeforePopulationChange, pCity->getFoodKept(),
+			iGrowthThresholdBefore, pCity->growthThreshold(), pCity->getMaxFoodKeptPercent());
+	}
+}
+
+void logSASGameRecordCityCultureExpanded(CvCity const* pCity)
+{
+	if (pCity == NULL || pCity->getCultureLevel() == NO_CULTURELEVEL)
+		return;
+	CultureLevelTypes const eCultureLevel = pCity->getCultureLevel();
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=CITY_CULTURE_EXPANDED player=%d cityId=%d city=%S x=%d y=%d cultureLevel=%s cultureLevelId=%d ownerCultureTimes100=%d nextCultureThreshold=%d defenseModifier=%d totalDefense=%d",
+		GC.getGame().getGameTurn(), pCity->getOwner(), pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(),
+		GC.getInfo(eCultureLevel).getType(), eCultureLevel, pCity->getCultureTimes100(pCity->getOwner()), pCity->getCultureThreshold(), pCity->getDefenseModifier(false), pCity->getTotalDefense(false));
+}
+
 void logSASGameRecordReligionFounded(ReligionTypes eReligion, PlayerTypes ePlayer)
 {
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=RELIGION_FOUNDED player=%d religion=%s",

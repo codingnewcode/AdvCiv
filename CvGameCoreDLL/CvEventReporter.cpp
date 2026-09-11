@@ -214,6 +214,7 @@ void CvEventReporter::cityLost( CvCity *pCity)
 
 void CvEventReporter::cultureExpansion(CvCity *pCity, PlayerTypes ePlayer)
 {
+	if (gGameRecordLogLevel >= 2) logSASGameRecordCityCultureExpanded(pCity);
 	m_kPythonEventMgr.reportCultureExpansion(pCity, ePlayer);
 }
 

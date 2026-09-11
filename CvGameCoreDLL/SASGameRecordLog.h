@@ -75,6 +75,10 @@ void logSASGameRecordUnitCaptured(PlayerTypes eOldOwner, UnitTypes eOldUnitType,
 void logSASGameRecordWarStarted(TeamTypes eDeclarer, TeamTypes eTarget, WarPlanTypes eWarPlan, bool bPrimaryDoW, bool bNewDiplo, PlayerTypes eSponsor, bool bRandomEvent, WarDeclarationCause eCause);
 void logSASGameRecordWarEnded(TeamTypes eTeam, TeamTypes eOtherTeam, int iTeamAWarSuccess, int iTeamBWarSuccess, bool bCapitulate, TeamTypes eBroker, bool bRandomEvent, bool bReparations);
 void logSASGameRecordWarPlanChanged(TeamTypes eTeam, TeamTypes eTarget, WarPlanTypes eOldWarPlan, WarPlanTypes eNewWarPlan, bool bWar, int iOldStateCounter);
+// <!-- custom: Natural city growth/starvation is compacted into level-2 interval flow while level 3 preserves exact city transitions; culture expansion uses the existing authoritative event boundary. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordCityGrowthPrevented(CvCity const* pCity, int iFoodDiscarded);
+void logSASGameRecordCityPopulationChanged(CvCity const* pCity, bool bGrowth, int iPopulationBefore, int iFoodDifference, int iFoodBefore, int iFoodAfterDifference, int iFoodKeptBefore, int iFoodKeptBeforePopulationChange, int iGrowthThresholdBefore);
+void logSASGameRecordCityCultureExpanded(CvCity const* pCity);
 // <!-- custom: Authoritative religion/corporation founding and realized city membership changes. Spread-attempt/failure provenance remains a separate later CvUnit layer. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordReligionFounded(ReligionTypes eReligion, PlayerTypes ePlayer);
 void logSASGameRecordCorporationFounded(CorporationTypes eCorporation, PlayerTypes ePlayer);
