@@ -30,9 +30,11 @@ void logSASGameRecordCityAcquired(PlayerTypes eOldOwner, PlayerTypes eNewOwner, 
 void noteSASGameRecordCombatStarted(CvUnit const* pAttacker, CvUnit const* pDefender, CvPlot const* pBattlePlot);
 void logSASGameRecordNonlethalCombat(CvUnit const* pAttacker, CvUnit const* pDefender, CvPlot const* pBattlePlot, bool bCombatLimitReached);
 void logSASGameRecordCombatResult(CvUnit const* pWinner, CvUnit const* pLoser, CvPlot const* pBattlePlot);
-// <!-- custom: Level-3 air-combat rows distinguish actual strike/interception use from merely owning aircraft; interrupted higher-level missions are not guessed from the interception boundary. (GPT-5.6 + ChatGPT-5.6-Sol) -->
+// <!-- custom: Level-3 tactical air/bombard rows distinguish actual unit use from merely owning the capability. Consecutive equivalent city bombardments are synthesized compactly; interrupted higher-level missions are not guessed from the interception boundary. (GPT-5.6 + ChatGPT-5.6-Sol) -->
+void logSASGameRecordCityBombard(CvUnit const* pUnit, CvCity const* pCity, char const* szMode, int iBombardRate, bool bIgnoreBuildingDefense, int iDefenseModifierBefore, int iDefenseDamageBefore);
 void logSASGameRecordAirStrike(CvUnit const* pUnit, CvUnit const* pDefender, int iDefenderDamageBefore, int iDefenderDamageAfter);
 void logSASGameRecordAirInterception(CvUnit const* pAttacker, CvUnit const* pInterceptor, CvPlot const* pTargetPlot, int iAttackerDamageTaken, int iInterceptorDamageTaken);
+void logSASGameRecordAirBombPlot(CvUnit const* pUnit, CvPlot const* pTargetPlot, char const* szTargetKind, char const* szTarget, bool bSuccess);
 // <!-- custom: Observe one AI_chooseProduction call as a scope so every early return is handled without teaching the AI decision tree about recorder schema.
 // At level 2+, the destructor compares the final head order with the entry state and records only meaningful switches, clears, or resumptions of stored production. The disabled level-0/1 path stays a null-pointer check. (ChatGPT-5.6-Sol) -->
 class SASGameRecordAIProductionChoiceScope

@@ -4516,13 +4516,23 @@ bool CvUnit::airBomb(CvPlot& kTarget, /* advc.004c: */ bool* pbIntercepted,
 		return true;
 	}
 	CvWString szBuffer;
+	bool const bLogAirBombDetails = (gGameRecordLogLevel >= 3);
 
 	CvCity* pCity = kTarget.getPlotCity();
 	if (pCity != NULL)
 	{
+		// <!-- custom: Level-3 GameRecord captures the exact city-defense mutation; compute before-state only when the detailed recorder is enabled. (ChatGPT-5.6-Sol) -->
+		int iGameRecordDefenseModifierBefore = -1;
+		int iGameRecordDefenseDamageBefore = -1;
+		if (bLogAirBombDetails)
+		{
+			iGameRecordDefenseModifierBefore = pCity->getDefenseModifier(false);
+			iGameRecordDefenseDamageBefore = pCity->getDefenseDamage();
+		}
 		//pCity->changeDefenseModifier(-airBombCurrRate());
 		// advc.004c:
 		pCity->changeDefenseModifier(-std::max(0, airBombDefenseDamage(*pCity)));	
+		if (bLogAirBombDetails) logSASGameRecordCityBombard(this, pCity, "AIR", airBombCurrRate(), true, iGameRecordDefenseModifierBefore, iGameRecordDefenseDamageBefore);
 		szBuffer = gDLL->getText("TXT_KEY_MISC_YOU_DEFENSES_REDUCED_TO",
 				pCity->getNameKey(), pCity->getDefenseModifier(false), getNameKey());
 		gDLL->UI().addMessage(pCity->getOwner(), true, // advc.004g: was false
@@ -4542,6 +4552,14 @@ bool CvUnit::airBomb(CvPlot& kTarget, /* advc.004c: */ bool* pbIntercepted,
 		if (bValidOwner && eStructure != NO_STRUCTURE)
 		{
 			bool const bRoute = (eStructure == STRUCTURE_ROUTE);
+			// <!-- custom: Retain the intended pre-mutation structure only at level 3 so successful and failed air-bomb attempts remain attributable without importing mature SAS's broader generic plot-change subsystem. (ChatGPT-5.6-Sol) -->
+			char const* szGameRecordTargetKind = NULL;
+			char const* szGameRecordTarget = NULL;
+			if (bLogAirBombDetails)
+			{
+				szGameRecordTargetKind = (bRoute ? "ROUTE" : "IMPROVEMENT");
+				szGameRecordTarget = (bRoute ? GC.getInfo(kTarget.getRouteType()).getType() : GC.getInfo(kTarget.getImprovementType()).getType());
+			}
 			wchar const* szStructure = (bRoute ?
 					GC.getInfo(kTarget.getRouteType()).getTextKeyWide() :
 					GC.getInfo(kTarget.getImprovementType()).getTextKeyWide());
@@ -4579,9 +4597,11 @@ bool CvUnit::airBomb(CvPlot& kTarget, /* advc.004c: */ bool* pbIntercepted,
 					kTarget.setImprovementType(GC.getInfo(kTarget.getImprovementType()).
 							getImprovementPillage());
 				}
+				if (bLogAirBombDetails) logSASGameRecordAirBombPlot(this, &kTarget, szGameRecordTargetKind, szGameRecordTarget, true);
 			}
 			else
 			{
+				if (bLogAirBombDetails) logSASGameRecordAirBombPlot(this, &kTarget, szGameRecordTargetKind, szGameRecordTarget, false);
 				szBuffer = gDLL->getText("TXT_KEY_MISC_YOU_UNIT_FAIL_DESTROY_IMP",
 						getNameKey(), szStructure);
 				gDLL->UI().addMessage(getOwner(), true, -1, szBuffer,
@@ -4593,6 +4613,7 @@ bool CvUnit::airBomb(CvPlot& kTarget, /* advc.004c: */ bool* pbIntercepted,
 			or when plot owner in FoW was out of date */
 		else
 		{
+			if (bLogAirBombDetails) logSASGameRecordAirBombPlot(this, &kTarget, "NONE", "-", false);
 			szBuffer = gDLL->getText("TXT_KEY_MISC_AIR_BOMB_FAIL_IMP_GONE", getNameKey());
 			gDLL->UI().addMessage(getOwner(), true, -1, szBuffer,
 					"AS2D_BOMB_FAILS", MESSAGE_TYPE_INFO, getButton(),
@@ -4709,8 +4730,18 @@ bool CvUnit::bombard()
 	}
 
 	bool bFirstBombardment = !pBombardCity->isBombarded(); // advc.004g
+	// <!-- custom: Record exact siege/naval city-defense reduction at level 3; consecutive equivalent actions are compacted by SASGameRecordLog, while disabled/lower levels avoid before-state work. (ChatGPT-5.6-Sol) -->
+	int iGameRecordDefenseModifierBefore = -1;
+	int iGameRecordDefenseDamageBefore = -1;
+	bool const bLogBombardDetails = (gGameRecordLogLevel >= 3);
+	if (bLogBombardDetails)
+	{
+		iGameRecordDefenseModifierBefore = pBombardCity->getDefenseModifier(false);
+		iGameRecordDefenseDamageBefore = pBombardCity->getDefenseDamage();
+	}
 	// advc: Moved into subroutine
 	pBombardCity->changeDefenseModifier(-std::max(0, damageToBombardTarget(getPlot())));
+	if (bLogBombardDetails) logSASGameRecordCityBombard(this, pBombardCity, getDomainType() == DOMAIN_SEA ? "NAVAL" : "SIEGE", bombardRate(), ignoreBuildingDefense(), iGameRecordDefenseModifierBefore, iGameRecordDefenseDamageBefore);
 	setMadeAttack(true);
 	changeMoves(GC.getMOVE_DENOMINATOR());
 

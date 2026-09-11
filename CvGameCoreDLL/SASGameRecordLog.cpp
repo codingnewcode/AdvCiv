@@ -543,6 +543,34 @@ struct SASGameRecordBlockadeContext
 };
 static std::vector<SASGameRecordBlockadeContext> g_aSASGameRecordBlockades;
 
+// <!-- custom: Consecutive siege/naval/air bombard actions against the same city are recorder-local synthetic history. Buffer only the compact factual fields needed to merge adjacent equivalent actions; no gameplay/save state is added. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordCityBombardPending
+{
+	bool bValid;
+	int iTurn;
+	CvString szMode;
+	PlayerTypes ePlayer;
+	PlayerTypes eTargetPlayer;
+	int iCityId;
+	CvWString szCity;
+	int iX;
+	int iY;
+	int iActions;
+	int iBombardRateTotal;
+	int iIgnoreBuildingDefenseActions;
+	int iDefenseModifierBefore;
+	int iDefenseModifierAfter;
+	int iTotalDefense;
+	int iDefenseDamageBefore;
+	int iDefenseDamageAfter;
+	int iDefenseDamageMax;
+	std::vector<std::pair<CvString,int> > aUnitTypes;
+	std::vector<std::pair<CvString,int> > aUnitAIs;
+	SASGameRecordCityBombardPending() : bValid(false), iTurn(-1), ePlayer(NO_PLAYER), eTargetPlayer(NO_PLAYER), iCityId(-1), iX(-1), iY(-1), iActions(0), iBombardRateTotal(0), iIgnoreBuildingDefenseActions(0), iDefenseModifierBefore(-1), iDefenseModifierAfter(-1), iTotalDefense(-1), iDefenseDamageBefore(-1), iDefenseDamageAfter(-1), iDefenseDamageMax(-1) {}
+};
+static SASGameRecordCityBombardPending g_kSASGameRecordPendingCityBombard;
+static bool g_bSASGameRecordFlushingCityBombard = false;
+
 static int getSASGameRecordDelta(bool bValid, int iCurrent, int iPrevious)
 {
 	return bValid ? iCurrent - iPrevious : 0;
@@ -574,6 +602,11 @@ static void resetSASGameRecordCityLifecycleState()
 static void resetSASGameRecordBlockadeState()
 {
 	g_aSASGameRecordBlockades.clear();
+}
+
+static void resetSASGameRecordCityBombardState()
+{
+	g_kSASGameRecordPendingCityBombard = SASGameRecordCityBombardPending();
 }
 
 static void resetSASGameRecordCombatState()
@@ -855,6 +888,39 @@ static void appendSASGameRecordTypeCount(CvString& szList, const char* szType, i
 	CvString szItem;
 	szItem.Format(szList.empty() ? "%s:%d" : ",%s:%d", szType, iCount);
 	szList += szItem;
+}
+
+static void addSASGameRecordCityBombardTypeCount(std::vector<std::pair<CvString,int> >& aCounts, char const* szType)
+{
+	for (size_t iI = 0; iI < aCounts.size(); iI++)
+	{
+		if (aCounts[iI].first == szType)
+		{
+			aCounts[iI].second++;
+			return;
+		}
+	}
+	aCounts.push_back(std::make_pair(CvString(szType), 1));
+}
+
+static void flushSASGameRecordPendingCityBombard()
+{
+	if (!g_kSASGameRecordPendingCityBombard.bValid)
+		return;
+	CvString szUnitTypes;
+	CvString szUnitAIs;
+	for (size_t iI = 0; iI < g_kSASGameRecordPendingCityBombard.aUnitTypes.size(); iI++)
+		appendSASGameRecordTypeCount(szUnitTypes, g_kSASGameRecordPendingCityBombard.aUnitTypes[iI].first.GetCString(), g_kSASGameRecordPendingCityBombard.aUnitTypes[iI].second);
+	for (size_t iI = 0; iI < g_kSASGameRecordPendingCityBombard.aUnitAIs.size(); iI++)
+		appendSASGameRecordTypeCount(szUnitAIs, g_kSASGameRecordPendingCityBombard.aUnitAIs[iI].first.GetCString(), g_kSASGameRecordPendingCityBombard.aUnitAIs[iI].second);
+	if (szUnitTypes.empty()) szUnitTypes = "-";
+	if (szUnitAIs.empty()) szUnitAIs = "-";
+	g_bSASGameRecordFlushingCityBombard = true;
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=CITY_BOMBARD mode=%s player=%d targetPlayer=%d cityId=%d city=%S x=%d y=%d actions=%d unitTypes=%s unitAI=%s bombardRateTotal=%d ignoreBuildingDefenseActions=%d defenseModifierBefore=%d defenseModifierAfter=%d defenseReduction=%d totalDefense=%d defenseDamageBefore=%d defenseDamageAfter=%d defenseDamageMax=%d",
+			g_kSASGameRecordPendingCityBombard.iTurn, g_kSASGameRecordPendingCityBombard.szMode.GetCString(), g_kSASGameRecordPendingCityBombard.ePlayer, g_kSASGameRecordPendingCityBombard.eTargetPlayer, g_kSASGameRecordPendingCityBombard.iCityId, g_kSASGameRecordPendingCityBombard.szCity.GetCString(), g_kSASGameRecordPendingCityBombard.iX, g_kSASGameRecordPendingCityBombard.iY, g_kSASGameRecordPendingCityBombard.iActions, szUnitTypes.GetCString(), szUnitAIs.GetCString(),
+			g_kSASGameRecordPendingCityBombard.iBombardRateTotal, g_kSASGameRecordPendingCityBombard.iIgnoreBuildingDefenseActions, g_kSASGameRecordPendingCityBombard.iDefenseModifierBefore, g_kSASGameRecordPendingCityBombard.iDefenseModifierAfter, std::max(0, g_kSASGameRecordPendingCityBombard.iDefenseModifierBefore - g_kSASGameRecordPendingCityBombard.iDefenseModifierAfter), g_kSASGameRecordPendingCityBombard.iTotalDefense, g_kSASGameRecordPendingCityBombard.iDefenseDamageBefore, g_kSASGameRecordPendingCityBombard.iDefenseDamageAfter, g_kSASGameRecordPendingCityBombard.iDefenseDamageMax);
+	g_bSASGameRecordFlushingCityBombard = false;
+	g_kSASGameRecordPendingCityBombard = SASGameRecordCityBombardPending();
 }
 
 static void appendSASGameRecordPositiveValue(CvString& szList, const char* szName, int iValue)
@@ -4188,6 +4254,9 @@ void logSASGameRecord(TCHAR* format, ... )
 	static const bool bEnabled = isSASGameRecordLogEnabled();
 	if (!bEnabled)
 		return;
+	// <!-- custom: CITY_BOMBARD buffers only consecutive equivalent actions. Flush before the next ordinary row so compact synthesis cannot hide battle/action ordering. (ChatGPT-5.6-Sol) -->
+	if (!g_bSASGameRecordFlushingCityBombard)
+		flushSASGameRecordPendingCityBombard();
 
 	va_list args;
 	va_start(args, format);
@@ -4562,7 +4631,42 @@ void logSASGameRecordProductionUpgraded(CvCity const* pCity, UnitTypes eOldUnit,
 		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=PRODUCTION_UPGRADED player=%d cityId=%d city=%S oldUnit=%s newUnit=%s productionTransferred=%d newProductionBefore=%d newProductionAfter=%d overwrittenDestinationProduction=%d", GC.getGame().getGameTurn(), pCity->getOwner(), pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), getSASGameRecordUnitType(eOldUnit), getSASGameRecordUnitType(eNewUnit), iProductionTransferred, iDestinationProductionBefore, iProductionTransferred, std::max(0, iDestinationProductionBefore));
 }
 
-// <!-- custom: Level-3 air-combat outcomes preserve exact primary-target damage and resolved interception combat without adding another combat calculation or inferring the interrupted higher-level air mission. (GPT-5.6 + ChatGPT-5.6-Sol) -->
+// <!-- custom: Level-3 tactical outcomes preserve exact city-defense reduction, air-strike damage, interception combat and air-bombed plot targets without repeating gameplay calculations or guessing interrupted mission provenance. (GPT-5.6 + ChatGPT-5.6-Sol) -->
+void logSASGameRecordCityBombard(CvUnit const* pUnit, CvCity const* pCity, char const* szMode, int iBombardRate, bool bIgnoreBuildingDefense, int iDefenseModifierBefore, int iDefenseDamageBefore)
+{
+	if (pUnit == NULL || pCity == NULL)
+		return;
+	const int iGameTurn = GC.getGame().getGameTurn();
+	const int iDefenseModifierAfter = pCity->getDefenseModifier(false);
+	const int iDefenseDamageAfter = pCity->getDefenseDamage();
+	// <!-- custom: Merge only truly adjacent same-turn actions against the same city/mode/attacking player whose defense state continues exactly from the previous action. Any unrelated GameRecord row flushes the sequence through the generic writer. (ChatGPT-5.6-Sol) -->
+	const bool bContinueSequence = (g_kSASGameRecordPendingCityBombard.bValid && g_kSASGameRecordPendingCityBombard.iTurn == iGameTurn && g_kSASGameRecordPendingCityBombard.szMode == szMode && g_kSASGameRecordPendingCityBombard.ePlayer == pUnit->getOwner() && g_kSASGameRecordPendingCityBombard.eTargetPlayer == pCity->getOwner() && g_kSASGameRecordPendingCityBombard.iCityId == pCity->getID() && g_kSASGameRecordPendingCityBombard.iDefenseModifierAfter == iDefenseModifierBefore && g_kSASGameRecordPendingCityBombard.iDefenseDamageAfter == iDefenseDamageBefore);
+	if (!bContinueSequence)
+	{
+		flushSASGameRecordPendingCityBombard();
+		g_kSASGameRecordPendingCityBombard.bValid = true;
+		g_kSASGameRecordPendingCityBombard.iTurn = iGameTurn;
+		g_kSASGameRecordPendingCityBombard.szMode = szMode;
+		g_kSASGameRecordPendingCityBombard.ePlayer = pUnit->getOwner();
+		g_kSASGameRecordPendingCityBombard.eTargetPlayer = pCity->getOwner();
+		g_kSASGameRecordPendingCityBombard.iCityId = pCity->getID();
+		g_kSASGameRecordPendingCityBombard.szCity = getSASGameRecordQuotedCityName(pCity);
+		g_kSASGameRecordPendingCityBombard.iX = pCity->getX();
+		g_kSASGameRecordPendingCityBombard.iY = pCity->getY();
+		g_kSASGameRecordPendingCityBombard.iDefenseModifierBefore = iDefenseModifierBefore;
+		g_kSASGameRecordPendingCityBombard.iDefenseDamageBefore = iDefenseDamageBefore;
+	}
+	g_kSASGameRecordPendingCityBombard.iActions++;
+	g_kSASGameRecordPendingCityBombard.iBombardRateTotal += iBombardRate;
+	if (bIgnoreBuildingDefense) g_kSASGameRecordPendingCityBombard.iIgnoreBuildingDefenseActions++;
+	g_kSASGameRecordPendingCityBombard.iDefenseModifierAfter = iDefenseModifierAfter;
+	g_kSASGameRecordPendingCityBombard.iTotalDefense = pCity->getTotalDefense(false);
+	g_kSASGameRecordPendingCityBombard.iDefenseDamageAfter = iDefenseDamageAfter;
+	g_kSASGameRecordPendingCityBombard.iDefenseDamageMax = GC.getMAX_CITY_DEFENSE_DAMAGE();
+	addSASGameRecordCityBombardTypeCount(g_kSASGameRecordPendingCityBombard.aUnitTypes, getSASGameRecordUnitType(pUnit->getUnitType()));
+	addSASGameRecordCityBombardTypeCount(g_kSASGameRecordPendingCityBombard.aUnitAIs, getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()));
+}
+
 void logSASGameRecordAirStrike(CvUnit const* pUnit, CvUnit const* pDefender, int iDefenderDamageBefore, int iDefenderDamageAfter)
 {
 	if (pUnit == NULL || pDefender == NULL)
@@ -4579,6 +4683,14 @@ void logSASGameRecordAirInterception(CvUnit const* pAttacker, CvUnit const* pInt
 		return;
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=AIR_INTERCEPTION attackerPlayer=%d attackerUnitId=%d attackerUnit=%s attackerUnitAI=%s interceptorPlayer=%d interceptorUnitId=%d interceptorUnit=%s interceptorUnitAI=%s x=%d y=%d attackerDamageTaken=%d interceptorDamageTaken=%d attackerDead=%d interceptorDead=%d attackerIsAir=%d",
 			GC.getGame().getGameTurn(), pAttacker->getOwner(), pAttacker->getID(), getSASGameRecordUnitType(pAttacker->getUnitType()), getSASGameRecordUnitAIType(pAttacker->AI_getUnitAIType()), pInterceptor->getOwner(), pInterceptor->getID(), getSASGameRecordUnitType(pInterceptor->getUnitType()), getSASGameRecordUnitAIType(pInterceptor->AI_getUnitAIType()), pTargetPlot->getX(), pTargetPlot->getY(), iAttackerDamageTaken, iInterceptorDamageTaken, pAttacker->isDead(), pInterceptor->isDead(), pAttacker->getDomainType() == DOMAIN_AIR);
+}
+
+void logSASGameRecordAirBombPlot(CvUnit const* pUnit, CvPlot const* pTargetPlot, char const* szTargetKind, char const* szTarget, bool bSuccess)
+{
+	if (pUnit == NULL || pTargetPlot == NULL)
+		return;
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=AIR_BOMB_PLOT player=%d unitId=%d unit=%s unitAI=%s fromX=%d fromY=%d targetOwner=%d x=%d y=%d targetKind=%s target=%s success=%d",
+			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()), pUnit->getX(), pUnit->getY(), pTargetPlot->getOwner(), pTargetPlot->getX(), pTargetPlot->getY(), szTargetKind, szTarget, bSuccess);
 }
 
 void logSASGameRecordResearchCompleted(TechTypes eTech, TeamTypes eTeam, PlayerTypes ePlayer, int iProgressBefore, int iProgressBeforePostCompletionAdjustment, int iResearchModifier, int iUnmodifiedOverflow)
@@ -5823,6 +5935,8 @@ void logSASGameRecordTurn(int iGameTurn)
 
 void startSASGameRecordLogForNewGame()
 {
+	// <!-- custom: A previous session can end immediately after a bombard sequence; flush its self-contained pending row before switching log filenames. (ChatGPT-5.6-Sol) -->
+	flushSASGameRecordPendingCityBombard();
 	rollSASGameRecordLog("new");
 	resetSASGameRecordTeamPrevious();
 	resetSASGameRecordPlayerPrevious();
@@ -5833,6 +5947,7 @@ void startSASGameRecordLogForNewGame()
 	resetSASGameRecordCombatState();
 	resetSASGameRecordBlockadeState();
 	resetSASGameRecordMilitaryFlowState();
+	resetSASGameRecordCityBombardState();
 	CvString const szLogName = getSASGameRecordLogName();
 	logSASGameRecord("GAME_RECORD_NEW_GAME_INITIALIZING utc=%s logFile=%s", getSASGameRecordLogTimestamp().GetCString(), getSASDiagnosticQuoted(szLogName.GetCString()).GetCString());
 	logSASGameRecordLogSettings();
@@ -5856,6 +5971,8 @@ void logSASGameRecordNewGameStarted()
 
 void startSASGameRecordLogForLoadedSave()
 {
+	// <!-- custom: Preserve any final pending bombard row in the previous session before rolling to the loaded-save log. (ChatGPT-5.6-Sol) -->
+	flushSASGameRecordPendingCityBombard();
 	rollSASGameRecordLog("load");
 	resetSASGameRecordTeamPrevious();
 	resetSASGameRecordPlayerPrevious();
@@ -5866,6 +5983,7 @@ void startSASGameRecordLogForLoadedSave()
 	resetSASGameRecordCombatState();
 	resetSASGameRecordBlockadeState();
 	resetSASGameRecordMilitaryFlowState();
+	resetSASGameRecordCityBombardState();
 	logSASGameRecordGameState("GAME_RECORD_SAVE_LOADED");
 	logSASGameRecordLogSettings();
 	logSASGameRecordTechCapabilitySources();
