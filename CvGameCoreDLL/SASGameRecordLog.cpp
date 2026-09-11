@@ -264,6 +264,10 @@ static int g_aiSASGameRecordCitiesLostByConquest[MAX_PLAYERS];
 static int g_aiSASGameRecordCitiesTradedIn[MAX_PLAYERS];
 static int g_aiSASGameRecordCitiesTradedOut[MAX_PLAYERS];
 
+// <!-- custom: Golden Age/anarchy duration observations are log-session-local rather than persisted lifetime totals. Keep that scope explicit in field names so loaded-save logs remain truthful. (ChatGPT-5.6-Sol) -->
+static int g_aiSASGameRecordLoggedGoldenAgeTurns[MAX_PLAYERS];
+static int g_aiSASGameRecordLoggedAnarchyTurns[MAX_PLAYERS];
+
 // <!-- custom: Exact battle rows now feed compact interval/session aggregates too. Keep ordinary win/loss counts separate from withdrawals, combat-limit attacks and binary-outcome luck so level 2 can summarize combat without level-3 per-battle spam. (ChatGPT-5.6-Sol) -->
 static int g_aiSASGameRecordBattleWins[MAX_PLAYERS];
 static int g_aiSASGameRecordBattleLosses[MAX_PLAYERS];
@@ -585,6 +589,15 @@ static void resetSASGameRecordPlayerPrevious()
 {
 	for (int iI = 0; iI < MAX_PLAYERS; iI++)
 		g_akSASGameRecordPlayerPrevious[iI].bValid = false;
+}
+
+static void resetSASGameRecordPlayerDurationState()
+{
+	for (int iI = 0; iI < MAX_PLAYERS; iI++)
+	{
+		g_aiSASGameRecordLoggedGoldenAgeTurns[iI] = 0;
+		g_aiSASGameRecordLoggedAnarchyTurns[iI] = 0;
+	}
 }
 
 static void resetSASGameRecordResearchState()
@@ -3864,12 +3877,12 @@ static void logSASGameRecordPlayerSnapshot(PlayerTypes ePlayer, int iGameTurn)
 	bool const bCurrentlyHumanControlled = kPlayer.isHuman();
 	bool const bAutoplayControlled = kPlayer.isHumanDisabled();
 	bool const bHumanSlot = (bCurrentlyHumanControlled || bAutoplayControlled);
-	// <!-- custom: Current AdvCiv-SAS also exposes recorder-observed golden-age/anarchy lifetime counters in this row. Their action hooks have not been ported yet, so this slice records authoritative current timers only rather than emitting misleading zero-valued session counters. (ChatGPT-5.6-Sol) -->
-	logSASGameRecord("GAME_RECORD_PLAYER turn=%d player=%d team=%d civ=%s leader=%s isHuman=%d humanSlot=%d currentlyHumanControlled=%d autoplayControlled=%d rank=%d deltaValid=%d score=%d scoreDelta=%+d cities=%d citiesDelta=%+d pop=%d popDelta=%+d land=%d landDelta=%+d units=%d unitsDelta=%+d combatUnits=%d combatUnitsDelta=%+d militarySupportUnits=%d militarySupportUnitsDelta=%+d power=%d powerDelta=%+d gold=%d goldDelta=%+d gpt=%d gptDelta=%+d researchRate=%d researchRateDelta=%+d researchPercent=%d currentResearch=%s researchOverflow=%d noResearchAvailable=%d researchTurns=%d era=%s stateReligion=%s techScorePercent=%d combatXP=%d greatPeopleCreated=%d greatGeneralsCreated=%d greatGeneralThreshold=%d goldenAgeTurns=%d anarchyTurns=%d revolutionTimer=%d conversionTimer=%d wars=%s",
+	// <!-- custom: Keep current remaining Golden Age/anarchy timers separate from recorder-session observed duration counters; the logged counters reset whenever a new GameRecord session begins. (ChatGPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_PLAYER turn=%d player=%d team=%d civ=%s leader=%s isHuman=%d humanSlot=%d currentlyHumanControlled=%d autoplayControlled=%d rank=%d deltaValid=%d score=%d scoreDelta=%+d cities=%d citiesDelta=%+d pop=%d popDelta=%+d land=%d landDelta=%+d units=%d unitsDelta=%+d combatUnits=%d combatUnitsDelta=%+d militarySupportUnits=%d militarySupportUnitsDelta=%+d power=%d powerDelta=%+d gold=%d goldDelta=%+d gpt=%d gptDelta=%+d researchRate=%d researchRateDelta=%+d researchPercent=%d currentResearch=%s researchOverflow=%d noResearchAvailable=%d researchTurns=%d era=%s stateReligion=%s techScorePercent=%d combatXP=%d greatPeopleCreated=%d greatGeneralsCreated=%d greatGeneralThreshold=%d goldenAgeTurns=%d loggedGoldenAgeTurns=%d anarchyTurns=%d loggedAnarchyTurns=%d revolutionTimer=%d conversionTimer=%d wars=%s",
 			iGameTurn, ePlayer, kPlayer.getTeam(), szCiv, szLeader, bCurrentlyHumanControlled, bHumanSlot, bCurrentlyHumanControlled, bAutoplayControlled, kGame.getPlayerRank(ePlayer) + 1, kPrevious.bValid,
 			iScore, getSASGameRecordDelta(kPrevious.bValid, iScore, kPrevious.iScore), iCities, getSASGameRecordDelta(kPrevious.bValid, iCities, kPrevious.iCities), iPopulation, getSASGameRecordDelta(kPrevious.bValid, iPopulation, kPrevious.iPopulation), iLand, getSASGameRecordDelta(kPrevious.bValid, iLand, kPrevious.iLand),
 			iUnits, getSASGameRecordDelta(kPrevious.bValid, iUnits, kPrevious.iUnits), iCombatUnits, getSASGameRecordDelta(kPrevious.bValid, iCombatUnits, kPrevious.iCombatUnits), iMilitarySupportUnits, getSASGameRecordDelta(kPrevious.bValid, iMilitarySupportUnits, kPrevious.iMilitarySupportUnits), iPower, getSASGameRecordDelta(kPrevious.bValid, iPower, kPrevious.iPower), iGold, getSASGameRecordDelta(kPrevious.bValid, iGold, kPrevious.iGold), iGoldRate, getSASGameRecordDelta(kPrevious.bValid, iGoldRate, kPrevious.iGoldRate),
-			iResearchRate, getSASGameRecordDelta(kPrevious.bValid, iResearchRate, kPrevious.iResearchRate), kPlayer.getCommercePercent(COMMERCE_RESEARCH), getSASGameRecordTechType(eResearch), kPlayer.getOverflowResearch(), kPlayer.isNoResearchAvailable(), iResearchTurns, getSASGameRecordEraType(kPlayer.getCurrentEra()), getSASGameRecordReligionType(kPlayer.getStateReligion()), kTeam.getBestKnownTechScorePercent(), kPlayer.getCombatExperience(), kPlayer.getGreatPeopleCreated(), kPlayer.getGreatGeneralsCreated(), kPlayer.greatPeopleThreshold(true), kPlayer.getGoldenAgeTurns(), kPlayer.getAnarchyTurns(), kPlayer.getRevolutionTimer(), kPlayer.getConversionTimer(), getSASGameRecordWarTeams(kPlayer.getTeam()).GetCString());
+			iResearchRate, getSASGameRecordDelta(kPrevious.bValid, iResearchRate, kPrevious.iResearchRate), kPlayer.getCommercePercent(COMMERCE_RESEARCH), getSASGameRecordTechType(eResearch), kPlayer.getOverflowResearch(), kPlayer.isNoResearchAvailable(), iResearchTurns, getSASGameRecordEraType(kPlayer.getCurrentEra()), getSASGameRecordReligionType(kPlayer.getStateReligion()), kTeam.getBestKnownTechScorePercent(), kPlayer.getCombatExperience(), kPlayer.getGreatPeopleCreated(), kPlayer.getGreatGeneralsCreated(), kPlayer.greatPeopleThreshold(true), kPlayer.getGoldenAgeTurns(), g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getAnarchyTurns(), g_aiSASGameRecordLoggedAnarchyTurns[ePlayer], kPlayer.getRevolutionTimer(), kPlayer.getConversionTimer(), getSASGameRecordWarTeams(kPlayer.getTeam()).GetCString());
 	logSASGameRecord("GAME_RECORD_PLAYER_HISTORY turn=%d player=%d deltaValid=%d historyScore=%d historyScoreDelta=%+d historyEconomy=%d historyEconomyDelta=%+d historyIndustry=%d historyIndustryDelta=%+d historyAgriculture=%d historyAgricultureDelta=%+d historyPower=%d historyPowerDelta=%+d historyCulture=%d historyCultureDelta=%+d historyEspionage=%d historyEspionageDelta=%+d",
 			iGameTurn, ePlayer, kPrevious.bValid, iHistoryScore, getSASGameRecordDelta(kPrevious.bValid, iHistoryScore, kPrevious.iHistoryScore), iHistoryEconomy, getSASGameRecordDelta(kPrevious.bValid, iHistoryEconomy, kPrevious.iHistoryEconomy), iHistoryIndustry, getSASGameRecordDelta(kPrevious.bValid, iHistoryIndustry, kPrevious.iHistoryIndustry), iHistoryAgriculture, getSASGameRecordDelta(kPrevious.bValid, iHistoryAgriculture, kPrevious.iHistoryAgriculture), iHistoryPower, getSASGameRecordDelta(kPrevious.bValid, iHistoryPower, kPrevious.iHistoryPower), iHistoryCulture, getSASGameRecordDelta(kPrevious.bValid, iHistoryCulture, kPrevious.iHistoryCulture), iHistoryEspionage, getSASGameRecordDelta(kPrevious.bValid, iHistoryEspionage, kPrevious.iHistoryEspionage));
 	// <!-- custom: The environment row shows world pollution, but not which player produced it or whether buildings, bonuses, dirty power, or population caused it. Keep these city scans behind record level 2, and derive the total from the four components rather than scanning a fifth time. (GPT-5.6-Sol) -->
@@ -4329,7 +4342,7 @@ void noteSASGameRecordResearchApplication(PlayerTypes ePlayer, TechTypes eTech, 
 	kApplication.iIncomingOverflowModified = iIncomingOverflowModified;
 }
 
-// <!-- custom: AI_doResearch has already finalized this turn's target before the CvPlayer::doTurn hook, while CvPlayer::doResearch has not yet applied this turn's science. Compare that stable boundary with the previous player turn and record only switches away from a still-incomplete technology; routine completed-tech queue progression is deliberately suppressed. Cause comes only from explicit high-level queue-mutating hooks; unknown/uninstrumented paths stay UNKNOWN rather than being inferred from nearby events. (ChatGPT-5.6-Sol) -->
+// <!-- custom: This stable pre-economy player-turn boundary serves two recorder-only observations: session Golden Age/anarchy duration and the finalized research target before doResearch applies science. Research history still records only switches away from an incomplete invested technology; routine completion progression stays suppressed. (ChatGPT-5.6-Sol) -->
 void updateSASGameRecordPlayerTurnState(PlayerTypes ePlayer)
 {
 	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
@@ -4337,6 +4350,12 @@ void updateSASGameRecordPlayerTurnState(PlayerTypes ePlayer)
 	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
 	if (!kPlayer.isAlive() || kPlayer.isBarbarian())
 		return;
+
+	// <!-- custom: Count each Golden Age/anarchy turn observed at the stable pre-economy player-turn boundary. These counters reset with the GameRecord session and therefore remain distinct from the player's current remaining-turn fields. (ChatGPT-5.6-Sol) -->
+	if (kPlayer.getGoldenAgeTurns() > 0)
+		g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer]++;
+	if (kPlayer.getAnarchyTurns() > 0)
+		g_aiSASGameRecordLoggedAnarchyTurns[ePlayer]++;
 
 	SASGameRecordResearchPrevious& kPrevious = g_akSASGameRecordResearchPrevious[ePlayer];
 	TeamTypes const eTeam = kPlayer.getTeam();
@@ -5144,6 +5163,38 @@ void logSASGameRecordCorporationChanged(CorporationTypes eCorporation, PlayerTyp
 }
 
 
+// <!-- custom: Exact Golden Age/anarchy lifecycle actions complement periodic remaining-turn snapshots. Logged duration fields are explicitly session-local and reset whenever a new GameRecord log begins. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordGoldenAge(PlayerTypes ePlayer, bool bStart)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s player=%d goldenAgeTurns=%d loggedGoldenAgeTurns=%d anarchyTurns=%d loggedAnarchyTurns=%d",
+			GC.getGame().getGameTurn(), bStart ? "GOLDEN_AGE_STARTED" : "GOLDEN_AGE_ENDED", ePlayer, kPlayer.getGoldenAgeTurns(),
+			g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getAnarchyTurns(), g_aiSASGameRecordLoggedAnarchyTurns[ePlayer]);
+}
+
+void logSASGameRecordGoldenAgeTurnsChanged(PlayerTypes ePlayer, int iChange, int iOldGoldenAgeTurns, int iNewGoldenAgeTurns)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=GOLDEN_AGE_TURNS_CHANGED player=%d change=%+d oldGoldenAgeTurns=%d newGoldenAgeTurns=%d goldenAgeTurns=%d loggedGoldenAgeTurns=%d anarchyTurns=%d loggedAnarchyTurns=%d",
+			GC.getGame().getGameTurn(), ePlayer, iChange, iOldGoldenAgeTurns, iNewGoldenAgeTurns, kPlayer.getGoldenAgeTurns(),
+			g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getAnarchyTurns(), g_aiSASGameRecordLoggedAnarchyTurns[ePlayer]);
+}
+
+void logSASGameRecordAnarchy(PlayerTypes ePlayer, bool bStart)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s player=%d anarchyTurns=%d loggedAnarchyTurns=%d goldenAgeTurns=%d loggedGoldenAgeTurns=%d revolutionTimer=%d conversionTimer=%d",
+			GC.getGame().getGameTurn(), bStart ? "ANARCHY_STARTED" : "ANARCHY_ENDED", ePlayer, kPlayer.getAnarchyTurns(),
+			g_aiSASGameRecordLoggedAnarchyTurns[ePlayer], kPlayer.getGoldenAgeTurns(), g_aiSASGameRecordLoggedGoldenAgeTurns[ePlayer], kPlayer.getRevolutionTimer(), kPlayer.getConversionTimer());
+}
+
+
 // <!-- custom: Policy/religion action history complements periodic policy snapshots with the exact post-initialization transition turn and preserves civic-driven effective state-religion changes separately from the player's remembered last-state-religion choice. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordCivicChanged(PlayerTypes ePlayer, CivicOptionTypes eCivicOption, CivicTypes eOldCivic, CivicTypes eNewCivic, ReligionTypes eOldEffectiveStateReligion, ReligionTypes eNewEffectiveStateReligion)
 {
@@ -5211,6 +5262,7 @@ void startSASGameRecordLogForNewGame()
 	rollSASGameRecordLog("new");
 	resetSASGameRecordTeamPrevious();
 	resetSASGameRecordPlayerPrevious();
+	resetSASGameRecordPlayerDurationState();
 	resetSASGameRecordGlobalPrevious();
 	resetSASGameRecordResearchState();
 	resetSASGameRecordCityLifecycleState();
@@ -5242,6 +5294,7 @@ void startSASGameRecordLogForLoadedSave()
 	rollSASGameRecordLog("load");
 	resetSASGameRecordTeamPrevious();
 	resetSASGameRecordPlayerPrevious();
+	resetSASGameRecordPlayerDurationState();
 	resetSASGameRecordGlobalPrevious();
 	resetSASGameRecordResearchState();
 	resetSASGameRecordCityLifecycleState();

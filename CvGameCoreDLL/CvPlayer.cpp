@@ -2830,7 +2830,7 @@ void CvPlayer::doTurn()
 	//doUpdateCacheOnTurn(); // advc: removed
 	kGame.verifyDeals();
 	AI().AI_doTurnPre();
-	// <!-- custom: At this point AI_doResearch has finalized the turn's target, while doResearch below has not yet applied science. The incremental 1.14 port pre-gates at level 2 because this helper currently contains only research-target observation. (ChatGPT-5.6-Sol) -->
+	// <!-- custom: At this stable pre-economy boundary, observe session Golden Age/anarchy duration and the AI's finalized research target before doResearch applies science. Both recorder paths are level-2+. (ChatGPT-5.6-Sol) -->
 	if (gGameRecordLogLevel >= 2) updateSASGameRecordPlayerTurnState(getID());
 
 	if (getRevolutionTimer() > 0)
@@ -7451,9 +7451,13 @@ void CvPlayer::changeGoldenAgeTurns(int iChange)
 
 	CvWString szBuffer;
 
-	bool const bOldGoldenAge = isGoldenAge();
+	// <!-- custom: Preserve the old turn count so extending an already-active Golden Age can be distinguished from its normal per-turn countdown without logging every decrement. (ChatGPT-5.6-Sol) -->
+	int const iOldGoldenAgeTurns = getGoldenAgeTurns();
+	bool const bOldGoldenAge = (iOldGoldenAgeTurns > 0);
 	m_iGoldenAgeTurns += iChange;
 	FAssert(getGoldenAgeTurns() >= 0);
+	if (gGameRecordLogLevel >= 2 && GC.getGame().isFinalInitialized() && iChange > 0 && bOldGoldenAge && isGoldenAge())
+		logSASGameRecordGoldenAgeTurnsChanged(getID(), iChange, iOldGoldenAgeTurns, getGoldenAgeTurns());
 
 	if (bOldGoldenAge != isGoldenAge())
 	{
@@ -7548,6 +7552,8 @@ void CvPlayer::changeAnarchyTurns(int iChange) // advc: Refactored
 	FAssert(getAnarchyTurns() >= 0);
 	if (bOldAnarchy == isAnarchy())
 		return;
+	if (gGameRecordLogLevel >= 2 && GC.getGame().isFinalInitialized())
+		logSASGameRecordAnarchy(getID(), isAnarchy());
 
 	if (isActive())
 	{

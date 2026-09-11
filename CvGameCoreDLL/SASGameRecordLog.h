@@ -84,6 +84,10 @@ void logSASGameRecordReligionFounded(ReligionTypes eReligion, PlayerTypes ePlaye
 void logSASGameRecordCorporationFounded(CorporationTypes eCorporation, PlayerTypes ePlayer);
 void logSASGameRecordReligionChanged(ReligionTypes eReligion, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded);
 void logSASGameRecordCorporationChanged(CorporationTypes eCorporation, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded);
+// <!-- custom: Exact Golden Age/anarchy lifecycle actions complement periodic remaining-turn snapshots; logged duration counters are session-local observations. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordGoldenAge(PlayerTypes ePlayer, bool bStart);
+void logSASGameRecordGoldenAgeTurnsChanged(PlayerTypes ePlayer, int iChange, int iOldGoldenAgeTurns, int iNewGoldenAgeTurns);
+void logSASGameRecordAnarchy(PlayerTypes ePlayer, bool bStart);
 // <!-- custom: Exact post-initialization civic and remembered state-religion transitions complement periodic policy snapshots without changing policy/religion gameplay. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordCivicChanged(PlayerTypes ePlayer, CivicOptionTypes eCivicOption, CivicTypes eOldCivic, CivicTypes eNewCivic, ReligionTypes eOldEffectiveStateReligion, ReligionTypes eNewEffectiveStateReligion);
 void logSASGameRecordLastStateReligionChanged(PlayerTypes ePlayer, ReligionTypes eOldReligion, ReligionTypes eNewReligion);

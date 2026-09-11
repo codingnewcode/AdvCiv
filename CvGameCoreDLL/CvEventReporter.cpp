@@ -399,12 +399,17 @@ void CvEventReporter::corporationRemove(CorporationTypes eType, PlayerTypes ePla
 
 void CvEventReporter::goldenAge(PlayerTypes ePlayer)
 {
+	// <!-- custom: Record the realized Golden Age boundary at the same authoritative event used by Python/statistics; duration extensions are recorded separately by CvPlayer::changeGoldenAgeTurns. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2 && GC.getGame().isFinalInitialized())
+		logSASGameRecordGoldenAge(ePlayer, true);
 	m_kPythonEventMgr.reportGoldenAge(ePlayer);
 	m_kStatistics.goldenAge(ePlayer);
 }
 
 void CvEventReporter::endGoldenAge(PlayerTypes ePlayer)
 {
+	if (gGameRecordLogLevel >= 2 && GC.getGame().isFinalInitialized())
+		logSASGameRecordGoldenAge(ePlayer, false);
 	m_kPythonEventMgr.reportEndGoldenAge(ePlayer);
 }
 
