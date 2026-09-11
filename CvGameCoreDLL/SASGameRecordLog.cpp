@@ -5105,8 +5105,40 @@ void logSASGameRecordWarPlanChanged(TeamTypes eTeam, TeamTypes eTarget, WarPlanT
 }
 
 
-// <!-- custom: Religion/corporation founding and realized city membership changes are authoritative EventReporter boundaries already exposed by AdvCiv.
-// Keep these factual lifecycle actions separate from missionary/executive attempt reasoning, which requires deeper CvUnit instrumentation and remains deferred. (ChatGPT-5.6-Sol) -->
+// <!-- custom: Unit gifting recreates the unit for its receiver before the EventReporter boundary.
+// Preserve the realized giver->receiver transfer and the recreated unit's state without logging AI valuation or offer reasoning. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordUnitGifted(CvUnit const* pUnit, PlayerTypes eGiftingPlayer, CvPlot const* pPlotLocation)
+{
+	if (pUnit == NULL || eGiftingPlayer < 0 || eGiftingPlayer >= MAX_PLAYERS)
+		return;
+	PlayerTypes const eReceiver = pUnit->getOwner();
+	TeamTypes const eGiverTeam = GET_PLAYER(eGiftingPlayer).getTeam();
+	TeamTypes const eReceiverTeam = (eReceiver == NO_PLAYER ? NO_TEAM : GET_PLAYER(eReceiver).getTeam());
+	CvPlot const* pPlot = (pPlotLocation == NULL ? pUnit->plot() : pPlotLocation);
+	int iPromotions = 0;
+	FOR_EACH_ENUM(Promotion)
+	{
+		if (pUnit->isHasPromotion(eLoopPromotion))
+			iPromotions++;
+	}
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=UNIT_GIFTED giverPlayer=%d giverTeam=%d receiverPlayer=%d receiverTeam=%d unitId=%d unit=%s unitAI=%s x=%d y=%d area=%d experience=%d level=%d promotions=%d damage=%d productionNeeded=%d canCombat=%d cargo=%d transportId=%d",
+			GC.getGame().getGameTurn(), eGiftingPlayer, eGiverTeam, eReceiver, eReceiverTeam, pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()),
+			pPlot == NULL ? -1 : pPlot->getX(), pPlot == NULL ? -1 : pPlot->getY(), pPlot == NULL ? -1 : pPlot->getArea().getID(), pUnit->getExperience(), pUnit->getLevel(), iPromotions, pUnit->getDamage(),
+			eReceiver == NO_PLAYER ? -1 : GET_PLAYER(eReceiver).getProductionNeeded(pUnit->getUnitType()), pUnit->canCombat() ? 1 : 0, pUnit->isCargo() ? 1 : 0, pUnit->getTransportUnit() == NULL ? -1 : pUnit->getTransportUnit()->getID());
+}
+
+// <!-- custom: Circumnavigation is a one-time global history boundary with a permanent naval-movement effect.
+// Record the winning team and exact before/after team modifier after the existing map-revelation test succeeds. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordCircumnavigated(TeamTypes eTeam, int iFreeSeaMoves, bool bBonusApplied, int iSeaExtraMovesBefore, int iSeaExtraMovesAfter)
+{
+	if (eTeam == NO_TEAM)
+		return;
+	CvMap const& kMap = GC.getMap();
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=CIRCUMNAVIGATION_COMPLETED team=%d members=%s wrapX=%d wrapY=%d freeSeaMoves=%d bonusApplied=%d seaExtraMovesBefore=%d seaExtraMovesAfter=%d",
+			GC.getGame().getGameTurn(), eTeam, getSASGameRecordTeamMembers(eTeam).GetCString(), kMap.isWrapX() ? 1 : 0, kMap.isWrapY() ? 1 : 0,
+			iFreeSeaMoves, bBonusApplied ? 1 : 0, iSeaExtraMovesBefore, iSeaExtraMovesAfter);
+}
+
 // <!-- custom: Natural growth/starvation can occur entirely between periodic city snapshots. Level 2 keeps compact interval totals; level 3 additionally preserves exact city/food/granary transitions. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordCityGrowthPrevented(CvCity const* pCity, int iFoodDiscarded)
 {
@@ -5352,6 +5384,8 @@ void logSASGameRecordBlockadePlunder(CvUnit const* pUnit, CvCity const* pCity, i
 			iGold, iTradeRoutes, iProfitPerRoute, iContext >= 0 ? 1 : 0, iStartTurn, iAgeTurns);
 }
 
+// <!-- custom: Religion/corporation founding and realized city membership changes are authoritative EventReporter boundaries.
+// Missionary/Executive attempt rows complement them from the deeper CvUnit boundary with consumed-unit outcome context. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordReligionFounded(ReligionTypes eReligion, PlayerTypes ePlayer)
 {
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=RELIGION_FOUNDED player=%d religion=%s",

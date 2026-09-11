@@ -315,6 +315,8 @@ void CvEventReporter::unitSpreadReligionAttempt(CvUnit* pUnit, ReligionTypes eRe
 
 void CvEventReporter::unitGifted(CvUnit* pUnit, PlayerTypes eGiftingPlayer, CvPlot* pPlotLocation)
 {
+	// <!-- custom: The unit has already been recreated for its recipient at this authoritative boundary; preserve the realized transfer rather than AI gift reasoning. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordUnitGifted(pUnit, eGiftingPlayer, pPlotLocation);
 	m_kPythonEventMgr.reportUnitGifted(pUnit, eGiftingPlayer, pPlotLocation);
 }
 

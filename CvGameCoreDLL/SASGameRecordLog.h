@@ -95,6 +95,9 @@ void logSASGameRecordCityHurry(CvCity const* pCity, HurryTypes eHurry, int iProd
 void logSASGameRecordPillage(CvUnit const* pUnit, ImprovementTypes eOldImprovement, RouteTypes eOldRoute, BonusTypes eOldBonus, PlayerTypes eVictimPlayer, int iGoldGained);
 void logSASGameRecordBlockadeChanged(CvUnit const* pUnit, bool bStarting);
 void logSASGameRecordBlockadePlunder(CvUnit const* pUnit, CvCity const* pCity, int iGold, int iTradeRoutes, int iProfitPerRoute);
+// <!-- custom: Preserve authoritative one-shot unit/team transitions that periodic snapshots cannot attribute precisely: completed unit gifts and the global circumnavigation winner/sea-movement effect. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordUnitGifted(CvUnit const* pUnit, PlayerTypes eGiftingPlayer, CvPlot const* pPlotLocation);
+void logSASGameRecordCircumnavigated(TeamTypes eTeam, int iFreeSeaMoves, bool bBonusApplied, int iSeaExtraMovesBefore, int iSeaExtraMovesAfter);
 void logSASGameRecordCityGrowthPrevented(CvCity const* pCity, int iFoodDiscarded);
 void logSASGameRecordCityPopulationChanged(CvCity const* pCity, bool bGrowth, int iPopulationBefore, int iFoodDifference, int iFoodBefore, int iFoodAfterDifference, int iFoodKeptBefore, int iFoodKeptBeforePopulationChange, int iGrowthThresholdBefore);
 void logSASGameRecordCityCultureExpanded(CvCity const* pCity);

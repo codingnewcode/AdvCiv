@@ -19,7 +19,7 @@
 #include "CvPopupInfo.h"
 #include "BBAILog.h" // BETTER_BTS_AI_MOD, AI logging, 10/02/09, jdog5000
 #include "CvBugOptions.h" // advc.071
-#include "SASGameRecordLog.h" // <!-- custom: Research completion accounting and first-discovery reevaluation feed SASGameRecord lifecycle rows. (ChatGPT-5.6-Sol) -->
+#include "SASGameRecordLog.h" // <!-- custom: Structured team, war, research, and one-shot team lifecycle rows feed SASGameRecord separately from BBAI diagnostics. (ChatGPT-5.6-Sol) -->
 
 // advc.003u: Statics moved from CvTeamAI
 CvTeamAI** CvTeam::m_aTeams = NULL;
@@ -5519,6 +5519,10 @@ void CvTeam::testCircumnavigated()
 
 	GC.getGame().makeCircumnavigated();
 
+	// <!-- custom: Capture only the pre-mutation value needed by SASGameRecord; gameplay continues to use AdvCiv's original define checks and movement change. (ChatGPT-5.6-Sol) -->
+	bool const bLogGameRecordCircumnavigation = (gGameRecordLogLevel >= 2);
+	int const iSeaExtraMovesBefore = bLogGameRecordCircumnavigation ? getExtraMoves(DOMAIN_SEA) : 0;
+
 	//if (GC.getGame().getElapsedGameTurns() > 0)
 	if (GC.getGame().getElapsedGameTurns() > 1 && // K-Mod (due to changes in when CvTeam::doTurn is called)
 		GC.getDefineINT("CIRCUMNAVIGATE_FREE_MOVES") != 0)
@@ -5549,6 +5553,13 @@ void CvTeam::testCircumnavigated()
 				getReplayName().c_str()));
 		GC.getGame().addReplayMessage(REPLAY_MESSAGE_MAJOR_EVENT,
 				getLeaderID(), szBuffer, GC.getColorType("HIGHLIGHT_TEXT"));
+	}
+	// <!-- custom: Circumnavigation is globally one-shot; record its winner and realized naval-movement effect after AdvCiv applies the existing bonus. (ChatGPT-5.6-Sol) -->
+	if (bLogGameRecordCircumnavigation)
+	{
+		int const iFreeSeaMoves = GC.getDefineINT("CIRCUMNAVIGATE_FREE_MOVES");
+		bool const bBonusApplied = (GC.getGame().getElapsedGameTurns() > 1 && iFreeSeaMoves != 0);
+		logSASGameRecordCircumnavigated(getID(), iFreeSeaMoves, bBonusApplied, iSeaExtraMovesBefore, getExtraMoves(DOMAIN_SEA));
 	}
 }
 
