@@ -432,6 +432,8 @@ void CvCity::kill(bool bUpdatePlotGroups, /* advc.001: */ bool bBumpUnits)
 	} // </advc.106>
 	kPlot.setImprovementType(GC.getRUINS_IMPROVEMENT());
 	CvEventReporter::getInstance().cityLost(this);
+	// <!-- custom: resetVictoryProgress runs only after this city object is deleted. Preserve any active launch/countdown and the old-capital identity before that state disappears. (ChatGPT-5.6-Sol) -->
+	if (bCapital && gGameRecordLogLevel >= 2) logSASGameRecordVictoryProgressResetForCapital(this);
 	kOwner.deleteCity(getID());
 
 	kPlot.updateCulture(/*true*/ bBumpUnits, false); // advc.001

@@ -153,6 +153,11 @@ void logSASGameRecordAnarchy(PlayerTypes ePlayer, bool bStart);
 // <!-- custom: Exact post-initialization civic and remembered state-religion transitions complement periodic policy snapshots without changing policy/religion gameplay. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordCivicChanged(PlayerTypes ePlayer, CivicOptionTypes eCivicOption, CivicTypes eOldCivic, CivicTypes eNewCivic, ReligionTypes eOldEffectiveStateReligion, ReligionTypes eNewEffectiveStateReligion);
 void logSASGameRecordLastStateReligionChanged(PlayerTypes ePlayer, ReligionTypes eOldReligion, ReligionTypes eNewReligion);
+// <!-- custom: Explicit victory/spaceship lifecycle rows preserve launch timing, arrival failure/reset causes, the final winner, and an exact victory-time snapshot instead of inferring them from project counts or later game state. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordVictoryLaunched(PlayerTypes ePlayer, VictoryTypes eVictory);
+void logSASGameRecordVictoryProgressResetForCapital(CvCity const* pCapital);
+void logSASGameRecordSpaceshipFailed(TeamTypes eTeam, VictoryTypes eVictory, int iLaunchSuccessPercent);
+void logSASGameRecordVictory(TeamTypes eWinner, VictoryTypes eVictory);
 // <!-- custom: Team-relationship lifecycle actions make first contact, permanent-alliance merges and vassal-state changes explicit instead of forcing snapshot consumers to infer their exact turn. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordTeamMerged(TeamTypes eSurvivingTeam, TeamTypes eAbsorbedTeam);
 void logSASGameRecordTeamMet(TeamTypes eTeam, TeamTypes eOtherTeam, bool bNewDiplo, int iX1, int iY1, int iX2, int iY2, CvPlot const* pTeamContactPlot, CvPlot const* pOtherContactPlot);

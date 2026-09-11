@@ -120,6 +120,8 @@ struct SASGameRecordGlobalPrevious
 };
 
 static SASGameRecordGlobalPrevious g_kSASGameRecordGlobalPrevious;
+// <!-- custom: Victory forces an immediate full snapshot; remember its turn so the ordinary interval hook cannot duplicate the same large snapshot later that turn. Recorder-local only and reset with each log session. (ChatGPT-5.6-Sol) -->
+static int g_iSASGameRecordLastFullSnapshotTurn = -1;
 
 // <!-- custom: Keep the portable high-level player fields first. More specialized bonus, espionage, unit-posture, worker, territory and city baselines are added with the corresponding snapshot rows rather than existing as unused state. (ChatGPT-5.6-Sol) -->
 struct SASGameRecordPlayerPrevious
@@ -4424,6 +4426,7 @@ static void logSASGameRecordSnapshot(int iGameTurn, char const* szReason)
 		logSASGameRecordMilitaryFlowBuckets(iGameTurn);
 	}
 	logSASGameRecord("GAME_RECORD_TURN_END turn=%d reason=%s", iGameTurn, szReason);
+	g_iSASGameRecordLastFullSnapshotTurn = iGameTurn;
 }
 
 // <!-- custom: High-level queue-mutating paths call this only at SASGameRecord level 2+. Keep the latest authoritative cause until the player's next finalized research-target observation. If it produces no invested-tech redirection, the observer discards it rather than emitting a standalone/noisy action. (ChatGPT-5.6-Sol) -->
@@ -5981,12 +5984,94 @@ void logSASGameRecordTeamMet(TeamTypes eTeam, TeamTypes eOtherTeam, bool bNewDip
 			pOtherContactPlot == NULL ? -1 : pOtherContactPlot->getX(), pOtherContactPlot == NULL ? -1 : pOtherContactPlot->getY());
 }
 
+void logSASGameRecordVictoryLaunched(PlayerTypes ePlayer, VictoryTypes eVictory)
+{
+	if (ePlayer < 0 || ePlayer >= MAX_PLAYERS || eVictory == NO_VICTORY)
+		return;
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	CvTeam const& kTeam = GET_TEAM(kPlayer.getTeam());
+	int iPartsBuilt = 0;
+	int iPartsMinimum = 0;
+	int iPartsMaximum = 0;
+	bool bMinimumComplete = false;
+	CvString szProjectParts;
+	bool const bProjectVictory = getSASGameRecordVictoryProjectState(kPlayer.getTeam(), eVictory, iPartsBuilt, iPartsMinimum, iPartsMaximum, bMinimumComplete, szProjectParts);
+	int const iCountdown = kTeam.getVictoryCountdown(eVictory);
+	// <!-- custom: Project-completion rows alone do not reveal when a spaceship actually launches. Preserve the authoritative countdown/arrival state immediately after CvPlayer::launch sets it. (ChatGPT-5.6-Sol) -->
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=SPACESHIP_LAUNCHED player=%d team=%d victory=%s countdown=%d arrivalTurn=%d travelTurns=%d launchSuccessPercent=%d partsBuilt=%d partsMinimum=%d partsMaximum=%d projectParts=%s",
+			GC.getGame().getGameTurn(), ePlayer, kPlayer.getTeam(), getSASGameRecordVictoryType(eVictory),
+			iCountdown, iCountdown < 0 ? -1 : GC.getGame().getGameTurn() + iCountdown,
+			bProjectVictory && bMinimumComplete ? kTeam.getVictoryDelay(eVictory) : -1,
+			kTeam.getLaunchSuccessRate(eVictory), iPartsBuilt, iPartsMinimum, iPartsMaximum, bProjectVictory ? szProjectParts.GetCString() : "-");
+}
+
+static void logSASGameRecordVictoryProgressRemoved(TeamTypes eTeam, VictoryTypes eVictory, char const* szAction, char const* szCause, int iLaunchSuccessPercent, CvCity const* pCapital)
+{
+	CvTeam const& kTeam = GET_TEAM(eTeam);
+	int iPartsBuilt = 0;
+	int iPartsMinimum = 0;
+	int iPartsMaximum = 0;
+	bool bMinimumComplete = false;
+	CvString szProjectParts;
+	bool const bProjectVictory = getSASGameRecordVictoryProjectState(eTeam, eVictory, iPartsBuilt, iPartsMinimum, iPartsMaximum, bMinimumComplete, szProjectParts);
+	int const iCountdown = kTeam.getVictoryCountdown(eVictory);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s team=%d victory=%s cause=%s countdown=%d arrivalTurn=%d launchSuccessPercent=%d capitalPlayer=%d capitalCityId=%d capital=%S capitalX=%d capitalY=%d projectVictory=%d partsBuilt=%d partsMinimum=%d partsMaximum=%d projectParts=%s",
+			GC.getGame().getGameTurn(), szAction, eTeam, getSASGameRecordVictoryType(eVictory), szCause, iCountdown,
+			iCountdown < 0 ? -1 : GC.getGame().getGameTurn() + iCountdown, iLaunchSuccessPercent,
+			pCapital == NULL ? NO_PLAYER : pCapital->getOwner(), pCapital == NULL ? -1 : pCapital->getID(),
+			getSASGameRecordQuotedCityName(pCapital).GetCString(), pCapital == NULL ? -1 : pCapital->getX(), pCapital == NULL ? -1 : pCapital->getY(),
+			bProjectVictory, iPartsBuilt, iPartsMinimum, iPartsMaximum, bProjectVictory ? szProjectParts.GetCString() : "-");
+}
+
+void logSASGameRecordVictoryProgressResetForCapital(CvCity const* pCapital)
+{
+	if (pCapital == NULL || GC.getGame().getGameState() != GAMESTATE_ON)
+		return;
+	TeamTypes const eTeam = pCapital->getTeam();
+	CvTeam const& kTeam = GET_TEAM(eTeam);
+	FOR_EACH_ENUM(Victory)
+	{
+		if (kTeam.getVictoryCountdown(eLoopVictory) >= 0)
+			logSASGameRecordVictoryProgressRemoved(eTeam, eLoopVictory, "VICTORY_PROGRESS_RESET", "CAPITAL_LOST", kTeam.getLaunchSuccessRate(eLoopVictory), pCapital);
+	}
+}
+
+void logSASGameRecordSpaceshipFailed(TeamTypes eTeam, VictoryTypes eVictory, int iLaunchSuccessPercent)
+{
+	if (eTeam == NO_TEAM || eVictory == NO_VICTORY)
+		return;
+	// <!-- custom: A failed arrival roll resets the active countdown/projects immediately afterward; retain the exact losing launch state first. (ChatGPT-5.6-Sol) -->
+	logSASGameRecordVictoryProgressRemoved(eTeam, eVictory, "SPACESHIP_FAILED", "LAUNCH_ROLL_FAILED", iLaunchSuccessPercent, NULL);
+}
+
+void logSASGameRecordVictory(TeamTypes eWinner, VictoryTypes eVictory)
+{
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=VICTORY team=%d victory=%s",
+			GC.getGame().getGameTurn(), eWinner, getSASGameRecordVictoryType(eVictory));
+	// <!-- custom: Preserve final raw and normalized score for every civilization at the authoritative victory callback, not only the selected ReplayInfo player. (ChatGPT-5.6-Sol) -->
+	for (int iI = 0; iI < MAX_CIV_PLAYERS; iI++)
+	{
+		PlayerTypes const ePlayer = (PlayerTypes)iI;
+		CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+		if (!kPlayer.isEverAlive())
+			continue;
+		bool const bWinner = (kPlayer.getTeam() == eWinner);
+		logSASGameRecord("GAME_RECORD_FINAL_SCORE turn=%d player=%d team=%d alive=%d winner=%d score=%d normalizedScore=%d",
+				GC.getGame().getGameTurn(), ePlayer, kPlayer.getTeam(), kPlayer.isAlive(), bWinner, kPlayer.calculateScore(), kPlayer.calculateScore(true, bWinner));
+	}
+	// <!-- custom: Victory can occur between configured snapshot intervals. Force one exact final state now; logSASGameRecordTurn suppresses a duplicate if this was already an interval turn. (ChatGPT-5.6-Sol) -->
+	logSASGameRecordSnapshot(GC.getGame().getGameTurn(), "victory");
+}
+
 void logSASGameRecordVassalState(TeamTypes eMaster, TeamTypes eVassal, bool bVassal)
 {
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s master=%d vassal=%d", GC.getGame().getGameTurn(), bVassal ? "VASSALAGE_STARTED" : "VASSALAGE_ENDED", eMaster, eVassal);
 }
 void logSASGameRecordTurn(int iGameTurn)
 {
+	// <!-- custom: A victory can force the final full snapshot before the ordinary end-turn interval hook. Do not emit the same turn twice. (ChatGPT-5.6-Sol) -->
+	if (g_iSASGameRecordLastFullSnapshotTurn == iGameTurn)
+		return;
 	logSASGameRecordSnapshot(iGameTurn, "interval");
 }
 
@@ -6005,6 +6090,7 @@ void startSASGameRecordLogForNewGame()
 	resetSASGameRecordBlockadeState();
 	resetSASGameRecordMilitaryFlowState();
 	resetSASGameRecordCityBombardState();
+	g_iSASGameRecordLastFullSnapshotTurn = -1;
 	CvString const szLogName = getSASGameRecordLogName();
 	logSASGameRecord("GAME_RECORD_NEW_GAME_INITIALIZING utc=%s logFile=%s", getSASGameRecordLogTimestamp().GetCString(), getSASDiagnosticQuoted(szLogName.GetCString()).GetCString());
 	logSASGameRecordLogSettings();
@@ -6041,6 +6127,7 @@ void startSASGameRecordLogForLoadedSave()
 	resetSASGameRecordBlockadeState();
 	resetSASGameRecordMilitaryFlowState();
 	resetSASGameRecordCityBombardState();
+	g_iSASGameRecordLastFullSnapshotTurn = -1;
 	logSASGameRecordGameState("GAME_RECORD_SAVE_LOADED");
 	logSASGameRecordLogSettings();
 	logSASGameRecordTechCapabilitySources();

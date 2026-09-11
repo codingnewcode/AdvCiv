@@ -17758,6 +17758,8 @@ void CvPlayer::launch(VictoryTypes eVictory)
 
 	kTeam.finalizeProjectArtTypes();
 	kTeam.setVictoryCountdown(eVictory, kTeam.getVictoryDelay(eVictory));
+	// <!-- custom: Preserve the authoritative spaceship launch only after its countdown has been set; project completion alone cannot reveal this transition. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordVictoryLaunched(getID(), eVictory);
 
 	//gDLL->getEngineIFace()->AddLaunch(getID());
 	// K-Mod. The spaceship launch causes pitboss to crash

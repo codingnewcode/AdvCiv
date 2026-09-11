@@ -8160,9 +8160,15 @@ void CvGame::testVictory()
 					kTeam.changeVictoryCountdown(eVictory, -1);
 				if (kTeam.getVictoryCountdown(eVictory) == 0)
 				{
-					if (SyncRandSuccess100(kTeam.getLaunchSuccessRate(eVictory)))
+					// <!-- custom: Cache the already-used launch success chance so a failed arrival can be recorded before resetVictoryProgress erases the countdown/component state. (ChatGPT-5.6-Sol) -->
+					int const iLaunchSuccessPercent = kTeam.getLaunchSuccessRate(eVictory);
+					if (SyncRandSuccess100(iLaunchSuccessPercent))
 						aeeWinners.push_back(std::make_pair(kTeam.getID(), eVictory));
-					else kTeam.resetVictoryProgress();
+					else
+					{
+						if (gGameRecordLogLevel >= 2) logSASGameRecordSpaceshipFailed(kTeam.getID(), eVictory, iLaunchSuccessPercent);
+						kTeam.resetVictoryProgress();
+					}
 				}
 			}
 		}

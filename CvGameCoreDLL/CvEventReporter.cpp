@@ -454,6 +454,8 @@ void CvEventReporter::chat(CvWString szString)
 
 void CvEventReporter::victory(TeamTypes eWinner, VictoryTypes eVictory)
 {
+	// <!-- custom: Authoritative victory callback: preserve the exact winner/final-score boundary before Python/statistics consumers run. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel > 0) logSASGameRecordVictory(eWinner, eVictory);
 	m_kPythonEventMgr.reportVictory(eWinner, eVictory);
 	m_kStatistics.setVictory(eWinner, eVictory);
 
