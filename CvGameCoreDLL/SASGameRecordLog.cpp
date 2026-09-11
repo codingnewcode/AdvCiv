@@ -5016,6 +5016,43 @@ void logSASGameRecordWarPlanChanged(TeamTypes eTeam, TeamTypes eTarget, WarPlanT
 }
 
 
+// <!-- custom: Religion/corporation founding and realized city membership changes are authoritative EventReporter boundaries already exposed by AdvCiv.
+// Keep these factual lifecycle actions separate from missionary/executive attempt reasoning, which requires deeper CvUnit instrumentation and remains deferred. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordReligionFounded(ReligionTypes eReligion, PlayerTypes ePlayer)
+{
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=RELIGION_FOUNDED player=%d religion=%s",
+			GC.getGame().getGameTurn(), ePlayer, getSASGameRecordReligionType(eReligion));
+}
+
+void logSASGameRecordCorporationFounded(CorporationTypes eCorporation, PlayerTypes ePlayer)
+{
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=CORPORATION_FOUNDED player=%d corporation=%s",
+			GC.getGame().getGameTurn(), ePlayer, getSASGameRecordCorporationType(eCorporation));
+}
+
+void logSASGameRecordReligionChanged(ReligionTypes eReligion, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded)
+{
+	if (eReligion == NO_RELIGION || pCity == NULL || ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	CvGame const& kGame = GC.getGame();
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s player=%d team=%d cityId=%d city=%S x=%d y=%d religion=%s holyCity=%d effectiveStateReligion=%s religionsInCity=%d",
+			kGame.getGameTurn(), bAdded ? "RELIGION_SPREAD" : "RELIGION_REMOVED", ePlayer, kPlayer.getTeam(), pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(),
+			getSASGameRecordReligionType(eReligion), kGame.getHolyCity(eReligion) == pCity ? 1 : 0, getSASGameRecordReligionType(kPlayer.getStateReligion()), pCity->getReligionCount());
+}
+
+void logSASGameRecordCorporationChanged(CorporationTypes eCorporation, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded)
+{
+	if (eCorporation == NO_CORPORATION || pCity == NULL || ePlayer < 0 || ePlayer >= MAX_PLAYERS)
+		return;
+	CvGame const& kGame = GC.getGame();
+	CvPlayer const& kPlayer = GET_PLAYER(ePlayer);
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s player=%d team=%d cityId=%d city=%S x=%d y=%d corporation=%s headquarters=%d corporationsInCity=%d",
+			kGame.getGameTurn(), bAdded ? "CORPORATION_SPREAD" : "CORPORATION_REMOVED", ePlayer, kPlayer.getTeam(), pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pCity->getX(), pCity->getY(),
+			getSASGameRecordCorporationType(eCorporation), kGame.getHeadquarters(eCorporation) == pCity ? 1 : 0, pCity->getCorporationCount());
+}
+
+
 // <!-- custom: CvTeam::addTeam is the authoritative team-merge boundary. Log both pre-merge player assignments while the absorbed team still owns its slots.
 // Periodic team snapshots can then describe the resulting state without forcing a consumer to infer the exact merge turn. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordTeamMerged(TeamTypes eSurvivingTeam, TeamTypes eAbsorbedTeam)

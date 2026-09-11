@@ -359,32 +359,40 @@ void CvEventReporter::techSelected(TechTypes eTech, PlayerTypes ePlayer)
 
 void CvEventReporter::religionFounded(ReligionTypes eType, PlayerTypes ePlayer)
 {
+	if (gGameRecordLogLevel >= 2) logSASGameRecordReligionFounded(eType, ePlayer);
 	m_kPythonEventMgr.reportReligionFounded(eType, ePlayer);
 	m_kStatistics.religionFounded(eType, ePlayer);
 }
 
 void CvEventReporter::religionSpread(ReligionTypes eType, PlayerTypes ePlayer, CvCity* pSpreadCity)
 {
+	// <!-- custom: Record only the realized city membership change here; missionary attempt/failure provenance is a separate later instrumentation layer. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordReligionChanged(eType, ePlayer, pSpreadCity, true);
 	m_kPythonEventMgr.reportReligionSpread(eType, ePlayer, pSpreadCity);
 }
 
 void CvEventReporter::religionRemove(ReligionTypes eType, PlayerTypes ePlayer, CvCity* pSpreadCity)
 {
+	if (gGameRecordLogLevel >= 2) logSASGameRecordReligionChanged(eType, ePlayer, pSpreadCity, false);
 	m_kPythonEventMgr.reportReligionRemove(eType, ePlayer, pSpreadCity);
 }
 
 void CvEventReporter::corporationFounded(CorporationTypes eType, PlayerTypes ePlayer)
 {
+	if (gGameRecordLogLevel >= 2) logSASGameRecordCorporationFounded(eType, ePlayer);
 	m_kPythonEventMgr.reportCorporationFounded(eType, ePlayer);
 }
 
 void CvEventReporter::corporationSpread(CorporationTypes eType, PlayerTypes ePlayer, CvCity* pSpreadCity)
 {
+	// <!-- custom: Corporation membership changes materially affect city yields, maintenance and resources; record the authoritative realized change without importing executive AI/spread-attempt refactors. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordCorporationChanged(eType, ePlayer, pSpreadCity, true);
 	m_kPythonEventMgr.reportCorporationSpread(eType, ePlayer, pSpreadCity);
 }
 
 void CvEventReporter::corporationRemove(CorporationTypes eType, PlayerTypes ePlayer, CvCity* pSpreadCity)
 {
+	if (gGameRecordLogLevel >= 2) logSASGameRecordCorporationChanged(eType, ePlayer, pSpreadCity, false);
 	m_kPythonEventMgr.reportCorporationRemove(eType, ePlayer, pSpreadCity);
 }
 

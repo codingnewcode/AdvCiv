@@ -75,6 +75,11 @@ void logSASGameRecordUnitCaptured(PlayerTypes eOldOwner, UnitTypes eOldUnitType,
 void logSASGameRecordWarStarted(TeamTypes eDeclarer, TeamTypes eTarget, WarPlanTypes eWarPlan, bool bPrimaryDoW, bool bNewDiplo, PlayerTypes eSponsor, bool bRandomEvent, WarDeclarationCause eCause);
 void logSASGameRecordWarEnded(TeamTypes eTeam, TeamTypes eOtherTeam, int iTeamAWarSuccess, int iTeamBWarSuccess, bool bCapitulate, TeamTypes eBroker, bool bRandomEvent, bool bReparations);
 void logSASGameRecordWarPlanChanged(TeamTypes eTeam, TeamTypes eTarget, WarPlanTypes eOldWarPlan, WarPlanTypes eNewWarPlan, bool bWar, int iOldStateCounter);
+// <!-- custom: Authoritative religion/corporation founding and realized city membership changes. Spread-attempt/failure provenance remains a separate later CvUnit layer. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordReligionFounded(ReligionTypes eReligion, PlayerTypes ePlayer);
+void logSASGameRecordCorporationFounded(CorporationTypes eCorporation, PlayerTypes ePlayer);
+void logSASGameRecordReligionChanged(ReligionTypes eReligion, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded);
+void logSASGameRecordCorporationChanged(CorporationTypes eCorporation, PlayerTypes ePlayer, CvCity const* pCity, bool bAdded);
 // <!-- custom: Team-relationship lifecycle actions make first contact, permanent-alliance merges and vassal-state changes explicit instead of forcing snapshot consumers to infer their exact turn. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordTeamMerged(TeamTypes eSurvivingTeam, TeamTypes eAbsorbedTeam);
 void logSASGameRecordTeamMet(TeamTypes eTeam, TeamTypes eOtherTeam, bool bNewDiplo, int iX1, int iY1, int iX2, int iY2, CvPlot const* pTeamContactPlot, CvPlot const* pOtherContactPlot);
