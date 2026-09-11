@@ -811,6 +811,11 @@ static const char* getSASGameRecordMissionType(MissionTypes eMission)
 	return (eMission == NO_MISSION ? "-" : GC.getInfo(eMission).getType());
 }
 
+static const char* getSASGameRecordEspionageMissionType(EspionageMissionTypes eMission)
+{
+	return (eMission == NO_ESPIONAGEMISSION ? "-" : GC.getInfo(eMission).getType());
+}
+
 static void appendSASGameRecordTypeCount(CvString& szList, const char* szType, int iCount)
 {
 	if (iCount <= 0)
@@ -5309,6 +5314,90 @@ void logSASGameRecordGreatPersonDied(CvUnit const* pUnit, PlayerTypes eResponsib
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=GREAT_PERSON_DIED player=%d unitId=%d unit=%s x=%d y=%d cause=%s responsiblePlayer=%d",
 			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()),
 			pPlot == NULL ? -1 : pPlot->getX(), pPlot == NULL ? -1 : pPlot->getY(), szCause == NULL ? "-" : szCause, eResponsiblePlayer);
+}
+
+
+// <!-- custom: Completed espionage and mission-phase interceptions share one decoder so the same mission/data and pre-mission destructible-target context produce identical readable target tokens. (ChatGPT-5.6-Sol) -->
+static void getSASGameRecordEspionageTarget(EspionageMissionTypes eMission, int iExtraData, ImprovementTypes eTargetImprovement, RouteTypes eTargetRoute, UnitTypes eTargetUnit, char const*& szTargetKind, char const*& szTargetType)
+{
+	szTargetKind = "-";
+	szTargetType = "-";
+	if (eMission == NO_ESPIONAGEMISSION)
+		return;
+	CvEspionageMissionInfo const& kMission = GC.getInfo(eMission);
+	if (kMission.isDestroyImprovement())
+	{
+		if (eTargetImprovement != NO_IMPROVEMENT)
+		{
+			szTargetKind = "improvement";
+			szTargetType = getSASGameRecordImprovementType(eTargetImprovement);
+		}
+		else if (eTargetRoute != NO_ROUTE)
+		{
+			szTargetKind = "route";
+			szTargetType = getSASGameRecordRouteType(eTargetRoute);
+		}
+	}
+	else if (kMission.getDestroyBuildingCostFactor() > 0)
+	{
+		szTargetKind = "building";
+		szTargetType = getSASGameRecordBuildingType((BuildingTypes)iExtraData);
+	}
+	else if (kMission.getDestroyProjectCostFactor() > 0)
+	{
+		szTargetKind = "project";
+		szTargetType = getSASGameRecordProjectType((ProjectTypes)iExtraData);
+	}
+	else if (kMission.getDestroyUnitCostFactor() > 0 || kMission.getBuyUnitCostFactor() > 0)
+	{
+		szTargetKind = "unit";
+		szTargetType = getSASGameRecordUnitType(eTargetUnit);
+	}
+	else if (kMission.getBuyTechCostFactor() > 0)
+	{
+		szTargetKind = "tech";
+		szTargetType = getSASGameRecordTechType((TechTypes)iExtraData);
+	}
+	else if (kMission.getSwitchCivicCostFactor() > 0)
+	{
+		szTargetKind = "civic";
+		szTargetType = getSASGameRecordCivicType((CivicTypes)iExtraData);
+	}
+	else if (kMission.getSwitchReligionCostFactor() > 0)
+	{
+		szTargetKind = "religion";
+		szTargetType = getSASGameRecordReligionType((ReligionTypes)iExtraData);
+	}
+}
+
+void logSASGameRecordEspionageMission(CvUnit const* pUnit, EspionageMissionTypes eMission, PlayerTypes eTargetPlayer, CvPlot const* pPlot, int iExtraData, int iCost, int iEPBefore, int iEPAfter, ImprovementTypes eTargetImprovement, RouteTypes eTargetRoute, UnitTypes eTargetUnit, int iEffectValue, char const* szEffectKind)
+{
+	if (pUnit == NULL || eMission == NO_ESPIONAGEMISSION)
+		return;
+	char const* szTargetKind;
+	char const* szTargetType;
+	getSASGameRecordEspionageTarget(eMission, iExtraData, eTargetImprovement, eTargetRoute, eTargetUnit, szTargetKind, szTargetType);
+	CvCity const* pCity = (pPlot == NULL ? NULL : pPlot->getPlotCity());
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=ESPIONAGE_MISSION player=%d spyId=%d spy=%s spyAI=%s targetPlayer=%d targetTeam=%d mission=%s cost=%d epBefore=%d epAfter=%d cityId=%d city=%S x=%d y=%d targetKind=%s target=%s effectKind=%s effectValue=%d extraData=%d fortifyTurns=%d",
+			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()),
+			eTargetPlayer, eTargetPlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(eTargetPlayer).getTeam(), getSASGameRecordEspionageMissionType(eMission), iCost, iEPBefore, iEPAfter,
+			pCity == NULL ? -1 : pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(), pPlot == NULL ? -1 : pPlot->getX(), pPlot == NULL ? -1 : pPlot->getY(),
+			szTargetKind, szTargetType, szEffectKind == NULL ? "-" : szEffectKind, iEffectValue, iExtraData, pUnit->getFortifyTurns());
+}
+
+void logSASGameRecordSpyIntercepted(CvUnit const* pUnit, PlayerTypes eTargetPlayer, char const* szPhase, int iModifier, int iInterceptChanceX100, EspionageMissionTypes eMission, int iExtraData, ImprovementTypes eTargetImprovement, RouteTypes eTargetRoute, UnitTypes eTargetUnit)
+{
+	if (pUnit == NULL)
+		return;
+	char const* szTargetKind;
+	char const* szTargetType;
+	getSASGameRecordEspionageTarget(eMission, iExtraData, eTargetImprovement, eTargetRoute, eTargetUnit, szTargetKind, szTargetType);
+	CvCity const* pCity = pUnit->getPlot().getPlotCity();
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=SPY_INTERCEPTED player=%d spyId=%d spy=%s spyAI=%s targetPlayer=%d targetTeam=%d phase=%s mission=%s targetKind=%s target=%s extraData=%d x=%d y=%d cityId=%d city=%S modifier=%d interceptChanceX100=%d fortifyTurns=%d",
+			GC.getGame().getGameTurn(), pUnit->getOwner(), pUnit->getID(), getSASGameRecordUnitType(pUnit->getUnitType()), getSASGameRecordUnitAIType(pUnit->AI_getUnitAIType()),
+			eTargetPlayer, eTargetPlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(eTargetPlayer).getTeam(), szPhase == NULL ? "-" : szPhase, getSASGameRecordEspionageMissionType(eMission),
+			szTargetKind, szTargetType, iExtraData, pUnit->getX(), pUnit->getY(), pCity == NULL ? -1 : pCity->getID(), getSASGameRecordQuotedCityName(pCity).GetCString(),
+			iModifier, iInterceptChanceX100, pUnit->getFortifyTurns());
 }
 
 // <!-- custom: CvTeam::addTeam is the authoritative team-merge boundary. Log both pre-merge player assignments while the absorbed team still owns its slots.

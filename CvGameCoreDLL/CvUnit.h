@@ -251,7 +251,8 @@ public:
 
 	bool canEspionage(const CvPlot* pPlot, bool bTestVisible = false) const;
 	bool espionage(EspionageMissionTypes eMission, int iData);
-	bool testSpyIntercepted(PlayerTypes eTargetPlayer, bool bMission, int iModifier); // (K-Mod added bMission)
+	// <!-- custom: Optional mission provenance is logging-only; travel interception passes "TRAVEL", while mission interception preserves the intended mission/target even if the Spy dies before or after execution. (ChatGPT-5.6-Sol) -->
+	bool testSpyIntercepted(PlayerTypes eTargetPlayer, bool bMission, int iModifier, char const* szSummaryPhase, EspionageMissionTypes eMission = NO_ESPIONAGEMISSION, int iData = -1, ImprovementTypes eTargetImprovement = NO_IMPROVEMENT, RouteTypes eTargetRoute = NO_ROUTE, UnitTypes eTargetUnit = NO_UNIT); // (K-Mod added bMission)
 	int getSpyInterceptPercent(TeamTypes eTargetTeam, bool bMission) const; // (K-Mod added bMission)
 	bool isIntruding() const;
 

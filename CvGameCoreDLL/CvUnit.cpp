@@ -663,12 +663,12 @@ void CvUnit::doTurn()
 			if (GET_TEAM(getTeam()).isOpenBorders(eTeam))
 			{
 				testSpyIntercepted(getPlot().getOwner(), false,
-						GC.getDefineINT(CvGlobals::ESPIONAGE_SPY_NO_INTRUDE_INTERCEPT_MOD));
+						GC.getDefineINT(CvGlobals::ESPIONAGE_SPY_NO_INTRUDE_INTERCEPT_MOD), "TRAVEL");
 			}
 			else
 			{
 				testSpyIntercepted(getPlot().getOwner(), false,
-						GC.getDefineINT(CvGlobals::ESPIONAGE_SPY_INTERCEPT_MOD));
+						GC.getDefineINT(CvGlobals::ESPIONAGE_SPY_INTERCEPT_MOD), "TRAVEL");
 			}
 		}
 	}
@@ -6146,18 +6146,94 @@ bool CvUnit::espionage(EspionageMissionTypes eMission, int iData)
 	else
 	{
 		CvEspionageMissionInfo const& kMission = GC.getInfo(eMission);
-		if (testSpyIntercepted(eTargetPlayer, true, kMission.getDifficultyMod()))
+		bool const bLogEspionageMission = (gGameRecordLogLevel >= 2);
+		ImprovementTypes eTargetImprovement = NO_IMPROVEMENT;
+		RouteTypes eTargetRoute = NO_ROUTE;
+		UnitTypes eTargetUnit = NO_UNIT;
+		if (bLogEspionageMission)
+		{
+			// <!-- custom: Capture destructible target identity before interception/execution so caught-before, completed and caught-after rows keep the same readable target even if the mission removes it. (ChatGPT-5.6-Sol) -->
+			if (kMission.isDestroyImprovement())
+			{
+				eTargetImprovement = getPlot().getImprovementType();
+				eTargetRoute = getPlot().getRouteType();
+			}
+			else if ((kMission.getDestroyUnitCostFactor() > 0 || kMission.getBuyUnitCostFactor() > 0) && iData >= 0)
+			{
+				CvUnit const* pTargetUnit = GET_PLAYER(eTargetPlayer).getUnit(iData);
+				if (pTargetUnit != NULL)
+					eTargetUnit = pTargetUnit->getUnitType();
+			}
+		}
+		if (testSpyIntercepted(eTargetPlayer, true, kMission.getDifficultyMod(), "BEFORE_MISSION", eMission, iData, eTargetImprovement, eTargetRoute, eTargetUnit))
 		{
 			return false;
 		}
 
-		if (GET_PLAYER(getOwner()).doEspionageMission(eMission, eTargetPlayer,
-			plot(), iData, this))
+		CvPlot* const pMissionPlot = plot();
+		int iMissionCost = -1;
+		int iEPBefore = -1;
+		int iEffectValue = -1;
+		char const* szEffectKind = "-";
+		if (bLogEspionageMission)
 		{
+			CvCity* const pTargetCity = pMissionPlot->getPlotCity();
+			TeamTypes const eTargetTeam = TEAMID(eTargetPlayer);
+			iMissionCost = GET_PLAYER(getOwner()).getEspionageMissionCost(eMission, eTargetPlayer, pMissionPlot, iData, this);
+			iEPBefore = GET_TEAM(getTeam()).getEspionagePointsAgainstTeam(eTargetTeam);
+			if (kMission.getDestroyProductionCostFactor() > 0 && pTargetCity != NULL)
+			{
+				iEffectValue = pTargetCity->getProduction();
+				szEffectKind = "productionDestroyed";
+			}
+			else if (kMission.getStolenGoldPercent() > 0 && pTargetCity != NULL)
+			{
+				iEffectValue = GET_PLAYER(getOwner()).getEspionageGoldQuantity(eMission, eTargetPlayer, pTargetCity);
+				szEffectKind = "goldStolen";
+			}
+			else if (kMission.getCityInsertCultureCostFactor() > 0 && pTargetCity != NULL)
+			{
+				iEffectValue = pTargetCity->cultureTimes100InsertedByMission(eMission);
+				szEffectKind = "cultureInsertedX100";
+			}
+			else if (kMission.getCityPoisonWaterCounter() > 0)
+			{
+				iEffectValue = kMission.getCityPoisonWaterCounter();
+				szEffectKind = "poisonTurns";
+			}
+			else if (kMission.getCityUnhappinessCounter() > 0)
+			{
+				iEffectValue = kMission.getCityUnhappinessCounter();
+				szEffectKind = "unhappinessTurns";
+			}
+			else if (kMission.getCityRevoltCounter() > 0)
+			{
+				iEffectValue = kMission.getCityRevoltCounter();
+				szEffectKind = "revoltTurns";
+			}
+			else if (kMission.getPlayerAnarchyCounter() > 0)
+			{
+				iEffectValue = kMission.getPlayerAnarchyCounter() * GC.getInfo(GC.getGame().getGameSpeedType()).getAnarchyPercent() / 100;
+				szEffectKind = "anarchyTurns";
+			}
+			else if (kMission.getCounterespionageNumTurns() > 0)
+			{
+				iEffectValue = kMission.getCounterespionageNumTurns() * GC.getInfo(GC.getGame().getGameSpeedType()).getResearchPercent() / 100;
+				szEffectKind = "counterespionageTurns";
+			}
+		}
+		if (GET_PLAYER(getOwner()).doEspionageMission(eMission, eTargetPlayer,
+			pMissionPlot, iData, this))
+		{
+			if (bLogEspionageMission)
+			{
+				logSASGameRecordEspionageMission(this, eMission, eTargetPlayer, pMissionPlot, iData, iMissionCost, iEPBefore,
+						GET_TEAM(getTeam()).getEspionagePointsAgainstTeam(TEAMID(eTargetPlayer)), eTargetImprovement, eTargetRoute, eTargetUnit, iEffectValue, szEffectKind);
+			}
 			if (getPlot().isActiveVisible(false))
 				NotifyEntity(MISSION_ESPIONAGE);
 
-			if (!testSpyIntercepted(eTargetPlayer, true, GC.getDefineINT("ESPIONAGE_SPY_MISSION_ESCAPE_MOD")))
+			if (!testSpyIntercepted(eTargetPlayer, true, GC.getDefineINT("ESPIONAGE_SPY_MISSION_ESCAPE_MOD"), "AFTER_MISSION", eMission, iData, eTargetImprovement, eTargetRoute, eTargetUnit))
 			{
 				setFortifyTurns(0);
 				setMadeAttack(true);
@@ -6190,14 +6266,15 @@ bool CvUnit::espionage(EspionageMissionTypes eMission, int iData)
 	return false;
 }
 
-bool CvUnit::testSpyIntercepted(PlayerTypes eTargetPlayer, bool bMission, int iModifier)
+// <!-- custom: Mission/target arguments are recorder provenance only; interception chance, RNG order, messages, diplomatic memory and kill behavior remain unchanged. (ChatGPT-5.6-Sol) -->
+bool CvUnit::testSpyIntercepted(PlayerTypes eTargetPlayer, bool bMission, int iModifier, char const* szSummaryPhase, EspionageMissionTypes eMission, int iData, ImprovementTypes eTargetImprovement, RouteTypes eTargetRoute, UnitTypes eTargetUnit)
 {
 	CvPlayer& kTargetPlayer = GET_PLAYER(eTargetPlayer);
 	if (kTargetPlayer.isBarbarian())
 		return false;
 
-	if (!SyncRandSuccess10000((100 + iModifier) *
-		getSpyInterceptPercent(kTargetPlayer.getTeam(), bMission)))
+	int const iInterceptChanceX100 = (100 + iModifier) * getSpyInterceptPercent(kTargetPlayer.getTeam(), bMission);
+	if (!SyncRandSuccess10000(iInterceptChanceX100))
 	{
 		return false;
 	}
@@ -6253,7 +6330,10 @@ bool CvUnit::testSpyIntercepted(PlayerTypes eTargetPlayer, bool bMission, int iM
 	if (getPlot().isActiveVisible(false))
 		NotifyEntity(MISSION_SURRENDER);
 	if (gGameRecordLogLevel >= 2)
+	{
+		logSASGameRecordSpyIntercepted(this, eTargetPlayer, szSummaryPhase, iModifier, iInterceptChanceX100, eMission, iData, eTargetImprovement, eTargetRoute, eTargetUnit);
 		logSASGameRecordGreatPersonDied(this, eTargetPlayer, "SPY_INTERCEPTED");
+	}
 
 	kill(true);
 	return true;
