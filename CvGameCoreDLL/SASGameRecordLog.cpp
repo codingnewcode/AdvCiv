@@ -835,6 +835,16 @@ static const char* getSASGameRecordTechType(TechTypes eTech)
 	return (eTech == NO_TECH ? "-" : GC.getInfo(eTech).getType());
 }
 
+static const char* getSASGameRecordEventTriggerType(EventTriggerTypes eTrigger)
+{
+	return (eTrigger == NO_EVENTTRIGGER ? "-" : GC.getInfo(eTrigger).getType());
+}
+
+static const char* getSASGameRecordEventType(EventTypes eEvent)
+{
+	return (eEvent == NO_EVENT ? "-" : GC.getInfo(eEvent).getType());
+}
+
 static const char* getSASGameRecordGoodyType(GoodyTypes eGoody)
 {
 	return (eGoody == NO_GOODY ? "-" : GC.getInfo(eGoody).getType());
@@ -5423,6 +5433,263 @@ void logSASGameRecordGoodyNoOutcome(PlayerTypes ePlayer, CvPlot const* pPlot, Cv
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=GOODY_NO_OUTCOME player=%d team=%d x=%d y=%d area=%d triggerUnitId=%d triggerUnit=%s followup=%d taboo=%s attempts=%d",
 			GC.getGame().getGameTurn(), ePlayer, GET_PLAYER(ePlayer).getTeam(), pPlot->getX(), pPlot->getY(), pPlot->getArea().getID(),
 			pTriggerUnit == NULL ? -1 : pTriggerUnit->getID(), pTriggerUnit == NULL ? "-" : getSASGameRecordUnitType(pTriggerUnit->getUnitType()), eTaboo != NO_GOODY, getSASGameRecordGoodyType(eTaboo), iAttempts);
+}
+
+
+// <!-- custom: Random-event lifecycle rows summarize only broad EventInfo effect families and gameplay-relevant Python hooks, not speculative candidate weights or AI values. Callers pre-gate this diagnostic work at level 2+. (ChatGPT-5.6-Sol) -->
+static bool hasSASGameRecordRandomEventUnitLocalEffect(CvEventInfo const& kEvent)
+{
+	wchar const* szUnitNameKey = kEvent.getUnitNameKey();
+	return (kEvent.isDisbandUnit() || kEvent.getUnitExperience() != 0 || kEvent.getUnitImmobileTurns() > 0 || kEvent.getUnitPromotion() != NO_PROMOTION || (szUnitNameKey != NULL && szUnitNameKey[0] != L'\0'));
+}
+
+static CvString getSASGameRecordRandomEventEffects(CvEventInfo const& kEvent)
+{
+	CvString szEffects;
+	if (kEvent.getGold() != 0 || kEvent.getRandomGold() != 0 || kEvent.getTechCostPercent() != 0) appendSASGameRecordType(szEffects, "GOLD");
+	if (kEvent.getTechCostPercent() != 0) appendSASGameRecordType(szEffects, "TECH_COST");
+	if (kEvent.getEspionagePoints() != 0) appendSASGameRecordType(szEffects, "ESPIONAGE_POINTS");
+	if (kEvent.getTechPercent() != 0) appendSASGameRecordType(szEffects, "TECH_PROGRESS");
+	if (kEvent.isGoldenAge()) appendSASGameRecordType(szEffects, "GOLDEN_AGE");
+	if (kEvent.getFreeUnitSupport() != 0 || kEvent.getInflationModifier() != 0 || kEvent.getSpaceProductionModifier() != 0) appendSASGameRecordType(szEffects, "PLAYER_MODIFIER");
+	if (kEvent.isDeclareWar()) appendSASGameRecordType(szEffects, "DECLARE_WAR");
+	if (kEvent.getBonusGift() != NO_BONUS) appendSASGameRecordType(szEffects, "BONUS_GIFT");
+	if (kEvent.getHappy() != 0) appendSASGameRecordType(szEffects, "HAPPINESS");
+	if (kEvent.getHealth() != 0) appendSASGameRecordType(szEffects, "HEALTH");
+	if (kEvent.getHurryAnger() != 0 || kEvent.getHappyTurns() != 0) appendSASGameRecordType(szEffects, "TEMPORARY_MOOD");
+	if (kEvent.getFood() != 0 || kEvent.getFoodPercent() != 0) appendSASGameRecordType(szEffects, "FOOD");
+	if (kEvent.getPopulationChange() != 0) appendSASGameRecordType(szEffects, "POPULATION");
+	if (kEvent.getRevoltTurns() > 0) appendSASGameRecordType(szEffects, "REVOLT");
+	if (kEvent.getCulture() != 0) appendSASGameRecordType(szEffects, "CULTURE");
+	if (kEvent.getMaxPillage() > 0) appendSASGameRecordType(szEffects, "PILLAGE");
+	bool bFreeSpecialists = false;
+	FOR_EACH_ENUM(Specialist)
+	{
+		if (kEvent.getFreeSpecialistCount(eLoopSpecialist) != 0)
+		{
+			bFreeSpecialists = true;
+			break;
+		}
+	}
+	if (bFreeSpecialists) appendSASGameRecordType(szEffects, "FREE_SPECIALISTS");
+	if (kEvent.getUnitClass() != NO_UNITCLASS && kEvent.getNumUnits() > 0) appendSASGameRecordType(szEffects, "FREE_UNITS");
+	if (kEvent.getBuildingClass() != NO_BUILDINGCLASS && kEvent.getBuildingChange() != 0) appendSASGameRecordType(szEffects, "BUILDING_CHANGE");
+	if (kEvent.getBuildingYieldChange().isAnyNonDefault() || kEvent.getBuildingCommerceChange().isAnyNonDefault() ||
+		kEvent.getBuildingHappyChange().isAnyNonDefault() || kEvent.getBuildingHealthChange().isAnyNonDefault())
+	{
+		appendSASGameRecordType(szEffects, "BUILDING_MODIFIER");
+	}
+	bool bPlotYield = false;
+	FOR_EACH_ENUM(Yield)
+	{
+		if (kEvent.getPlotExtraYield(eLoopYield) != 0)
+		{
+			bPlotYield = true;
+			break;
+		}
+	}
+	if (kEvent.getFeatureChange() != 0 || kEvent.getImprovementChange() != 0 || kEvent.getBonusChange() != 0 || kEvent.getRouteChange() != 0 || bPlotYield) appendSASGameRecordType(szEffects, "PLOT_CHANGE");
+	bool bFreePromotions = false;
+	FOR_EACH_ENUM(UnitCombat)
+	{
+		if (kEvent.getUnitCombatPromotion(eLoopUnitCombat) != NO_PROMOTION)
+		{
+			bFreePromotions = true;
+			break;
+		}
+	}
+	if (!bFreePromotions)
+	{
+		FOR_EACH_ENUM(UnitClass)
+		{
+			if (kEvent.getUnitClassPromotion(eLoopUnitClass) != NO_PROMOTION)
+			{
+				bFreePromotions = true;
+				break;
+			}
+		}
+	}
+	if (bFreePromotions) appendSASGameRecordType(szEffects, "FREE_PROMOTION");
+	if (kEvent.getBonusRevealed() != NO_BONUS) appendSASGameRecordType(szEffects, "BONUS_REVEAL");
+	if (kEvent.getConvertOwnCities() > 0 || kEvent.getConvertOtherCities() > 0) appendSASGameRecordType(szEffects, "RELIGION_SPREAD");
+	if (kEvent.getOurAttitudeModifier() != 0 || kEvent.getAttitudeModifier() != 0 || kEvent.getTheirEnemyAttitudeModifier() != 0) appendSASGameRecordType(szEffects, "DIPLO_ATTITUDE");
+	if (hasSASGameRecordRandomEventUnitLocalEffect(kEvent)) appendSASGameRecordType(szEffects, "UNIT_LOCAL");
+	bool bFollowup = false;
+	bool bClear = false;
+	FOR_EACH_ENUM(Event)
+	{
+		if (kEvent.getAdditionalEventChance(eLoopEvent) > 0 || kEvent.getAdditionalEventTime(eLoopEvent) != 0) bFollowup = true;
+		if (kEvent.getClearEventChance(eLoopEvent) > 0) bClear = true;
+	}
+	if (bFollowup) appendSASGameRecordType(szEffects, "FOLLOWUP_EVENT");
+	if (bClear) appendSASGameRecordType(szEffects, "CLEAR_EVENT");
+	char const* szPythonCallback = kEvent.getPythonCallback();
+	if (szPythonCallback != NULL && szPythonCallback[0] != '\0') appendSASGameRecordType(szEffects, "PYTHON_CALLBACK");
+	return getSASDiagnosticOrDash(szEffects);
+}
+
+static char const* getSASGameRecordRandomEventNormalSelectionMode(CvEventTriggerInfo const& kTrigger)
+{
+	int const iWeight = kTrigger.getProbability();
+	if (iWeight == -1) return "FORCED_WHEN_ELIGIBLE";
+	if (iWeight < -1) return "DIRECT_OR_SPECIAL_ONLY";
+	if (iWeight == 0) return "ZERO_WEIGHT_DIRECT_ONLY";
+	return "WEIGHTED_RANDOM";
+}
+
+static CvString getSASGameRecordRandomEventTriggerPrereqs(CvEventTriggerInfo const& kTrigger)
+{
+	CvString szPrereqs;
+	for (int i = 0; i < kTrigger.getNumPrereqEvents(); i++)
+		appendSASGameRecordType(szPrereqs, getSASGameRecordEventType((EventTypes)kTrigger.getPrereqEvent(i)));
+	return getSASDiagnosticOrDash(szPrereqs);
+}
+
+static CvString getSASGameRecordRandomEventTriggerPythonHooks(CvEventTriggerInfo const& kTrigger)
+{
+	CvString szHooks;
+	if (kTrigger.getPythonCallback() != NULL && kTrigger.getPythonCallback()[0] != '\0') appendSASGameRecordType(szHooks, "CALLBACK");
+	if (kTrigger.getPythonCanDo() != NULL && kTrigger.getPythonCanDo()[0] != '\0') appendSASGameRecordType(szHooks, "CAN_DO");
+	if (kTrigger.getPythonCanDoCity() != NULL && kTrigger.getPythonCanDoCity()[0] != '\0') appendSASGameRecordType(szHooks, "CAN_DO_CITY");
+	if (kTrigger.getPythonCanDoUnit() != NULL && kTrigger.getPythonCanDoUnit()[0] != '\0') appendSASGameRecordType(szHooks, "CAN_DO_UNIT");
+	return getSASDiagnosticOrDash(szHooks);
+}
+
+static CvString getSASGameRecordRandomEventPythonHooks(CvEventInfo const& kEvent)
+{
+	CvString szHooks;
+	if (kEvent.getPythonCallback() != NULL && kEvent.getPythonCallback()[0] != '\0') appendSASGameRecordType(szHooks, "CALLBACK");
+	if (kEvent.getPythonCanDo() != NULL && kEvent.getPythonCanDo()[0] != '\0') appendSASGameRecordType(szHooks, "CAN_DO");
+	if (kEvent.getPythonExpireCheck() != NULL && kEvent.getPythonExpireCheck()[0] != '\0') appendSASGameRecordType(szHooks, "EXPIRE_CHECK");
+	return getSASDiagnosticOrDash(szHooks);
+}
+
+struct SASGameRecordRandomEventTargets
+{
+	SASGameRecordRandomEventTargets(CvPlayer const& kPlayer, EventTriggeredData const* pData, EventTypes eEvent)
+	: iCityId(-1), iCityExists(-1), eOtherPlayer(NO_PLAYER), iOtherPlayerAlive(-1), iOtherCityId(-1), iOtherCityExists(-1),
+	  iUnitId(-1), iUnitExists(-1), iUnitCanApply(-1), szUnit("-"), iPlotX(INVALID_PLOT_COORD), iPlotY(INVALID_PLOT_COORD), iPlotExists(-1), iPlotOwner(NO_PLAYER),
+	  eReligion(NO_RELIGION), eCorporation(NO_CORPORATION), eBuilding(NO_BUILDING), iBuildingPresentInCity(-1)
+	{
+		if (pData == NULL) return;
+		iCityId = pData->m_iCityId;
+		if (iCityId >= 0) iCityExists = (kPlayer.getCity(iCityId) != NULL);
+		eOtherPlayer = pData->m_eOtherPlayer;
+		if (eOtherPlayer != NO_PLAYER && eOtherPlayer >= 0 && eOtherPlayer < MAX_PLAYERS)
+		{
+			iOtherPlayerAlive = GET_PLAYER(eOtherPlayer).isAlive();
+			iOtherCityId = pData->m_iOtherPlayerCityId;
+			if (iOtherCityId >= 0) iOtherCityExists = (GET_PLAYER(eOtherPlayer).getCity(iOtherCityId) != NULL);
+		}
+		else iOtherCityId = pData->m_iOtherPlayerCityId;
+		iUnitId = pData->m_iUnitId;
+		bool const bHasEvent = (eEvent != NO_EVENT);
+		bool const bRequiresConcreteUnit = (bHasEvent && hasSASGameRecordRandomEventUnitLocalEffect(GC.getInfo(eEvent)));
+		if (iUnitId >= 0)
+		{
+			CvUnit const* pUnit = kPlayer.getUnit(iUnitId);
+			iUnitExists = (pUnit != NULL);
+			if (pUnit != NULL)
+			{
+				szUnit = getSASGameRecordUnitType(pUnit->getUnitType());
+				if (bHasEvent) iUnitCanApply = pUnit->canApplyEvent(eEvent);
+			}
+			else if (bHasEvent) iUnitCanApply = 0;
+		}
+		else if (bRequiresConcreteUnit)
+		{
+			iUnitExists = 0;
+			iUnitCanApply = 0;
+		}
+		iPlotX = pData->m_iPlotX;
+		iPlotY = pData->m_iPlotY;
+		if (iPlotX != INVALID_PLOT_COORD && iPlotY != INVALID_PLOT_COORD)
+		{
+			CvPlot const* pPlot = GC.getMap().plot(iPlotX, iPlotY);
+			iPlotExists = (pPlot != NULL);
+			if (pPlot != NULL) iPlotOwner = pPlot->getOwner();
+		}
+		eReligion = pData->m_eReligion;
+		eCorporation = pData->m_eCorporation;
+		eBuilding = pData->m_eBuilding;
+		if (eBuilding != NO_BUILDING)
+		{
+			CvCity const* pCity = (iCityId < 0 ? NULL : kPlayer.getCity(iCityId));
+			iBuildingPresentInCity = (pCity != NULL && pCity->getNumRealBuilding(eBuilding) > 0);
+		}
+	}
+	int iCityId;
+	int iCityExists;
+	PlayerTypes eOtherPlayer;
+	int iOtherPlayerAlive;
+	int iOtherCityId;
+	int iOtherCityExists;
+	int iUnitId;
+	int iUnitExists;
+	int iUnitCanApply;
+	char const* szUnit;
+	int iPlotX;
+	int iPlotY;
+	int iPlotExists;
+	PlayerTypes iPlotOwner;
+	ReligionTypes eReligion;
+	CorporationTypes eCorporation;
+	BuildingTypes eBuilding;
+	int iBuildingPresentInCity;
+};
+
+static char const* getSASGameRecordRandomEventApplyPath(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, bool bUpdateTrigger, int& iCountdownDueTurn)
+{
+	iCountdownDueTurn = -1;
+	if (!bUpdateTrigger) return "ADDITIONAL_IMMEDIATE";
+	EventTriggeredData const* pCountdown = kPlayer.getEventCountdown(eEvent);
+	if (pCountdown != NULL && pCountdown->m_iId == iTriggeredId && GC.getGame().getGameTurn() >= pCountdown->m_iTurn)
+	{
+		iCountdownDueTurn = pCountdown->m_iTurn;
+		return "ADDITIONAL_COUNTDOWN";
+	}
+	return "PRIMARY_REPLY_OR_DIRECT";
+}
+
+void logSASGameRecordRandomEventTriggered(CvPlayer const& kPlayer, EventTriggeredData const& kTriggeredData, char const* szDeliveryPath)
+{
+	CvEventTriggerInfo const& kTrigger = GC.getInfo(kTriggeredData.m_eTrigger);
+	SASGameRecordRandomEventTargets const kTargets(kPlayer, &kTriggeredData, NO_EVENT);
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_TRIGGERED turn=%d player=%d team=%d triggeredId=%d trigger=%s delivery=%s triggerTurn=%d normalSelectionMode=%s recurring=%d global=%d teamScope=%d singlePlayer=%d plotEvent=%d triggerFiredBeforeDelivery=%d prereqEvents=%s prereqEventCity=%d pythonHooks=%s cityId=%d cityExists=%d otherPlayer=%d otherPlayerAlive=%d otherCityId=%d otherCityExists=%d unitId=%d unitExists=%d unit=%s plot=%d,%d plotExists=%d plotOwner=%d religion=%s corporation=%s building=%s buildingPresentInCity=%d",
+			GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), kTriggeredData.m_iId, getSASGameRecordEventTriggerType(kTriggeredData.m_eTrigger), szDeliveryPath, kTriggeredData.m_iTurn, getSASGameRecordRandomEventNormalSelectionMode(kTrigger),
+			kTrigger.isRecurring(), kTrigger.isGlobal(), kTrigger.isTeam(), kTrigger.isSinglePlayer(), kTrigger.isPlotEventTrigger(), kPlayer.isTriggerFired(kTriggeredData.m_eTrigger), getSASGameRecordRandomEventTriggerPrereqs(kTrigger).GetCString(), kTrigger.isPrereqEventCity(), getSASGameRecordRandomEventTriggerPythonHooks(kTrigger).GetCString(),
+			kTargets.iCityId, kTargets.iCityExists, kTargets.eOtherPlayer, kTargets.iOtherPlayerAlive, kTargets.iOtherCityId, kTargets.iOtherCityExists,
+			kTargets.iUnitId, kTargets.iUnitExists, kTargets.szUnit, kTargets.iPlotX, kTargets.iPlotY, kTargets.iPlotExists, kTargets.iPlotOwner,
+			getSASGameRecordReligionType(kTargets.eReligion), getSASGameRecordCorporationType(kTargets.eCorporation), getSASGameRecordBuildingType(kTargets.eBuilding), kTargets.iBuildingPresentInCity);
+}
+
+void logSASGameRecordRandomEventNoSelection(CvPlayer const& kPlayer, EventTriggeredData const& kTriggeredData, char const* szResolution)
+{
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_NO_SELECTION turn=%d player=%d team=%d triggeredId=%d trigger=%s resolution=%s triggerTurn=%d ageTurns=%d",
+			GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), kTriggeredData.m_iId, getSASGameRecordEventTriggerType(kTriggeredData.m_eTrigger), szResolution,
+			kTriggeredData.m_iTurn, GC.getGame().getGameTurn() - kTriggeredData.m_iTurn);
+}
+
+// <!-- custom: Preserve Base AdvCiv 1.14's existing setTriggerFired-before-canDoEvent order. This row observes that exact transaction rather than importing mature AdvCiv-SAS's KI#810 gameplay repair. Specialized result rows can be added separately after the core lifecycle is established. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventApply(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, EventTriggeredData const* pTriggeredData, bool bUpdateTrigger, char const* szDisposition, int iCanDoEvent, int iTriggerFiredBefore, int iEventOccurredBefore)
+{
+	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	EventTriggerTypes const eTrigger = (pTriggeredData == NULL ? NO_EVENTTRIGGER : pTriggeredData->m_eTrigger);
+	CvEventTriggerInfo const* pTrigger = (eTrigger == NO_EVENTTRIGGER ? NULL : &GC.getInfo(eTrigger));
+	SASGameRecordRandomEventTargets const kTargets(kPlayer, pTriggeredData, eEvent);
+	int iCountdownDueTurn = -1;
+	char const* szApplyPath = getSASGameRecordRandomEventApplyPath(kPlayer, eEvent, iTriggeredId, bUpdateTrigger, iCountdownDueTurn);
+	int const iTriggerTurn = (pTriggeredData == NULL ? -1 : pTriggeredData->m_iTurn);
+	int const iReplyAgeTurns = (iTriggerTurn < 0 ? -1 : GC.getGame().getGameTurn() - iTriggerTurn);
+	int const iTriggerFiredAfter = (eTrigger == NO_EVENTTRIGGER ? -1 : kPlayer.isTriggerFired(eTrigger));
+	int const iEventOccurredAfter = (kPlayer.getEventOccured(eEvent) != NULL);
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_APPLY turn=%d player=%d team=%d triggeredId=%d trigger=%s event=%s applyPath=%s bUpdateTrigger=%d disposition=%s canDoEvent=%d triggerTurn=%d replyAgeTurns=%d countdownDueTurn=%d triggerNormalSelectionMode=%s triggerRecurring=%d triggerGlobal=%d triggerTeam=%d triggerSinglePlayer=%d triggerPlotEvent=%d triggerPrereqEvents=%s triggerPrereqEventCity=%d triggerPythonHooks=%s eventQuest=%d eventGlobal=%d eventTeam=%d eventCityEffect=%d eventOtherCityEffect=%d eventEffects=%s eventPythonHooks=%s triggerFiredBefore=%d triggerFiredAfter=%d eventOccurredBefore=%d eventOccurredAfter=%d requiresConcreteUnit=%d unitId=%d unitExists=%d unit=%s unitCanApply=%d cityId=%d cityExists=%d otherPlayer=%d otherPlayerAlive=%d otherCityId=%d otherCityExists=%d plot=%d,%d plotExists=%d plotOwner=%d religion=%s corporation=%s building=%s buildingPresentInCity=%d",
+			GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventTriggerType(eTrigger), getSASGameRecordEventType(eEvent), szApplyPath, bUpdateTrigger, szDisposition, iCanDoEvent,
+			iTriggerTurn, iReplyAgeTurns, iCountdownDueTurn, pTrigger == NULL ? "-" : getSASGameRecordRandomEventNormalSelectionMode(*pTrigger), pTrigger == NULL ? -1 : pTrigger->isRecurring(), pTrigger == NULL ? -1 : pTrigger->isGlobal(), pTrigger == NULL ? -1 : pTrigger->isTeam(), pTrigger == NULL ? -1 : pTrigger->isSinglePlayer(), pTrigger == NULL ? -1 : pTrigger->isPlotEventTrigger(),
+			pTrigger == NULL ? "-" : getSASGameRecordRandomEventTriggerPrereqs(*pTrigger).GetCString(), pTrigger == NULL ? -1 : pTrigger->isPrereqEventCity(), pTrigger == NULL ? "-" : getSASGameRecordRandomEventTriggerPythonHooks(*pTrigger).GetCString(),
+			kEvent.isQuest(), kEvent.isGlobal(), kEvent.isTeam(), kEvent.isCityEffect(), kEvent.isOtherPlayerCityEffect(), getSASGameRecordRandomEventEffects(kEvent).GetCString(), getSASGameRecordRandomEventPythonHooks(kEvent).GetCString(), iTriggerFiredBefore, iTriggerFiredAfter, iEventOccurredBefore, iEventOccurredAfter, hasSASGameRecordRandomEventUnitLocalEffect(kEvent),
+			kTargets.iUnitId, kTargets.iUnitExists, kTargets.szUnit, kTargets.iUnitCanApply, kTargets.iCityId, kTargets.iCityExists, kTargets.eOtherPlayer, kTargets.iOtherPlayerAlive, kTargets.iOtherCityId, kTargets.iOtherCityExists,
+			kTargets.iPlotX, kTargets.iPlotY, kTargets.iPlotExists, kTargets.iPlotOwner, getSASGameRecordReligionType(kTargets.eReligion), getSASGameRecordCorporationType(kTargets.eCorporation), getSASGameRecordBuildingType(kTargets.eBuilding), kTargets.iBuildingPresentInCity);
 }
 
 // <!-- custom: Per-war aggregate accounting and the final all-purpose statistics row remain deferred until the remaining combat/city/unit action families are complete. (ChatGPT-5.6-Sol) -->

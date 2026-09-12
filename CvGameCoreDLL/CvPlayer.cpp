@@ -16169,27 +16169,35 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 {
 	FAssert(eEvent != NO_EVENT);
 
+	bool const bLogRandomEvent = (gGameRecordLogLevel >= 2);
 	EventTriggeredData* pTriggeredData = getEventTriggered(iEventTriggeredId);
+	int const iEventOccurredBefore = (bLogRandomEvent ? (getEventOccured(eEvent) != NULL) : -1);
 
 	if (pTriggeredData == NULL)
 	{
+		if (bLogRandomEvent) logSASGameRecordRandomEventApply(*this, eEvent, iEventTriggeredId, NULL, bUpdateTrigger, "REJECTED_MISSING_TRIGGER_DATA", -1, -1, iEventOccurredBefore);
 		deleteEventTriggered(iEventTriggeredId);
 		return;
 	}
 
+	int const iTriggerFiredBefore = (bLogRandomEvent ? isTriggerFired(pTriggeredData->m_eTrigger) : -1);
+	// <!-- custom: Keep Base AdvCiv 1.14's existing trigger-fired ordering unchanged; mature AdvCiv-SAS's KI#810 repair is deliberately not part of this telemetry port. (ChatGPT-5.6-Sol) -->
 	if (bUpdateTrigger)
 	{
 		setTriggerFired(*pTriggeredData, true);
 	}
 
-	if (!canDoEvent(eEvent, *pTriggeredData))
+	bool const bCanDoEvent = canDoEvent(eEvent, *pTriggeredData);
+	if (!bCanDoEvent)
 	{
+		if (bLogRandomEvent) logSASGameRecordRandomEventApply(*this, eEvent, iEventTriggeredId, pTriggeredData, bUpdateTrigger, "REJECTED_CAN_DO", 0, iTriggerFiredBefore, iEventOccurredBefore);
 		if (bUpdateTrigger)
 			deleteEventTriggered(iEventTriggeredId);
 		return;
 	}
 
 	setEventOccured(eEvent, *pTriggeredData);
+	if (bLogRandomEvent) logSASGameRecordRandomEventApply(*this, eEvent, iEventTriggeredId, pTriggeredData, bUpdateTrigger, "ACCEPTED", 1, iTriggerFiredBefore, iEventOccurredBefore);
 
 	CvEventInfo& kEvent = GC.getInfo(eEvent);
 	CvCity* pCity =	getCity(pTriggeredData->m_iCityId);
@@ -17121,6 +17129,8 @@ void CvPlayer::trigger(EventTriggerTypes eTrigger)
 
 void CvPlayer::trigger(const EventTriggeredData& kData)
 {
+	// <!-- custom: Record only concrete trigger instances that reach the real delivery boundary; candidate trigger weights and AI event values remain intentionally absent. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordRandomEventTriggered(*this, kData, isHuman() ? "HUMAN_POPUP" : "AI_IMMEDIATE");
 	if (isHuman())
 	{
 		CvPopupInfo* pInfo = new CvPopupInfo(BUTTONPOPUP_EVENT, kData.getID());
@@ -17131,6 +17141,7 @@ void CvPlayer::trigger(const EventTriggeredData& kData)
 		EventTypes eEvent = AI().AI_chooseEvent(kData.getID());
 		if (eEvent != NO_EVENT)
 			applyEvent(eEvent, kData.getID());
+		else if (gGameRecordLogLevel >= 2) logSASGameRecordRandomEventNoSelection(*this, kData, "AI_NO_EVENT_SELECTED");
 	}
 }
 
