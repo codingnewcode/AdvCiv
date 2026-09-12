@@ -16546,8 +16546,16 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 						pUnitCity = getCapital();
 					if (pUnitCity != NULL)
 					{
+						int iUnitsCreated = 0;
 						for (int i = 0; i < kEvent.getNumUnits(); i++)
-							initUnit(eUnit, pUnitCity->getX(), pUnitCity->getY());
+						{
+							CvUnit* pCreatedUnit = initUnit(eUnit, pUnitCity->getX(), pUnitCity->getY());
+							if (bLogRandomEvent && pCreatedUnit != NULL)
+								iUnitsCreated++;
+						}
+						// <!-- custom: Event-created free units bypass ordinary city production, so preserve the realized resolved unit type/count and spawn location without adding another unit creation scan or changing initUnit order. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+						if (bLogRandomEvent && kEvent.getNumUnits() > 0)
+							logSASGameRecordRandomEventFreeUnitsResult(getID(), getID(), eEvent, iEventTriggeredId, eUnitClass, eUnit, kEvent.getNumUnits(), iUnitsCreated, pUnitCity);
 					}
 				}
 			}

@@ -5956,6 +5956,16 @@ void logSASGameRecordRandomEventPlayerResult(CvPlayer const& kPlayer, EventTypes
 			getSASGameRecordBonusType(kAfter.eBonusRevealed != NO_BONUS ? kAfter.eBonusRevealed : kBefore.eBonusRevealed), kBefore.iForceRevealedBonus, kAfter.iForceRevealedBonus);
 }
 
+// <!-- custom: EventInfos can create civilization-specific free units directly rather than through city production.
+// Record the already resolved unit class/type, requested versus successfully created count, and actual spawn city/location; no extra unit construction or scan is performed. (ChatGPT-5.6-Sol + GPT-5.6-Sol) -->
+void logSASGameRecordRandomEventFreeUnitsResult(PlayerTypes ePlayer, PlayerTypes eAffectedPlayer, EventTypes eEvent, int iTriggeredId, UnitClassTypes eUnitClass, UnitTypes eUnit, int iRequestedCount, int iCreatedCount, CvCity const* pSpawnCity)
+{
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_FREE_UNITS_RESULT turn=%d player=%d team=%d affectedPlayer=%d triggeredId=%d event=%s unitClass=%s unit=%s requested=%d created=%d cityId=%d plot=%d,%d",
+			GC.getGame().getGameTurn(), ePlayer, (ePlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(ePlayer).getTeam()), eAffectedPlayer, iTriggeredId, getSASGameRecordEventType(eEvent),
+			eUnitClass == NO_UNITCLASS ? "-" : GC.getInfo(eUnitClass).getType(), getSASGameRecordUnitType(eUnit), iRequestedCount, iCreatedCount,
+			pSpawnCity == NULL ? -1 : pSpawnCity->getID(), pSpawnCity == NULL ? INVALID_PLOT_COORD : pSpawnCity->getX(), pSpawnCity == NULL ? INVALID_PLOT_COORD : pSpawnCity->getY());
+}
+
 void logSASGameRecordRandomEventOccurrenceCleared(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eClearedEvent, int iTriggeredId, int iClearChance, char const* szScope, TeamTypes eScopeTeam, int iScopePlayerSlots, int iScopeEverAlivePlayers, int iClearedOccurrences)
 {
 	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_OCCURRENCE_CLEARED turn=%d player=%d team=%d triggeredId=%d sourceEvent=%s clearedEvent=%s clearChance=%d scope=%s scopeTeam=%d scopePlayerSlots=%d scopeEverAlivePlayers=%d clearedOccurrences=%d",
