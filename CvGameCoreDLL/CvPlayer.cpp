@@ -16613,12 +16613,24 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				kEvent.getUnitCombatPromotion(eLoopUnitCombat);
 		if (eEventPromo == NO_PROMOTION)
 			continue;
+		int const iSASFreePromotionBefore = (bLogRandomEvent ? isFreePromotion(eLoopUnitCombat, eEventPromo) : -1);
+		int iSASExistingUnitsNewlyPromoted = 0;
 		FOR_EACH_UNIT_VAR(pLoopUnit, *this)
 		{
 			if (pLoopUnit->getUnitCombatType() == eLoopUnitCombat)
+			{
+				bool const bSASHadPromotion = (bLogRandomEvent ? pLoopUnit->isHasPromotion(eEventPromo) : false);
 				pLoopUnit->setHasPromotion(eEventPromo, true);
+				if (bLogRandomEvent && !bSASHadPromotion && pLoopUnit->isHasPromotion(eEventPromo)) iSASExistingUnitsNewlyPromoted++;
+			}
 		}
 		setFreePromotion(eLoopUnitCombat, eEventPromo, true);
+		if (bLogRandomEvent)
+		{
+			int const iSASFreePromotionAfter = isFreePromotion(eLoopUnitCombat, eEventPromo);
+			if (iSASExistingUnitsNewlyPromoted > 0 || iSASFreePromotionBefore != iSASFreePromotionAfter)
+				logSASGameRecordRandomEventFreePromotionResult(*this, eEvent, iEventTriggeredId, "UNIT_COMBAT", eLoopUnitCombat, eEventPromo, iSASExistingUnitsNewlyPromoted, iSASFreePromotionBefore, iSASFreePromotionAfter);
+		}
 	}
 	FOR_EACH_ENUM(UnitClass)
 	{
@@ -16626,12 +16638,24 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				kEvent.getUnitClassPromotion(eLoopUnitClass);
 		if (eEventPromo == NO_PROMOTION)
 			continue;
+		int const iSASFreePromotionBefore = (bLogRandomEvent ? isFreePromotion(eLoopUnitClass, eEventPromo) : -1);
+		int iSASExistingUnitsNewlyPromoted = 0;
 		FOR_EACH_UNIT_VAR(pLoopUnit, *this)
 		{
 			if (pLoopUnit->getUnitClassType() == eLoopUnitClass)
+			{
+				bool const bSASHadPromotion = (bLogRandomEvent ? pLoopUnit->isHasPromotion(eEventPromo) : false);
 				pLoopUnit->setHasPromotion(eEventPromo, true);
+				if (bLogRandomEvent && !bSASHadPromotion && pLoopUnit->isHasPromotion(eEventPromo)) iSASExistingUnitsNewlyPromoted++;
+			}
 		}
 		setFreePromotion(eLoopUnitClass, eEventPromo, true);
+		if (bLogRandomEvent)
+		{
+			int const iSASFreePromotionAfter = isFreePromotion(eLoopUnitClass, eEventPromo);
+			if (iSASExistingUnitsNewlyPromoted > 0 || iSASFreePromotionBefore != iSASFreePromotionAfter)
+				logSASGameRecordRandomEventFreePromotionResult(*this, eEvent, iEventTriggeredId, "UNIT_CLASS", eLoopUnitClass, eEventPromo, iSASExistingUnitsNewlyPromoted, iSASFreePromotionBefore, iSASFreePromotionAfter);
+		}
 	}
 	if (kEvent.getBonusRevealed() != NO_BONUS)
 	{
