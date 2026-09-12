@@ -3593,6 +3593,11 @@ void CvPlayer::contact(PlayerTypes ePlayer)
 void CvPlayer::handleDiploEvent(DiploEventTypes eDiploEvent, PlayerTypes ePlayer, int iData1, int iData2)
 {
 	FAssertMsg(ePlayer != getID(), "shouldn't call this function on ourselves");
+	// <!-- custom: Capture only factual resolved diplomacy interactions at level 2+; ordinary internal diplomacy processing remains untouched. (ChatGPT-5.6-Sol) -->
+	bool const bLogResolvedSASDiplo = (gGameRecordLogLevel >= 2 && isSASGameRecordResolvedDiploInteraction(eDiploEvent));
+	SASGameRecordDiploRelationState kSASDiploBefore;
+	if (bLogResolvedSASDiplo)
+		captureSASGameRecordDiploRelationState(getID(), ePlayer, kSASDiploBefore);
 
 	switch (eDiploEvent)
 	{
@@ -3785,6 +3790,13 @@ void CvPlayer::handleDiploEvent(DiploEventTypes eDiploEvent, PlayerTypes ePlayer
 	default:
 		FAssert(false);
 		break;
+	}
+
+	if (bLogResolvedSASDiplo)
+	{
+		SASGameRecordDiploRelationState kSASDiploAfter;
+		captureSASGameRecordDiploRelationState(getID(), ePlayer, kSASDiploAfter);
+		logSASGameRecordResolvedDiploInteraction(getID(), eDiploEvent, ePlayer, iData1, kSASDiploBefore, kSASDiploAfter);
 	}
 }
 

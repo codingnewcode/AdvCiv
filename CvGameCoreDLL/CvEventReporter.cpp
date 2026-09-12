@@ -437,6 +437,9 @@ void CvEventReporter::playerChangeStateReligion(PlayerTypes ePlayerID, ReligionT
 
 void CvEventReporter::playerGoldTrade(PlayerTypes eFromPlayer, PlayerTypes eToPlayer, int iAmount)
 {
+	// <!-- custom: This existing callback is the authoritative realized player-to-player gold-transfer boundary; preserve the exact transfer before Python observers run. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 3)
+		logSASGameRecordPlayerGoldTrade(eFromPlayer, eToPlayer, iAmount);
 	m_kPythonEventMgr.reportPlayerGoldTrade(eFromPlayer, eToPlayer, iAmount);
 }
 

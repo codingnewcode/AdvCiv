@@ -166,6 +166,21 @@ void logSASGameRecordPlayerAliveChanged(PlayerTypes ePlayer, bool bRevived);
 struct VoteTriggeredData;
 void logSASGameRecordVoteTriggered(VoteTriggeredData const* pVoteTriggered);
 void logSASGameRecordVoteResult(VoteTriggeredData const* pVoteTriggered, bool bThresholdPassed, bool bPassed, bool bCancelled, qword uiDefaultedAbstain, qword uiDefiers, qword uiEndorsers);
+// <!-- custom: Resolved diplomacy rows capture factual help/demand/religion/civic/war/trade-request outcomes and their immediate relationship-state deltas; direct gold transfers use the existing EventReporter boundary. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordDiploRelationState
+{
+	int iActorAttitude;
+	int iOtherAttitude;
+	int aiActorMemory[NUM_MEMORY_TYPES];
+	int aiOtherMemory[NUM_MEMORY_TYPES];
+	WarPlanTypes eActorWarPlan;
+	WarPlanTypes eOtherWarPlan;
+	bool bAtWar;
+};
+bool isSASGameRecordResolvedDiploInteraction(DiploEventTypes eDiploEvent);
+void captureSASGameRecordDiploRelationState(PlayerTypes eActor, PlayerTypes eOther, SASGameRecordDiploRelationState& kState);
+void logSASGameRecordResolvedDiploInteraction(PlayerTypes eActor, DiploEventTypes eDiploEvent, PlayerTypes eOther, int iData1, SASGameRecordDiploRelationState const& kBefore, SASGameRecordDiploRelationState const& kAfter);
+void logSASGameRecordPlayerGoldTrade(PlayerTypes eFromPlayer, PlayerTypes eToPlayer, int iAmount);
 // <!-- custom: Recorder-only control-session actions make AI Auto Play, active-player handoffs and successful Debug-mode toggles explicit without changing Base AdvCiv's autoplay API/signatures. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordAutoPlayChanged(int iOldValue, int iNewValue, bool bChangePlayerStatus);
 void logSASGameRecordActivePlayerChanged(PlayerTypes eOldPlayer, PlayerTypes eNewPlayer);
