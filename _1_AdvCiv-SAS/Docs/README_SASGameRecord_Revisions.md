@@ -40,6 +40,11 @@ Because this numbering is reconstructed after the fact, the descriptions are con
 
 ## History (latest first)
 
+### Revision 73 - SAS practical 6446
+
+- **Date:** 2026-09-12
+- **Change:** Canonicalized invalid `TEAM_MET` first-contact coordinate pairs as `-1,-1` instead of serializing values that are undefined when their validity flags are false; ordinary valid coordinates and gameplay behavior are unchanged.
+
 ### Revision 72 - SAS practical 6443
 
 - **Date:** 2026-09-10
