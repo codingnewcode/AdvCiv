@@ -1627,6 +1627,11 @@ AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Ad
 		<DefineName>SAS_BBAI_MILITARY_PRODUCTION_LOG_LEVEL</DefineName>
 		<iDefineIntVal>0</iDefineIntVal>
 	</Define>
+	<!-- custom: Dedicated spaceship-production diagnostics. Level 2 records reevaluation/release/final-target transitions for already-invested spaceship projects plus the best project selected by each city; level 3 also records every spaceship candidate's availability, city-fit calculation, and the space-specific value before/after victory-stage, war-area, and production-capacity adjustments. This is diagnostic-only and adds no RNG calls. (GPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_BBAI_SPACE_PRODUCTION_LOG_LEVEL</DefineName>
+		<iDefineIntVal>3</iDefineIntVal>
+	</Define>
 	<!-- custom: New dedicated citizen-assignment diagnostics following the shared log-level classification above. Level 3 notably compares final worked/unworked jobs contextually and also reports simple 3F + 2H + 1C raw-yield disagreements, without enabling broad city logs. (GPT-5.5) -->
 	<Define>
 		<DefineName>SAS_BBAI_CITIZEN_LOG_LEVEL</DefineName>
@@ -2704,6 +2709,28 @@ AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Ad
 		<iDefineIntVal>50</iDefineIntVal>
 	</Define>
 
+
+
+	<!-- custom: Keep an already-invested minimum-required spaceship component in production from SPACE3 onward when the city is not in immediate danger and the component is either near-term or already heavily invested with a still-reasonable remaining time. Ordinary Base AdvCiv/K-Mod city reevaluation can otherwise park launch-gating projects for unrelated production after substantial investment. When several cities simultaneously build the same component, the DLL ranks eligible copies by remaining turns, stored production, then stable city identity and protects only as many as the still-missing minimum launch requirement; optional duplicates remain fully flexible. 1 enables the optimization; 0 restores inherited project reevaluation. See KI#184.3. (ChatGPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_AI_CHOOSE_PRODUCTION_SPACE3_MINIMUM_SPACESHIP_COMPONENT_CONTINUITY_OPTIMIZE</DefineName>
+		<iDefineIntVal>1</iDefineIntVal>
+	</Define>
+	<!-- custom: Near-term continuity maximum, expressed in Normal-speed-equivalent project turns and scaled by CreatePercent. Default 25 covers the motivating Docking Bay interruptions at 18, 15, 7 and 5 turns and the reproduced Stasis Chamber interruption at 22 turns without locking a fresh poor 30-40-turn assignment. 0 disables only this near-term gate; the heavier-investment gate below can still apply. See KI#184.3. (ChatGPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_AI_CHOOSE_PRODUCTION_SPACE3_MINIMUM_SPACESHIP_COMPONENT_CONTINUITY_MAX_TURNS_NORMAL_GAMESPEED</DefineName>
+		<iDefineIntVal>25</iDefineIntVal>
+	</Define>
+	<!-- custom: Minimum completion percentage for the heavier-investment continuity fallback. It only applies through its separate maximum-turn gate below, so a fresh slow project remains free to relocate. Default 40 is evidence-driven: a refined replay still parked Rome's mandatory Stasis Chamber at 44%-49% completion and 32-33 turns remaining for an optional Thruster and then a 2-turn Jail. 0 removes the completion-percentage requirement; 100 requires a fully stored project and therefore practically disables this fallback before completion. See KI#184.3. (ChatGPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_AI_CHOOSE_PRODUCTION_SPACE3_MINIMUM_SPACESHIP_COMPONENT_CONTINUITY_HEAVY_INVESTMENT_MIN_COMPLETION_PERCENT</DefineName>
+		<iDefineIntVal>40</iDefineIntVal>
+	</Define>
+	<!-- custom: Maximum remaining build time, expressed in Normal-speed-equivalent project turns and scaled by CreatePercent, for the heavier-investment fallback above. Default 40 protects substantially invested launch-gating components just outside the 25-turn near-term gate while still allowing genuinely slow assignments to be reconsidered. 0 disables the heavier-investment fallback. See KI#184.3. (ChatGPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_AI_CHOOSE_PRODUCTION_SPACE3_MINIMUM_SPACESHIP_COMPONENT_CONTINUITY_HEAVY_INVESTMENT_MAX_TURNS_NORMAL_GAMESPEED</DefineName>
+		<iDefineIntVal>40</iDefineIntVal>
+	</Define>
 
 
 	<!-- custom: How strongly normal AI build-unit probability reduces the early "short-circuit 1" base building chance while the normal +15 military-spending allowance still permits more units. 100 means BuildUnitProb 80 reduces this gate's base odds by 80%; the inherited production-progress preference inside AI_chooseBuilding remains unchanged, and 0 restores the Base AdvCiv/K-Mod short-circuit 1 odds. See KI#197.7. (GPT-5.6 Thinking) -->

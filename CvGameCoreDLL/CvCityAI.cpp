@@ -15,6 +15,94 @@
 #include "BBAILog.h" // BETTER_BTS_AI_MOD, AI logging, 10/02/09, jdog5000
 #include "SASGameRecordLog.h" // <!-- custom: Level-2+ AI production-churn history brackets AI_chooseProduction without adding recorder schema to its decision branches. (ChatGPT-5.6-Sol) -->
 
+// <!-- custom: Targeted RAII trace for the Rome-style failure where invested spaceship production is reevaluated and parked. The constructor arms only for an AI city currently producing a spaceship project; the destructor reports the authoritative final head target across every early return in AI_chooseProduction. This is diagnostic-only and adds no RNG calls. (GPT-5.6-Sol) -->
+class SASSpaceProductionReevaluationLogScope
+{
+public:
+	SASSpaceProductionReevaluationLogScope(CvCityAI const& kCity, bool bEnabled) : m_pCity(NULL), m_eOldProject(NO_PROJECT), m_iOldStored(0), m_iOldNeeded(0), m_iOldTurnsLeft(-1)
+	{
+		if (!bEnabled || kCity.isHuman() || kCity.isBarbarian())
+			return;
+		ProjectTypes const eProject = kCity.getProductionProject();
+		if (eProject == NO_PROJECT || !GC.getInfo(eProject).isSpaceship())
+			return;
+		m_pCity = &kCity;
+		m_eOldProject = eProject;
+		m_iOldStored = kCity.getProjectProduction(eProject);
+		m_iOldNeeded = kCity.getProductionNeeded(eProject);
+		m_iOldTurnsLeft = kCity.getProductionTurnsLeft(eProject, 0);
+		if (m_iOldTurnsLeft == MAX_INT)
+			m_iOldTurnsLeft = -1;
+
+		CvPlayerAI const& kPlayer = GET_PLAYER(kCity.getOwner());
+		CvTeamAI const& kTeam = GET_TEAM(kPlayer.getTeam());
+		int const iProjectValue = kCity.AI_projectValue(eProject);
+		int const iEnemyPowerPercent = kTeam.AI_getEnemyPowerPercent(true);
+		logBBAI("SPACE_PRODUCTION_REEVALUATE turn=%d player=%d %S city=%S cityId=%d project=%s stored=%d needed=%d completionPercent=%d turnsLeft=%d chooseDirty=%d danger=%d areaAI=%d landWar=%d focusWar=%d atWar=%d enemyPowerPercent=%d projectValue=%d space1=%d space2=%d space3=%d space4=%d",
+			GC.getGame().getGameTurn(), kCity.getOwner(), kPlayer.getCivilizationDescription(0), kCity.getName().GetCString(), kCity.getID(), GC.getInfo(eProject).getType(),
+			m_iOldStored, m_iOldNeeded, (100 * m_iOldStored) / std::max(1, m_iOldNeeded), m_iOldTurnsLeft, kCity.isChooseProductionDirty(), kCity.AI_isDanger(), kCity.getArea().getAreaAIType(kCity.getTeam()),
+			kPlayer.AI_isLandWar(kCity.getArea()), kPlayer.AI_isFocusWar(), kTeam.getNumWars() > 0, iEnemyPowerPercent, iProjectValue,
+			kPlayer.AI_atVictoryStage(AI_VICTORY_SPACE1), kPlayer.AI_atVictoryStage(AI_VICTORY_SPACE2), kPlayer.AI_atVictoryStage(AI_VICTORY_SPACE3), kPlayer.AI_atVictoryStage(AI_VICTORY_SPACE4));
+	}
+
+	~SASSpaceProductionReevaluationLogScope()
+	{
+		if (m_pCity == NULL)
+			return;
+		ProjectTypes const eNewProject = m_pCity->getProductionProject();
+		if (eNewProject == m_eOldProject)
+		{
+			if (gSpaceProductionLogLevel >= 3)
+				logBBAI("SPACE_PRODUCTION_TARGET_RESULT turn=%d player=%d city=%S cityId=%d oldProject=%s action=KEEP newKind=PROJECT newTarget=%s stored=%d needed=%d turnsLeft=%d",
+					GC.getGame().getGameTurn(), m_pCity->getOwner(), m_pCity->getName().GetCString(), m_pCity->getID(), GC.getInfo(m_eOldProject).getType(), GC.getInfo(eNewProject).getType(),
+					m_pCity->getProjectProduction(eNewProject), m_pCity->getProductionNeeded(eNewProject), m_pCity->getProductionTurnsLeft(eNewProject, 0));
+			return;
+		}
+
+		char const* szNewKind = "-";
+		char const* szNewTarget = "-";
+		UnitTypes const eNewUnit = m_pCity->getProductionUnit();
+		BuildingTypes const eNewBuilding = m_pCity->getProductionBuilding();
+		if (eNewProject != NO_PROJECT)
+		{
+			szNewKind = "PROJECT";
+			szNewTarget = GC.getInfo(eNewProject).getType();
+		}
+		else if (eNewUnit != NO_UNIT)
+		{
+			szNewKind = "UNIT";
+			szNewTarget = GC.getInfo(eNewUnit).getType();
+		}
+		else if (eNewBuilding != NO_BUILDING)
+		{
+			szNewKind = "BUILDING";
+			szNewTarget = GC.getInfo(eNewBuilding).getType();
+		}
+		else if (m_pCity->isProductionProcess())
+		{
+			szNewKind = "PROCESS";
+			ProcessTypes const eProcess = m_pCity->getProductionProcess();
+			if (eProcess != NO_PROCESS)
+				szNewTarget = GC.getInfo(eProcess).getType();
+		}
+		int const iNewStored = (m_pCity->isProduction() ? m_pCity->getProduction() : 0);
+		int const iNewNeeded = (m_pCity->isProduction() ? m_pCity->getProductionNeeded() : 0);
+		int iNewTurnsLeft = (m_pCity->isProduction() ? m_pCity->getProductionTurnsLeft() : -1);
+		if (iNewTurnsLeft == MAX_INT)
+			iNewTurnsLeft = -1;
+		logBBAI("SPACE_PRODUCTION_TARGET_RESULT turn=%d player=%d city=%S cityId=%d oldProject=%s action=SWITCH oldStored=%d oldNeeded=%d oldTurnsLeft=%d newKind=%s newTarget=%s newStored=%d newNeeded=%d newTurnsLeft=%d",
+			GC.getGame().getGameTurn(), m_pCity->getOwner(), m_pCity->getName().GetCString(), m_pCity->getID(), GC.getInfo(m_eOldProject).getType(),
+			m_iOldStored, m_iOldNeeded, m_iOldTurnsLeft, szNewKind, szNewTarget, iNewStored, iNewNeeded, iNewTurnsLeft);
+	}
+
+private:
+	CvCityAI const* m_pCity;
+	ProjectTypes m_eOldProject;
+	int m_iOldStored;
+	int m_iOldNeeded;
+	int m_iOldTurnsLeft;
+};
+
 // <!-- custom: Compact structured rejection logging for the concrete AI_chooseUnit SAS gates. Keep each gate itself to one short helper call plus return false, while names/formatting are computed only when detailed military-production logging is enabled. No behavior change. (ChatGPT-5.6) -->
 static void logSASMilitaryProductionConcreteReject(CvCityAI const& kCity, UnitTypes eUnit, UnitAITypes eUnitAI, char const* szReason, char const* szMetricA = "-", int iValueA = -1, char const* szMetricB = "-", int iValueB = -1)
 {
@@ -1165,6 +1253,56 @@ namespace
 	}
 }
 
+// <!-- custom: A minimum spaceship component can earn continuity either because it is already near-term or because substantial invested production would otherwise be parked despite a still-reasonable remaining time.
+// Keep the heavier-investment path separate from the ordinary near-term gate: this avoids locking a fresh poor assignment merely because its total build time happens to fall below the extended ceiling. (ChatGPT-5.6-Sol) -->
+static bool SAS_isMinimumSpaceshipComponentContinuityEligible(int iTurns, int iStored, int iNeeded, int iNearTermMaxTurns, int iHeavyInvestmentMinCompletionPercent, int iHeavyInvestmentMaxTurns)
+{
+	if (iTurns <= 0 || iStored <= 0)
+		return false;
+	if (iNearTermMaxTurns > 0 && iTurns <= iNearTermMaxTurns)
+		return true;
+	if (iHeavyInvestmentMaxTurns <= 0 || iTurns > iHeavyInvestmentMaxTurns)
+		return false;
+	int const iCompletionPercent = 100 * iStored / std::max(1, iNeeded);
+	return (iCompletionPercent >= iHeavyInvestmentMinCompletionPercent);
+}
+
+// <!-- custom: Rank concurrently produced copies of one minimum-required spaceship component so continuity protects only as many active AI-team copies as the remaining launch minimum actually needs.
+// Prefer the copy with fewer turns remaining, then more stored production, then stable owner/city IDs.
+// Dangerous cities, teammates not yet at SPACE3, and copies outside both continuity gates are excluded because this rule would not keep them anyway.
+// This is intentionally a tiny late-game scan only after an invested spaceship component has already reached one of the continuity gates. (ChatGPT-5.6-Sol) -->
+static int SAS_getMinimumSpaceshipComponentContinuityRank(CvCityAI const& kCity, ProjectTypes eProject, int iCurrentTurns, int iCurrentStored, int iNearTermMaxTurns, int iHeavyInvestmentMinCompletionPercent, int iHeavyInvestmentMaxTurns)
+{
+	int iRank = 1;
+	for (MemberAIIter itMember(kCity.getTeam()); itMember.hasNext(); ++itMember)
+	{
+		if (itMember->isHuman() || !itMember->AI_atVictoryStage(AI_VICTORY_SPACE3))
+			continue;
+		FOR_EACH_CITYAI(pLoopCity, *itMember)
+		{
+			if (pLoopCity == &kCity || pLoopCity->getProductionProject() != eProject ||
+				pLoopCity->getProduction() <= 0 || pLoopCity->AI_isDanger())
+			{
+				continue;
+			}
+			int const iLoopTurns = pLoopCity->getProductionTurnsLeft(eProject, 0);
+			int const iLoopStored = pLoopCity->getProjectProduction(eProject);
+			if (!SAS_isMinimumSpaceshipComponentContinuityEligible(iLoopTurns, iLoopStored, pLoopCity->getProductionNeeded(eProject), iNearTermMaxTurns, iHeavyInvestmentMinCompletionPercent, iHeavyInvestmentMaxTurns))
+			{
+				continue;
+			}
+			bool const bLoopAhead = (iLoopTurns < iCurrentTurns ||
+					(iLoopTurns == iCurrentTurns && (iLoopStored > iCurrentStored ||
+					(iLoopStored == iCurrentStored &&
+					(pLoopCity->getOwner() < kCity.getOwner() ||
+					(pLoopCity->getOwner() == kCity.getOwner() && pLoopCity->getID() < kCity.getID()))))));
+			if (bLoopAhead)
+				iRank++;
+		}
+	}
+	return iRank;
+}
+
 #define BUILDINGFOCUS_FOOD					(1 << 1)
 #define BUILDINGFOCUS_PRODUCTION			(1 << 2)
 #define BUILDINGFOCUS_GOLD					(1 << 3)
@@ -1192,6 +1330,7 @@ void CvCityAI::AI_chooseProduction()
 	// <!-- custom: One scope observes the authoritative entry/final head target across every early return.
 	// Only civilization AI cities at SASGameRecord level 2+ capture state; ordinary completion -> fresh next selection is suppressed as non-churn. (ChatGPT-5.6-Sol) -->
 	SASGameRecordAIProductionChoiceScope kSASGameRecordProductionChoiceScope(*this, gGameRecordLogLevel >= 2 && !isHuman() && !isBarbarian());
+	SASSpaceProductionReevaluationLogScope kSASSpaceProductionReevaluationLogScope(*this, gSpaceProductionLogLevel >= 2);
 	bool bWasFoodProduction = isFoodProduction();
 	bool bDanger = AI_isDanger();
 
@@ -1213,6 +1352,57 @@ void CvCityAI::AI_chooseProduction()
 	{
 		if (getProduction() > 0)
 		{
+			// <!-- custom: Once SPACE3 is active, keep an already-invested minimum spaceship component when it is either near-term or heavily invested with a still-reasonable remaining time.
+			// Base AdvCiv/K-Mod otherwise lets ordinary AI_chooseProduction reevaluation clear spaceship projects before unrelated city priorities compete; dedicated BBAI diagnostics reproduced Rome parking its sole missing Docking Bay at 39-78% completion and even 1469/1880 production with only 5 turns left despite no local danger.
+			// The first SPACE4/20-turn prototype improved launch execution but overprotected duplicate Engines and missed a safe SPACE3 Stasis Chamber at 22 turns. The SPACE3/25-turn refinement fixed both edges, then another replay still parked Rome's mandatory Stasis at 44%-49% completion with 32-33 turns remaining for an optional Thruster and a 2-turn Jail.
+			// Keep the 25-turn near-term gate, add a separate heavier-investment gate instead of simply widening it for fresh projects, and rank simultaneously eligible copies so only the best copies still needed for the minimum launch set become sticky. Optional duplicates remain reevaluable and immediate city danger still overrides. See KI#184.3. (ChatGPT-5.6-Sol) -->
+			static const bool bSASSpace3MinimumComponentContinuity = GC.getDefineBOOL("SAS_AI_CHOOSE_PRODUCTION_SPACE3_MINIMUM_SPACESHIP_COMPONENT_CONTINUITY_OPTIMIZE");
+			static const int iSASSpace3MinimumComponentContinuityMaxTurnsNormal = std::max(0, GC.getDefineINT("SAS_AI_CHOOSE_PRODUCTION_SPACE3_MINIMUM_SPACESHIP_COMPONENT_CONTINUITY_MAX_TURNS_NORMAL_GAMESPEED"));
+			static const int iSASSpace3MinimumComponentContinuityHeavyMinPercent = range(GC.getDefineINT("SAS_AI_CHOOSE_PRODUCTION_SPACE3_MINIMUM_SPACESHIP_COMPONENT_CONTINUITY_HEAVY_INVESTMENT_MIN_COMPLETION_PERCENT"), 0, 100);
+			static const int iSASSpace3MinimumComponentContinuityHeavyMaxTurnsNormal = std::max(0, GC.getDefineINT("SAS_AI_CHOOSE_PRODUCTION_SPACE3_MINIMUM_SPACESHIP_COMPONENT_CONTINUITY_HEAVY_INVESTMENT_MAX_TURNS_NORMAL_GAMESPEED"));
+			ProjectTypes const eCurrentProject = getProductionProject();
+			if (bSASSpace3MinimumComponentContinuity && !bDanger && eCurrentProject != NO_PROJECT &&
+				kPlayer.AI_atVictoryStage(AI_VICTORY_SPACE3) && GC.getInfo(eCurrentProject).isSpaceship())
+			{
+				CvProjectInfo const& kCurrentProject = GC.getInfo(eCurrentProject);
+				VictoryTypes const eProjectVictory = kCurrentProject.getVictoryPrereq();
+				int const iMinimumRequired = (eProjectVictory == NO_VICTORY ? 0 : kCurrentProject.getVictoryMinThreshold(eProjectVictory));
+				int const iCurrentCount = kTeam.getProjectCount(eCurrentProject);
+				int const iMinimumCopiesStillNeeded = std::max(0, iMinimumRequired - iCurrentCount);
+				int const iCurrentTurns = getProductionTurnsLeft(eCurrentProject, 0);
+				int const iCurrentStored = getProjectProduction(eCurrentProject);
+				int const iCurrentNeeded = getProductionNeeded(eCurrentProject);
+				int const iCurrentCompletionPercent = 100 * iCurrentStored / std::max(1, iCurrentNeeded);
+				int const iCreatePercent = GC.getInfo(kGame.getGameSpeedType()).getCreatePercent();
+				int const iContinuityMaxTurns = (iSASSpace3MinimumComponentContinuityMaxTurnsNormal <= 0 ? 0 : std::max(1, (iSASSpace3MinimumComponentContinuityMaxTurnsNormal * iCreatePercent + 99) / 100));
+				int const iHeavyInvestmentMaxTurns = (iSASSpace3MinimumComponentContinuityHeavyMaxTurnsNormal <= 0 ? 0 : std::max(1, (iSASSpace3MinimumComponentContinuityHeavyMaxTurnsNormal * iCreatePercent + 99) / 100));
+				bool const bNearTermContinuity = (iContinuityMaxTurns > 0 && iCurrentTurns > 0 && iCurrentTurns <= iContinuityMaxTurns);
+				bool const bHeavyInvestmentContinuity = (!bNearTermContinuity && iHeavyInvestmentMaxTurns > 0 &&
+					iCurrentTurns > 0 && iCurrentTurns <= iHeavyInvestmentMaxTurns &&
+					iCurrentCompletionPercent >= iSASSpace3MinimumComponentContinuityHeavyMinPercent);
+				if (eProjectVictory != NO_VICTORY && kGame.isVictoryValid(eProjectVictory) && iMinimumCopiesStillNeeded > 0 &&
+					(bNearTermContinuity || bHeavyInvestmentContinuity))
+				{
+					int const iContinuityRank = SAS_getMinimumSpaceshipComponentContinuityRank(*this, eCurrentProject, iCurrentTurns, iCurrentStored, iContinuityMaxTurns, iSASSpace3MinimumComponentContinuityHeavyMinPercent, iHeavyInvestmentMaxTurns);
+					char const* szContinuityGate = (bNearTermContinuity ? "near_term" : "heavy_investment");
+					if (iContinuityRank <= iMinimumCopiesStillNeeded)
+					{
+						if (gSpaceProductionLogLevel >= 2)
+							logBBAI("SPACE_PRODUCTION_CONTINUITY turn=%d player=%d %S city=%S cityId=%d project=%s stored=%d needed=%d completionPercent=%d turnsLeft=%d nearTermMaxTurns=%d heavyMinCompletionPercent=%d heavyMaxTurns=%d continuityGate=%s minimumRequired=%d currentCount=%d remainingMinimum=%d continuityRank=%d teamMaking=%d reason=space3_minimum_component",
+								kGame.getGameTurn(), getOwner(), kPlayer.getCivilizationDescription(0), getName().GetCString(), getID(), kCurrentProject.getType(),
+								iCurrentStored, iCurrentNeeded, iCurrentCompletionPercent, iCurrentTurns, iContinuityMaxTurns,
+								iSASSpace3MinimumComponentContinuityHeavyMinPercent, iHeavyInvestmentMaxTurns, szContinuityGate,
+								iMinimumRequired, iCurrentCount, iMinimumCopiesStillNeeded, iContinuityRank, kTeam.getProjectMaking(eCurrentProject));
+						return;
+					}
+					if (gSpaceProductionLogLevel >= 3)
+						logBBAI("SPACE_PRODUCTION_CONTINUITY_SKIP turn=%d player=%d %S city=%S cityId=%d project=%s stored=%d needed=%d completionPercent=%d turnsLeft=%d nearTermMaxTurns=%d heavyMinCompletionPercent=%d heavyMaxTurns=%d continuityGate=%s minimumRequired=%d currentCount=%d remainingMinimum=%d continuityRank=%d teamMaking=%d reason=duplicate_beyond_minimum",
+							kGame.getGameTurn(), getOwner(), kPlayer.getCivilizationDescription(0), getName().GetCString(), getID(), kCurrentProject.getType(),
+							iCurrentStored, iCurrentNeeded, iCurrentCompletionPercent, iCurrentTurns, iContinuityMaxTurns,
+							iSASSpace3MinimumComponentContinuityHeavyMinPercent, iHeavyInvestmentMaxTurns, szContinuityGate,
+							iMinimumRequired, iCurrentCount, iMinimumCopiesStillNeeded, iContinuityRank, kTeam.getProjectMaking(eCurrentProject));
+				}
+			}
 			//if we are killing our growth to train this, then finish it.
 			if (!bDanger && isFoodProduction() && (getProductionUnitAI() != UNITAI_SETTLE ||
 				(!kPlayer.AI_isFinancialTrouble() &&
@@ -1339,6 +1529,16 @@ void CvCityAI::AI_chooseProduction()
 				{
 					return;
 				}
+			}
+		}
+		if (gSpaceProductionLogLevel >= 2)
+		{
+			ProjectTypes const eProductionProject = getProductionProject();
+			if (eProductionProject != NO_PROJECT && GC.getInfo(eProductionProject).isSpaceship())
+			{
+				logBBAI("SPACE_PRODUCTION_RELEASE turn=%d player=%d %S city=%S cityId=%d project=%s stored=%d needed=%d turnsLeft=%d reason=ordinary_AI_chooseProduction_reevaluation",
+					kGame.getGameTurn(), getOwner(), kPlayer.getCivilizationDescription(0), getName().GetCString(), getID(), GC.getInfo(eProductionProject).getType(),
+					getProjectProduction(eProductionProject), getProductionNeeded(eProductionProject), getProductionTurnsLeft(eProductionProject, 0));
 			}
 		}
 		clearOrderQueue();
@@ -9772,14 +9972,25 @@ ProjectTypes CvCityAI::AI_bestProject(int* piBestValue, /* advc.001n: */ bool bA
 	int iBestValue = 0;
 	FOR_EACH_ENUM2(Project, eProject)
 	{
-		if (!canCreate(eProject))
-			continue; // can't build it. skip to the next project.
 		CvProjectInfo const& kProject = GC.getInfo(eProject);
+		if (!canCreate(eProject))
+		{
+			if (gSpaceProductionLogLevel >= 3 && kProject.isSpaceship())
+				logBBAI("SPACE_PROJECT_CANDIDATE turn=%d player=%d %S city=%S cityId=%d project=%s result=SKIP reason=cannot_create productionRank=%d teamCount=%d teamMaking=%d maxTeam=%d stored=%d",
+					kGame.getGameTurn(), getOwner(), kOwner.getCivilizationDescription(0), getName().GetCString(), getID(), kProject.getType(), iProductionRank,
+					kTeam.getProjectCount(eProject), kTeam.getProjectMaking(eProject), kProject.getMaxTeamInstances(), getProjectProduction(eProject));
+			continue; // can't build it. skip to the next project.
+		}
 
 		int iTurnsLeft = getProductionTurnsLeft(eProject, 0);
 		// <advc.004x>
 		if(iTurnsLeft == MAX_INT)
-			continue; // </advc.004x>
+		{
+			if (gSpaceProductionLogLevel >= 3 && kProject.isSpaceship())
+				logBBAI("SPACE_PROJECT_CANDIDATE turn=%d player=%d %S city=%S cityId=%d project=%s result=SKIP reason=no_finite_turns productionRank=%d stored=%d",
+					kGame.getGameTurn(), getOwner(), kOwner.getCivilizationDescription(0), getName().GetCString(), getID(), kProject.getType(), iProductionRank, getProjectProduction(eProject));
+			continue;
+		} // </advc.004x>
 		int iRelativeTurns = (100 * iTurnsLeft + 50) /
 				GC.getInfo(kGame.getGameSpeedType()).getCreatePercent();
 		if (iRelativeTurns > 10 && kProject.getMaxTeamInstances() > 0 &&
@@ -9792,6 +10003,9 @@ ProjectTypes CvCityAI::AI_bestProject(int* piBestValue, /* advc.001n: */ bool bA
 			iProductionRank > std::max(3, kOwner.getNumCities() / 2))
 		{
 			// not fast enough to risk blocking our more productive cities from building it.
+			if (gSpaceProductionLogLevel >= 3 && kProject.isSpaceship())
+				logBBAI("SPACE_PROJECT_CANDIDATE turn=%d player=%d %S city=%S cityId=%d project=%s result=SKIP reason=slow_low_production_rank productionRank=%d cities=%d turnsLeft=%d relativeTurns=%d stored=%d",
+					kGame.getGameTurn(), getOwner(), kOwner.getCivilizationDescription(0), getName().GetCString(), getID(), kProject.getType(), iProductionRank, kOwner.getNumCities(), iTurnsLeft, iRelativeTurns, getProjectProduction(eProject));
 			continue;
 		}
 		// otherwise, the project is something we can consider building!
@@ -9812,10 +10026,16 @@ ProjectTypes CvCityAI::AI_bestProject(int* piBestValue, /* advc.001n: */ bool bA
 			}
 		}
 		if (iValue <= 0)
+		{
+			if (gSpaceProductionLogLevel >= 3 && kProject.isSpaceship())
+				logBBAI("SPACE_PROJECT_CANDIDATE turn=%d player=%d %S city=%S cityId=%d project=%s result=SKIP reason=nonpositive_value productionRank=%d turnsLeft=%d relativeTurns=%d value=%d stored=%d",
+					kGame.getGameTurn(), getOwner(), kOwner.getCivilizationDescription(0), getName().GetCString(), getID(), kProject.getType(), iProductionRank, iTurnsLeft, iRelativeTurns, iValue, getProjectProduction(eProject));
 			continue; // the project is worthless. Skip it.
+		}
 
 		bool bVictory = false;
 		bool bGoodFit = false;
+		int iNeededPiecesForFit = -1;
 
 		if (kOwner.AI_atVictoryStage(AI_VICTORY_SPACE3))
 		{
@@ -9836,6 +10056,7 @@ ProjectTypes CvCityAI::AI_bestProject(int* piBestValue, /* advc.001n: */ bool bA
 							GC.getInfo(eAnyProject).getVictoryThreshold(eProjVictory)
 							- kTeam.getProjectCount(eAnyProject));
 				}
+				iNeededPiecesForFit = iNeededPieces;
 				if (kTeam.getProjectCount(eProject) <
 					kProject.getVictoryThreshold(eProjVictory))
 				{
@@ -9893,11 +10114,29 @@ ProjectTypes CvCityAI::AI_bestProject(int* piBestValue, /* advc.001n: */ bool bA
 				iValue /= iRelativeTurns + 5;
 			}
 		}
+		if (gSpaceProductionLogLevel >= 3 && kProject.isSpaceship())
+		{
+			VictoryTypes const eSpaceVictory = kProject.getVictoryPrereq();
+			int const iVictoryThreshold = (eSpaceVictory == NO_VICTORY ? 0 : kProject.getVictoryThreshold(eSpaceVictory));
+			int const iVictoryMinThreshold = (eSpaceVictory == NO_VICTORY ? 0 : kProject.getVictoryMinThreshold(eSpaceVictory));
+			logBBAI("SPACE_PROJECT_CANDIDATE turn=%d player=%d %S city=%S cityId=%d project=%s result=VALUE productionRank=%d turnsLeft=%d relativeTurns=%d stored=%d teamCount=%d teamMaking=%d victoryThreshold=%d victoryMinThreshold=%d neededPieces=%d victoryFit=%d goodFit=%d finalValue=%d currentBest=%s currentBestValue=%d",
+				kGame.getGameTurn(), getOwner(), kOwner.getCivilizationDescription(0), getName().GetCString(), getID(), kProject.getType(), iProductionRank, iTurnsLeft, iRelativeTurns, getProjectProduction(eProject),
+				kTeam.getProjectCount(eProject), kTeam.getProjectMaking(eProject), iVictoryThreshold, iVictoryMinThreshold, iNeededPiecesForFit, bVictory, bGoodFit, iValue,
+				(eBestProject == NO_PROJECT ? "-" : GC.getInfo(eBestProject).getType()), iBestValue);
+		}
 		if (iValue > iBestValue)
 		{
 			iBestValue = iValue;
 			eBestProject = eProject;
 		}
+	}
+	if (gSpaceProductionLogLevel >= 2 && kOwner.AI_atVictoryStage(AI_VICTORY_SPACE2))
+	{
+		logBBAI("SPACE_PROJECT_BEST turn=%d player=%d %S city=%S cityId=%d productionRank=%d project=%s value=%d currentProject=%s currentStored=%d",
+			kGame.getGameTurn(), getOwner(), kOwner.getCivilizationDescription(0), getName().GetCString(), getID(), iProductionRank,
+			(eBestProject == NO_PROJECT ? "-" : GC.getInfo(eBestProject).getType()), iBestValue,
+			(getProductionProject() == NO_PROJECT ? "-" : GC.getInfo(getProductionProject()).getType()),
+			(getProductionProject() == NO_PROJECT ? 0 : getProjectProduction(getProductionProject())));
 	}
 	if (piBestValue) // note: piBestValue is set even if there is no best project.
 		*piBestValue = iBestValue;
@@ -10143,6 +10382,7 @@ int CvCityAI::AI_projectValue(ProjectTypes eProject) /* advc: */ const
 		It just doesn't conform to the usual metrics...
 		this is going to be very arbitrary...
 		-- and it will be based on the original BtS code! */
+	int const iValueBeforeSpace = iValue;
 	int iSpaceValue = 0;
 
 	// a project which enables other projects... i.e. the Apollo Program
@@ -10177,6 +10417,7 @@ int CvCityAI::AI_projectValue(ProjectTypes eProject) /* advc: */ const
 				(4 * perVictoryVal.second);
 	}
 
+	int const iSpaceValueBeforeStage = iSpaceValue;
 	if (kOwner.AI_atVictoryStage(AI_VICTORY_SPACE4))
 		iSpaceValue *= 4;
 	else if (kOwner.AI_atVictoryStage(AI_VICTORY_SPACE3))
@@ -10185,19 +10426,40 @@ int CvCityAI::AI_projectValue(ProjectTypes eProject) /* advc: */ const
 		iSpaceValue *= 2;
 	else if (!kOwner.AI_atVictoryStage(AI_VICTORY_SPACE1) && kOwner.AI_atVictoryStage4())
 		iSpaceValue = (2 * iSpaceValue) / 3;
+	int const iSpaceValueAfterStage = iSpaceValue;
 
-	if (getArea().getAreaAIType(kOwner.getTeam()) != AREAAI_NEUTRAL)
+	AreaAITypes const eSpaceAreaAI = getArea().getAreaAIType(kOwner.getTeam());
+	if (eSpaceAreaAI != AREAAI_NEUTRAL)
 	{
-		iSpaceValue = getArea().getAreaAIType(kOwner.getTeam()) == AREAAI_DEFENSIVE ?
+		iSpaceValue = eSpaceAreaAI == AREAAI_DEFENSIVE ?
 				iSpaceValue/2 : 2*iSpaceValue/3;
 	}
+	int const iSpaceValueAfterArea = iSpaceValue;
 	// <advc.115> Check if we have remotely enough production capacity for SS parts
-	if(iSpaceValue > 0 && kOwner.calculateTotalYield(YIELD_PRODUCTION) <
-		GC.getInfo(kGame.getGameSpeedType()).getCreatePercent())
+	int iEmpireProduction = -1;
+	bool bSpaceCapacitySuppressed = false;
+	if(iSpaceValue > 0)
 	{
-		iSpaceValue = 0;
+		iEmpireProduction = kOwner.calculateTotalYield(YIELD_PRODUCTION);
+		if (iEmpireProduction < GC.getInfo(kGame.getGameSpeedType()).getCreatePercent())
+		{
+			iSpaceValue = 0;
+			bSpaceCapacitySuppressed = true;
+		}
 	} // </advc.115>
 	iValue += iSpaceValue;
+
+	if (gSpaceProductionLogLevel >= 3 && (kProject.isSpaceship() || iSpaceValueBeforeStage > 0))
+	{
+		VictoryTypes const eSpaceVictory = kProject.getVictoryPrereq();
+		int const iVictoryThreshold = (eSpaceVictory == NO_VICTORY ? 0 : kProject.getVictoryThreshold(eSpaceVictory));
+		int const iVictoryMinThreshold = (eSpaceVictory == NO_VICTORY ? 0 : kProject.getVictoryMinThreshold(eSpaceVictory));
+		logBBAI("SPACE_PROJECT_VALUE turn=%d player=%d %S city=%S cityId=%d project=%s spaceship=%d teamCount=%d teamMaking=%d stored=%d needed=%d victoryThreshold=%d victoryMinThreshold=%d preSpaceValue=%d rawSpaceValue=%d stageSpaceValue=%d areaAI=%d areaSpaceValue=%d empireProduction=%d createPercent=%d capacitySuppressed=%d finalSpaceValue=%d finalProjectValue=%d space1=%d space2=%d space3=%d space4=%d",
+			kGame.getGameTurn(), getOwner(), kOwner.getCivilizationDescription(0), getName().GetCString(), getID(), kProject.getType(), kProject.isSpaceship(),
+			kTeam.getProjectCount(eProject), kTeam.getProjectMaking(eProject), getProjectProduction(eProject), getProductionNeeded(eProject), iVictoryThreshold, iVictoryMinThreshold,
+			iValueBeforeSpace, iSpaceValueBeforeStage, iSpaceValueAfterStage, eSpaceAreaAI, iSpaceValueAfterArea, iEmpireProduction, GC.getInfo(kGame.getGameSpeedType()).getCreatePercent(),
+			bSpaceCapacitySuppressed, iSpaceValue, iValue, kOwner.AI_atVictoryStage(AI_VICTORY_SPACE1), kOwner.AI_atVictoryStage(AI_VICTORY_SPACE2), kOwner.AI_atVictoryStage(AI_VICTORY_SPACE3), kOwner.AI_atVictoryStage(AI_VICTORY_SPACE4));
+	}
 
 	return iValue;
 }

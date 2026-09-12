@@ -20,6 +20,7 @@ int getSASBBAITeamLogLevel();
 int getSASBBAIWarLogLevel();
 int getSASBBAICityLogLevel();
 int getSASBBAIMilitaryProductionLogLevel();
+int getSASBBAISpaceProductionLogLevel();
 int getSASBBAICitizenLogLevel();
 int getSASBBAIUnitLogLevel();
 int getSASBBAIOverseasTransportLogLevel();
@@ -44,6 +45,7 @@ void startSASBBAILogForLoadedSave(); // <!-- custom: Roll and identify a loaded 
 #define gWarLogLevel getSASBBAIWarLogLevel() // <!-- custom: Separate war-plan and war-target diagnostics from broad TEAM logging. (GPT-5.5) -->
 #define gCityLogLevel getSASBBAICityLogLevel()
 #define gMilitaryProductionLogLevel getSASBBAIMilitaryProductionLogLevel() // <!-- custom: Dedicated AI city military-production diagnostics without enabling broad CITY logging. (ChatGPT-5.6-Sol) -->
+#define gSpaceProductionLogLevel getSASBBAISpaceProductionLogLevel() // <!-- custom: Dedicated spaceship-project valuation, selection, and production-switch diagnostics without broad PLAYER/CITY logging. (GPT-5.6-Sol) -->
 #define gCitizenLogLevel getSASBBAICitizenLogLevel() // <!-- custom: Separate citizen-assignment and plot-allocation diagnostics from general CITY logging. (GPT-5.5) -->
 #define gUnitLogLevel getSASBBAIUnitLogLevel()
 #define gOverseasTransportLogLevel getSASBBAIOverseasTransportLogLevel() // <!-- custom: Separate overseas military-cargo and Settler-transport diagnostics from broad CITY and UNIT logging. (GPT-5.6-Sol) -->
