@@ -152,6 +152,7 @@ namespace hotkeyDescr
 }
 
 bool atWar(TeamTypes eTeamA, TeamTypes eTeamB);												// Exposed to Python
+char const* getSASDiploEventType(DiploEventTypes eDiploEvent); // <!-- custom: Shared raw enum-token text for DiploEventTypes because static enum values have no CvInfo type strings; use user-facing text helpers for translated/prose labels. (GPT-5.5) -->
 char const* getSASMemoryType(MemoryTypes eMemory); // <!-- custom: Shared raw enum-token text for diplomatic memories because static enum values have no CvInfo type strings. (GPT-5.6-Sol) -->
 char const* getSASWarPlanType(WarPlanTypes eWarPlan); // <!-- custom: Shared raw enum-token text for WarPlanTypes because static enum values have no CvInfo type strings; use user-facing text helpers for translated/prose labels. (GPT-5.5) -->
 char const* getSASWarDeclarationCause(WarDeclarationCause eCause); // <!-- custom: Shared stable labels for war-declaration origins so SASGameRecord and any later BBAI diagnostics do not duplicate the switch. (GPT-5.6-Sol) -->

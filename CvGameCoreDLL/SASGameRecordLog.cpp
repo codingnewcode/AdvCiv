@@ -1,3 +1,6 @@
+// AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Advanced Strategy)
+// (c) 2026 wonderingabout & AI/LLM helpers (see Authors in AdvCiv-SAS's root README.md)
+
 #include "CvGameCoreDLL.h"
 #include "SASGameRecordLog.h"
 #include "CvGame.h" // <!-- custom: Needed for game-record turn, game-state, victory, RNG, and map-classification context rows. (GPT-5.5) -->

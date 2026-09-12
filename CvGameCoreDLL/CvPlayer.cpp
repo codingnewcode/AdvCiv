@@ -24,6 +24,77 @@
 #include "RiseFall.h" // advc.708: Needed only for savegame compatibility
 #include "SelfMod.h" // advc.092b
 
+namespace
+{
+
+
+	CvString getSASGameRecordDiploCityText(PlayerTypes ePlayer, int iCityId)
+	{
+		if (ePlayer == NO_PLAYER)
+			return CvString("-");
+		CvCity* pCity = GET_PLAYER(ePlayer).getCity(iCityId);
+		CvString szValue;
+		if (pCity != NULL)
+			szValue.Format("cityId=%d,city=%S", pCity->getID(), pCity->getName().GetCString());
+		else szValue.Format("cityId=%d", iCityId);
+		return szValue;
+	}
+
+	CvString getSASGameRecordDiploData1Text(PlayerTypes ePlayer, DiploEventTypes eDiploEvent, int iData1, int iData2)
+	{
+		switch (eDiploEvent)
+		{
+		case DIPLOEVENT_JOIN_WAR:
+		case DIPLOEVENT_NO_JOIN_WAR:
+		case DIPLOEVENT_STOP_TRADING:
+		case DIPLOEVENT_NO_STOP_TRADING:
+		case DIPLOEVENT_SET_WARPLAN:
+			return getSASTeamDiagnosticText((TeamTypes)iData1);
+		case DIPLOEVENT_RESEARCH_TECH:
+			if (iData1 >= 0 && iData1 < GC.getNumTechInfos())
+				return CvString(GC.getInfo((TechTypes)iData1).getType());
+			break;
+		case DIPLOEVENT_TARGET_CITY:
+			return getSASGameRecordDiploCityText((PlayerTypes)iData1, iData2);
+		case DIPLOEVENT_CONVERT:
+		case DIPLOEVENT_NO_CONVERT:
+			return GET_PLAYER(ePlayer).getStateReligion() == NO_RELIGION ? CvString("-") : CvString(GC.getInfo(GET_PLAYER(ePlayer).getStateReligion()).getType());
+		case DIPLOEVENT_REVOLUTION:
+		case DIPLOEVENT_NO_REVOLUTION:
+			return GET_PLAYER(ePlayer).getFavoriteCivic() == NO_CIVIC ? CvString("-") : CvString(GC.getInfo(GET_PLAYER(ePlayer).getFavoriteCivic()).getType());
+		case DIPLOEVENT_ASK_HELP:
+		case DIPLOEVENT_MADE_DEMAND:
+			return CvString(iData1 > 0 ? "granted" : "not_granted_or_unknown");
+		default:
+			return CvString("-");
+		}
+		return getSASDiagnosticIntText(iData1);
+	}
+
+	CvString getSASGameRecordDiploData2Text(DiploEventTypes eDiploEvent, int iData2)
+	{
+		switch (eDiploEvent)
+		{
+		case DIPLOEVENT_SET_WARPLAN:
+			return CvString(getSASWarPlanType((WarPlanTypes)iData2));
+		default:
+			return CvString("-");
+		}
+	}
+
+	bool isSASGameRecordLowValueDiploEvent(DiploEventTypes eDiploEvent)
+	{
+		return (eDiploEvent == DIPLOEVENT_CONTACT || eDiploEvent == DIPLOEVENT_AI_CONTACT || eDiploEvent == DIPLOEVENT_FAILED_CONTACT || eDiploEvent == DIPLOEVENT_TARGET_CITY || eDiploEvent == DIPLOEVENT_SET_WARPLAN);
+	}
+
+	void logSASGameRecordDiploEventAction(PlayerTypes ePlayer, DiploEventTypes eDiploEvent, PlayerTypes eOtherPlayer, int iData1, int iData2)
+	{
+		// <!-- custom: Preserve lower-value/raw EXE diplomacy events at level 3, and uncommon non-semantic events at level 2. Resolved help/demand/civic/religion/war-join/embargo interactions use the richer post-event row instead. (ChatGPT-5.6-Sol) -->
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=DIPLO_EVENT player=%d other=%d event=%s data1=%d data1Text=%s data2=%d data2Text=%s",
+				GC.getGame().getGameTurn(), ePlayer, eOtherPlayer, getSASDiploEventType(eDiploEvent), iData1, getSASGameRecordDiploData1Text(ePlayer, eDiploEvent, iData1, iData2).GetCString(), iData2, getSASGameRecordDiploData2Text(eDiploEvent, iData2).GetCString());
+	}
+}
+
 // advc.003u: Statics moved from CvPlayerAI
 CvPlayerAI** CvPlayer::m_aPlayers = NULL;
 
@@ -3593,8 +3664,10 @@ void CvPlayer::contact(PlayerTypes ePlayer)
 void CvPlayer::handleDiploEvent(DiploEventTypes eDiploEvent, PlayerTypes ePlayer, int iData1, int iData2)
 {
 	FAssertMsg(ePlayer != getID(), "shouldn't call this function on ourselves");
-	// <!-- custom: Capture only factual resolved diplomacy interactions at level 2+; ordinary internal diplomacy processing remains untouched. (ChatGPT-5.6-Sol) -->
-	bool const bLogResolvedSASDiplo = (gGameRecordLogLevel >= 2 && isSASGameRecordResolvedDiploInteraction(eDiploEvent));
+	// <!-- custom: Resolved high-impact interactions get richer post-event state; retain the remaining raw EXE diplomacy events compactly without logging speculative AI evaluation. (ChatGPT-5.6-Sol) -->
+	bool const bLogSASDiplo = (gGameRecordLogLevel >= 2);
+	bool const bLogVerboseSASDiplo = (bLogSASDiplo && gGameRecordLogLevel >= 3);
+	bool const bLogResolvedSASDiplo = (bLogSASDiplo && isSASGameRecordResolvedDiploInteraction(eDiploEvent));
 	SASGameRecordDiploRelationState kSASDiploBefore;
 	if (bLogResolvedSASDiplo)
 		captureSASGameRecordDiploRelationState(getID(), ePlayer, kSASDiploBefore);
@@ -3754,7 +3827,7 @@ void CvPlayer::handleDiploEvent(DiploEventTypes eDiploEvent, PlayerTypes ePlayer
 		break;
 
 	case DIPLOEVENT_RESEARCH_TECH:
-		if (gGameRecordLogLevel >= 2) noteSASGameRecordResearchTargetChangeCause(getID(), RESEARCH_TARGET_CHANGE_DIPLO_RESEARCH_COORDINATION);
+		if (bLogSASDiplo) noteSASGameRecordResearchTargetChangeCause(getID(), RESEARCH_TARGET_CHANGE_DIPLO_RESEARCH_COORDINATION);
 		pushResearch((TechTypes)iData1, true);
 		break;
 
@@ -3798,6 +3871,8 @@ void CvPlayer::handleDiploEvent(DiploEventTypes eDiploEvent, PlayerTypes ePlayer
 		captureSASGameRecordDiploRelationState(getID(), ePlayer, kSASDiploAfter);
 		logSASGameRecordResolvedDiploInteraction(getID(), eDiploEvent, ePlayer, iData1, kSASDiploBefore, kSASDiploAfter);
 	}
+	else if (bLogSASDiplo && (bLogVerboseSASDiplo || !isSASGameRecordLowValueDiploEvent(eDiploEvent)))
+		logSASGameRecordDiploEventAction(getID(), eDiploEvent, ePlayer, iData1, iData2);
 }
 
 
