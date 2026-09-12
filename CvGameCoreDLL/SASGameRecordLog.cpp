@@ -5783,6 +5783,108 @@ void logSASGameRecordRandomEventCityResult(PlayerTypes ePlayer, PlayerTypes eAff
 
 // <!-- custom: Building-modifier EventInfos can create durable latent state even when no current building/output changes.
 // Keep one compact realized operation row per configured modifier: selected-city modifiers retain their stored after value, empire yield/commerce modifiers name the current-city scope, and empire happiness/health modifiers retain the resolved player-level building modifier before/after. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventBuildingModifierResults(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, char const* szScope, CvCity const* pCity)
+{
+	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	bool const bCityScope = (pCity != NULL);
+	PlayerTypes const eAffectedPlayer = (bCityScope ? pCity->getOwner() : kPlayer.getID());
+	int const iCityId = (bCityScope ? pCity->getID() : -1);
+	int const iAffectedCityCount = (bCityScope ? 1 : kPlayer.getNumCities());
+
+	FOR_EACH_NON_DEFAULT_PAIR(kEvent.getBuildingYieldChange(), BuildingClass, YieldChangeMap)
+	{
+		FOR_EACH_NON_DEFAULT_PAIR(perBuildingClassVal.second, Yield, int)
+		{
+			BuildingTypes const eBuilding = (bCityScope ? pCity->getCivilization().getBuilding(perBuildingClassVal.first) :
+					kPlayer.getCivilization().getBuilding(perBuildingClassVal.first));
+			int iBefore = -1;
+			int iAfter = -1;
+			if (bCityScope)
+			{
+				iAfter = pCity->getBuildingYieldChange(perBuildingClassVal.first, perYieldVal.first);
+				iBefore = iAfter - perYieldVal.second;
+			}
+			logSASGameRecord("GAME_RECORD_RANDOM_EVENT_BUILDING_MODIFIER_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s scope=%s target=%s affectedPlayer=%d affectedTeam=%d cityId=%d affectedCityCount=%d modifier=YIELD buildingClass=%s building=%s subType=%s operation=ADD configuredValue=%+d valueBefore=%d valueAfter=%d",
+					GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), szScope,
+					bCityScope ? "CITY_STORED_MODIFIER" : "CURRENT_CITIES_STORED_MODIFIER", eAffectedPlayer,
+					GET_PLAYER(eAffectedPlayer).getTeam(), iCityId, iAffectedCityCount,
+					GC.getInfo(perBuildingClassVal.first).getType(), getSASGameRecordBuildingType(eBuilding), GC.getInfo(perYieldVal.first).getType(),
+					perYieldVal.second, iBefore, iAfter);
+		}
+	}
+	FOR_EACH_NON_DEFAULT_PAIR(kEvent.getBuildingCommerceChange(), BuildingClass, CommerceChangeMap)
+	{
+		FOR_EACH_NON_DEFAULT_PAIR(perBuildingClassVal.second, Commerce, int)
+		{
+			BuildingTypes const eBuilding = (bCityScope ? pCity->getCivilization().getBuilding(perBuildingClassVal.first) :
+					kPlayer.getCivilization().getBuilding(perBuildingClassVal.first));
+			int iBefore = -1;
+			int iAfter = -1;
+			if (bCityScope)
+			{
+				iAfter = pCity->getBuildingCommerceChange(perBuildingClassVal.first, perCommerceVal.first);
+				iBefore = iAfter - perCommerceVal.second;
+			}
+			logSASGameRecord("GAME_RECORD_RANDOM_EVENT_BUILDING_MODIFIER_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s scope=%s target=%s affectedPlayer=%d affectedTeam=%d cityId=%d affectedCityCount=%d modifier=COMMERCE buildingClass=%s building=%s subType=%s operation=ADD configuredValue=%+d valueBefore=%d valueAfter=%d",
+					GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), szScope,
+					bCityScope ? "CITY_STORED_MODIFIER" : "CURRENT_CITIES_STORED_MODIFIER", eAffectedPlayer,
+					GET_PLAYER(eAffectedPlayer).getTeam(), iCityId, iAffectedCityCount,
+					GC.getInfo(perBuildingClassVal.first).getType(), getSASGameRecordBuildingType(eBuilding), getSASGameRecordCommerceType(perCommerceVal.first),
+					perCommerceVal.second, iBefore, iAfter);
+		}
+	}
+	FOR_EACH_NON_DEFAULT_PAIR(kEvent.getBuildingHappyChange(), BuildingClass, int)
+	{
+		BuildingTypes const eBuilding = (bCityScope ? pCity->getCivilization().getBuilding(perBuildingClassVal.first) :
+				kPlayer.getCivilization().getBuilding(perBuildingClassVal.first));
+		int iBefore = -1;
+		int iAfter = -1;
+		char const* szTarget = "CITY_STORED_MODIFIER";
+		char const* szOperation = "SET";
+		if (bCityScope)
+			iAfter = pCity->getBuildingHappyChange(perBuildingClassVal.first);
+		else
+		{
+			szTarget = "PLAYER_BUILDING_MODIFIER";
+			szOperation = "ADD";
+			if (eBuilding != NO_BUILDING)
+			{
+				iAfter = kPlayer.getExtraBuildingHappiness(eBuilding);
+				iBefore = iAfter - perBuildingClassVal.second;
+			}
+		}
+		logSASGameRecord("GAME_RECORD_RANDOM_EVENT_BUILDING_MODIFIER_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s scope=%s target=%s affectedPlayer=%d affectedTeam=%d cityId=%d affectedCityCount=%d modifier=HAPPINESS buildingClass=%s building=%s subType=- operation=%s configuredValue=%+d valueBefore=%d valueAfter=%d",
+				GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), szScope, szTarget,
+				eAffectedPlayer, GET_PLAYER(eAffectedPlayer).getTeam(), iCityId, bCityScope ? 1 : -1, GC.getInfo(perBuildingClassVal.first).getType(), getSASGameRecordBuildingType(eBuilding),
+				szOperation, perBuildingClassVal.second, iBefore, iAfter);
+	}
+	FOR_EACH_NON_DEFAULT_PAIR(kEvent.getBuildingHealthChange(), BuildingClass, int)
+	{
+		BuildingTypes const eBuilding = (bCityScope ? pCity->getCivilization().getBuilding(perBuildingClassVal.first) :
+				kPlayer.getCivilization().getBuilding(perBuildingClassVal.first));
+		int iBefore = -1;
+		int iAfter = -1;
+		char const* szTarget = "CITY_STORED_MODIFIER";
+		char const* szOperation = "SET";
+		if (bCityScope)
+			iAfter = pCity->getBuildingHealthChange(perBuildingClassVal.first);
+		else
+		{
+			szTarget = "PLAYER_BUILDING_MODIFIER";
+			szOperation = "ADD";
+			if (eBuilding != NO_BUILDING)
+			{
+				iAfter = kPlayer.getExtraBuildingHealth(eBuilding);
+				iBefore = iAfter - perBuildingClassVal.second;
+			}
+		}
+		logSASGameRecord("GAME_RECORD_RANDOM_EVENT_BUILDING_MODIFIER_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s scope=%s target=%s affectedPlayer=%d affectedTeam=%d cityId=%d affectedCityCount=%d modifier=HEALTH buildingClass=%s building=%s subType=- operation=%s configuredValue=%+d valueBefore=%d valueAfter=%d",
+				GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), szScope, szTarget,
+				eAffectedPlayer, GET_PLAYER(eAffectedPlayer).getTeam(), iCityId, bCityScope ? 1 : -1, GC.getInfo(perBuildingClassVal.first).getType(), getSASGameRecordBuildingType(eBuilding),
+				szOperation, perBuildingClassVal.second, iBefore, iAfter);
+	}
+}
+
 void logSASGameRecordRandomEventOccurrenceCleared(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eClearedEvent, int iTriggeredId, int iClearChance, char const* szScope, TeamTypes eScopeTeam, int iScopePlayerSlots, int iScopeEverAlivePlayers, int iClearedOccurrences)
 {
 	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_OCCURRENCE_CLEARED turn=%d player=%d team=%d triggeredId=%d sourceEvent=%s clearedEvent=%s clearChance=%d scope=%s scopeTeam=%d scopePlayerSlots=%d scopeEverAlivePlayers=%d clearedOccurrences=%d",

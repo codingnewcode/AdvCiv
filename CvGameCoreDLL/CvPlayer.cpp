@@ -16383,11 +16383,13 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 	{
 		// <!-- custom: Empire-scoped EventInfos can mutate every city without an individual city applyEvent call.
 		// Snapshot only when this EventInfo actually contains a deterministic city-relevant effect; ordinary gold/war/promotion/etc. events avoid the extra city scans. (ChatGPT-5.6-Sol) -->
+		bool const bLogRandomEventBuildingModifierResult = (bLogRandomEvent &&
+				(kEvent.getBuildingYieldChange().isAnyNonDefault() || kEvent.getBuildingCommerceChange().isAnyNonDefault() ||
+				kEvent.getBuildingHappyChange().isAnyNonDefault() || kEvent.getBuildingHealthChange().isAnyNonDefault()));
 		bool const bLogRandomEventEmpireCityResult = (bLogRandomEvent &&
 				(kEvent.getHappy() != 0 || kEvent.getHealth() != 0 || kEvent.getHurryAnger() != 0 || kEvent.getHappyTurns() != 0 ||
 				kEvent.getFood() != 0 || kEvent.getFoodPercent() != 0 || kEvent.getPopulationChange() != 0 || kEvent.getCulture() != 0 ||
-				kEvent.getBuildingYieldChange().isAnyNonDefault() || kEvent.getBuildingCommerceChange().isAnyNonDefault() ||
-				kEvent.getBuildingHappyChange().isAnyNonDefault() || kEvent.getBuildingHealthChange().isAnyNonDefault()));
+				bLogRandomEventBuildingModifierResult));
 		std::vector<std::pair<int, SASGameRecordRandomEventCityState> > aSASRandomEventCityBefore;
 		if (bLogRandomEventEmpireCityResult)
 		{
@@ -16551,6 +16553,7 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				logSASGameRecordRandomEventCityResult(getID(), getID(), iEventTriggeredId, eEvent, "EMPIRE", *pSASCity, aSASRandomEventCityBefore[i].second, kSASAfter);
 			}
 		}
+		if (bLogRandomEventBuildingModifierResult) logSASGameRecordRandomEventBuildingModifierResults(*this, eEvent, iEventTriggeredId, "EMPIRE", NULL);
 	}
 
 	CvPlot* pPlot = GC.getMap().plot(
