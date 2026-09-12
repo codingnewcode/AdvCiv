@@ -1132,7 +1132,40 @@ Stable `#ki-number` anchors keep links valid when an entry title or status is re
 [KI#1032 - (Provisional Pending UI inherited AdvC SPaH defect) Hidden randomized points omit their disclosure](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1032)\
 [KI#1033 - (Provisional Pending UI inherited AdvC optional-alert defect) Multi-copy resource changes duplicate third-party alerts](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1033)\
 [KI#1034 - (Provisional Pending inherited K-Mod diagnostic defect) CvMap initialization uses an incomplete printf conversion](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1034)\
-[KI#1035 - (Provisional Pending audit cursor) Post-primary cross-file and deferred-note pass remains active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1035)\
+[KI#1035 - (Provisional Pending AdvCiv-SAS maintenance repair regression) Vassal city loss refreshes master maintenance before deletion](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1035)\
+[KI#1036 - (Provisional Pending inherited BtS/K-Mod/AdvC AI valuation defect left incomplete by SAS) Recovered Conscript and Defy-Resolution anger layers count as one citizen](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1036)\
+[KI#1037 - (Provisional Pending AdvCiv-SAS Worker AI regression) Productive-feature Phase 0 ignores other affected cities](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1037)\
+[KI#1038 - (Provisional Pending AdvCiv-SAS UWAI repair regression) Non-capital foreign city changes leave observer target values stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1038)\
+[KI#1039 - (Provisional Pending AdvCiv-SAS assault repair regression) Gunship-only cargo can authorize an impossible city invasion](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1039)\
+[KI#1040 - (Provisional Pending AdvCiv-SAS smart-Bombard repair regression) Undefended cities exclude every legal immediate capturer](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1040)\
+[KI#1041 - (Provisional Pending AdvCiv-SAS trade-rounding repair regression) An out-of-bounds exact multiple hides the adjacent legal value](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1041)\
+[KI#1042 - (Provisional Pending AdvCiv-SAS event-valuation repair regression) PlotExtraYield absolute values are treated as additive gains](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1042)\
+[KI#1043 - (Provisional Pending AdvCiv-SAS event-valuation repair regression) Already revealed resources retain full force-reveal value](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1043)\
+[KI#1044 - (Provisional Pending AdvCiv-SAS UWAI repair regression) Asymmetric land clashes average an unavailable distance](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1044)\
+[KI#1045 - (Provisional Pending AdvCiv-SAS Permanent-Alliance repair regression) Transient UWAI state is cleared before target migration](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1045)\
+[KI#1046 - (Provisional Pending AdvCiv-SAS cargo-automation repair regression) Carrier cancellation omits automated air cargo](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1046)\
+[KI#1047 - (Provisional Pending inherited BtS carrier-automation defect) Carrier Explore mixes head-unit cargo with group-wide automation](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1047)\
+[KI#1048 - (Provisional Pending inherited BtS/K-Mod/AdvC amphibious scope defect) One carrier can land another carrier's grouped cargo](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1048)\
+[KI#1049 - (Provisional Pending AdvCiv-SAS air-rebase repair regression) Recon is cleared before shared destination capacity is consumed](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1049)\
+[KI#1050 - (Provisional Pending Architectural AdvCiv-SAS UWAI repair regression) GreedForSpace dedup state leaks across agent teammates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1050)\
+[KI#1051 - (Provisional Pending AdvCiv-SAS UWAI repair regression) HiredHand historical-role utility repeats across agent teammates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1051)\
+[KI#1052 - (Provisional Pending inherited AdvC HiredHand defect) Ally-hire obligation repeats across target teammates](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1052)\
+[KI#1053 - (Provisional Pending AdvCiv-SAS UWAI repair regression) KingMaking uses the target team leader's personal attitude](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1053)\
+[KI#1054 - (Provisional Pending inherited Base AdvCiv KingMaking defect) Pre-launch capital loss falsely eliminates a Space4 contender](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1054)\
+[KI#1055 - (Provisional Pending AdvCiv-SAS war-weariness repair regression) Dead-owner values freeze through elimination](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1055)\
+[KI#1056 - (Provisional Pending AdvCiv-SAS Permanent-Alliance repair regression) Historical identity migration skips dead outsiders](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1056)\
+[KI#1057 - (Provisional Pending AdvCiv-SAS Permanent-Alliance repair regression) Contact and first-contact migration skip dead outsiders](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1057)\
+[KI#1058 - (Provisional Pending AdvCiv-SAS Espionage repair regression) The first generic Spy can block an eligible grouped Spy](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1058)\
+[KI#1059 - (Provisional Pending UI AdvCiv-SAS perspective defect) Info Screen power hover uses the real active player](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1059)\
+[KI#1060 - (Provisional Pending UI AdvCiv-SAS replay repair regression) Timeline reuses another observer's filtered replay](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1060)\
+[KI#1061 - (Provisional Pending inherited AdvC starting-position regression) A preassigned teammate blocks later fallback assignment](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1061)\
+[KI#1062 - (Provisional Pending UI mixed inherited/AdvCiv-SAS localization defect) Four persistent Main Interface labels remain stale](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1062)\
+[KI#1063 - (Provisional Pending UI AdvCiv-SAS display defect) Culture Breakdown omits slider and process culture](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1063)\
+[KI#1064 - (Provisional Pending Team Battleground regeneration defect) Start assignment mixes alive and ever-alive populations](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1064)\
+[KI#1065 - (Provisional Pending inherited Custom Continents regeneration defect) One-Per-Team producer and consumer cross different team thresholds](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1065)\
+[KI#1066 - (Provisional Pending UI AdvCiv-SAS font-migration regression) Great Person fitting measures a different font than it renders](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1066)\
+[KI#1067 - (Provisional Pending UI AdvCiv-SAS Domestic Advisor repair regression) Debug-selected Free Colony availability executes for the active player](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1067)\
+[KI#1068 - (Provisional Pending audit cursor) Chronological repair-history pass remains active](/_1_AdvCiv-SAS/Docs/README_Known_Issues.md#ki-1068)\
 
 <a id="ki-1"></a>
 
@@ -18416,8 +18449,338 @@ Found as F713/provisional KI#1034 during ChatGPT-5.6-Sol's C031-WIP682 post-prim
 
 <a id="ki-1035"></a>
 
-## KI#1035 - (Provisional Pending audit cursor) Post-primary cross-file and deferred-note pass remains active
+## KI#1035 - (Provisional Pending AdvCiv-SAS maintenance repair regression) Vassal city loss refreshes master maintenance before deletion
 
-All 169 current `.cpp` files are complete at C031-WIP676. Reserved for F714 while the post-primary pass continues mining the strongest proved/deferred current-live notes and cross-file/data/API seams after F708-F713 were promoted as KI#1029-KI#1034.
+The KI#789 repair refreshes a vassal master's maintenance from `CvTeam::changeNumCities(-1)`, but city destruction reaches that hook before `CvPlayer::deleteCity` removes the doomed city from the vassal's authoritative `m_cities` container. The refresh therefore still sees the old vassal city count; unlike founding/acquisition `+1`, no later ordinary loss/raze refresh repairs the master's cached maintenance.
 
-Reconciled from ChatGPT-5.6-Sol's C031-WIP682 continuation cursor with the help of GPT-5.6-Sol, thanks.
+The inherited missing-invalidation root remains KI#789; practical 6419 introduced this asymmetric SAS repair ordering. Pending refreshing the master after player-city removal, without broadly reordering the established city-kill transaction.
+
+Found as F714/provisional KI#1035 during ChatGPT-5.6-Sol's C031-WIP687 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1036"></a>
+
+## KI#1036 - (Provisional Pending inherited BtS/K-Mod/AdvC AI valuation defect left incomplete by SAS) Recovered Conscript and Defy-Resolution anger layers count as one citizen
+
+`CvCityAI::AI_yieldValue` adds the number of temporary-anger timer layers recovered before growth directly to future happiness. That is dimensionally correct for Hurry anger, but current Conscript and Defy-Resolution layers represent 3 and 5 angry population respectively; recovering one such layer can therefore restore 3 or 5 population of happiness headroom while the evaluator credits only 1.
+
+BtS, K-Mod and Base AdvC already used the one-citizen assumption. Practical 6426 repaired the timing/layer-count defects in KI#853, KI#854, KI#858 and KI#860 but retained the inherited magnitude error. Pending forecasting the actual recovered unhappy-population contribution through the authoritative anger arithmetic rather than treating every source layer equally.
+
+Found as F715/provisional KI#1036 during ChatGPT-5.6-Sol's C031-WIP689 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1037"></a>
+
+## KI#1037 - (Provisional Pending AdvCiv-SAS Worker AI regression) Productive-feature Phase 0 ignores other affected cities
+
+The SAS productive-feature Phase-0 Worker override rejects a Forest removal only when the chop-production city would make or worsen a current health/happiness deficit. A shared-radius Forest affects every nearby qualifying city, so the chosen production city can retain its rounded health while another same-team city loses a full healthy population and becomes unhealthy.
+
+Practical 6402 introduced this default-enabled Phase-0 gate; Base AdvC has no equivalent producer. Pending preserving city-specific chop-hammer assignment while validating the feature transition against every affected same-team city before classifying the plot as safely expendable.
+
+Found as F716/provisional KI#1037 during ChatGPT-5.6-Sol's C031-WIP699 current-tail audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1038"></a>
+
+## KI#1038 - (Provisional Pending AdvCiv-SAS UWAI repair regression) Non-capital foreign city changes leave observer target values stale
+
+The KI#554 repair rebuilds an observer's UWAI city cache when its own city set changes or a foreign capital changes. Ordinary foreign non-capital creation/destruction can also change every surviving target city's cached `m_iTargetValue` through owner city counts and production ranks, yet observers only add/remove the changed wrapper and resort using the surviving stale values.
+
+The inherited invalidation root remains KI#554; practical 6373 made its SAS observer optimization too narrow. Pending recomputing affected surviving target values and resorting, or safely rebuilding eligible observer caches, for both foreign city creation and destruction.
+
+Found as F717/provisional KI#1038 during ChatGPT-5.6-Sol's C031-WIP707 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1039"></a>
+
+## KI#1039 - (Provisional Pending AdvCiv-SAS assault repair regression) Gunship-only cargo can authorize an impossible city invasion
+
+KI#529 replaced broad cargo counts with `getCargoThatCanAttack`, but `canAttack()` includes the current Gunship even though `bNoCapture=1`. A Gunship-only assault transport can consequently authorize a declaration and target an undefended coastal city; after war begins, the Gunship can neither attack a nonexistent defender nor enter and capture the enemy city.
+
+The inherited/SAS-amplified capability root remains KI#529; practical 6372 repaired civilian-cargo false positives but not city-capture capability. Pending using target-local post-declaration landing legality for assault-war decisions, without weakening the separate strategic-pressure census where a Gunship remains genuine military cargo.
+
+Found as F718/provisional KI#1039 during ChatGPT-5.6-Sol's C031-WIP708 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1040"></a>
+
+## KI#1040 - (Provisional Pending AdvCiv-SAS smart-Bombard repair regression) Undefended cities exclude every legal immediate capturer
+
+KI#530's repaired human smart-Bombard attacker census unconditionally uses attack-only `canMoveInto(target, true)`. Against an undefended city that form requires a defender to fight, so every ordinary unit that can legally enter and capture the city is excluded; the intended easy-capture ordering state becomes unreachable exactly in the zero-defender case.
+
+The inherited ordering root remains KI#530; practical 6356 correctly added same-owner/current-movement safeguards but applied the defended-target predicate too broadly. Pending preserving those filters while using immediate legal capture entry for undefended targets.
+
+Found as F719/provisional KI#1040 during ChatGPT-5.6-Sol's C031-WIP710 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1041"></a>
+
+## KI#1041 - (Provisional Pending AdvCiv-SAS trade-rounding repair regression) An out-of-bounds exact multiple hides the adjacent legal value
+
+The KI#685 bounded trade-rounding repair makes both candidate values equal the original whenever the requested value is already an exact `DIPLOMACY_VALUE_REMAINDER` multiple. If that original lies outside the permitted interval, a legal adjacent multiple is never tested—for example, requested 100 with upper bound 97 misses 95 and can skip a valid gold counterproposal.
+
+The inherited destructive-fallback root remains KI#685; practical 6340 fixed it but introduced/retained this exact-multiple boundary. Pending retaining the no-mutation-until-valid invariant while selecting the neighboring multiple toward the interval whenever the exact original is out of bounds.
+
+Found as F720/provisional KI#1041 during ChatGPT-5.6-Sol's C031-WIP716 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1042"></a>
+
+## KI#1042 - (Provisional Pending AdvCiv-SAS event-valuation repair regression) PlotExtraYield absolute values are treated as additive gains
+
+KI#681 moved `PlotExtraYield` into AI event valuation before its consumers, but adds the configured EventInfo value as a new yield gain. Runtime `CvMap::setPlotExtraYield` stores that number as an absolute per-plot value, so a later event that writes +1 over an existing +1 produces no change while the AI still assigns positive permanent-yield value.
+
+The inherited late-ordering root remains KI#681; practical 6339 made the value effective without converting it to the runtime delta. Pending valuing configured absolute value minus the plot's current stored extra yield for both worked and unworked plots.
+
+Found as F721/provisional KI#1042 during ChatGPT-5.6-Sol's C031-WIP717 repair-side audit, including the shipped Truffles/Antelope/Great Beast chain; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1043"></a>
+
+## KI#1043 - (Provisional Pending AdvCiv-SAS event-valuation repair regression) Already revealed resources retain full force-reveal value
+
+KI#676 correctly changed event valuation to read `BonusRevealed`, but grants the full resource-reveal value without checking whether the team already reveals that bonus through technology. The shipped A Man Named Jed event can therefore make an AI pay gold to force-reveal Oil after Combustion, despite producing no new current or ordinary future information.
+
+The inherited wrong-field root remains KI#676; practical 6338 repaired the field identity but not the actual state transition. Pending valuing only a force reveal that changes the team's effective reveal state.
+
+Found as F722/provisional KI#1043 during ChatGPT-5.6-Sol's C031-WIP718 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1044"></a>
+
+## KI#1044 - (Provisional Pending AdvCiv-SAS UWAI repair regression) Asymmetric land clashes average an unavailable distance
+
+KI#591's clash repair averages land-only deployment distances for both sides whenever a clash is not fleet-only, while the inherited mode predicate requires only one side to have a qualifying land route. The other side can therefore contribute the new unavailable `-1` sentinel to physical-distance arithmetic.
+
+The inherited mixed-route representation root remains KI#591; practical 6315 introduced the separate land-distance metric but not a safe asymmetric clash contract. Pending selecting a valid per-side metric consistent with each available route, or strengthening the clash-mode predicate, and never using `-1` in arithmetic.
+
+Found as F723/provisional KI#1044 during ChatGPT-5.6-Sol's C031-WIP739 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1045"></a>
+
+## KI#1045 - (Provisional Pending AdvCiv-SAS Permanent-Alliance repair regression) Transient UWAI state is cleared before target migration
+
+KI#551 migrates an absorbed Permanent-Alliance team's outsider target keys only after player reassignment has reduced that team's alive count to zero. Normal war-ending teardown has already cleared sponsored-war bounty/sponsor state and human capitulation readiness by then, so those advertised migrations see no source state; only the finalized past-war history remains available.
+
+The inherited one-way target-key omission remains KI#551; practical 6302 introduced this repair ordering, and later KI#562 makes the preceding cleanup explicit rather than curing it. Pending snapshotting the transient absorbed-target state before teardown or otherwise transferring it without disturbing final past-war accounting.
+
+Found as F724/provisional KI#1045 during ChatGPT-5.6-Sol's C031-WIP752 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1046"></a>
+
+## KI#1046 - (Provisional Pending AdvCiv-SAS cargo-automation repair regression) Carrier cancellation omits automated air cargo
+
+KI#477 reused the land-only KI#476 cargo helper when a transport changes to `NO_AUTOMATE`. That narrows BtS's all-cargo cancellation behavior and leaves ordinary automated air cargo active when its sole carrier's automation stops, even though the cross-transport ownership correction itself is valid.
+
+The inherited cross-transport group-scope root remains KI#477; practical 6282 introduced this domain-narrowing SAS repair regression. Pending applying cancellation to deduplicated cargo groups exclusively carried by the current transport group across all supported cargo domains.
+
+Found as F725/provisional KI#1046 during ChatGPT-5.6-Sol's C031-WIP772 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1047"></a>
+
+## KI#1047 - (Provisional Pending inherited BtS carrier-automation defect) Carrier Explore mixes head-unit cargo with group-wide automation
+
+Carrier Explore is selection-group automation, but the inherited propagation block inspects only the sea group head's aircraft and then automates each admitted aircraft's entire selection group. It can therefore omit aircraft carried by non-head transports and can also automate grouped aircraft physically carried by unrelated transport groups.
+
+The block originates in Firaxis BtS and survives through K-Mod, Base AdvC and SAS; Vanilla and Warlords lack it. Pending enumerating cargo across every current sea-group transport and mutating only deduplicated air groups whose relevant carried members belong to that transport group.
+
+Found as F726/provisional KI#1047 during ChatGPT-5.6-Sol's C031-WIP773 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1048"></a>
+
+## KI#1048 - (Provisional Pending inherited BtS/K-Mod/AdvC amphibious scope defect) One carrier can land another carrier's grouped cargo
+
+Amphibious execution can correctly qualify one land unit physically carried by transport group A, then push the landing mission onto that unit's entire selection group. Same-plot land cargo carried by separate transport groups can legally share a group, so ordering A can also unload or attack with grouped cargo still carried by untouched transport group B.
+
+The group-wide mission push is inherited from Firaxis/K-Mod/AdvC; practical 6281's KI#472 ownership test fixes its original false-success root but exposes rather than creates this execution-scope sibling. Pending restricting the executed cargo participants to the current sea transport group while preserving valid cargo grouping and mission semantics.
+
+Found as F727/provisional KI#1048 during ChatGPT-5.6-Sol's C031-WIP774 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1049"></a>
+
+## KI#1049 - (Provisional Pending AdvCiv-SAS air-rebase repair regression) Recon is cleared before shared destination capacity is consumed
+
+KI#471 clears recon state for every grouped aircraft that independently passes `canMoveInto` before movement begins. With one destination air-capacity slot left, two Fighters can both pass that preflight test; the first consumes the slot, the second remains behind after a fresh execution-time failure, but both have already lost their recon plots.
+
+The inherited head-only recon root remains KI#471; practical 6280 introduced this shared-capacity participation mismatch. Pending clearing recon only for aircraft that actually rebase, without reverting the repaired per-member checks.
+
+Found as F728/provisional KI#1049 during ChatGPT-5.6-Sol's C031-WIP775 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1050"></a>
+
+## KI#1050 - (Provisional Pending Architectural AdvCiv-SAS UWAI repair regression) GreedForSpace dedup state leaks across agent teammates
+
+KI#454 deduplicates rival teammates' repeated physical settlement plots through `GreedForSpace::m_countedSites`, but one aspect object is reused across every member of the evaluating agent team and its set is not reset. The first agent member to encounter a plot therefore suppresses later teammates from applying their different player-local city/site and amortization values to it.
+
+Base AdvC contains the original rival-side duplicate-site root but not this persistent set. Practical 6278 introduced the SAS lifetime mismatch. Pending an explicit team/scenario ownership rule that values each physical opportunity once without assigning it implicitly to whichever teammate iterates first.
+
+Found as F729/provisional KI#1050 during ChatGPT-5.6-Sol's C031-WIP777 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1051"></a>
+
+## KI#1051 - (Provisional Pending AdvCiv-SAS UWAI repair regression) HiredHand historical-role utility repeats across agent teammates
+
+KI#451 canonicalizes the target side of HiredHand's historical-role term, but `WarEvaluator` still evaluates the same aspect for every member of the agent team. Because the term uses the same team-vs-team war counter and elapsed-game-turn state, a two-member agent team receives twice the one-member team's obligation solely from its player partition.
+
+The inherited target-member repetition remains KI#451; practical 6277 fixed that dimension but left the agent-member dimension. Pending charging this team-owned historical-role term once through a deterministic eligible AI representative or coherent team-level evaluation, without suppressing the genuinely player-owned sponsorship branches.
+
+Found as F730/provisional KI#1051 during ChatGPT-5.6-Sol's C031-WIP778 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1052"></a>
+
+## KI#1052 - (Provisional Pending inherited AdvC HiredHand defect) Ally-hire obligation repeats across target teammates
+
+HiredHand's separate “we hired an ally” branch remains inside every rival-player pass even though `sponsorAgainst(eTheirTeam)` and the resulting fight-along obligation are target-team state. Normal hired-war bookkeeping also broadcasts the fallback memory to each attacked team member, so one paid war against a two-member target can contribute the same obligation twice.
+
+This branch is inherited from AdvC and was intentionally left outside practical 6277's KI#451 target-side repair because it mixes team sponsorship with player memories. Pending aggregating whether any target member supplies the fallback evidence, then charging the target-team obligation once.
+
+Found as F731/provisional KI#1052 during ChatGPT-5.6-Sol's C031-WIP778 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1053"></a>
+
+## KI#1053 - (Provisional Pending AdvCiv-SAS UWAI repair regression) KingMaking uses the target team leader's personal attitude
+
+KI#433 prevents repeated team-owned KingMaking state by evaluating only the target team's administrative leader, but the next gate still reads the current agent player's attitude toward that exact rival player. Two otherwise identical Permanent Alliances can therefore produce or erase the whole coalition value merely because a Friendly rather than Annoyed teammate is selected as leader.
+
+Base AdvC has the broader player/team modeling root but not this leader guard; practical 6272 introduced the representative leak. Pending retaining once-per-target-team ownership while defining an explicit attitude aggregation rather than equating the administrative leader with team diplomacy.
+
+Found as F732/provisional KI#1053 during ChatGPT-5.6-Sol's C031-WIP783 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1054"></a>
+
+## KI#1054 - (Provisional Pending inherited Base AdvCiv KingMaking defect) Pre-launch capital loss falsely eliminates a Space4 contender
+
+KingMaking drops a stage-4 Space candidate whenever the military scenario predicts loss of its current capital. Before launch there is no active victory countdown: the capital relocates and completed spaceship Projects survive, so the team can still finish and launch despite being removed from the predicted winner set.
+
+Base AdvC retains this K-Mod-era shortcut; practical 6272 did not introduce it. Pending making capital loss categorically invalidate Space4 only when an active Space-victory countdown would actually trigger `resetVictoryProgress`, while treating a pre-launch loss as at most a softer setback.
+
+Found as F733/provisional KI#1054 during ChatGPT-5.6-Sol's C031-WIP783 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1055"></a>
+
+## KI#1055 - (Provisional Pending AdvCiv-SAS war-weariness repair regression) Dead-owner values freeze through elimination
+
+KI#415 restores decay for an alive team's war-weariness value against a dead target, but decay still runs only from the owner team's alive-only `doTurn`. The reciprocal dead owner's value therefore freezes for the whole elimination interval and can return as obsolete asymmetric war-weariness if that civilization revives and fights the survivor again.
+
+The inherited dead-target iterator root remains KI#415; its SAS repair does not cover the distinct dead-owner lifecycle. Pending aging retained directional values while their owner is dead or equivalently normalizing them on elimination/revival with the same decay semantics, rather than simply erasing history.
+
+Found as F734/provisional KI#1055 during ChatGPT-5.6-Sol's C031-WIP790 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1056"></a>
+
+## KI#1056 - (Provisional Pending AdvCiv-SAS Permanent-Alliance repair regression) Historical identity migration skips dead outsiders
+
+KI#411 migrates the absorbed team's persistent `hasSeen` identity history through a Permanent Alliance, but iterates only currently alive outsider teams. A dead outsider's retained knowledge in either direction remains keyed to the obsolete absorbed team, so later revival can make the surviving alliance or revived civilization forget an identity it historically knew.
+
+The inherited K-Mod identity-loss root remains KI#411; its SAS repair is complete for live outsiders but leaves this revival boundary. Pending unioning persistent `hasSeen` state across every relevant ever-alive outsider while retaining alive-only restrictions for neighboring active side effects.
+
+Found as F735/provisional KI#1056 during ChatGPT-5.6-Sol's C031-WIP792 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1057"></a>
+
+## KI#1057 - (Provisional Pending AdvCiv-SAS Permanent-Alliance repair regression) Contact and first-contact migration skip dead outsiders
+
+KI#401 preserves `hasMet` and earliest first-contact turns for live outsiders during Permanent-Alliance absorption, but its outsider list is alive-only. If an already-met civilization is dead during the merge, both directions of its persistent contact state remain stranded on the absorbed team ID; after revival, the survivor can behave as if contact never occurred.
+
+The inherited AdvC first-contact migration root remains KI#401; the SAS repair omits the dead-outsider lifecycle. Pending directly unioning durable contact/timestamp fields for relevant ever-alive dead slots without firing inappropriate live-contact side effects, while retaining normal `meet` behavior for live teams.
+
+Found as F736/provisional KI#1057 during ChatGPT-5.6-Sol's C031-WIP794 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1058"></a>
+
+## KI#1058 - (Provisional Pending AdvCiv-SAS Espionage repair regression) The first generic Spy can block an eligible grouped Spy
+
+KI#398 now finds a Spy rather than accepting an arbitrary movable group head, but the helper knows neither the selected Espionage mission nor its target. Grouped Spies can differ in stationary discounts and exact affordability, so the first generic Spy can hide a mission that a later selected Spy could perform; execution can also expose that first Spy to interception before final mission-specific rejection and then stop without trying the eligible Spy.
+
+The inherited BtS mixed-group actor root remains KI#398; its SAS repair uses a still-too-broad actor population. Pending selecting or aggregating Spies that pass `canDoEspionageMission` for the exact mission/target and validating that eligibility before interception, while preserving one successful Spy action per command.
+
+Found as F737/provisional KI#1058 during ChatGPT-5.6-Sol's C031-WIP797 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1059"></a>
+
+## KI#1059 - (Provisional Pending UI AdvCiv-SAS perspective defect) Info Screen power hover uses the real active player
+
+The Info Screen Score table can display an allowed debug/vassal advisor perspective B, but its dedicated power-ratio widget carries only the target and delegates to scoreboard help that hardcodes the real active player A. A visible B-vs-C ratio can therefore receive A-vs-C hover percentages and espionage-threshold explanations.
+
+This is an AdvCiv-SAS Score-tab widget/caller contract defect exposed while reviewing the otherwise-valid KI#388 repair; the ordinary scoreboard correctly belongs to the real active player. Pending carrying the selected advisor perspective explicitly and using it for both ratio and espionage help.
+
+Found as F738/provisional KI#1059 during ChatGPT-5.6-Sol's C031-WIP800 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1060"></a>
+
+## KI#1060 - (Provisional Pending UI AdvCiv-SAS replay repair regression) Timeline reuses another observer's filtered replay
+
+KI#337 correctly stores and applies historical AP/UN audience masks, but the Info Screen Timeline can reuse a non-null global replay snapshot without proving that it was built for the currently selected advisor perspective. After the end-game Replay creates a snapshot for human A, switching Timeline to allowed vassal B can leak A-only resolution rows or omit rows visible only to B.
+
+The historical-mask root remains KI#337; this is a SAS cross-context cache-ownership defect created by combining observer-filtered replay data with alternate advisor perspectives. Pending rebuilding the Timeline snapshot for the selected perspective, or storing and requiring an exact observer identity before reuse.
+
+Found as F739/provisional KI#1060 during ChatGPT-5.6-Sol's C031-WIP814 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1061"></a>
+
+## KI#1061 - (Provisional Pending inherited AdvC starting-position regression) A preassigned teammate blocks later fallback assignment
+
+AdvC's team-start fallback marks `abPlayerDone` only inside the branch that began with a null starting plot. If the first teammate already has a pre-marked start, every outer pass reaches that same unmarked member and breaks again; a later teammate can remain without any starting plot in both Debug verification and Release recovery paths.
+
+AdvC practical 2708 introduced this bookkeeping regression; K-Mod's older fallback progressed past already-started members. Pending marking a member done only after it actually has a valid start, whether pre-existing or newly found, while preserving KI#340's compact alive-team rotation.
+
+Found as F740/provisional KI#1061 during ChatGPT-5.6-Sol's C031-WIP821 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1062"></a>
+
+## KI#1062 - (Provisional Pending UI mixed inherited/AdvCiv-SAS localization defect) Four persistent Main Interface labels remain stale
+
+KI#307 refreshes ten persistent translated Main Interface fields after an in-session language change, but omits Waiting, End Turn, Waiting for You and Field-of-View text. The first three became persistent through SAS caching; the Field-of-View label was already cached in K-Mod/Base AdvC. All four continue displaying the language active when `initState` last ran.
+
+This is low priority because AdvCiv-SAS officially targets English, but it is the same live-language invalidation contract as KI#307. Pending moving the four lookups into the existing language-ID-guarded refresh helper while preserving their SAS font wrappers.
+
+Found as F741/provisional KI#1062 during ChatGPT-5.6-Sol's C031-WIP839 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1063"></a>
+
+## KI#1063 - (Provisional Pending UI AdvCiv-SAS display defect) Culture Breakdown omits slider and process culture
+
+KI#308.2 now displays the exact Culture modifier, but the custom City Screen breakdown's base rows still omit ordinary Culture-slider commerce and production converted through the shipped Build Culture process. Under No Espionage, the final Culture rate can additionally include transferred Espionage commerce absent from the decomposition, so the displayed sources need not reconcile with the exact total.
+
+The custom decomposition is SAS-specific; practical 6207 repaired only its old inferred modifier and exposed the broader source-accounting mismatch. Pending deriving rows from the same native source partition as `getBaseCommerceRateTimes100`, including an explicit process term and a clear No-Espionage policy.
+
+Found as F742/provisional KI#1063 during ChatGPT-5.6-Sol's C031-WIP840 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1064"></a>
+
+## KI#1064 - (Provisional Pending Team Battleground regeneration defect) Start assignment mixes alive and ever-alive populations
+
+Team Battleground builds compact team/player state from ever-alive participants but sizes or limits later start assignment with alive counts. After WorldBuilder regenerates a map without reviving eliminated players, the script can index an alive-sized array through a larger ever-alive team index or assign Round/Donut circle positions to dead players while omitting living ones.
+
+The existing fresh-game KI#267 and KI#288-KI#291 repairs remain valid; this is their independently reachable regeneration lifecycle sibling. Pending using one coherent participating population—practically alive players/teams—for every start-assignment structure while retaining actual sparse IDs.
+
+Found as F743/provisional KI#1064 during ChatGPT-5.6-Sol's C031-WIP848 Team Battleground repair audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1065"></a>
+
+## KI#1065 - (Provisional Pending inherited Custom Continents regeneration defect) One-Per-Team producer and consumer cross different team thresholds
+
+Custom Continents creates its One-Per-Team shuffle only when fewer than seven teams are ever alive, while `findStartingPlot` consumes it whenever at most six teams are currently alive. A game that began above the threshold, lost teams and then regenerated through WorldBuilder can therefore read an undefined shuffle; other lifecycle histories can reuse stale or undersized state.
+
+This is separate from KI#265's fresh-game sparse-ID repair and is inherited in the Custom Continents producer/consumer design. Pending making both stages use the same current participating-team population and rebuilding the shuffle for every applicable generation pass.
+
+Found as F744/provisional KI#1065 during ChatGPT-5.6-Sol's C031-WIP854 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1066"></a>
+
+## KI#1066 - (Provisional Pending UI AdvCiv-SAS font-migration regression) Great Person fitting measures a different font than it renders
+
+Maximum-types Great Person text measures each untagged candidate through `determineWidth`, but both live callers render the result under the configurable SAS Label font. Larger Label fonts can therefore admit a suffix that clips, while smaller fonts can reject one that would fit, in both the map and city Great Person bars.
+
+KI#237 correctly fixed one-candidate-late acceptance and KI#237.2 supplies the real runtime bar width; SAS's later outward font ownership/migration created the remaining measurement mismatch. Pending measuring the candidate under the same configured Label wrapper without returning nested font tags.
+
+Found as F745/provisional KI#1066 during ChatGPT-5.6-Sol's C031-WIP860 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1067"></a>
+
+## KI#1067 - (Provisional Pending UI AdvCiv-SAS Domestic Advisor repair regression) Debug-selected Free Colony availability executes for the active player
+
+KI#233 restores the standard Domestic Advisor's Free Colony/Liberate button and, in Debug mode, computes its visibility from the dropdown-selected player B. The native `WIDGET_ACTION` carries no player identity: clicking it launches and executes the Free Colony action for the real active player A, so eligibility and mutation can describe different empires.
+
+The original active-player repair remains valid; this extra perspective mismatch is SAS-specific. Pending showing this native action only when the selected Domestic perspective equals the real active player, including in Debug mode, unless a genuinely selected-player-aware executor is introduced.
+
+Found as F746/provisional KI#1067 during ChatGPT-5.6-Sol's C031-WIP864 repair-side audit; reconciled into Known Issues with the help of GPT-5.6-Sol, thanks.
+
+<a id="ki-1068"></a>
+
+## KI#1068 - (Provisional Pending audit cursor) Chronological repair-history pass remains active
+
+All 169 current `.cpp` files remain complete. Reserved for F747 after the chronological repair-history audit reached C031-WIP866 with F734-F746 promoted as KI#1055-KI#1067; practical 6176 covering KI#225 is next.
+
+Reconciled from ChatGPT-5.6-Sol's C031-WIP866 continuation cursor with the help of GPT-5.6-Sol, thanks.
