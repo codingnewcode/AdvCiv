@@ -128,12 +128,45 @@ void logSASGameRecordGoodyNoOutcome(PlayerTypes ePlayer, CvPlot const* pPlot, Cv
 class CvPlayer;
 // <!-- custom: Random-event lifecycle diagnostics pass the existing player-local trigger payload by const pointer/reference without exposing its save-layout definition through this lightweight recorder header. (ChatGPT-5.6-Sol) -->
 struct EventTriggeredData;
+// <!-- custom: Random-event city-result logging snapshots only realized city state that can otherwise disappear between periodic rows. The caller captures before/after only at level 2+, so disabled logging pays no city-query cost. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordRandomEventCityState
+{
+	SASGameRecordRandomEventCityState();
+	explicit SASGameRecordRandomEventCityState(CvCity const& kCity, EventTypes eEvent);
+	int iPopulation;
+	int iFood;
+	int iFoodYield;
+	int iProductionYield;
+	int iCommerceYield;
+	int iGoldRate;
+	int iResearchRate;
+	int iCultureRate;
+	int iEspionageRate;
+	int iOwnerCultureTimes100;
+	int iOccupationTurns;
+	int iCultureUpdateTurns;
+	int iExtraHappiness;
+	int iExtraHealth;
+	int iHurryAngerTurns;
+	int iHappinessTurns;
+	int iAngryPopulation;
+	int iHappyLevel;
+	int iUnhappyLevel;
+	int iGoodHealth;
+	int iBadHealth;
+	int iSpaceProductionModifier;
+	int iFreeSpecialistInstances;
+	BuildingTypes eBuilding;
+	int iRealBuildingCount;
+};
 // <!-- custom: Random-event trigger delivery and reply/application lifecycle are recorded at level 2+ without changing Base AdvCiv 1.14 event semantics. Realized payload details remain separate follow-up slices. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordRandomEventTriggered(CvPlayer const& kPlayer, EventTriggeredData const& kTriggeredData, char const* szDeliveryPath);
 void logSASGameRecordRandomEventNoSelection(CvPlayer const& kPlayer, EventTriggeredData const& kTriggeredData, char const* szResolution);
 void logSASGameRecordRandomEventApply(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, EventTriggeredData const* pTriggeredData, bool bUpdateTrigger, char const* szDisposition, int iCanDoEvent, int iTriggerFiredBefore, int iEventOccurredBefore);
 void logSASGameRecordRandomEventGoldResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, int iRangeLow, int iRangeHigh, int iPlayerGoldDelta, PlayerTypes eOtherPlayer, bool bGoldToPlayer);
 void logSASGameRecordRandomEventTechResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, TechTypes eTech, int iTechPercent, int iResearchBefore, int iBeakersApplied, int iResearchAfter, int iTechCost, int iCompleted);
+// <!-- custom: Preserve realized deterministic city consequences separately from EventInfo selection. This complements canonical gold/tech/lifecycle rows without dumping static XML magnitudes into RANDOM_EVENT_APPLY. Call only at level 2+ with caller-captured before/after state. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventCityResult(PlayerTypes ePlayer, PlayerTypes eAffectedPlayer, int iTriggeredId, EventTypes eEvent, char const* szScope, CvCity const& kCity, SASGameRecordRandomEventCityState const& kBefore, SASGameRecordRandomEventCityState const& kAfter);
 // <!-- custom: Successful random-event occurrence clears and delayed follow-up scheduling are durable lifecycle state, so record them only after the original chance/scope/earliest-turn logic has resolved. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordRandomEventOccurrenceCleared(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eClearedEvent, int iTriggeredId, int iClearChance, char const* szScope, TeamTypes eScopeTeam, int iScopePlayerSlots, int iScopeEverAlivePlayers, int iClearedOccurrences);
 void logSASGameRecordRandomEventCountdownScheduled(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eFollowupEvent, int iTriggeredId, int iRequestedDueTurn, int iPreviousDueTurn, int iScheduledDueTurn);

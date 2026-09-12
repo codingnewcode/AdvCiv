@@ -21,6 +21,7 @@
 #include "CvInfo_Organization.h" // <!-- custom: Needed for religion/corporation type names in game-record action rows. (GPT-5.5) -->
 #include "CvInfo_Civics.h" // <!-- custom: Needed for policy/civic names in game-record advisor rows. (ChatGPT-5.5) -->
 #include "CvInfo_Civilization.h" // <!-- custom: Needed to attribute player-wide extra happiness/health to traits instead of leaving effects from loaded-mod rules under an opaque `extra` label. (GPT-5.6-Sol) -->
+#include "CvCivilization.h" // <!-- custom: Needed to resolve civilization-specific BuildingClass types in realized random-event building/city result rows; CvPlayer/CvCity only forward-declare the runtime CvCivilization wrapper. This is a compile-time dependency only. (ChatGPT-5.6-Sol) -->
 #include "CvInfo_Tech.h" // <!-- custom: Needed for stable technology type names and XML trade-capability source mapping. (ChatGPT-5.6-Sol) -->
 #include "CvInfo_Terrain.h" // <!-- custom: Needed for terrain/feature/bonus type names in game-record context rows. (ChatGPT-5.5) -->
 #include "CvInfo_Build.h" // <!-- custom: Needed for worker build-type names and build target classification in game-record rows. (ChatGPT-5.5) -->
@@ -5713,6 +5714,75 @@ void logSASGameRecordRandomEventTechResult(CvPlayer const& kPlayer, EventTypes e
 
 // <!-- custom: Successful ClearEventChance rolls are durable EventInfo lifecycle changes, not candidate diagnostics.
 // Record only the realized clear transaction after the existing player/team/global reset loop has run, including how many scoped occurrences actually existed and were cleared. (ChatGPT-5.6-Sol) -->
+SASGameRecordRandomEventCityState::SASGameRecordRandomEventCityState() :
+		iPopulation(-1), iFood(-1), iFoodYield(-1), iProductionYield(-1), iCommerceYield(-1),
+		iGoldRate(-1), iResearchRate(-1), iCultureRate(-1), iEspionageRate(-1), iOwnerCultureTimes100(-1),
+		iOccupationTurns(-1), iCultureUpdateTurns(-1), iExtraHappiness(-1), iExtraHealth(-1),
+		iHurryAngerTurns(-1), iHappinessTurns(-1), iAngryPopulation(-1), iHappyLevel(-1), iUnhappyLevel(-1),
+		iGoodHealth(-1), iBadHealth(-1), iSpaceProductionModifier(-1), iFreeSpecialistInstances(-1),
+		eBuilding(NO_BUILDING), iRealBuildingCount(-1)
+{}
+
+SASGameRecordRandomEventCityState::SASGameRecordRandomEventCityState(CvCity const& kCity, EventTypes eEvent) :
+		iPopulation(kCity.getPopulation()), iFood(kCity.getFood()), iFoodYield(kCity.getYieldRate(YIELD_FOOD)),
+		iProductionYield(kCity.getYieldRate(YIELD_PRODUCTION)), iCommerceYield(kCity.getYieldRate(YIELD_COMMERCE)),
+		iGoldRate(kCity.getCommerceRate(COMMERCE_GOLD)), iResearchRate(kCity.getCommerceRate(COMMERCE_RESEARCH)),
+		iCultureRate(kCity.getCommerceRate(COMMERCE_CULTURE)), iEspionageRate(kCity.getCommerceRate(COMMERCE_ESPIONAGE)),
+		iOwnerCultureTimes100(kCity.getCultureTimes100(kCity.getOwner())), iOccupationTurns(kCity.getOccupationTimer()),
+		iCultureUpdateTurns(kCity.getCultureUpdateTimer()), iExtraHappiness(kCity.getExtraHappiness()),
+		iExtraHealth(kCity.getExtraHealth()), iHurryAngerTurns(kCity.getHurryAngerTimer()),
+		iHappinessTurns(kCity.getHappinessTimer()), iAngryPopulation(kCity.angryPopulation()), iHappyLevel(kCity.happyLevel()),
+		iUnhappyLevel(kCity.unhappyLevel()), iGoodHealth(kCity.goodHealth()), iBadHealth(kCity.badHealth()),
+		iSpaceProductionModifier(kCity.getSpaceProductionModifier()), iFreeSpecialistInstances(kCity.getNumGreatPeople()),
+		eBuilding(NO_BUILDING), iRealBuildingCount(-1)
+{
+	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	BuildingClassTypes const eBuildingClass = (BuildingClassTypes)kEvent.getBuildingClass();
+	if (eBuildingClass != NO_BUILDINGCLASS)
+	{
+		eBuilding = kCity.getCivilization().getBuilding(eBuildingClass);
+		if (eBuilding != NO_BUILDING)
+			iRealBuildingCount = kCity.getNumRealBuilding(eBuilding);
+	}
+}
+
+// <!-- custom: Keep deterministic EventInfo city consequences compact and realized: record before/after state only when something actually changed. Include immediate yield/commerce output so transient city consequences do not disappear before the next periodic snapshot. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventCityResult(PlayerTypes ePlayer, PlayerTypes eAffectedPlayer, int iTriggeredId, EventTypes eEvent, char const* szScope, CvCity const& kCity, SASGameRecordRandomEventCityState const& kBefore, SASGameRecordRandomEventCityState const& kAfter)
+{
+	bool const bChanged = (kBefore.iPopulation != kAfter.iPopulation || kBefore.iFood != kAfter.iFood ||
+			kBefore.iFoodYield != kAfter.iFoodYield || kBefore.iProductionYield != kAfter.iProductionYield ||
+			kBefore.iCommerceYield != kAfter.iCommerceYield || kBefore.iGoldRate != kAfter.iGoldRate ||
+			kBefore.iResearchRate != kAfter.iResearchRate || kBefore.iCultureRate != kAfter.iCultureRate ||
+			kBefore.iEspionageRate != kAfter.iEspionageRate || kBefore.iOwnerCultureTimes100 != kAfter.iOwnerCultureTimes100 ||
+			kBefore.iOccupationTurns != kAfter.iOccupationTurns || kBefore.iCultureUpdateTurns != kAfter.iCultureUpdateTurns ||
+			kBefore.iExtraHappiness != kAfter.iExtraHappiness || kBefore.iExtraHealth != kAfter.iExtraHealth ||
+			kBefore.iHurryAngerTurns != kAfter.iHurryAngerTurns || kBefore.iHappinessTurns != kAfter.iHappinessTurns ||
+			kBefore.iAngryPopulation != kAfter.iAngryPopulation || kBefore.iHappyLevel != kAfter.iHappyLevel ||
+			kBefore.iUnhappyLevel != kAfter.iUnhappyLevel || kBefore.iGoodHealth != kAfter.iGoodHealth ||
+			kBefore.iBadHealth != kAfter.iBadHealth || kBefore.iSpaceProductionModifier != kAfter.iSpaceProductionModifier ||
+			kBefore.iFreeSpecialistInstances != kAfter.iFreeSpecialistInstances || kBefore.eBuilding != kAfter.eBuilding ||
+			kBefore.iRealBuildingCount != kAfter.iRealBuildingCount);
+	if (!bChanged)
+		return;
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_CITY_RESULT turn=%d player=%d team=%d affectedPlayer=%d affectedTeam=%d triggeredId=%d event=%s scope=%s cityId=%d city=%S x=%d y=%d populationBefore=%d populationAfter=%d populationDelta=%+d foodBefore=%d foodAfter=%d foodDelta=%+d foodYieldBefore=%d foodYieldAfter=%d productionYieldBefore=%d productionYieldAfter=%d commerceYieldBefore=%d commerceYieldAfter=%d goldRateBefore=%d goldRateAfter=%d researchRateBefore=%d researchRateAfter=%d cultureRateBefore=%d cultureRateAfter=%d espionageRateBefore=%d espionageRateAfter=%d ownerCultureTimes100Before=%d ownerCultureTimes100After=%d ownerCultureTimes100Delta=%+d occupationTurnsBefore=%d occupationTurnsAfter=%d cultureUpdateTurnsBefore=%d cultureUpdateTurnsAfter=%d extraHappinessBefore=%d extraHappinessAfter=%d extraHealthBefore=%d extraHealthAfter=%d hurryAngerTurnsBefore=%d hurryAngerTurnsAfter=%d happinessTurnsBefore=%d happinessTurnsAfter=%d angryPopulationBefore=%d angryPopulationAfter=%d happyLevelBefore=%d happyLevelAfter=%d unhappyLevelBefore=%d unhappyLevelAfter=%d goodHealthBefore=%d goodHealthAfter=%d badHealthBefore=%d badHealthAfter=%d spaceProductionModifierBefore=%d spaceProductionModifierAfter=%d freeSpecialistInstancesBefore=%d freeSpecialistInstancesAfter=%d building=%s realBuildingCountBefore=%d realBuildingCountAfter=%d",
+			GC.getGame().getGameTurn(), ePlayer, (ePlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(ePlayer).getTeam()), eAffectedPlayer,
+			(eAffectedPlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(eAffectedPlayer).getTeam()), iTriggeredId, getSASGameRecordEventType(eEvent), szScope,
+			kCity.getID(), getSASGameRecordQuotedCityName(&kCity).GetCString(), kCity.getX(), kCity.getY(),
+			kBefore.iPopulation, kAfter.iPopulation, kAfter.iPopulation - kBefore.iPopulation, kBefore.iFood, kAfter.iFood, kAfter.iFood - kBefore.iFood,
+			kBefore.iFoodYield, kAfter.iFoodYield, kBefore.iProductionYield, kAfter.iProductionYield, kBefore.iCommerceYield, kAfter.iCommerceYield,
+			kBefore.iGoldRate, kAfter.iGoldRate, kBefore.iResearchRate, kAfter.iResearchRate, kBefore.iCultureRate, kAfter.iCultureRate, kBefore.iEspionageRate, kAfter.iEspionageRate,
+			kBefore.iOwnerCultureTimes100, kAfter.iOwnerCultureTimes100, kAfter.iOwnerCultureTimes100 - kBefore.iOwnerCultureTimes100,
+			kBefore.iOccupationTurns, kAfter.iOccupationTurns, kBefore.iCultureUpdateTurns, kAfter.iCultureUpdateTurns,
+			kBefore.iExtraHappiness, kAfter.iExtraHappiness, kBefore.iExtraHealth, kAfter.iExtraHealth, kBefore.iHurryAngerTurns, kAfter.iHurryAngerTurns,
+			kBefore.iHappinessTurns, kAfter.iHappinessTurns, kBefore.iAngryPopulation, kAfter.iAngryPopulation, kBefore.iHappyLevel, kAfter.iHappyLevel,
+			kBefore.iUnhappyLevel, kAfter.iUnhappyLevel, kBefore.iGoodHealth, kAfter.iGoodHealth, kBefore.iBadHealth, kAfter.iBadHealth,
+			kBefore.iSpaceProductionModifier, kAfter.iSpaceProductionModifier, kBefore.iFreeSpecialistInstances, kAfter.iFreeSpecialistInstances,
+			getSASGameRecordBuildingType(kAfter.eBuilding != NO_BUILDING ? kAfter.eBuilding : kBefore.eBuilding), kBefore.iRealBuildingCount, kAfter.iRealBuildingCount);
+}
+
+
+// <!-- custom: Building-modifier EventInfos can create durable latent state even when no current building/output changes.
+// Keep one compact realized operation row per configured modifier: selected-city modifiers retain their stored after value, empire yield/commerce modifiers name the current-city scope, and empire happiness/health modifiers retain the resolved player-level building modifier before/after. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordRandomEventOccurrenceCleared(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eClearedEvent, int iTriggeredId, int iClearChance, char const* szScope, TeamTypes eScopeTeam, int iScopePlayerSlots, int iScopeEverAlivePlayers, int iClearedOccurrences)
 {
 	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_OCCURRENCE_CLEARED turn=%d player=%d team=%d triggeredId=%d sourceEvent=%s clearedEvent=%s clearChance=%d scope=%s scopeTeam=%d scopePlayerSlots=%d scopeEverAlivePlayers=%d clearedOccurrences=%d",

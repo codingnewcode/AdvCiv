@@ -16381,6 +16381,20 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 
 	if (!kEvent.isCityEffect() && !kEvent.isOtherPlayerCityEffect())
 	{
+		// <!-- custom: Empire-scoped EventInfos can mutate every city without an individual city applyEvent call.
+		// Snapshot only when this EventInfo actually contains a deterministic city-relevant effect; ordinary gold/war/promotion/etc. events avoid the extra city scans. (ChatGPT-5.6-Sol) -->
+		bool const bLogRandomEventEmpireCityResult = (bLogRandomEvent &&
+				(kEvent.getHappy() != 0 || kEvent.getHealth() != 0 || kEvent.getHurryAnger() != 0 || kEvent.getHappyTurns() != 0 ||
+				kEvent.getFood() != 0 || kEvent.getFoodPercent() != 0 || kEvent.getPopulationChange() != 0 || kEvent.getCulture() != 0 ||
+				kEvent.getBuildingYieldChange().isAnyNonDefault() || kEvent.getBuildingCommerceChange().isAnyNonDefault() ||
+				kEvent.getBuildingHappyChange().isAnyNonDefault() || kEvent.getBuildingHealthChange().isAnyNonDefault()));
+		std::vector<std::pair<int, SASGameRecordRandomEventCityState> > aSASRandomEventCityBefore;
+		if (bLogRandomEventEmpireCityResult)
+		{
+			FOR_EACH_CITY(pSASCity, *this)
+				aSASRandomEventCityBefore.push_back(std::make_pair(pSASCity->getID(), SASGameRecordRandomEventCityState(*pSASCity, eEvent)));
+		}
+
 		if (kEvent.getHappy() != 0)
 			changeExtraHappiness(kEvent.getHappy());
 		if (kEvent.getHealth() != 0)
@@ -16524,6 +16538,17 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 							initUnit(eUnit, pUnitCity->getX(), pUnitCity->getY());
 					}
 				}
+			}
+		}
+		if (bLogRandomEventEmpireCityResult)
+		{
+			for (size_t i = 0; i < aSASRandomEventCityBefore.size(); i++)
+			{
+				CvCity const* pSASCity = getCity(aSASRandomEventCityBefore[i].first);
+				if (pSASCity == NULL)
+					continue;
+				SASGameRecordRandomEventCityState const kSASAfter(*pSASCity, eEvent);
+				logSASGameRecordRandomEventCityResult(getID(), getID(), iEventTriggeredId, eEvent, "EMPIRE", *pSASCity, aSASRandomEventCityBefore[i].second, kSASAfter);
 			}
 		}
 	}

@@ -12565,8 +12565,13 @@ void CvCity::applyEvent(EventTypes eEvent,
 	if (!canApplyEvent(eEvent, kTriggeredData))
 		return;
 
-	setEventOccured(eEvent, true);
 	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	// <!-- custom: Capture deterministic EventInfo city consequences only after the authoritative canApplyEvent gate; disabled/level-1 logging performs none of these city-state queries. (ChatGPT-5.6-Sol) -->
+	bool const bLogRandomEventCityResult = (gGameRecordLogLevel >= 2);
+	SASGameRecordRandomEventCityState kSASRandomEventCityBefore;
+	if (bLogRandomEventCityResult) kSASRandomEventCityBefore = SASGameRecordRandomEventCityState(*this, eEvent);
+
+	setEventOccured(eEvent, true);
 	if (kEvent.isCityEffect() || kEvent.isOtherPlayerCityEffect())
 	{
 		if (kEvent.getHappy() != 0)
@@ -12710,6 +12715,12 @@ void CvCity::applyEvent(EventTypes eEvent,
 	FOR_EACH_NON_DEFAULT_PAIR(kEvent.getBuildingHealthChange(), BuildingClass, int)
 	{
 		setBuildingHealthChange(perBuildingClassVal.first, perBuildingClassVal.second);
+	}
+
+	if (bLogRandomEventCityResult)
+	{
+		SASGameRecordRandomEventCityState const kSASRandomEventCityAfter(*this, eEvent);
+		logSASGameRecordRandomEventCityResult(kTriggeredData.m_ePlayer, getOwner(), kTriggeredData.m_iId, eEvent, kEvent.isCityEffect() ? "CITY" : "OTHER_PLAYER_CITY", *this, kSASRandomEventCityBefore, kSASRandomEventCityAfter);
 	}
 
 	if (bClear)
