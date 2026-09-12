@@ -7,9 +7,33 @@
 #include "CvCity.h"
 #include "CvMap.h"
 #include "CvGameTextMgr.h"
+#include "CvGameCoreUtils.h" // <!-- custom: Shared raw TradeableItems token text for SASGameRecord diplomacy deal rows. (GPT-5.6-Sol) -->
 #include "CvInfo_Civics.h"
 #include "CvInfo_Terrain.h" // just for a logBBAI call :(
 #include "BBAILog.h" // BETTER_BTS_AI_MOD, AI logging, 10/02/09, jdog5000
+#include "SASGameRecordLog.h" // <!-- custom: Structured accepted-deal and trade-item lifecycle rows are separate from BBAI diagnostics. (GPT-5.6-Sol) -->
+
+namespace
+{
+	void logSASGameRecordDealAction(CvDeal const& kDeal, CLinkList<TradeData> const& kFirstList, CLinkList<TradeData> const& kSecondList, bool bCheckAllowed, bool bMakingPeace, bool bAIRequest, TeamTypes ePeaceTradeTarget, TeamTypes eWarTradeTarget)
+	{
+		// <!-- custom: Accepted diplomacy bundles are the safest high-level hook for open borders, resources, technologies, war/peace requests, maps, and tribute/help exchanges. Build text only when callers have already gated SASGameRecord. (ChatGPT-5.5 + GPT-5.6-Sol) -->
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=DIPLO_DEAL dealId=%d first=%d second=%d checkAllowed=%d makingPeace=%d aiRequest=%d peaceTarget=%s warTarget=%s firstGives=%s secondGives=%s",
+				GC.getGame().getGameTurn(), kDeal.getID(), kDeal.getFirstPlayer(), kDeal.getSecondPlayer(), bCheckAllowed ? 1 : 0, bMakingPeace ? 1 : 0, bAIRequest ? 1 : 0, getSASTeamDiagnosticText(ePeaceTradeTarget).GetCString(), getSASTeamDiagnosticText(eWarTradeTarget).GetCString(), getSASTradeListText(kFirstList, kDeal.getFirstPlayer()).GetCString(), getSASTradeListText(kSecondList, kDeal.getSecondPlayer()).GetCString());
+	}
+
+	void logSASGameRecordDealEndAction(CvDeal const& kDeal, bool bKillTeam, bool bUpdateAttitude, PlayerTypes eCancelPlayer)
+	{
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=DIPLO_DEAL_ENDED dealId=%d first=%d second=%d cancelPlayer=%d killTeam=%d updateAttitude=%d firstGives=%s secondGives=%s",
+				GC.getGame().getGameTurn(), kDeal.getID(), kDeal.getFirstPlayer(), kDeal.getSecondPlayer(), eCancelPlayer, bKillTeam ? 1 : 0, bUpdateAttitude ? 1 : 0, getSASTradeListText(kDeal.getFirstList(), kDeal.getFirstPlayer()).GetCString(), getSASTradeListText(kDeal.getSecondList(), kDeal.getSecondPlayer()).GetCString());
+	}
+
+	void logSASGameRecordTradeItemAction(const char* szActionType, int iDealId, TradeData const& kItem, PlayerTypes eFromPlayer, PlayerTypes eToPlayer, bool bFlagA, bool bFlagB, PlayerTypes eCancelPlayer = NO_PLAYER)
+	{
+		logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s dealId=%d from=%d to=%d item=%s data=%s flagA=%d flagB=%d cancelPlayer=%d",
+				GC.getGame().getGameTurn(), szActionType, iDealId, eFromPlayer, eToPlayer, getSASTradeItemType(kItem.m_eItemType), getSASTradeDataText(kItem, eFromPlayer).GetCString(), bFlagA ? 1 : 0, bFlagB ? 1 : 0, eCancelPlayer);
+	}
+}
 
 
 CvDeal::CvDeal()
@@ -122,6 +146,8 @@ void CvDeal::announceCancel(PlayerTypes eMsgTarget, PlayerTypes eOther,
 void CvDeal::killSilent(bool bKillTeam, bool bUpdateAttitude, // </advc.036>
 	PlayerTypes eCancelPlayer) // advc.130p
 {
+	if (gGameRecordLogLevel >= 2 && (getLengthFirst() > 0 || getLengthSecond() > 0))
+		logSASGameRecordDealEndAction(*this, bKillTeam, bUpdateAttitude, eCancelPlayer);
 	FOR_EACH_TRADE_ITEM(getFirstList())
 	{
 		endTrade(*pItem, getFirstPlayer(), getSecondPlayer(), bKillTeam,
@@ -190,9 +216,12 @@ void CvDeal::addTradeItems(
 		for peace deals, and I don't think AI_dealValue will work correctly when
 		no longer at war. */
 	bool const bMakingPeace = ::atWar(eFirstTeam, eSecondTeam);
+	bool const bLogDealAction = (gGameRecordLogLevel >= 2);
+	bool const bLogTradeItems = (bLogDealAction && gGameRecordLogLevel >= 3);
 	bool bUpdateAttitude = false;
 	// advc.ctr:
 	bool const bAIRequest = (bPeaceTreaty && !bPeaceTreatyFromTrade && !bMakingPeace);
+	if (bLogDealAction) logSASGameRecordDealAction(*this, kFirstList, kSecondList, bCheckAllowed, bMakingPeace, bAIRequest, ePeaceTradeTarget, eWarTradeTarget);
 	/*  Calls to changePeacetimeTradeValue moved into a new function
 		(also for advc.ctr) */
 	if (GET_PLAYER(getSecondPlayer()).AI_processTradeValue(kFirstList, getFirstPlayer(),
@@ -289,6 +318,7 @@ void CvDeal::addTradeItems(
 			} // </advc.104>
 			bool bSave = startTrade(*pItem, getFirstPlayer(), getSecondPlayer(),
 					bMakingPeace, bPeaceTreatyImplied); // advc.ctr
+			if (bLogTradeItems) logSASGameRecordTradeItemAction("DIPLO_TRADE_ITEM", getID(), *pItem, getFirstPlayer(), getSecondPlayer(), bSave, bMakingPeace);
 			bBumpUnits = (bBumpUnits || pItem->m_eItemType == TRADE_PEACE); // K-Mod
 			if (bSave)
 				insertAtEndFirst(*pItem);
@@ -313,6 +343,7 @@ void CvDeal::addTradeItems(
 			} // </advc.104>
 			bool bSave = startTrade(*pItem, getSecondPlayer(), getFirstPlayer(),
 					bMakingPeace, bPeaceTreatyImplied); // advc.ctr
+			if (bLogTradeItems) logSASGameRecordTradeItemAction("DIPLO_TRADE_ITEM", getID(), *pItem, getSecondPlayer(), getFirstPlayer(), bSave, bMakingPeace);
 			bBumpUnits = (bBumpUnits || pItem->m_eItemType == TRADE_PEACE); // K-Mod
 
 			if (bSave)
@@ -1022,6 +1053,7 @@ void CvDeal::endTrade(TradeData trade, PlayerTypes eFromPlayer,
 			GET_PLAYER(eToPlayer).isAlive());
 	if (!bAlive)
 		bUpdateAttitude = false; // </advc>
+	if (gGameRecordLogLevel >= 3) logSASGameRecordTradeItemAction("DIPLO_TRADE_ITEM_ENDED", getID(), trade, eFromPlayer, eToPlayer, bTeam, bAlive, eCancelPlayer);
 	switch(trade.m_eItemType)
 	{
 	case TRADE_RESOURCES:
