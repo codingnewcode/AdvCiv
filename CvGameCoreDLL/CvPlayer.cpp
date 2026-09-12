@@ -16215,7 +16215,12 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 	// advc (note): This computation of iGold seems overcomplicated - but correct.
 	int const iRandomGold = getEventCost(eEvent, pTriggeredData->m_eOtherPlayer, true);
 	int iGold = getEventCost(eEvent, pTriggeredData->m_eOtherPlayer, false);
+	int const iGoldBase = iGold;
 	iGold += SyncRandNum(iRandomGold - iGold + 1);
+
+	// <!-- custom: Record the exact already-computed random-event treasury result without repeating event-cost calculation, dynamic tech selection, or RNG. (ChatGPT-5.6-Sol) -->
+	if (bLogRandomEvent && (iGoldBase != 0 || iRandomGold != 0 || iGold != 0))
+		logSASGameRecordRandomEventGoldResult(*this, eEvent, iEventTriggeredId, std::min(iGoldBase, iRandomGold), std::max(iGoldBase, iRandomGold), iGold, pTriggeredData->m_eOtherPlayer, kEvent.isGoldToPlayer());
 
 	if (iGold != 0)
 	{
@@ -16239,10 +16244,25 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 	{
 		TechTypes const eBestTech = getBestEventTech(eEvent,
 				pTriggeredData->m_eOtherPlayer);
+		int iResearchBefore = -1;
+		int iResearchAfter = -1;
+		int iTechCost = -1;
+		int iBeakers = 0;
+		int iCompleted = -1;
 		if (eBestTech != NO_TECH)
 		{
-			int const iBeakers = GET_TEAM(getTeam()).changeResearchProgressPercent(
+			if (bLogRandomEvent)
+			{
+				iResearchBefore = GET_TEAM(getTeam()).getResearchProgress(eBestTech);
+				iTechCost = GET_TEAM(getTeam()).getResearchCost(eBestTech);
+			}
+			iBeakers = GET_TEAM(getTeam()).changeResearchProgressPercent(
 					eBestTech, kEvent.getTechPercent(), getID(), TECH_ACQUISITION_RANDOM_EVENT);
+			if (bLogRandomEvent)
+			{
+				iResearchAfter = GET_TEAM(getTeam()).getResearchProgress(eBestTech);
+				iCompleted = GET_TEAM(getTeam()).isHasTech(eBestTech);
+			}
 			if (iBeakers > 0)
 			{	// advc: Was effectively itMember(getID()); previously fixed by kmodx.
 				for (MemberIter itMember(getTeam()); itMember.hasNext(); ++itMember)
@@ -16254,6 +16274,9 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				}
 			}
 		}
+		// <!-- custom: Record the actual dynamically selected research target/result after gameplay applies it; TECH_ACQUIRED remains canonical when the event completes the technology. (ChatGPT-5.6-Sol) -->
+		if (bLogRandomEvent)
+			logSASGameRecordRandomEventTechResult(*this, eEvent, iEventTriggeredId, eBestTech, kEvent.getTechPercent(), iResearchBefore, iBeakers, iResearchAfter, iTechCost, iCompleted);
 	}
 
 	if (kEvent.isGoldenAge())
