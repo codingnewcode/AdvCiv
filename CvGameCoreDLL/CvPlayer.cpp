@@ -16319,22 +16319,59 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 		bClear = (SyncRandNum(100) < kEvent.getClearEventChance(eLoopEvent));
 		if (!bClear)
 			continue;
+		int iClearScopePlayerSlots = (bLogRandomEvent ? 0 : -1);
+		int iClearScopeEverAlivePlayers = (bLogRandomEvent ? 0 : -1);
+		int iClearedOccurrences = (bLogRandomEvent ? 0 : -1);
+		char const* szClearScope = (bLogRandomEvent ? "PLAYER" : NULL);
+		TeamTypes eClearScopeTeam = NO_TEAM;
 		if (kEvent.isGlobal())
 		{
+			if (bLogRandomEvent) szClearScope = "GLOBAL";
 			for (PlayerIter<> itPlayer; itPlayer.hasNext(); ++itPlayer)
 			{
 				if (!itPlayer->isBarbarian())
+				{
+					if (bLogRandomEvent)
+					{
+						iClearScopePlayerSlots++;
+						if (itPlayer->isEverAlive()) iClearScopeEverAlivePlayers++;
+						if (itPlayer->getEventOccured(eLoopEvent) != NULL) iClearedOccurrences++;
+					}
 					itPlayer->resetEventOccured(eLoopEvent, itPlayer->getID() != getID());
+				}
 			}
 		}
 		else if (kEvent.isTeam())
 		{
+			if (bLogRandomEvent)
+			{
+				szClearScope = "TEAM";
+				eClearScopeTeam = getTeam();
+			}
 			for (MemberIter itMember(getTeam()); itMember.hasNext(); ++itMember)
 			{
+				if (bLogRandomEvent)
+				{
+					iClearScopePlayerSlots++;
+					if (itMember->isEverAlive()) iClearScopeEverAlivePlayers++;
+					if (itMember->getEventOccured(eLoopEvent) != NULL) iClearedOccurrences++;
+				}
 				itMember->resetEventOccured(eLoopEvent, itMember->getID() != getID());
 			}
 		}
-		else resetEventOccured(eLoopEvent, false);
+		else
+		{
+			if (bLogRandomEvent)
+			{
+				iClearScopePlayerSlots = 1;
+				iClearScopeEverAlivePlayers = (isEverAlive() ? 1 : 0);
+				iClearedOccurrences = (getEventOccured(eLoopEvent) != NULL ? 1 : 0);
+			}
+			resetEventOccured(eLoopEvent, false);
+		}
+		// <!-- custom: Log only a successful existing ClearEventChance roll after the original reset scope has completed.
+		// Failed candidate rolls remain intentionally absent. (ChatGPT-5.6-Sol) -->
+		if (bLogRandomEvent) logSASGameRecordRandomEventOccurrenceCleared(*this, eEvent, eLoopEvent, iEventTriggeredId, kEvent.getClearEventChance(eLoopEvent), szClearScope, eClearScopeTeam, iClearScopePlayerSlots, iClearScopeEverAlivePlayers, iClearedOccurrences);
 	}
 
 	if (pCity != NULL && kEvent.isCityEffect())
@@ -16795,13 +16832,16 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				kTriggered.m_iTurn = (GC.getGame().getSpeedPercent() *
 						kEvent.getAdditionalEventTime(eLoopEvent)) / 100 +
 						GC.getGame().getGameTurn();
+				int const iRequestedDueTurn = (bLogRandomEvent ? kTriggered.m_iTurn : -1);
 				EventTriggeredData const* pExistingTriggered = getEventCountdown(eLoopEvent);
+				int const iPreviousDueTurn = (!bLogRandomEvent || pExistingTriggered == NULL ? -1 : pExistingTriggered->m_iTurn);
 				if (pExistingTriggered != NULL)
 				{
 					kTriggered.m_iTurn = std::min(kTriggered.m_iTurn,
 							pExistingTriggered->m_iTurn);
 				}
 				setEventCountdown(eLoopEvent, kTriggered);
+				if (bLogRandomEvent) logSASGameRecordRandomEventCountdownScheduled(*this, eEvent, eLoopEvent, iEventTriggeredId, iRequestedDueTurn, iPreviousDueTurn, kTriggered.m_iTurn);
 				bDeleteTrigger = false;
 			}
 		}
