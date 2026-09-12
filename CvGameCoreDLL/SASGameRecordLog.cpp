@@ -5922,6 +5922,40 @@ void logSASGameRecordRandomEventUnitResult(PlayerTypes ePlayer, int iTriggeredId
 			bRenameApplied, (kEvent.isDisbandUnit() && !kAfter.iExists));
 }
 
+SASGameRecordRandomEventPlayerState::SASGameRecordRandomEventPlayerState() :
+		iExtraHappiness(-1), iExtraHealth(-1), iBaseFreeUnits(-1), iSpaceProductionModifier(-1), iInflationRate(-1),
+		iEspionagePointsAgainstOther(-1), eBonusRevealed(NO_BONUS), iForceRevealedBonus(-1)
+{}
+
+SASGameRecordRandomEventPlayerState::SASGameRecordRandomEventPlayerState(CvPlayer const& kPlayer, EventTypes eEvent, PlayerTypes eOtherPlayer) :
+		iExtraHappiness(kPlayer.getExtraHappiness()), iExtraHealth(kPlayer.getExtraHealth()), iBaseFreeUnits(kPlayer.getBaseFreeUnits()),
+		iSpaceProductionModifier(kPlayer.getSpaceProductionModifier()), iInflationRate(kPlayer.calculateInflationRate()),
+		iEspionagePointsAgainstOther(eOtherPlayer == NO_PLAYER ? -1 : GET_TEAM(kPlayer.getTeam()).getEspionagePointsAgainstTeam(GET_PLAYER(eOtherPlayer).getTeam())),
+		eBonusRevealed((BonusTypes)GC.getInfo(eEvent).getBonusRevealed()),
+		iForceRevealedBonus(eBonusRevealed == NO_BONUS ? -1 : GET_TEAM(kPlayer.getTeam()).isForceRevealedBonus(eBonusRevealed))
+{}
+
+// <!-- custom: Keep native player-level EventInfo consequences tied to the selected event without duplicating gold, tech, Golden Age or war rows.
+// `inflationRate` is the public realized rate rather than the private raw modifier; configured modifier deltas are included only for the three direct player-modifier XML fields. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventPlayerResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, PlayerTypes eOtherPlayer, SASGameRecordRandomEventPlayerState const& kBefore, SASGameRecordRandomEventPlayerState const& kAfter)
+{
+	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	bool const bChanged = (kBefore.iExtraHappiness != kAfter.iExtraHappiness || kBefore.iExtraHealth != kAfter.iExtraHealth ||
+			kBefore.iBaseFreeUnits != kAfter.iBaseFreeUnits || kBefore.iSpaceProductionModifier != kAfter.iSpaceProductionModifier ||
+			kBefore.iInflationRate != kAfter.iInflationRate || kBefore.iEspionagePointsAgainstOther != kAfter.iEspionagePointsAgainstOther ||
+			kBefore.iForceRevealedBonus != kAfter.iForceRevealedBonus || kEvent.getInflationModifier() != 0);
+	if (!bChanged)
+		return;
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_PLAYER_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s otherPlayer=%d otherTeam=%d playerExtraHappinessBefore=%d playerExtraHappinessAfter=%d playerExtraHealthBefore=%d playerExtraHealthAfter=%d baseFreeUnitsBefore=%d baseFreeUnitsAfter=%d configuredFreeUnitSupport=%+d spaceProductionModifierBefore=%d spaceProductionModifierAfter=%d configuredSpaceProductionModifier=%+d inflationRateBefore=%d inflationRateAfter=%d configuredInflationModifier=%+d espionagePointsAgainstOtherBefore=%d espionagePointsAgainstOtherAfter=%d espionagePointsDelta=%+d bonusRevealed=%s forceRevealedBefore=%d forceRevealedAfter=%d",
+			GC.getGame().getGameTurn(), kPlayer.getID(), kPlayer.getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent), eOtherPlayer,
+			eOtherPlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(eOtherPlayer).getTeam(), kBefore.iExtraHappiness, kAfter.iExtraHappiness,
+			kBefore.iExtraHealth, kAfter.iExtraHealth, kBefore.iBaseFreeUnits, kAfter.iBaseFreeUnits, kEvent.getFreeUnitSupport(),
+			kBefore.iSpaceProductionModifier, kAfter.iSpaceProductionModifier, kEvent.getSpaceProductionModifier(), kBefore.iInflationRate, kAfter.iInflationRate,
+			kEvent.getInflationModifier(), kBefore.iEspionagePointsAgainstOther, kAfter.iEspionagePointsAgainstOther,
+			(kBefore.iEspionagePointsAgainstOther < 0 || kAfter.iEspionagePointsAgainstOther < 0 ? -1 : kAfter.iEspionagePointsAgainstOther - kBefore.iEspionagePointsAgainstOther),
+			getSASGameRecordBonusType(kAfter.eBonusRevealed != NO_BONUS ? kAfter.eBonusRevealed : kBefore.eBonusRevealed), kBefore.iForceRevealedBonus, kAfter.iForceRevealedBonus);
+}
+
 void logSASGameRecordRandomEventOccurrenceCleared(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eClearedEvent, int iTriggeredId, int iClearChance, char const* szScope, TeamTypes eScopeTeam, int iScopePlayerSlots, int iScopeEverAlivePlayers, int iClearedOccurrences)
 {
 	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_OCCURRENCE_CLEARED turn=%d player=%d team=%d triggeredId=%d sourceEvent=%s clearedEvent=%s clearChance=%d scope=%s scopeTeam=%d scopePlayerSlots=%d scopeEverAlivePlayers=%d clearedOccurrences=%d",

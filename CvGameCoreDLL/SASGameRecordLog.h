@@ -177,6 +177,21 @@ struct SASGameRecordRandomEventUnitState
 	PromotionTypes ePromotion;
 	int iHasPromotion;
 };
+// <!-- custom: Player-level EventInfo consequences can otherwise be visible only indirectly at a later snapshot.
+// Keep this to durable native values not already covered by dedicated gold/tech/Golden-Age/war rows. (ChatGPT-5.6-Sol) -->
+struct SASGameRecordRandomEventPlayerState
+{
+	SASGameRecordRandomEventPlayerState();
+	SASGameRecordRandomEventPlayerState(CvPlayer const& kPlayer, EventTypes eEvent, PlayerTypes eOtherPlayer);
+	int iExtraHappiness;
+	int iExtraHealth;
+	int iBaseFreeUnits;
+	int iSpaceProductionModifier;
+	int iInflationRate;
+	int iEspionagePointsAgainstOther;
+	BonusTypes eBonusRevealed;
+	int iForceRevealedBonus;
+};
 // <!-- custom: Random-event trigger delivery and reply/application lifecycle are recorded at level 2+ without changing Base AdvCiv 1.14 event semantics. Realized payload details remain separate follow-up slices. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordRandomEventTriggered(CvPlayer const& kPlayer, EventTriggeredData const& kTriggeredData, char const* szDeliveryPath);
 void logSASGameRecordRandomEventNoSelection(CvPlayer const& kPlayer, EventTriggeredData const& kTriggeredData, char const* szResolution);
@@ -188,6 +203,7 @@ void logSASGameRecordRandomEventCityResult(PlayerTypes ePlayer, PlayerTypes eAff
 void logSASGameRecordRandomEventBuildingModifierResults(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, char const* szScope, CvCity const* pCity);
 // <!-- custom: Preserve concrete stored-unit random-event consequences around the existing CvUnit::applyEvent call; caller snapshots only when one of its five unit-local EventInfo fields is present. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordRandomEventUnitResult(PlayerTypes ePlayer, int iTriggeredId, EventTypes eEvent, SASGameRecordRandomEventUnitState const& kBefore, SASGameRecordRandomEventUnitState const& kAfter);
+void logSASGameRecordRandomEventPlayerResult(CvPlayer const& kPlayer, EventTypes eEvent, int iTriggeredId, PlayerTypes eOtherPlayer, SASGameRecordRandomEventPlayerState const& kBefore, SASGameRecordRandomEventPlayerState const& kAfter);
 // <!-- custom: Successful random-event occurrence clears and delayed follow-up scheduling are durable lifecycle state, so record them only after the original chance/scope/earliest-turn logic has resolved. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordRandomEventOccurrenceCleared(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eClearedEvent, int iTriggeredId, int iClearChance, char const* szScope, TeamTypes eScopeTeam, int iScopePlayerSlots, int iScopeEverAlivePlayers, int iClearedOccurrences);
 void logSASGameRecordRandomEventCountdownScheduled(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eFollowupEvent, int iTriggeredId, int iRequestedDueTurn, int iPreviousDueTurn, int iScheduledDueTurn);

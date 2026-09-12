@@ -16212,6 +16212,16 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				getCity(pTriggeredData->m_iOtherPlayerCityId);
 	}
 
+	// <!-- custom: Capture only native player-level EventInfo state that lacks another exact canonical result row.
+	// City-local happiness/health stays in the city result path; disabled/level-1 logging performs no extra player/team queries. (ChatGPT-5.6-Sol) -->
+	bool const bLogRandomEventPlayerResult = (bLogRandomEvent &&
+			(kEvent.getFreeUnitSupport() != 0 || kEvent.getInflationModifier() != 0 || kEvent.getSpaceProductionModifier() != 0 ||
+			(kEvent.getEspionagePoints() != 0 && pTriggeredData->m_eOtherPlayer != NO_PLAYER) || kEvent.getBonusRevealed() != NO_BONUS ||
+			(!kEvent.isCityEffect() && !kEvent.isOtherPlayerCityEffect() && (kEvent.getHappy() != 0 || kEvent.getHealth() != 0))));
+	SASGameRecordRandomEventPlayerState kSASRandomEventPlayerBefore;
+	if (bLogRandomEventPlayerResult)
+		kSASRandomEventPlayerBefore = SASGameRecordRandomEventPlayerState(*this, eEvent, pTriggeredData->m_eOtherPlayer);
+
 	// advc (note): This computation of iGold seems overcomplicated - but correct.
 	int const iRandomGold = getEventCost(eEvent, pTriggeredData->m_eOtherPlayer, true);
 	int iGold = getEventCost(eEvent, pTriggeredData->m_eOtherPlayer, false);
@@ -16619,6 +16629,11 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 	{
 		GET_TEAM(getTeam()).setForceRevealedBonus((BonusTypes)
 				kEvent.getBonusRevealed(), true);
+	}
+	if (bLogRandomEventPlayerResult)
+	{
+		SASGameRecordRandomEventPlayerState const kSASRandomEventPlayerAfter(*this, eEvent, pTriggeredData->m_eOtherPlayer);
+		logSASGameRecordRandomEventPlayerResult(*this, eEvent, iEventTriggeredId, pTriggeredData->m_eOtherPlayer, kSASRandomEventPlayerBefore, kSASRandomEventPlayerAfter);
 	}
 	{
 		std::vector<CvCity*> apSpreadReligionCities;
