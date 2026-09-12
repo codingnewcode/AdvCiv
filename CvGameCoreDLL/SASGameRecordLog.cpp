@@ -122,6 +122,14 @@ struct SASGameRecordGlobalPrevious
 static SASGameRecordGlobalPrevious g_kSASGameRecordGlobalPrevious;
 // <!-- custom: Victory forces an immediate full snapshot; remember its turn so the ordinary interval hook cannot duplicate the same large snapshot later that turn. Recorder-local only and reset with each log session. (ChatGPT-5.6-Sol) -->
 static int g_iSASGameRecordLastFullSnapshotTurn = -1;
+// <!-- custom: AI Auto Play/control telemetry is recorder-session state only. Keep Base AdvCiv 1.14's autoplay API and gameplay untouched while retaining one request identity and active-player-change counts for each logged run. (ChatGPT-5.6-Sol) -->
+static int g_iSASGameRecordAutoPlayRequestId = 0;
+static int g_iSASGameRecordAutoPlayRequestedTurns = 0;
+static int g_iSASGameRecordAutoPlayStartTurn = -1;
+static int g_iSASGameRecordAutoPlayStartElapsedTurn = -1;
+static PlayerTypes g_eSASGameRecordAutoPlayStartPlayer = NO_PLAYER;
+static int g_iSASGameRecordAutoPlayPlayerChanges = 0;
+static int g_iSASGameRecordTotalActivePlayerChanges = 0;
 
 // <!-- custom: Keep the portable high-level player fields first. More specialized bonus, espionage, unit-posture, worker, territory and city baselines are added with the corresponding snapshot rows rather than existing as unused state. (ChatGPT-5.6-Sol) -->
 struct SASGameRecordPlayerPrevious
@@ -670,6 +678,17 @@ static void resetSASGameRecordResearchState()
 		g_akSASGameRecordResearchPrevious[iI].ePendingCause = RESEARCH_TARGET_CHANGE_UNKNOWN;
 		g_akSASGameRecordResearchApplication[iI].bValid = false;
 	}
+}
+
+static void resetSASGameRecordControlState()
+{
+	g_iSASGameRecordAutoPlayRequestId = 0;
+	g_iSASGameRecordAutoPlayRequestedTurns = 0;
+	g_iSASGameRecordAutoPlayStartTurn = -1;
+	g_iSASGameRecordAutoPlayStartElapsedTurn = -1;
+	g_eSASGameRecordAutoPlayStartPlayer = NO_PLAYER;
+	g_iSASGameRecordAutoPlayPlayerChanges = 0;
+	g_iSASGameRecordTotalActivePlayerChanges = 0;
 }
 
 static CvString createSASGameRecordUtcTimestamp()
@@ -6365,6 +6384,69 @@ void logSASGameRecordPlayerAliveChanged(PlayerTypes ePlayer, bool bRevived)
 	logSASGameRecordRunStatus(bRevived ? "playerRevived" : "playerAppeared");
 }
 
+// <!-- custom: Base AdvCiv 1.14 has no explicit autoplay-end-cause plumbing. Record only facts available at its authoritative counter mutation instead of changing signatures merely for telemetry. Scheduled completion is identifiable from the existing no-player-status countdown transition; other endings remain conservatively labelled from current authoritative state. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordAutoPlayChanged(int iOldValue, int iNewValue, bool bChangePlayerStatus)
+{
+	if (iOldValue == iNewValue)
+		return;
+	CvGame const& kGame = GC.getGame();
+	bool const bStarted = (iOldValue <= 0 && iNewValue > 0);
+	bool const bEnded = (iOldValue > 0 && iNewValue <= 0);
+	char const* szAction = (bStarted ? "AUTOPLAY_STARTED" : (bEnded ? "AUTOPLAY_ENDED" : "AUTOPLAY_CHANGED"));
+	PlayerTypes const eActivePlayer = kGame.getActivePlayer();
+	if (bStarted)
+	{
+		g_iSASGameRecordAutoPlayRequestId++;
+		g_iSASGameRecordAutoPlayRequestedTurns = iNewValue;
+		g_iSASGameRecordAutoPlayStartTurn = kGame.getGameTurn();
+		g_iSASGameRecordAutoPlayStartElapsedTurn = kGame.getElapsedGameTurns();
+		g_eSASGameRecordAutoPlayStartPlayer = eActivePlayer;
+		g_iSASGameRecordAutoPlayPlayerChanges = 0;
+	}
+	char const* szEndCause = "-";
+	if (bEnded)
+	{
+		if (!bChangePlayerStatus && iOldValue == 1)
+			szEndCause = "SCHEDULED";
+		else if (kGame.getWinner() != NO_TEAM)
+			szEndCause = "VICTORY";
+		else if (eActivePlayer != NO_PLAYER && !GET_PLAYER(eActivePlayer).isAlive())
+			szEndCause = "ACTIVE_PLAYER_DEFEATED";
+		else szEndCause = "OTHER_OR_INTERRUPTED";
+	}
+	int const iCompletedTurns = (!bEnded || g_iSASGameRecordAutoPlayRequestedTurns <= 0 ? 0 :
+			(!bChangePlayerStatus && iOldValue == 1 ? g_iSASGameRecordAutoPlayRequestedTurns : std::max(0, g_iSASGameRecordAutoPlayRequestedTurns - iOldValue)));
+	int const iElapsedGameTurns = (g_iSASGameRecordAutoPlayStartElapsedTurn < 0 ? 0 : std::max(0, kGame.getElapsedGameTurns() - g_iSASGameRecordAutoPlayStartElapsedTurn));
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s oldTurnsLeft=%d newTurnsLeft=%d activePlayer=%d changePlayerStatus=%d requestId=%d requestedTurns=%d completedTurns=%d elapsedGameTurns=%d startTurn=%d startElapsed=%d startPlayer=%d activePlayerChanges=%d totalActivePlayerChanges=%d endCause=%s",
+			kGame.getGameTurn(), szAction, iOldValue, iNewValue, eActivePlayer, bChangePlayerStatus, g_iSASGameRecordAutoPlayRequestId, g_iSASGameRecordAutoPlayRequestedTurns, iCompletedTurns, iElapsedGameTurns,
+			g_iSASGameRecordAutoPlayStartTurn, g_iSASGameRecordAutoPlayStartElapsedTurn, g_eSASGameRecordAutoPlayStartPlayer, g_iSASGameRecordAutoPlayPlayerChanges, g_iSASGameRecordTotalActivePlayerChanges, szEndCause);
+	if (bEnded)
+	{
+		g_iSASGameRecordAutoPlayRequestedTurns = 0;
+		g_iSASGameRecordAutoPlayStartTurn = -1;
+		g_iSASGameRecordAutoPlayStartElapsedTurn = -1;
+		g_eSASGameRecordAutoPlayStartPlayer = NO_PLAYER;
+		g_iSASGameRecordAutoPlayPlayerChanges = 0;
+	}
+}
+
+void logSASGameRecordActivePlayerChanged(PlayerTypes eOldPlayer, PlayerTypes eNewPlayer)
+{
+	g_iSASGameRecordTotalActivePlayerChanges++;
+	bool const bDuringAutoPlay = (GC.getGame().getAIAutoPlay() > 0 && g_iSASGameRecordAutoPlayRequestedTurns > 0);
+	if (bDuringAutoPlay)
+		g_iSASGameRecordAutoPlayPlayerChanges++;
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=ACTIVE_PLAYER_CHANGED oldPlayer=%d newPlayer=%d autoplayActive=%d autoplayTurnsLeft=%d requestId=%d activePlayerChanges=%d totalActivePlayerChanges=%d",
+			GC.getGame().getGameTurn(), eOldPlayer, eNewPlayer, bDuringAutoPlay, GC.getGame().getAIAutoPlay(), bDuringAutoPlay ? g_iSASGameRecordAutoPlayRequestId : -1,
+			bDuringAutoPlay ? g_iSASGameRecordAutoPlayPlayerChanges : 0, g_iSASGameRecordTotalActivePlayerChanges);
+}
+
+void logSASGameRecordDebugModeChanged(bool bOldDebugMode, bool bNewDebugMode)
+{
+	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=DEBUG_MODE_CHANGED old=%d new=%d activePlayer=%d autoplayTurnsLeft=%d",
+			GC.getGame().getGameTurn(), bOldDebugMode, bNewDebugMode, GC.getGame().getActivePlayer(), GC.getGame().getAIAutoPlay());
+}
+
 void logSASGameRecordVassalState(TeamTypes eMaster, TeamTypes eVassal, bool bVassal)
 {
 	logSASGameRecord("GAME_RECORD_ACTION turn=%d type=%s master=%d vassal=%d", GC.getGame().getGameTurn(), bVassal ? "VASSALAGE_STARTED" : "VASSALAGE_ENDED", eMaster, eVassal);
@@ -6387,6 +6469,7 @@ void startSASGameRecordLogForNewGame()
 	resetSASGameRecordPlayerDurationState();
 	resetSASGameRecordGlobalPrevious();
 	resetSASGameRecordResearchState();
+	resetSASGameRecordControlState();
 	resetSASGameRecordCityLifecycleState();
 	resetSASGameRecordCombatState();
 	resetSASGameRecordBlockadeState();
@@ -6424,6 +6507,7 @@ void startSASGameRecordLogForLoadedSave()
 	resetSASGameRecordPlayerDurationState();
 	resetSASGameRecordGlobalPrevious();
 	resetSASGameRecordResearchState();
+	resetSASGameRecordControlState();
 	resetSASGameRecordCityLifecycleState();
 	resetSASGameRecordCombatState();
 	resetSASGameRecordBlockadeState();

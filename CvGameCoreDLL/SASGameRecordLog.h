@@ -166,6 +166,10 @@ void logSASGameRecordPlayerAliveChanged(PlayerTypes ePlayer, bool bRevived);
 struct VoteTriggeredData;
 void logSASGameRecordVoteTriggered(VoteTriggeredData const* pVoteTriggered);
 void logSASGameRecordVoteResult(VoteTriggeredData const* pVoteTriggered, bool bThresholdPassed, bool bPassed, bool bCancelled, qword uiDefaultedAbstain, qword uiDefiers, qword uiEndorsers);
+// <!-- custom: Recorder-only control-session actions make AI Auto Play, active-player handoffs and successful Debug-mode toggles explicit without changing Base AdvCiv's autoplay API/signatures. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordAutoPlayChanged(int iOldValue, int iNewValue, bool bChangePlayerStatus);
+void logSASGameRecordActivePlayerChanged(PlayerTypes eOldPlayer, PlayerTypes eNewPlayer);
+void logSASGameRecordDebugModeChanged(bool bOldDebugMode, bool bNewDebugMode);
 // <!-- custom: Team-relationship lifecycle actions make first contact, permanent-alliance merges and vassal-state changes explicit instead of forcing snapshot consumers to infer their exact turn. (ChatGPT-5.6-Sol) -->
 void logSASGameRecordTeamMerged(TeamTypes eSurvivingTeam, TeamTypes eAbsorbedTeam);
 void logSASGameRecordTeamMet(TeamTypes eTeam, TeamTypes eOtherTeam, bool bNewDiplo, int iX1, int iY1, int iX2, int iY2, CvPlot const* pTeamContactPlot, CvPlot const* pOtherContactPlot);

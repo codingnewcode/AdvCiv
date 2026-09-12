@@ -4565,7 +4565,11 @@ void CvGame::initScoreCalculation()
 
 void CvGame::setAIAutoPlay(int iNewValue, /* <advc.127> */ bool bChangePlayerStatus)
 {
+	int const iOldAIAutoPlay = std::max(0, m_iAIAutoPlay);
 	m_iAIAutoPlay = std::max(0, iNewValue);
+	// <!-- custom: Log only autoplay start/end or explicit player-status changes; ordinary per-turn countdown ticks remain silent. Keep Base AdvCiv's original API and mutation order unchanged. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2 && (bChangePlayerStatus || iOldAIAutoPlay == 0 || m_iAIAutoPlay == 0))
+		logSASGameRecordAutoPlayChanged(iOldAIAutoPlay, m_iAIAutoPlay, bChangePlayerStatus);
 	if (!bChangePlayerStatus)
 		return; // </advc.127>
 	// Erik <BM1>
@@ -5103,8 +5107,11 @@ void CvGame::toggleDebugMode()
 {	// <advc.135c>
 	if (!m_bDebugMode && !isDebugToolsAllowed(false))
 		return; // </advc.135c>
-	m_bDebugMode = (m_bDebugMode ? false : true);
+	bool const bOldDebugMode = m_bDebugMode;
+	m_bDebugMode = !bOldDebugMode;
 	updateDebugModeCache();
+	// <!-- custom: Record only successful Debug-mode transitions after AdvCiv's permission check. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordDebugModeChanged(bOldDebugMode, m_bDebugMode);
 
 	GC.getMap().updateVisibility();
 	GC.getMap().updateSymbols();
@@ -5279,6 +5286,8 @@ void CvGame::setActivePlayer(PlayerTypes eNewValue, bool bForceHotSeat)
 	int const iActiveNetId = (eOldActivePlayer != NO_PLAYER ?
 			GET_PLAYER(eOldActivePlayer).getNetID() : -1);
 	GC.getInitCore().setActivePlayer(eNewValue);
+	// <!-- custom: The active-player identity has now changed authoritatively; retain control handoffs independently from autoplay start/end rows. (ChatGPT-5.6-Sol) -->
+	if (gGameRecordLogLevel >= 2) logSASGameRecordActivePlayerChanged(eOldActivePlayer, eNewValue);
 	if (eNewValue != NO_PLAYER && // K-Mod
 		GET_PLAYER(eNewValue).isHuman() &&
 		(isHotSeat() || isPbem() || bForceHotSeat))
