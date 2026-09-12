@@ -3694,6 +3694,11 @@ AI, UI, logging, or other modifications first developed in AdvCiv-SAS (Simple Ad
 		<DefineName>SAS_DO_TURN_FORCE_DEFENSE_BUILDINGS</DefineName>
 		<iDefineIntVal>1</iDefineIntVal>
 	</Define>
+	<!-- custom: 1 skips emergency defense (e.g. so far Walls/Castle) overrides in sheltered cities: no immediate land danger and no known current/chosen-war land border in the BFC plus its one-tile perimeter. Ocean-coastal cities remain eligible during an active overseas/non-land-area war, or when the existing AI water-danger check sees a nearby enemy naval unit within 2 tiles. Ordinary building choices and existing production are unaffected. 0 restores the previous emergency location policy for comparison; restart Civ4 after changing this cached define. (GPT-6 + ChatGPT-5.6-Sol) -->
+	<Define>
+		<DefineName>SAS_DO_TURN_FORCE_DEFENSE_BUILDINGS_SKIP_SHELTERED_ENABLE</DefineName>
+		<iDefineIntVal>1</iDefineIntVal>
+	</Define>
 	<!-- custom: adjust as per your xml if your defense buildings to urgently build are not the walls and the castle -->
 	<Define>
 		<DefineName>SAS_DO_TURN_FORCE_DEFENSE_BUILDINGS_1_BUILDINGCLASS_FULL_NAME</DefineName>

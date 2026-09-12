@@ -551,7 +551,7 @@ void CvCity::kill(bool bUpdatePlotGroups, /* advc.001: */ bool bBumpUnits)
 // Helper: attempts to force-construct a single building
 // Returns true if we set an emergency building order (or one was already queued)
 // <!-- custom: code comments use Harbor building since it's the building whose code was used here, based on previously working code that was directly in CvCity::doTurn. Credit: Claude Sonnet 4.5. (Claude code Sonnet 4.5 (summarized)) -->
-bool CvCity::SASTryEmergencyBuilding(BuildingClassTypes eBuildingClass)
+bool CvCity::SASTryEmergencyBuilding(BuildingClassTypes eBuildingClass, bool* pbDefenseBlockedByShelter, bool bLandDanger)
 {
 	if (eBuildingClass == NO_BUILDINGCLASS)
 		return false;
@@ -573,6 +573,65 @@ bool CvCity::SASTryEmergencyBuilding(BuildingClassTypes eBuildingClass)
 
 	if (!canConstruct(eBuilding, false, false, true))
 		return false;
+
+	// <!-- custom: Empire-wide war/power triggers forced defense buildings in sheltered cities, delaying economic development; only restrict this emergency override, leaving ordinary building choices available.
+	// Check shelter only after an emergency building is otherwise legal; callers have already applied their turn, war, hammer and water-share gates.
+	// The earlier doTurn location scan also ran when both buildings were already built, unavailable or too early, producing misleading counts of skipped city-turns.
+	// A non-NULL result pointer opts the defense callers into this filter and lets a sheltered Walls rejection skip Castle too, without a second location scan. Harbor/Port callers keep their existing behavior.
+	// The BFC-only test missed Persian enemy land immediately outside Mound City's BFC corner. Include the BFC and every adjacent plot (the 7x7 square except its four far corners), but only known current/chosen-war territory in the city's land area; nearby islands across water do not establish a land border.
+	// Use revealed ownership so fogged culture/city changes do not leak information. A chosen-war border matters too because the broad enemy-power trigger already treats planned targets as strategically relevant.
+	// Ocean-coastal cities are not treated as sheltered during an active war when this area is not a land-war area; otherwise an overseas war could make every inland city look exposed while the actually reachable coastal cities are suppressed.
+	// This is a same-landmass/local-exposure check, not pathfinding through mountains or other movement obstacles. AI_isDanger alone misses naval threats because it only scans the city land area. (GPT-6 + ChatGPT-5.6-Sol) -->
+	if (pbDefenseBlockedByShelter != NULL)
+	{
+		static const bool bSkipShelteredDefense = GC.getDefineBOOL("SAS_DO_TURN_FORCE_DEFENSE_BUILDINGS_SKIP_SHELTERED_ENABLE");
+		static const int iOceanThreshold = GC.getDefineINT(CvGlobals::MIN_WATER_SIZE_FOR_OCEAN);
+		CvPlayerAI const& kOwner = GET_PLAYER(getOwner());
+		CvTeamAI const& kOurTeam = GET_TEAM(getTeam());
+		bool const bOceanCoastal = isCoastal(iOceanThreshold);
+		bool bShelteredDefense = (bSkipShelteredDefense && !bLandDanger);
+		CvPlot const* pEnemyBorderPlot = NULL;
+		TeamTypes eEnemyBorderTeam = NO_TEAM;
+		if (bShelteredDefense)
+		{
+			for (int iDX = -3; iDX <= 3 && bShelteredDefense; ++iDX)
+			{
+				for (int iDY = -3; iDY <= 3; ++iDY)
+				{
+					if (abs(iDX) == 3 && abs(iDY) == 3)
+						continue;
+					CvPlot const* pLoopPlot = ::plotXY(getX(), getY(), iDX, iDY);
+					if (pLoopPlot == NULL || pLoopPlot->isWater() || !pLoopPlot->isArea(getArea()))
+						continue;
+					TeamTypes const ePlotTeam = pLoopPlot->getRevealedTeam(getTeam(), false);
+					if (ePlotTeam != NO_TEAM && (kOurTeam.isAtWar(ePlotTeam) || kOurTeam.AI_isChosenWar(ePlotTeam)))
+					{
+						pEnemyBorderPlot = pLoopPlot;
+						eEnemyBorderTeam = ePlotTeam;
+						bShelteredDefense = false;
+						break;
+					}
+				}
+			}
+		}
+		bool const bStrategicNavalExposure = (bShelteredDefense && bOceanCoastal && kOurTeam.getNumWars() > 0 && !kOwner.AI_isLandWar(getArea()));
+		if (bStrategicNavalExposure)
+			bShelteredDefense = false;
+		bool const bCheckNavalDanger = (bShelteredDefense && bOceanCoastal);
+		bool const bNavalDanger = (bCheckNavalDanger && kOwner.AI_getWaterDanger(getPlot(), 2, 1) > 0);
+		if (bNavalDanger)
+			bShelteredDefense = false;
+		*pbDefenseBlockedByShelter = bShelteredDefense;
+		if (gMilitaryProductionLogLevel >= 2 && !isHuman() && !isBarbarian())
+		{
+			bool const bAlreadyQueued = (getProductionBuilding() == eBuilding);
+			char const* szDecision = (*pbDefenseBlockedByShelter ? (bAlreadyQueued ? "RELEASE_EMERGENCY_PRIORITY" : "BLOCK_NEW_ORDER") : (bAlreadyQueued ? "KEEP_EMERGENCY_PRIORITY" : "FORCE_NEW_ORDER"));
+			logBBAI("EMERGENCY_DEFENSE_BUILDING turn=%d player=%d city=%S cityId=%d building=%s decision=%s reason=%s filterEnabled=%d alreadyQueued=%d oceanCoastal=%d landDanger=%d strategicNavalExposure=%d navalDangerChecked=%d navalDanger=%d enemyLandX=%d enemyLandY=%d enemyLandTeam=%d",
+				GC.getGame().getGameTurn(), getOwner(), getName().GetCString(), getID(), GC.getInfo(eBuilding).getType(), szDecision, (*pbDefenseBlockedByShelter ? "SHELTERED" : "LOCATION_ALLOWED"), bSkipShelteredDefense, bAlreadyQueued, bOceanCoastal, bLandDanger, bStrategicNavalExposure, bCheckNavalDanger, bNavalDanger, (pEnemyBorderPlot == NULL ? -1 : pEnemyBorderPlot->getX()), (pEnemyBorderPlot == NULL ? -1 : pEnemyBorderPlot->getY()), (int)eEnemyBorderTeam);
+		}
+		if (*pbDefenseBlockedByShelter)
+			return false;
+	}
 
 	// already doing it
 	if (getProductionBuilding() == eBuilding)
@@ -755,9 +814,9 @@ void CvCity::doTurn()
 				bDanger
 			);
 
-			// Your broader trigger: strong enemy, or we’re at war and they aren’t weak, or city flagged in danger
 			if (bShouldBuildEmergencyDefenseBuildings)
 			{
+				bool bDefenseBlockedByShelter = false;
 				// First: Walls
 				if (!bEmergencyBuilding)
 				{
@@ -771,7 +830,7 @@ void CvCity::doTurn()
 						static const BuildingClassTypes eWallsClass = (BuildingClassTypes)GC.getInfoTypeForString(GC.getDefineSTRING("SAS_DO_TURN_FORCE_DEFENSE_BUILDINGS_1_BUILDINGCLASS_FULL_NAME"));
 
 						// <!-- custom: note: this helper also pushes an emergency building if it returns true -->
-						if (SASTryEmergencyBuilding(eWallsClass))
+						if (SASTryEmergencyBuilding(eWallsClass, &bDefenseBlockedByShelter, bDanger))
 						{
 							bEmergencyBuilding = true;
 						}
@@ -779,7 +838,7 @@ void CvCity::doTurn()
 				}
 
 				// Otherwise: Castle (requires Walls anyway; canConstruct handles it)
-				if (!bEmergencyBuilding)
+				if (!bEmergencyBuilding && !bDefenseBlockedByShelter)
 				{
 					static const int iSAS_DO_TURN_FORCE_DEFENSE_BUILDINGS_2_MIN_TURN_NORMAL_GAMESPEED = GC.getDefineINT("SAS_DO_TURN_FORCE_DEFENSE_BUILDINGS_2_MIN_TURN_NORMAL_GAMESPEED");
 					const int iEarlyCutoff2 = (iSAS_DO_TURN_FORCE_DEFENSE_BUILDINGS_2_MIN_TURN_NORMAL_GAMESPEED * iTrainPct) / 100;
@@ -791,7 +850,7 @@ void CvCity::doTurn()
 						static const BuildingClassTypes eCastleClass = (BuildingClassTypes)GC.getInfoTypeForString(GC.getDefineSTRING("SAS_DO_TURN_FORCE_DEFENSE_BUILDINGS_2_BUILDINGCLASS_FULL_NAME"));
 
 						// <!-- custom: note: this helper also pushes an emergency building if it returns true -->
-						if (SASTryEmergencyBuilding(eCastleClass))
+						if (SASTryEmergencyBuilding(eCastleClass, &bDefenseBlockedByShelter, bDanger))
 						{
 							bEmergencyBuilding = true;
 						}
