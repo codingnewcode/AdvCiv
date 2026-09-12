@@ -16496,6 +16496,9 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 				}
 			}
 
+			// <!-- custom: Preserve the realized empire-scoped EventInfo pillage transaction without changing Base AdvCiv 1.14's existing roll or plot-selection behavior. (GPT-5.6-Sol) -->
+			if (bLogRandomEvent) logSASGameRecordRandomEventPillageResult("EMPIRE", getID(), getID(), -1, iEventTriggeredId, eEvent, kEvent.getMinPillage(), kEvent.getMaxPillage(), iPillage, iDone);
+
 			if (NO_PLAYER != pTriggeredData->m_eOtherPlayer)
 			{
 				CvWString szBuffer = gDLL->getText("TXT_KEY_EVENT_NUM_CITY_IMPROVEMENTS_DESTROYED",

@@ -12640,6 +12640,10 @@ void CvCity::applyEvent(EventTypes eEvent,
 				}
 			}
 
+			// <!-- custom: Record the realized city-scoped EventInfo pillage transaction after the existing AdvCiv 1.14 roll/destruction loop.
+			// Keep the original BtS/AdvCiv roll semantics unchanged; the configured XML maximum is retained diagnostically even though the existing SyncRandNum(max-min) path normally treats it as exclusive. (GPT-5.6-Sol) -->
+			if (gGameRecordLogLevel >= 2) logSASGameRecordRandomEventPillageResult("CITY", kTriggeredData.m_ePlayer, getOwner(), getID(), kTriggeredData.m_iId, eEvent, kEvent.getMinPillage(), kEvent.getMaxPillage(), iNumPillage, iNumPillaged);
+
 			PlayerTypes eOtherPlayer = kTriggeredData.m_eOtherPlayer;
 			if (!kEvent.isCityEffect() && kEvent.isOtherPlayerCityEffect())
 				eOtherPlayer = kTriggeredData.m_ePlayer;
