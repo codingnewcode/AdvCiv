@@ -5885,6 +5885,43 @@ void logSASGameRecordRandomEventBuildingModifierResults(CvPlayer const& kPlayer,
 	}
 }
 
+SASGameRecordRandomEventUnitState::SASGameRecordRandomEventUnitState() :
+		iExists(0), iUnitId(-1), eUnit(NO_UNIT), eUnitAI(NO_UNITAI), iX(INVALID_PLOT_COORD), iY(INVALID_PLOT_COORD),
+		iDamage(-1), iExperience(-1), iImmobileTurns(-1), ePromotion(NO_PROMOTION), iHasPromotion(-1)
+{}
+
+SASGameRecordRandomEventUnitState::SASGameRecordRandomEventUnitState(CvUnit const& kUnit, EventTypes eEvent) :
+		iExists(1), iUnitId(kUnit.getID()), eUnit(kUnit.getUnitType()), eUnitAI(kUnit.AI_getUnitAIType()), iX(kUnit.getX()), iY(kUnit.getY()),
+		iDamage(kUnit.getDamage()), iExperience(kUnit.getExperience()), iImmobileTurns(kUnit.getImmobileTimer()),
+		ePromotion((PromotionTypes)GC.getInfo(eEvent).getUnitPromotion()),
+		iHasPromotion(ePromotion == NO_PROMOTION ? -1 : kUnit.isHasPromotion(ePromotion))
+{}
+
+// <!-- custom: Preserve the concrete stored-unit result after CvUnit::applyEvent rather than only the EventInfo's UNIT_LOCAL label.
+// A disbanded unit is represented by existsAfter=0 and sentinel after-state values; no dead object is dereferenced after the original kill. (ChatGPT-5.6-Sol) -->
+void logSASGameRecordRandomEventUnitResult(PlayerTypes ePlayer, int iTriggeredId, EventTypes eEvent, SASGameRecordRandomEventUnitState const& kBefore, SASGameRecordRandomEventUnitState const& kAfter)
+{
+	CvEventInfo const& kEvent = GC.getInfo(eEvent);
+	if (!kBefore.iExists)
+		return;
+	CvWString const szUnitNameKey(kEvent.getUnitNameKey());
+	bool const bRenameApplied = !szUnitNameKey.empty();
+	bool const bChanged = (!kAfter.iExists || kBefore.iDamage != kAfter.iDamage || kBefore.iExperience != kAfter.iExperience ||
+			kBefore.iImmobileTurns != kAfter.iImmobileTurns || kBefore.iHasPromotion != kAfter.iHasPromotion ||
+			kEvent.isDisbandUnit() || bRenameApplied);
+	if (!bChanged)
+		return;
+	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_UNIT_RESULT turn=%d player=%d team=%d triggeredId=%d event=%s unitId=%d unit=%s unitAI=%s x=%d y=%d existsBefore=%d existsAfter=%d damageBefore=%d damageAfter=%d damageDelta=%+d experienceBefore=%d experienceAfter=%d experienceDelta=%+d immobileTurnsBefore=%d immobileTurnsAfter=%d immobileTurnsDelta=%+d promotion=%s hadPromotionBefore=%d hasPromotionAfter=%d unitNameKey=%S renameApplied=%d disbanded=%d",
+			GC.getGame().getGameTurn(), ePlayer, ePlayer == NO_PLAYER ? NO_TEAM : GET_PLAYER(ePlayer).getTeam(), iTriggeredId, getSASGameRecordEventType(eEvent),
+			kBefore.iUnitId, getSASGameRecordUnitType(kBefore.eUnit), getSASGameRecordUnitAIType(kBefore.eUnitAI), kBefore.iX, kBefore.iY,
+			kBefore.iExists, kAfter.iExists, kBefore.iDamage, kAfter.iDamage,
+			(kAfter.iDamage < 0 ? -1 : kAfter.iDamage - kBefore.iDamage), kBefore.iExperience, kAfter.iExperience,
+			(kAfter.iExperience < 0 ? -1 : kAfter.iExperience - kBefore.iExperience), kBefore.iImmobileTurns, kAfter.iImmobileTurns,
+			(kAfter.iImmobileTurns < 0 ? -1 : kAfter.iImmobileTurns - kBefore.iImmobileTurns), getSASGameRecordPromotionType(kBefore.ePromotion),
+			kBefore.iHasPromotion, kAfter.iHasPromotion, bRenameApplied ? kEvent.getUnitNameKey() : L"-",
+			bRenameApplied, (kEvent.isDisbandUnit() && !kAfter.iExists));
+}
+
 void logSASGameRecordRandomEventOccurrenceCleared(CvPlayer const& kPlayer, EventTypes eSourceEvent, EventTypes eClearedEvent, int iTriggeredId, int iClearChance, char const* szScope, TeamTypes eScopeTeam, int iScopePlayerSlots, int iScopeEverAlivePlayers, int iClearedOccurrences)
 {
 	logSASGameRecord("GAME_RECORD_RANDOM_EVENT_OCCURRENCE_CLEARED turn=%d player=%d team=%d triggeredId=%d sourceEvent=%s clearedEvent=%s clearChance=%d scope=%s scopeTeam=%d scopePlayerSlots=%d scopeEverAlivePlayers=%d clearedOccurrences=%d",

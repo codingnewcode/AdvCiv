@@ -16572,7 +16572,21 @@ void CvPlayer::applyEvent(EventTypes eEvent, int iEventTriggeredId, bool bUpdate
 		if (pUnit != NULL)
 		{
 			FAssert(pUnit->canApplyEvent(eEvent));
+			// <!-- custom: CvUnit::applyEvent consumes exactly these five unit-local EventInfo fields. Keep this local to the recorder port rather than adding the newer mature-SAS CvEventInfo helper solely for telemetry. (ChatGPT-5.6-Sol) -->
+			bool const bSASHasUnitName = (bLogRandomEvent && kEvent.getUnitNameKey() != NULL && kEvent.getUnitNameKey()[0] != L'\0');
+			bool const bLogRandomEventUnitResult = (bLogRandomEvent && (kEvent.isDisbandUnit() || kEvent.getUnitExperience() != 0 ||
+					kEvent.getUnitImmobileTurns() > 0 || kEvent.getUnitPromotion() != NO_PROMOTION || bSASHasUnitName));
+			int const iSASUnitId = (bLogRandomEventUnitResult ? pUnit->getID() : -1);
+			SASGameRecordRandomEventUnitState kSASUnitBefore;
+			if (bLogRandomEventUnitResult) kSASUnitBefore = SASGameRecordRandomEventUnitState(*pUnit, eEvent);
 			pUnit->applyEvent(eEvent); // might kill the unit
+			if (bLogRandomEventUnitResult)
+			{
+				CvUnit const* pSASUnitAfter = getUnit(iSASUnitId);
+				SASGameRecordRandomEventUnitState kSASUnitAfter;
+				if (pSASUnitAfter != NULL) kSASUnitAfter = SASGameRecordRandomEventUnitState(*pSASUnitAfter, eEvent);
+				logSASGameRecordRandomEventUnitResult(getID(), iEventTriggeredId, eEvent, kSASUnitBefore, kSASUnitAfter);
+			}
 		}
 	}
 	FOR_EACH_ENUM(UnitCombat)
